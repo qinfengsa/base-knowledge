@@ -10,8 +10,8 @@ import java.util.*;
 import static com.qinfengsa.structure.util.LogUtils.logResult;
 
 /**
- * @author: qinfengsa
- * @date: 2019/5/13 19:46
+ * @author qinfengsa
+ * @date 2019/5/13 19:46
  */
 @Slf4j
 public class TreeTest {
@@ -3402,5 +3402,100 @@ public class TreeTest {
         root.left = sortedListToBST(list,left,mid - 1);
         root.right = sortedListToBST(list,mid + 1,right);
         return root;
+    }
+
+
+    /**
+     * 129. 求根到叶子节点数字之和
+     * 给定一个二叉树，它的每个结点都存放一个 0-9 的数字，每条从根到叶子节点的路径都代表一个数字。
+     *
+     * 例如，从根到叶子节点路径 1->2->3 代表数字 123。
+     *
+     * 计算从根到叶子节点生成的所有数字之和。
+     *
+     * 说明: 叶子节点是指没有子节点的节点。
+     *
+     * 示例 1:
+     *
+     * 输入: [1,2,3]
+     *     1
+     *    / \
+     *   2   3
+     * 输出: 25
+     * 解释:
+     * 从根到叶子节点路径 1->2 代表数字 12.
+     * 从根到叶子节点路径 1->3 代表数字 13.
+     * 因此，数字总和 = 12 + 13 = 25.
+     * 示例 2:
+     *
+     * 输入: [4,9,0,5,1]
+     *     4
+     *    / \
+     *   9   0
+     *  / \
+     * 5   1
+     * 输出: 1026
+     * 解释:
+     * 从根到叶子节点路径 4->9->5 代表数字 495.
+     * 从根到叶子节点路径 4->9->1 代表数字 491.
+     * 从根到叶子节点路径 4->0 代表数字 40.
+     * 因此，数字总和 = 495 + 491 + 40 = 1026.
+     * @param root
+     * @return
+     */
+    public int sumNumbers(TreeNode root) {
+        sumNumbers(root,0);
+        return treeSum;
+    }
+
+    static int treeSum = 0;
+
+    private void sumNumbers(TreeNode node, int num) {
+        if (Objects.isNull(node)) {
+            return;
+        }
+        num = num * 10 + node.val;
+        if (Objects.isNull(node.left) && Objects.isNull(node.right)) {
+            treeSum += num;
+            return;
+        }
+
+        sumNumbers(node.left,num);
+        sumNumbers(node.right,num);
+    }
+
+
+    /**
+     * 96. 不同的二叉搜索树
+     * 给定一个整数 n，求以 1 ... n 为节点组成的二叉搜索树有多少种？
+     *
+     * 示例:
+     *
+     * 输入: 3
+     * 输出: 5
+     * 解释:
+     * 给定 n = 3, 一共有 5 种不同结构的二叉搜索树:
+     *
+     *    1         3     3      2      1
+     *     \       /     /      / \      \
+     *      3     2     1      1   3      2
+     *     /     /       \                 \
+     *    2     1         2                 3
+     * @param n
+     * @return
+     */
+    public int numTrees(int n) {
+        int[] dp = new int[n + 1];
+        dp[0] = 1;
+        dp[1] = 1;
+        for (int i = 2; i <= n; i++) {
+            int count = 0;
+            for (int j = 1; j <= i; j++) {
+                // 选择 j 作根节点 左子树的个数 dp[j - 1] 又子树的个数 dp[i - j]
+                count += dp[j - 1] * dp[i - j];
+            }
+            dp[i] = count;
+        }
+        return dp[n];
     }
 }
