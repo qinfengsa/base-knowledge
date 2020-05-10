@@ -1711,4 +1711,107 @@ public class BackTest {
             list.remove(size);
         }
     }
+
+
+    /**
+     * 216. 组合总和 III
+     * 找出所有相加之和为 n 的 k 个数的组合。组合中只允许含有 1 - 9 的正整数，并且每种组合中不存在重复的数字。
+     *
+     * 说明：
+     *
+     * 所有数字都是正整数。
+     * 解集不能包含重复的组合。
+     * 示例 1:
+     *
+     * 输入: k = 3, n = 7
+     * 输出: [[1,2,4]]
+     * 示例 2:
+     *
+     * 输入: k = 3, n = 9
+     * 输出: [[1,2,6], [1,3,5], [2,3,4]]
+     * @param k
+     * @param n
+     * @return
+     */
+    public List<List<Integer>> combinationSum3(int k, int n) {
+        List<List<Integer>> result  = new ArrayList<>();
+
+        combinationSum3(k,n,1,new ArrayList<>(),result);
+        return result;
+    }
+
+    private void combinationSum3(int count, int sum,int start,List<Integer> list,List<List<Integer>> result) {
+        if (count == 0 && sum == 0) {
+            result.add(new ArrayList<>(list));
+            return;
+        }
+        if (count <= 0) {
+            return;
+        }
+        if (sum <= 0) {
+            return;
+        }
+
+        for (int i = start; i <= 9; i++) {
+            list.add(i);
+            combinationSum3(count - 1, sum - i, i + 1,list,result);
+            list.remove(list.size() - 1);
+        }
+
+    }
+
+
+    @Test
+    public void subsetsWithDup() {
+        int[] nums = {1,2,2};
+        List<List<Integer>> result = subsetsWithDup(nums);
+        log.debug("result:{}",result);
+    }
+
+    /**
+     * 90. 子集 II
+     * 给定一个可能包含重复元素的整数数组 nums，返回该数组所有可能的子集（幂集）。
+     *
+     * 说明：解集不能包含重复的子集。
+     *
+     * 示例:
+     *
+     * 输入: [1,2,2]
+     * 输出:
+     * [
+     *   [2],
+     *   [1],
+     *   [1,2,2],
+     *   [2,2],
+     *   [1,2],
+     *   []
+     * ]
+     * @param nums
+     * @return
+     */
+    public List<List<Integer>> subsetsWithDup(int[] nums) {
+        List<List<Integer>> result = new ArrayList<>();
+        Arrays.sort(nums);
+
+        subsetsWithDup(new ArrayList<>(), result,nums,0);
+        return result;
+    }
+
+    private void subsetsWithDup(List<Integer> list,  List<List<Integer>> result,int[] nums, int start) {
+
+        result.add(new ArrayList<>(list));
+        int size = list.size();
+        for (int i = start; i < nums.length; i++) {
+            if (i > start && nums[i] == nums[i - 1]) {
+                continue;
+            }
+            list.add(nums[i]);
+
+            subsetsWithDup(list,result,nums,i + 1);
+            list.remove(size);
+        }
+
+
+
+    }
 }

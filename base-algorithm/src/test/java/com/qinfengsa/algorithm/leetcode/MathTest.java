@@ -4909,4 +4909,82 @@ public class MathTest {
         long num = start + (n - 1) / digit; // 2.
         return Long.toString(num).charAt((n - 1) % digit) - '0'; // 3. */
     }
+
+
+    /**
+     * 137. 只出现一次的数字 II
+     * 给定一个非空整数数组，除了某个元素只出现一次以外，其余每个元素均出现了三次。找出那个只出现了一次的元素。
+     *
+     * 说明：
+     *
+     * 你的算法应该具有线性时间复杂度。 你可以不使用额外空间来实现吗？
+     *
+     * 示例 1:
+     *
+     * 输入: [2,2,3,2]
+     * 输出: 3
+     * 示例 2:
+     *
+     * 输入: [0,1,0,1,0,1,99]
+     * 输出: 99
+     * @param nums
+     * @return
+     */
+    public int singleNumber2(int[] nums) {
+        Map<Integer,Integer> map = new HashMap<>();
+        for (int num : nums) {
+            int count = map.getOrDefault(num,0);
+            map.put(num,count + 1);
+        }
+
+        for (Integer key : map.keySet() ) {
+            if (map.get(key) == 1) {
+                return key;
+            }
+
+        }
+        return -1;
+    }
+
+
+    /**
+     * 223. 矩形面积
+     * 在二维平面上计算出两个由直线构成的矩形重叠后形成的总面积。
+     *
+     * 每个矩形由其左下顶点和右上顶点坐标表示，如图所示。
+     *
+     * Rectangle Area
+     *
+     * 示例:
+     *
+     * 输入: -3, 0, 3, 4, 0, -1, 9, 2
+     * 输出: 45
+     * 说明: 假设矩形面积不会超出 int 的范围。
+     * @param A
+     * @param B
+     * @param C
+     * @param D
+     * @param E
+     * @param F
+     * @param G
+     * @param H
+     * @return
+     */
+    public int computeArea(int A, int B, int C, int D, int E, int F, int G, int H) {
+
+        int x1 = Math.max(E,A);
+        int y1 = Math.max(B,F);
+
+        int x2 = Math.min(C,G);
+        int y2 = Math.min(D,H);
+        int area1 = (C - A) * (D - B);
+        int area2 = (G - E) * (H - F);
+        int area3 = 0;
+        if (E >= C || G <= A) {
+        } else if (F >= D || H <= B) {
+        } else {
+              area3 = (y2 - y1) * (x2 - x1);
+        }
+        return  area1 + area2 - area3;
+    }
 }

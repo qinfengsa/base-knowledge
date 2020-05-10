@@ -1503,4 +1503,94 @@ public class ListTest {
         list.get(left).next = null;
 
     }
+
+
+    /**
+     * 147. 对链表进行插入排序
+     * 对链表进行插入排序。
+     *
+     *
+     * 插入排序的动画演示如上。从第一个元素开始，该链表可以被认为已经部分排序（用黑色表示）。
+     * 每次迭代时，从输入数据中移除一个元素（用红色表示），并原地将其插入到已排好序的链表中。
+     *
+     *
+     *
+     * 插入排序算法：
+     *
+     * 插入排序是迭代的，每次只移动一个元素，直到所有元素可以形成一个有序的输出列表。
+     * 每次迭代中，插入排序只从输入数据中移除一个待排序的元素，找到它在序列中适当的位置，并将其插入。
+     * 重复直到所有输入数据插入完为止。
+     *
+     *
+     * 示例 1：
+     *
+     * 输入: 4->2->1->3
+     * 输出: 1->2->3->4
+     * 示例 2：
+     *
+     * 输入: -1->5->3->4->0
+     * 输出: -1->0->3->4->5
+     * @param head
+     * @return
+     */
+    public ListNode insertionSortList(ListNode head) {
+
+        //ListNode node = head;
+
+        ListNode root = new ListNode(0);
+        ListNode pre = root;
+        for (ListNode node = head;Objects.nonNull(node);) {
+            ListNode current = node;
+            node = node.next;
+            if (current.val < pre.val) {
+                pre = root;
+            }
+            while (Objects.nonNull(pre.next) && current.val > pre.next.val) {
+                pre = pre.next;
+            }
+            current.next = pre.next;
+            pre.next = current;
+
+        }
+
+        return root.next;
+    }
+
+
+    /**
+     * 86. 分隔链表
+     * 给定一个链表和一个特定值 x，对链表进行分隔，使得所有小于 x 的节点都在大于或等于 x 的节点之前。
+     *
+     * 你应当保留两个分区中每个节点的初始相对位置。
+     *
+     * 示例:
+     *
+     * 输入: head = 1->4->3->2->5->2, x = 3
+     * 输出: 1->2->2->4->3->5
+     * @param head
+     * @param x
+     * @return
+     */
+    public ListNode partition(ListNode head, int x) {
+        ListNode listHead1 = new ListNode(-1);
+        ListNode list1 = listHead1;
+        ListNode listHead2 = new ListNode(-1);
+        ListNode list2 = listHead2;
+        ListNode node = head;
+        while (Objects.nonNull(node)) {
+
+            if (node.val < x) {
+                list1.next = node;
+                list1 = list1.next;
+            } else {
+                list2.next = node;
+                list2 = list2.next;
+            }
+            node = node.next;
+        }
+        list2.next = null;
+
+        list1.next = listHead2.next;
+        return listHead1.next;
+    }
 }
