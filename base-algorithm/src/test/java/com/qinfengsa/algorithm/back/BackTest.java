@@ -1811,7 +1811,6 @@ public class BackTest {
             list.remove(size);
         }
 
-
-
     }
+
 }
