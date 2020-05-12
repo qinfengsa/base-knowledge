@@ -6,7 +6,7 @@ import com.qinfengsa.algorithm.util.SortUtils;
 /**
  * 堆排序
  * HeapSort
- * @author wangheng
+ * @author qinfengsa
  * @date 2019/3/23 10:40
  */
 public class HeapSort implements ISort {
@@ -24,7 +24,7 @@ public class HeapSort implements ISort {
 
 	/**
 	 * todo
-	 * @author wangheng
+	 * @author qinfengsa
 	 * @date 2019/3/23 13:05
 	 * @param sortArray
 	 */
@@ -47,7 +47,7 @@ public class HeapSort implements ISort {
 
 	/**
 	 * 构建指定长度的最大堆，得到最大值，并把堆顶元素和尾元素交换
-	 * @author wangheng
+	 * @author qinfengsa
 	 * @date 2019/3/23 12:02
 	 * @param
 	 */

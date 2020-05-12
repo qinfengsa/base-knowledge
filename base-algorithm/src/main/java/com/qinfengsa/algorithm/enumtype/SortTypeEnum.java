@@ -1,7 +1,7 @@
 package com.qinfengsa.algorithm.enumtype;
 
 /**
- * @author wangheng
+ * @author qinfengsa
  * @className SortTypeEnum
  * @description 排序类型枚举
  * @date 2019/3/11 9:33

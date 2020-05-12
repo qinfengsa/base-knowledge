@@ -6,7 +6,7 @@ import com.qinfengsa.algorithm.util.SortUtils;
 /**
  * 冒泡排序
  * BubbleSort
- * @author wangheng
+ * @author qinfengsa
  * @date 2019/3/23 9:29
  */
 public class BubbleSort implements ISort {

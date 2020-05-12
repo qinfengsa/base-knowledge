@@ -16,7 +16,7 @@ import com.qinfengsa.algorithm.sort2.impl.TimSort;
 /**
  * 排序工厂
  * JavaSortFactory
- * @author wangheng
+ * @author qinfengsa
  * @date 2019/3/23 10:38
  */
 public class JavaSortFactory {

@@ -7,7 +7,7 @@ import org.junit.Test;
 /**
  * 排序测试类
  * JavaSortTest
- * @author wangheng
+ * @author qinfengsa
  * @date 2019/3/7 8:59
  */
 public class JavaSortTest {

@@ -3,7 +3,7 @@ package com.qinfengsa.algorithm.util;
 /**
  * 排序工具类
  * SortUtils
- * @author wangheng
+ * @author qinfengsa
  * @date 2019/3/23 9:38
  */
 public class SortUtils {

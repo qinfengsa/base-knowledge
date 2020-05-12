@@ -6,7 +6,7 @@ import com.qinfengsa.algorithm.sort.ISort;
  * TODO
  * QuickSort
  *
- * @author wangheng
+ * @author qinfengsa
  * @date 2019/3/23 10:40
  */
 public class QuickSort  implements ISort {

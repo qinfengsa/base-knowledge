@@ -3,7 +3,7 @@ package com.qinfengsa.algorithm.sort2;
 /**
  * 排序接口
  * ISort
- * @author wangheng
+ * @author qinfengsa
  * @date 2019/3/23 9:25
  */
 public interface ISort {

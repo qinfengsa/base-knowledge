@@ -6,7 +6,7 @@ import com.qinfengsa.algorithm.sort.impl.*;
 /**
  * 排序工厂
  * JavaSortFactory
- * @author wangheng
+ * @author qinfengsa
  * @date 2019/3/23 10:38
  */
 public class JavaSortFactory {

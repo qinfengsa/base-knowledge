@@ -5,7 +5,7 @@ import com.qinfengsa.algorithm.sort.ISort;
 /**
  * 插入排序
  * InsertionSort
- * @author wangheng
+ * @author qinfengsa
  * @date 2019/3/23 10:39
  */
 public class InsertionSort  implements ISort {
@@ -17,7 +17,7 @@ public class InsertionSort  implements ISort {
 
 	/**
 	 * 插入排序
-	 * @author wangheng
+	 * @author qinfengsa
 	 * @date 2019/3/23 13:42
 	 * @param sortArray
 	 */

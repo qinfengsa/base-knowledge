@@ -27,8 +27,8 @@ import java.util.TreeMap;
 import static com.qinfengsa.structure.util.LogUtils.logResult;
 
 /**
- * @author: qinfengsa
- * @date: 2019/5/8 13:38
+ * @author qinfengsa
+ * @date 2019/5/8 13:38
  */
 @Slf4j
 public class ArrayTest {
@@ -9785,7 +9785,8 @@ public class ArrayTest {
 
         // 摩尔投票算法
         // 该算法在其局部变量中维护一个序列元素和一个计数器，计数器最初为零。
-        // 然后，它一次一个地处理序列的元素。处理元素x时，如果计数器为零，则算法将x存储为其维护的序列元素，并将计数器设置为1。否则，它将x与存储的元素进行比较，并使计数器递增（如果相等）或递减计数器（不相等）。
+        // 然后，它一次一个地处理序列的元素。处理元素x时，如果计数器为零，
+        // 则算法将x存储为其维护的序列元素，并将计数器设置为1。否则，它将x与存储的元素进行比较，并使计数器递增（如果相等）或递减计数器（不相等）。
         //
         // 这里有两个先觉条件要明确：
         //
@@ -10670,6 +10671,80 @@ public class ArrayTest {
         }
 
         return result;
+    }
+
+
+    /**
+     * 229. 求众数 II
+     * 给定一个大小为 n 的数组，找出其中所有出现超过 ⌊ n/3 ⌋ 次的元素。
+     *
+     * 说明: 要求算法的时间复杂度为 O(n)，空间复杂度为 O(1)。
+     *
+     * 示例 1:
+     *
+     * 输入: [3,2,3]
+     * 输出: [3]
+     * 示例 2:
+     *
+     * 输入: [1,1,1,3,3,2,2,2]
+     * 输出: [1,2]
+     * @param nums
+     * @return
+     */
+    public List<Integer> majorityElement2(int[] nums) {
+        List<Integer> list = new ArrayList<>();
+        // 摩尔投票算法
+        // 该算法在其局部变量中维护一个序列元素和一个计数器，计数器最初为零。
+        // 然后，它一次一个地处理序列的元素。处理元素x时，如果计数器为零，
+        // 则算法将x存储为其维护的序列元素，并将计数器设置为1。否则，它将x与存储的元素进行比较，并使计数器递增（如果相等）或递减计数器（不相等）。
+        //
+        // 这里有两个先觉条件要明确：
+        //
+        // 出现超过一半以上(n/2)的元素有且只有一个；
+        // 这个元素一定存在
+        int num1 = nums[0],count1 = 1;
+        int num2 = nums[0],count2 = 1;
+        for (int i = 1; i < nums.length; i++) {
+
+            if (num1 == nums[i]) {
+                count1++;
+                continue;
+            }
+            if (num2 == nums[i]) {
+                count2++;
+                continue;
+            }
+            if (count1 == 0) {
+                num1 = nums[i];
+                count1 = 1;
+                continue;
+            }
+
+            if (count2 == 0) {
+                num2 = nums[i];
+                count2 = 1;
+                continue;
+            }
+            count1--;
+            count2--;
+
+        }
+        /*Map<Integer,Integer> map = new HashMap<>();
+        for (int num : nums) {
+            int count = map.getOrDefault(num,0);
+            map.put(num, count + 1);
+        }
+        int len = nums.length/ 3;
+
+
+
+        map.forEach((k,v) -> {
+            if (v > len) {
+                list.add(k);
+            }
+        });*/
+
+        return list;
     }
 
 }

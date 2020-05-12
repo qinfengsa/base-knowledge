@@ -5,7 +5,7 @@ import com.qinfengsa.algorithm.sort.ISort;
 /**
  * 归并排序
  * MergeSort
- * @author wangheng
+ * @author qinfengsa
  * @date 2019/3/23 10:40
  */
 public class MergeSort  implements ISort {
@@ -16,7 +16,7 @@ public class MergeSort  implements ISort {
 
 	/**
 	 * 归并排序
-	 * @author wangheng
+	 * @author qinfengsa
 	 * @date 2019/3/23 13:45
 	 * @param sortArray
 	 * @param start

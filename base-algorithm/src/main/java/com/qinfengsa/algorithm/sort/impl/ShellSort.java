@@ -6,7 +6,7 @@ import com.qinfengsa.algorithm.sort.ISort;
  * 希尔排序
  * ShellSort
  *
- * @author wangheng
+ * @author qinfengsa
  * @date 2019/3/23 10:39
  */
 public class ShellSort  implements ISort {
