@@ -5016,4 +5016,75 @@ public class MathTest {
         }
         return m << count;
     }
+
+
+    /**
+     * 338. 比特位计数
+     * 给定一个非负整数 num。对于 0 ≤ i ≤ num 范围中的每个数字 i ，计算其二进制数中的 1 的数目并将它们作为数组返回。
+     *
+     * 示例 1:
+     *
+     * 输入: 2
+     * 输出: [0,1,1]
+     * 示例 2:
+     *
+     * 输入: 5
+     * 输出: [0,1,1,2,1,2]
+     * 进阶:
+     *
+     * 给出时间复杂度为O(n*sizeof(integer))的解答非常容易。但你可以在线性时间O(n)内用一趟扫描做到吗？
+     * 要求算法的空间复杂度为O(n)。
+     * 你能进一步完善解法吗？要求在C++或任何其他语言中不使用任何内置函数（如 C++ 中的 __builtin_popcount）来执行此操作。
+     * @param num
+     * @return
+     */
+    public int[] countBits(int num) {
+        int[] result = new int[num + 1];
+
+        for (int i = 1; i <= num; i++) {
+            result[i] = result[i >> 1] + (i & 1);
+        }
+
+        return result;
+    }
+
+
+    /**
+     * 343. 整数拆分
+     * 给定一个正整数 n，将其拆分为至少两个正整数的和，并使这些整数的乘积最大化。 返回你可以获得的最大乘积。
+     *
+     * 示例 1:
+     *
+     * 输入: 2
+     * 输出: 1
+     * 解释: 2 = 1 + 1, 1 × 1 = 1。
+     * 示例 2:
+     *
+     * 输入: 10
+     * 输出: 36
+     * 解释: 10 = 3 + 3 + 4, 3 × 3 × 4 = 36。
+     * 说明: 你可以假设 n 不小于 2 且不大于 58。
+     * @param n
+     * @return
+     */
+    public int integerBreak(int n) {
+        if (n <= 3) {
+            return n - 1;
+        }
+        if (n == 4) {
+            return 4;
+        }
+        int result = 1;
+        while (n > 3) {
+            if (n == 4) {
+                break;
+            }
+            n -= 3;
+            result *= 3;
+        }
+        if (n > 0) {
+            result *= n;
+        }
+        return result;
+    }
 }
