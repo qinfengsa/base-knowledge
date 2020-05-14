@@ -2348,4 +2348,102 @@ public class DynamicPlanTest {
 
         return max * max;
     }
+
+
+
+
+    /**
+     * 368. 最大整除子集
+     * 给出一个由无重复的正整数组成的集合，找出其中最大的整除子集，子集中任意一对 (Si，Sj) 都要满足：Si % Sj = 0 或 Sj % Si = 0。
+     *
+     * 如果有多个目标子集，返回其中任何一个均可。
+     *
+     *
+     *
+     * 示例 1:
+     *
+     * 输入: [1,2,3]
+     * 输出: [1,2] (当然, [1,3] 也正确)
+     * 示例 2:
+     *
+     * 输入: [1,2,4,8]
+     * 输出: [1,2,4,8]
+     * @param nums
+     * @return
+     */
+    public List<Integer> largestDivisibleSubset(int[] nums) {
+        if (nums.length == 0) {
+            return new LinkedList<>();
+        }
+        Arrays.sort(nums);
+        int[] dp = new int[nums.length];
+        dp[0] = 1;
+        for (int i = 1; i < nums.length; i++) {
+            int max = 0;
+            for (int j = 0; j < i; j++) {
+                if (nums[i] % nums[j] == 0 && dp[j] > max) {
+                    max = dp[j];
+                }
+            }
+            dp[i] = max + 1;
+        }
+        int maxIndex = 0,maxSize = 0;
+        for (int i = 0; i < nums.length; i++) {
+
+            if (dp[i] > maxSize) {
+                maxIndex = i;
+                maxSize = dp[i];
+            }
+        }
+        List<Integer> result = new ArrayList<>();
+        for (int i = maxIndex; i >= 0; i--) {
+
+            if (nums[maxIndex] % nums[i] == 0 && dp[i] == maxSize) {
+                maxSize--;
+                result.add(nums[i]);
+            }
+
+        }
+        Collections.reverse(result);
+        return result;
+
+
+
+
+
+        /*List<Integer>[] subsetList = new List[nums.length];
+
+        List<Integer> result = null;
+
+        subsetList[0] = new LinkedList<>();
+        subsetList[0].add(nums[0]);
+
+
+        for (int i = 1; i < nums.length; i++) {
+            int max = 0,maxIndex = -1;
+            for (int j = 0; j < i; j++) {
+                if (nums[i] % nums[j] == 0 && subsetList[j].size() > max) {
+                    maxIndex = j;
+                    max = subsetList[j].size();
+                }
+            }
+            if (maxIndex == -1) {
+                subsetList[i] = new LinkedList<>();
+            } else {
+                subsetList[i] = new LinkedList<>(subsetList[maxIndex]);
+            }
+            subsetList[i].add(nums[i]);
+        }
+        int maxSize = 0;
+
+        for (List<Integer> subset : subsetList) {
+
+            if (subset.size() > maxSize) {
+                result = subset;
+                maxSize = subset.size();
+            }
+        }
+
+        return result;*/
+    }
 }
