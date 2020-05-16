@@ -634,8 +634,7 @@ public class ListTest {
                 // 断掉
                 node.next = null;
                 ListNode startNode = pre.next;
-                ListNode preNode = reverseNode(startNode);
-                pre.next = preNode;
+                pre.next = reverseNode(startNode);
                 startNode.next = next;
                 pre = startNode;
             }
@@ -1592,5 +1591,79 @@ public class ListTest {
 
         list1.next = listHead2.next;
         return listHead1.next;
+    }
+
+
+    @Test
+    public void reverseKGroup2() {
+        int k = 2;
+        ListNode head = new ListNode(1);
+        ListNode node2 = new ListNode(2);
+        ListNode node3 = new ListNode(3);
+        ListNode node4 = new ListNode(4);
+        ListNode node5 = new ListNode(5);
+        ListNode node6 = new ListNode(6);
+        head.next = node2;
+        node2.next = node3;
+        node3.next = node4;
+        node4.next = node5;
+        //node5.next = node6;
+
+        ListNode result = reverseKGroup2(head,k);
+        logResult(logNode(result)) ;
+    }
+    /**
+     * 25. K 个一组翻转链表
+     * 给你一个链表，每 k 个节点一组进行翻转，请你返回翻转后的链表。
+     *
+     * k 是一个正整数，它的值小于或等于链表的长度。
+     *
+     * 如果节点总数不是 k 的整数倍，那么请将最后剩余的节点保持原有顺序。
+     *
+     *
+     *
+     * 示例：
+     *
+     * 给你这个链表：1->2->3->4->5
+     *
+     * 当 k = 2 时，应当返回: 2->1->4->3->5
+     *
+     * 当 k = 3 时，应当返回: 3->2->1->4->5
+     *
+     *
+     *
+     * 说明：
+     *
+     * 你的算法只能使用常数的额外空间。
+     * 你不能只是单纯的改变节点内部的值，而是需要实际进行节点交换。
+     * @param head
+     * @param k
+     * @return
+     */
+    public ListNode reverseKGroup2(ListNode head, int k) {
+        ListNode root = new ListNode(0);
+        root.next = head;
+
+        List<ListNode> list = new ArrayList<>();
+        ListNode node = head;
+        ListNode pre = root;
+        while (Objects.nonNull(node)) {
+            list.add(node);
+
+            ListNode next = node.next;
+            if (list.size() == k) {
+                for (int i = list.size() - 1; i >= 0; i--) {
+                    pre.next = list.remove(i);
+                    pre = pre.next;
+                }
+                pre.next = next;
+            }
+
+            node = next;
+        }
+
+
+
+        return root.next;
     }
 }
