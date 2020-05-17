@@ -10856,5 +10856,199 @@ public class ArrayTest {
         }
         return result;
     }
+
+
+    /**
+     * 5412. 在既定时间做作业的学生人数
+     * 给你两个整数数组 startTime（开始时间）和 endTime（结束时间），并指定一个整数 queryTime 作为查询时间。
+     *
+     * 已知，第 i 名学生在 startTime[i] 时开始写作业并于 endTime[i] 时完成作业。
+     *
+     * 请返回在查询时间 queryTime 时正在做作业的学生人数。形式上，返回能够使 queryTime 处于区间 [startTime[i], endTime[i]]（含）的学生人数。
+     *
+     *
+     *
+     * 示例 1：
+     *
+     * 输入：startTime = [1,2,3], endTime = [3,2,7], queryTime = 4
+     * 输出：1
+     * 解释：一共有 3 名学生。
+     * 第一名学生在时间 1 开始写作业，并于时间 3 完成作业，在时间 4 没有处于做作业的状态。
+     * 第二名学生在时间 2 开始写作业，并于时间 2 完成作业，在时间 4 没有处于做作业的状态。
+     * 第二名学生在时间 3 开始写作业，预计于时间 7 完成作业，这是是唯一一名在时间 4 时正在做作业的学生。
+     * 示例 2：
+     *
+     * 输入：startTime = [4], endTime = [4], queryTime = 4
+     * 输出：1
+     * 解释：在查询时间只有一名学生在做作业。
+     * 示例 3：
+     *
+     * 输入：startTime = [4], endTime = [4], queryTime = 5
+     * 输出：0
+     * 示例 4：
+     *
+     * 输入：startTime = [1,1,1,1], endTime = [1,3,2,4], queryTime = 7
+     * 输出：0
+     * 示例 5：
+     *
+     * 输入：startTime = [9,8,7,6,5,4,3,2,1], endTime = [10,10,10,10,10,10,10,10,10], queryTime = 5
+     * 输出：5
+     *
+     *
+     * 提示：
+     *
+     * startTime.length == endTime.length
+     * 1 <= startTime.length <= 100
+     * 1 <= startTime[i] <= endTime[i] <= 1000
+     * 1 <= queryTime <= 1000
+     * @param startTime
+     * @param endTime
+     * @param queryTime
+     * @return
+     */
+    public int busyStudent(int[] startTime, int[] endTime, int queryTime) {
+        int count = 0;
+        for (int i = 0; i < startTime.length; i++) {
+            if (startTime[i] <= queryTime && queryTime <= endTime[i]) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+
+    @Test
+    public void peopleIndexes() {
+        List<List<String>> favoriteCompanies = new ArrayList<>();
+        List<String> list1 = new ArrayList<>( );
+        list1.add("leetcode");
+        list1.add("google");
+        list1.add("facebook");
+        List<String> list2 = new ArrayList<>( );
+        list2.add("google");
+        list2.add("facebook");
+        List<String> list3 = new ArrayList<>( );
+        list3.add("google");
+        list3.add("facebook");
+        List<String> list4 = new ArrayList<>( );
+        list4.add("google");
+        list4.add("amazon");
+        favoriteCompanies.add(list1);
+        favoriteCompanies.add(list2);
+        favoriteCompanies.add(list3);
+        favoriteCompanies.add(list4);
+        List<Integer> list = peopleIndexes(favoriteCompanies);
+        logResult(list);
+    }
+
+    /**
+     * 5414. 收藏清单
+     * 给你一个数组 favoriteCompanies ，其中 favoriteCompanies[i] 是第 i 名用户收藏的公司清单（下标从 0 开始）。
+     *
+     * 请找出不是其他任何人收藏的公司清单的子集的收藏清单，并返回该清单下标。下标需要按升序排列。
+     *
+     *
+     *
+     * 示例 1：
+     *
+     * 输入：favoriteCompanies = [["leetcode","google","facebook"],["google","microsoft"],["google","facebook"],["google"],["amazon"]]
+     * 输出：[0,1,4]
+     * 解释：
+     * favoriteCompanies[2]=["google","facebook"] 是 favoriteCompanies[0]=["leetcode","google","facebook"] 的子集。
+     * favoriteCompanies[3]=["google"] 是 favoriteCompanies[0]=["leetcode","google","facebook"] 和 favoriteCompanies[1]=["google","microsoft"] 的子集。
+     * 其余的收藏清单均不是其他任何人收藏的公司清单的子集，因此，答案为 [0,1,4] 。
+     * 示例 2：
+     *
+     * 输入：favoriteCompanies = [["leetcode","google","facebook"],["leetcode","amazon"],["facebook","google"]]
+     * 输出：[0,1]
+     * 解释：favoriteCompanies[2]=["facebook","google"] 是 favoriteCompanies[0]=["leetcode","google","facebook"] 的子集，因此，答案为 [0,1] 。
+     * 示例 3：
+     *
+     * 输入：favoriteCompanies = [["leetcode"],["google"],["facebook"],["amazon"]]
+     * 输出：[0,1,2,3]
+     *
+     *
+     * 提示：
+     *
+     * 1 <= favoriteCompanies.length <= 100
+     * 1 <= favoriteCompanies[i].length <= 500
+     * 1 <= favoriteCompanies[i][j].length <= 20
+     * favoriteCompanies[i] 中的所有字符串 各不相同 。
+     * 用户收藏的公司清单也 各不相同 ，也就是说，即便我们按字母顺序排序每个清单， favoriteCompanies[i] != favoriteCompanies[j] 仍然成立。
+     * 所有字符串仅包含小写英文字母。
+     * @param favoriteCompanies
+     * @return
+     */
+    public List<Integer> peopleIndexes(List<List<String>> favoriteCompanies) {
+        /*List<Integer> result = new ArrayList<>();
+        int len = favoriteCompanies.size();
+        for (int i = 0; i < len; i++) {
+            List<String> list = favoriteCompanies.get(i);
+            boolean flag = true;
+            for (int j = 0; j < len; j++) {
+                if (i == j) {
+                    continue;
+                }
+
+                for (int k = 0; k < list.size(); k++) {
+                    if (!favoriteCompanies.get(j).contains(list.get(k)) ) {
+                        flag = false;
+                        break;
+                    }
+                }
+                if (flag) {
+                   break;
+                }
+            }
+            if (!flag) {
+                result.add(i);
+            }
+        }
+        return result;*/
+
+
+        List<Integer> result = new ArrayList<>();
+        Map<String,List<Integer>> favoriteMap = new HashMap<>();
+        for (int i = 0; i < favoriteCompanies.size(); i++) {
+            for (String key : favoriteCompanies.get(i)) {
+                List<Integer> list = favoriteMap.computeIfAbsent(key,k -> new ArrayList<>());
+                list.add(i);
+            }
+        }
+        for (int i = 0; i < favoriteCompanies.size(); i++) {
+            List<String> list = favoriteCompanies.get(i);
+            List<Integer> indexs = favoriteMap.get(list.get(0));
+            for (int j = 1; j < list.size(); j++) {
+                indexs = calIndex(indexs,favoriteMap.get(list.get(j)));
+                if (indexs.isEmpty()) {
+                    break;
+                }
+            }
+            if (indexs.isEmpty()) {
+                result.add(i);
+            }
+        }
+
+        return result;
+    }
+
+
+    /**
+     * 求两个列表的相同元素
+     * @param index1
+     * @param index2
+     */
+    private List<Integer> calIndex(List<Integer> index1,List<Integer> index2) {
+        List<Integer> result = new ArrayList<>();
+        for (int i = 0; i < index1.size(); i++) {
+            for (int j = 0; j < index2.size(); j++) {
+                if (Objects.equals(index1.get(i),index2.get(j))) {
+                    result.add(index1.get(i));
+                }
+            }
+        }
+
+        return result;
+    }
 }
 

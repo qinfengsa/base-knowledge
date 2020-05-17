@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -2157,8 +2158,8 @@ public class MathTest {
 
         if (max % min != 0) {
             return getGcd(min, max % min);
-        } else
-            return min;
+        }
+        return min;
 
     }
 
@@ -5182,4 +5183,142 @@ public class MathTest {
         }
 
     }
+
+
+    @Test
+    public void simplifiedFractions() {
+        int n = 4;
+        List<String> result = simplifiedFractions(n);
+        logResult(result);
+    }
+    /**
+     * 5397. 最简分数 显示英文描述
+     * 给你一个整数 n ，请你返回所有 0 到 1 之间（不包括 0 和 1）满足分母小于等于  n 的 最简 分数 。分数可以以 任意 顺序返回。
+     *
+     *
+     *
+     * 示例 1：
+     *
+     * 输入：n = 2
+     * 输出：["1/2"]
+     * 解释："1/2" 是唯一一个分母小于等于 2 的最简分数。
+     * 示例 2：
+     *
+     * 输入：n = 3
+     * 输出：["1/2","1/3","2/3"]
+     * 示例 3：
+     *
+     * 输入：n = 4
+     * 输出：["1/2","1/3","1/4","2/3","3/4"]
+     * 解释："2/4" 不是最简分数，因为它可以化简为 "1/2" 。
+     * 示例 4：
+     *
+     * 输入：n = 1
+     * 输出：[]
+     * @param n
+     * @return
+     */
+    public List<String> simplifiedFractions(int n) {
+        List<String> result = new ArrayList<>();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 1; i < n; i++) {
+            for (int j = i + 1; j <= n; j++) {
+                if (getGcd(i,j) != 1) {
+                    continue;
+                }
+
+                sb.setLength(0);
+                sb.append(i).append('/').append(j);
+                result.add(sb.toString());
+            }
+        }
+
+        return result;
+    }
+
+
+    /**
+     * 241. 为运算表达式设计优先级
+     * 给定一个含有数字和运算符的字符串，为表达式添加括号，改变其运算优先级以求出不同的结果。
+     * 你需要给出所有可能的组合的结果。有效的运算符号包含 +, - 以及 * 。
+     *
+     * 示例 1:
+     *
+     * 输入: "2-1-1"
+     * 输出: [0, 2]
+     * 解释:
+     * ((2-1)-1) = 0
+     * (2-(1-1)) = 2
+     * 示例 2:
+     *
+     * 输入: "2*3-4*5"
+     * 输出: [-34, -14, -10, -10, 10]
+     * 解释:
+     * (2*(3-(4*5))) = -34
+     * ((2*3)-(4*5)) = -14
+     * ((2*(3-4))*5) = -10
+     * (2*((3-4)*5)) = -10
+     * (((2*3)-4)*5) = 10
+     * @param input
+     * @return
+     */
+    public List<Integer> diffWaysToCompute(String input) {
+
+        if (input.length() == 0) {
+            return Collections.emptyList();
+        }
+        List<Integer> result = new ArrayList<>();
+        int index = 0, num = 0;
+        while (index < input.length() && !isOperation(input.charAt(index))) {
+            num = num * 10 + (input.charAt(index) - '0');
+            index++;
+        }
+        if (index == input.length()) {
+            result.add(num);
+            return result;
+        }
+        for (int i = 0; i < input.length(); i++) {
+            char c = input.charAt(i);
+            if (!isOperation(c)) {
+                continue;
+            }
+            List<Integer> list1 = diffWaysToCompute(input.substring(0, i ));
+            List<Integer> list2 = diffWaysToCompute(input.substring(i + 1));
+
+            for (int j = 0; j < list1.size(); j++) {
+                for (int k = 0; k < list2.size(); k++) {
+                    result.add(calculate(list1.get(j),c,list2.get(k)));
+                }
+            }
+
+
+
+        }
+
+
+
+
+        return result;
+    }
+
+
+
+    private boolean isOperation(char c) {
+        return c == '+' || c == '-' || c == '*';
+    }
+
+
+    private int calculate(int num1, char c, int num2) {
+        switch (c) {
+            case '+':
+                return num1 + num2;
+            case '-':
+                return num1 - num2;
+            case '*':
+                return num1 * num2;
+        }
+        return -1;
+    }
+
+
 }

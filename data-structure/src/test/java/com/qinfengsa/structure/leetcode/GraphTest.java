@@ -265,7 +265,7 @@ public class GraphTest {
      * @return
      */
     public int[] findOrder(int numCourses, int[][] prerequisites) {
-        int[] indegrees = new int[numCourses];
+        /*int[] indegrees = new int[numCourses];
         for(int[] p : prerequisites) {
             indegrees[p[0]]++;
         }
@@ -287,6 +287,43 @@ public class GraphTest {
                 if(req[1] != pre) continue;
                 if(--indegrees[req[0]] == 0) {
                     queue.add(req[0]);
+                }
+            }
+        }
+        if (index < numCourses) {
+            return new int[0];
+        }
+
+        return result;*/
+
+        int[] inDegrees = new int[numCourses];
+        Map<Integer,List<Integer>> map = new HashMap<>();
+        for (int[] p : prerequisites) {
+            inDegrees[p[0]]++;
+            List<Integer> list = map.computeIfAbsent(p[1],key -> new ArrayList<>());
+            list.add(p[0]);
+        }
+        // 队列 广度优先遍历
+        Deque<Integer> queue = new LinkedList<>();
+        for(int i = 0; i < numCourses; i++){
+            if(inDegrees[i] == 0) {
+                queue.addLast(i);
+            }
+        }
+        int[] result = new int[numCourses];
+        boolean[] visit = new boolean[numCourses];
+        int index = 0;
+        while (!queue.isEmpty()) {
+            Integer pre = queue.poll();
+            result[index++] = pre;
+            if (map.containsKey(pre)) {
+                List<Integer> list = map.get(pre);
+                for (int i = 0; i < list.size(); i++) {
+
+                    if (!visit[list.get(i)]) {
+                        queue.offer(list.get(i));
+                    }
+                    visit[list.get(i)] = true;
                 }
             }
         }

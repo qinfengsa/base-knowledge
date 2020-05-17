@@ -17,6 +17,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -5701,6 +5702,243 @@ public class StringTest {
             sb.append(str);
         }
 
+        return sb.toString();
+    }
+
+
+    /**
+     * 5396. 连续字符
+     * 给你一个字符串 s ，字符串的「能量」定义为：只包含一种字符的最长非空子字符串的长度。
+     *
+     * 请你返回字符串的能量。
+     *
+     *
+     *
+     * 示例 1：
+     *
+     * 输入：s = "leetcode"
+     * 输出：2
+     * 解释：子字符串 "ee" 长度为 2 ，只包含字符 'e' 。
+     * 示例 2：
+     *
+     * 输入：s = "abbcccddddeeeeedcba"
+     * 输出：5
+     * 解释：子字符串 "eeeee" 长度为 5 ，只包含字符 'e' 。
+     * 示例 3：
+     *
+     * 输入：s = "triplepillooooow"
+     * 输出：5
+     * 示例 4：
+     *
+     * 输入：s = "hooraaaaaaaaaaay"
+     * 输出：11
+     * 示例 5：
+     *
+     * 输入：s = "tourist"
+     * 输出：1
+     *
+     *
+     * 提示：
+     *
+     * 1 <= s.length <= 500
+     * s 只包含小写英文字母。
+     * @param s
+     * @return
+     */
+    public int maxPower(String s) {
+        int max = 0;
+        char[] chars = s.toCharArray();
+        int count = 1;
+        for (int i = 1; i <= chars.length; i++) {
+            if (i == chars.length || chars[i] != chars[i - 1]) {
+                max = Math.max(count,max);
+                count = 1;
+            } else {
+                count++;
+            }
+        }
+
+        return max;
+    }
+
+
+    @Test
+    public void largestNumber() {
+        int[] cost = {4,3,2,5,6,7,2,5,5};
+        int target = 9;
+        // [2,4,2,5,3,2,5,5,4]
+        //739
+        logResult(largestNumber(cost,target));
+    }
+
+    /**
+     * 5399. 数位成本和为目标值的最大数字
+     * 给你一个整数数组 cost 和一个整数 target 。请你返回满足如下规则可以得到的 最大 整数：
+     *
+     * 给当前结果添加一个数位（i + 1）的成本为 cost[i] （cost 数组下标从 0 开始）。
+     * 总成本必须恰好等于 target 。
+     * 添加的数位中没有数字 0 。
+     * 由于答案可能会很大，请你以字符串形式返回。
+     *
+     * 如果按照上述要求无法得到任何整数，请你返回 "0" 。
+     *
+     *
+     *
+     * 示例 1：
+     *
+     * 输入：cost = [4,3,2,5,6,7,2,5,5], target = 9
+     * 输出："7772"
+     * 解释：添加数位 '7' 的成本为 2 ，添加数位 '2' 的成本为 3 。所以 "7772" 的代价为 2*3+ 3*1 = 9 。 "997" 也是满足要求的数字，但 "7772" 是较大的数字。
+     *  数字     成本
+     *   1  ->   4
+     *   2  ->   3
+     *   3  ->   2
+     *   4  ->   5
+     *   5  ->   6
+     *   6  ->   7
+     *   7  ->   2
+     *   8  ->   5
+     *   9  ->   5
+     * 示例 2：
+     *
+     * 输入：cost = [7,6,5,5,5,6,8,7,8], target = 12
+     * 输出："85"
+     * 解释：添加数位 '8' 的成本是 7 ，添加数位 '5' 的成本是 5 。"85" 的成本为 7 + 5 = 12 。
+     * 示例 3：
+     *
+     * 输入：cost = [2,4,6,2,4,6,4,4,4], target = 5
+     * 输出："0"
+     * 解释：总成本是 target 的条件下，无法生成任何整数。
+     * 示例 4：
+     *
+     * 输入：cost = [6,10,15,40,40,40,40,40,40], target = 47
+     * 输出："32211"
+     *
+     *
+     * 提示：
+     *
+     * cost.length == 9
+     * 1 <= cost[i] <= 5000
+     * 1 <= target <= 5000
+     * @param cost
+     * @param target
+     * @return
+     */
+    public String largestNumber(int[] cost, int target) {
+        largestNumber(cost,cost.length,target,new StringBuilder());
+
+        logResult(largeNums);
+        return largeNum;
+    }
+
+    private static String largeNum = "0";
+
+    private static List<String> largeNums = new ArrayList<>();
+
+    private void largestNumber(int[] cost, int end, int target,StringBuilder sb) {
+        if (target == 0) {
+
+            if (sb.length() > largeNum.length() || (sb.length() == largeNum.length()
+                    && sb.toString().compareTo(largeNum) > 0)) {
+                largeNum = sb.toString();
+            }
+            largeNums.add(sb.toString());
+        }
+
+        for (int i = end; i > 0; i--) {
+            if (cost[i - 1] > target) {
+                continue;
+            }
+            int count = target / cost[i - 1];
+
+
+            int num = target - count * cost[i - 1];
+
+            int len = sb.length();
+            for (int j = 0; j < count; j++) {
+                sb.append(i);
+            }
+
+            largestNumber(cost,i - 1,num,sb);
+            sb.delete(len,len + count);
+        }
+    }
+
+    @Test
+    public void test44() {
+        StringBuilder sb = new StringBuilder("ABC");
+        int len = sb.length();
+        int count = 9;
+        for (int j = 0; j < count; j++) {
+            sb.append(1);
+        }
+
+        sb.delete(len,len + count);
+        logResult(sb.toString());
+    }
+
+
+    /**
+     * 5413. 重新排列句子中的单词
+     * 「句子」是一个用空格分隔单词的字符串。给你一个满足下述格式的句子 text :
+     *
+     * 句子的首字母大写
+     * text 中的每个单词都用单个空格分隔。
+     * 请你重新排列 text 中的单词，使所有单词按其长度的升序排列。如果两个单词的长度相同，则保留其在原句子中的相对顺序。
+     *
+     * 请同样按上述格式返回新的句子。
+     *
+     *
+     *
+     * 示例 1：
+     *
+     * 输入：text = "Leetcode is cool"
+     * 输出："Is cool leetcode"
+     * 解释：句子中共有 3 个单词，长度为 8 的 "Leetcode" ，长度为 2 的 "is" 以及长度为 4 的 "cool" 。
+     * 输出需要按单词的长度升序排列，新句子中的第一个单词首字母需要大写。
+     * 示例 2：
+     *
+     * 输入：text = "Keep calm and code on"
+     * 输出："On and keep calm code"
+     * 解释：输出的排序情况如下：
+     * "On" 2 个字母。
+     * "and" 3 个字母。
+     * "keep" 4 个字母，因为存在长度相同的其他单词，所以它们之间需要保留在原句子中的相对顺序。
+     * "calm" 4 个字母。
+     * "code" 4 个字母。
+     * 示例 3：
+     *
+     * 输入：text = "To be or not to be"
+     * 输出："To be or to be not"
+     *
+     *
+     * 提示：
+     *
+     * text 以大写字母开头，然后包含若干小写字母以及单词间的单个空格。
+     * 1 <= text.length <= 10^5
+     * @param text
+     * @return
+     */
+    public String arrangeWords(String text) {
+        String[] words = text.split(" ");
+        words[0] = words[0].toLowerCase();
+        Arrays.sort(words,(str1,str2) -> str1.length() - str2.length());
+        StringBuilder sb = new StringBuilder();
+        for (String word : words) {
+            if (sb.length() > 0) {
+                sb.append(" ");
+            }
+            sb.append(word);
+        }
+        for (int i = 0; i < words.length; i++) {
+            String word = words[i];
+            if (i == 0) {
+                word = word.substring(0,1).toUpperCase() + word.substring(1);
+            } else {
+                sb.append(" ");
+            }
+            sb.append(word);
+        }
         return sb.toString();
     }
 }
