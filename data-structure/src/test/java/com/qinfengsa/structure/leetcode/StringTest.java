@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 
 /**
  * @author: qinfengsa
@@ -5825,10 +5826,32 @@ public class StringTest {
      * @return
      */
     public String largestNumber(int[] cost, int target) {
-        largestNumber(cost,cost.length,target,new StringBuilder());
+        // 背包问题
+        String[] dp = new String[target + 1];
+        Comparator<String> comparator = Comparator.comparing(String::length).thenComparing(Function.identity());
 
-        logResult(largeNums);
-        return largeNum;
+        for (int i = 0; i <= target; i++) {
+            String max = null;
+            for (int j = 0; j < cost.length; j++) {
+                String temp = null;
+                if (i - cost[j] > 0) {
+                    String str = dp[i - cost[j]];
+                    if (str != null) {
+                        temp = String.valueOf(j + 1).concat(str);
+                    }
+                } else if (i == cost[j]) {
+                    temp = String.valueOf(j + 1);
+                }
+                if (max == null || (temp != null && comparator.compare(max, temp) < 0)) {
+                    max = temp;
+                }
+
+
+            }
+            dp[i] = max;
+        }
+
+        return dp[target] == null ? "0" : dp[target];
     }
 
     private static String largeNum = "0";

@@ -3590,6 +3590,14 @@ public class TreeTest {
      */
     public boolean isValidSerialization(String preorder) {
 
+        // 对二叉树 的 任意一棵子树 # 的 数量 = 节点数量 + 1
+        /*for (int i = 0; i < preorder.length(); i++) {
+            char c = preorder.charAt(i);
+
+        }*/
+        String[] nodes = preorder.split(",");
+
+
         return false;
     }
 

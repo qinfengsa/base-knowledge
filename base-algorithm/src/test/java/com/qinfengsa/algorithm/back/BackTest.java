@@ -1814,6 +1814,13 @@ public class BackTest {
     }
 
 
+    @Test
+    public void isAdditiveNumber() {
+        String num = "101";
+        logResult(isAdditiveNumber(num));
+
+    }
+
     /**
      * 306. 累加数
      * 累加数是一个字符串，组成它的数字可以形成累加序列。
@@ -1840,7 +1847,63 @@ public class BackTest {
      * @return
      */
     public boolean isAdditiveNumber(String num) {
+        if (num.length() < 3)
+            return false;
 
+        for (int i = 1; i <= num.length() >> 1; i++) {
+            for (int j = i + 1; j <= num.length() - 1; j++) {
+                if (isAdditiveNumber(num,0,i,j)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     *
+     * @param num 字符串
+     * @param a 第1个数的开始索引
+     * @param b 第2个数的开始索引
+     * @param c 第3个数的开始索引
+     * @return
+     */
+    private boolean isAdditiveNumber(String num,int a,int b,int c) {
+        int len = Math.max(b - a, c - b);
+        if ((b - a > 1 && num.charAt(a) == '0') ||(c - b > 1 && num.charAt(b) == '0')) {
+            return false;
+        }
+
+        long num1 = Long.valueOf(num.substring(a,b));
+        long num2 = Long.valueOf(num.substring(b,c));
+
+        if (c + len > num.length()) {
+            return false;
+        }
+        long num3 = Long.valueOf(num.substring(c,c + len));
+        if (num3 > 0 && num.charAt(c) == '0' ) {
+            return false;
+        }
+        if (num1 + num2 == num3) {
+            if (c + len == num.length()) {
+                return true;
+            }
+            return isAdditiveNumber(num,b,c,c + len);
+        }
+        if (c + len + 1 > num.length()) {
+            return false;
+        }
+        long num4 = Long.valueOf(num.substring(c,c + len + 1));
+        if (num4 > 0 && num.charAt(c) == '0' ) {
+            return false;
+        }
+        if (num1 + num2 == num4) {
+            if (c + len + 1 == num.length()) {
+                return true;
+            }
+            return isAdditiveNumber(num,b,c,c + len + 1);
+        }
 
         return false;
     }
