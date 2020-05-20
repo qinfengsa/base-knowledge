@@ -3596,9 +3596,19 @@ public class TreeTest {
 
         }*/
         String[] nodes = preorder.split(",");
+        // 一个结点 都会有个两个子结点
+        int count = 1;
+        for (int i = 0; i < nodes.length; i++) {
+            count--;
+            if (count < 0) {
+                return false;
+            }
+            if (!Objects.equals(nodes[i],"#")) {
+                count += 2;
+            }
 
-
-        return false;
+        }
+        return count == 0;
     }
 
 
