@@ -3672,4 +3672,72 @@ public class TreeTest {
         goodNodes(node.right,max);
 
     }
+
+
+    @Test
+    public void buildTree4() {
+        int [] preorder = {3,9,20,15,7};
+        int [] inorder = {9,3,15,20,7};
+        /*int [] preorder = {1,2,4,5,3,6,7};
+        int [] inorder = {4,2,5,1,6,3,7};*/
+
+
+        TreeNode treeNode = buildTree4(preorder,inorder);
+        log.debug("result:{} ",treeNode.val );
+    }
+
+    /**
+     * 105. 从前序与中序遍历序列构造二叉树
+     * 根据一棵树的前序遍历与中序遍历构造二叉树。
+     *
+     * 注意:
+     * 你可以假设树中没有重复的元素。
+     *
+     * 例如，给出
+     *
+     * 前序遍历 preorder = [3,9,20,15,7]
+     * 中序遍历 inorder = [9,3,15,20,7]
+     * 返回如下的二叉树：
+     *
+     *     3
+     *    / \
+     *   9  20
+     *     /  \
+     *    15   7
+     * @param preorder
+     * @param inorder
+     * @return
+     */
+    public TreeNode buildTree4(int[] preorder, int[] inorder) {
+        Map<Integer,Integer> indexMap = new HashMap<>();
+        for (int i = 0; i < inorder.length; i++) {
+            indexMap.put(inorder[i],i);
+        }
+        return buildTree4(preorder,0, preorder.length - 1,0,inorder.length - 1,indexMap);
+    }
+
+    private TreeNode buildTree4(int[] preorder, int preStart,int preEnd,
+                            int inStart,int inEnd,Map<Integer,Integer> indexMap) {
+        if (preStart > preEnd || inStart > inEnd) {
+            return null;
+        }
+        int rootVal = preorder[preStart];
+        TreeNode root = new TreeNode(rootVal);
+
+        int inRootIndex = indexMap.get(rootVal) ;
+        // preorder = [3,9,20,15,7]
+        // inorder = [9,3,15,20,7]
+        int leftLen = inRootIndex - inStart;
+        int rightLen = inEnd - inRootIndex;
+        if (leftLen > 0) {
+            root.left = buildTree4(preorder, preStart + 1, preStart + leftLen ,
+                    inStart, inRootIndex - 1, indexMap);
+        }
+        if (rightLen > 0) {
+            root.right = buildTree4(preorder, preEnd - rightLen + 1, preEnd,
+                    inRootIndex + 1, inEnd, indexMap);
+        }
+
+        return root;
+    }
 }

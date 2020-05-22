@@ -5389,4 +5389,103 @@ public class MathTest {
         return (int)Math.sqrt(n);
     }
 
+
+    @Test
+    public void superPow() {
+        int a = Integer.MAX_VALUE;
+        int[] b = {2,0,0};
+        logResult(superPow(a,b));
+    }
+
+    /**
+     * 372. 超级次方
+     * 你的任务是计算 ab 对 1337 取模，a 是一个正整数，b 是一个非常大的正整数且会以数组形式给出。
+     *
+     * 示例 1:
+     *
+     * 输入: a = 2, b = [3]
+     * 输出: 8
+     * 示例 2:
+     *
+     * 输入: a = 2, b = [1,0]
+     * 输出: 1024
+     * @param a
+     * @param b
+     * @return
+     */
+    public int superPow(int a, int[] b) {
+        a %= 1337;
+        int result = mypow(a,b[0]);
+        for (int i = 1; i < b.length; i++) {
+
+            result = mypow(result,10) * mypow(a,b[i]) % 1337;
+        }
+
+        return result;
+    }
+
+    private int mypow(int x, int n) {
+        if (n == 0) {
+            return 1;
+        }
+        int result = 1;
+        for (int i = n; i != 0; i >>= 1) {
+            if ((i & 1) == 1) {
+                result *= x;
+                result %= 1337;
+            }
+            x *= x;
+            x %= 1337;
+        }
+        return result;
+    }
+
+    @Test
+    public void maxRotateFunction() {
+        int[] a = {4, 3, 2, 6};
+        logResult(maxRotateFunction(a));
+    }
+
+    /**
+     * 396. 旋转函数
+     * 给定一个长度为 n 的整数数组 A 。
+     *
+     * 假设 Bk 是数组 A 顺时针旋转 k 个位置后的数组，我们定义 A 的“旋转函数” F 为：
+     *
+     * F(k) = 0 * Bk[0] + 1 * Bk[1] + ... + (n-1) * Bk[n-1]。
+     *
+     * 计算F(0), F(1), ..., F(n-1)中的最大值。
+     *
+     * 注意:
+     * 可以认为 n 的值小于 105。
+     *
+     * 示例:
+     *
+     * A = [4, 3, 2, 6]
+     *
+     * F(0) = (0 * 4) + (1 * 3) + (2 * 2) + (3 * 6) = 0 + 3 + 4 + 18 = 25
+     * F(1) = (0 * 6) + (1 * 4) + (2 * 3) + (3 * 2) = 0 + 4 + 6 + 6 = 16
+     * F(2) = (0 * 2) + (1 * 6) + (2 * 4) + (3 * 3) = 0 + 6 + 8 + 9 = 23
+     * F(3) = (0 * 3) + (1 * 2) + (2 * 6) + (3 * 4) = 0 + 2 + 12 + 12 = 26
+     *
+     * 所以 F(0), F(1), F(2), F(3) 中的最大值是 F(3) = 26 。
+     * @param A
+     * @return
+     */
+    public int maxRotateFunction(int[] A) {
+        int len = A.length;
+        int sum = 0;
+        int num = 0;
+        for (int i = 0; i < len; i++) {
+            num += i * A[i];
+            sum += A[i];
+        }
+
+        int max = num;
+        for (int i = len - 1; i > 0; i--) {
+            num = num + sum - len * A[i];
+            max = Math.max(max,num);
+        }
+        return max;
+    }
 }
