@@ -6071,4 +6071,133 @@ public class StringTest {
 
         return 0;
     }
+
+
+    /**
+     * 5416. 检查单词是否为句中其他单词的前缀
+     * 给你一个字符串 sentence 作为句子并指定检索词为 searchWord ，其中句子由若干用 单个空格 分隔的单词组成。
+     *
+     * 请你检查检索词 searchWord 是否为句子 sentence 中任意单词的前缀。
+     *
+     * 如果 searchWord 是某一个单词的前缀，则返回句子 sentence 中该单词所对应的下标（下标从 1 开始）。
+     * 如果 searchWord 是多个单词的前缀，则返回匹配的第一个单词的下标（最小下标）。
+     * 如果 searchWord 不是任何单词的前缀，则返回 -1 。
+     * 字符串 S 的 「前缀」是 S 的任何前导连续子字符串。
+     *
+     *
+     *
+     * 示例 1：
+     *
+     * 输入：sentence = "i love eating burger", searchWord = "burg"
+     * 输出：4
+     * 解释："burg" 是 "burger" 的前缀，而 "burger" 是句子中第 4 个单词。
+     * 示例 2：
+     *
+     * 输入：sentence = "this problem is an easy problem", searchWord = "pro"
+     * 输出：2
+     * 解释："pro" 是 "problem" 的前缀，而 "problem" 是句子中第 2 个也是第 6 个单词，但是应该返回最小下标 2 。
+     * 示例 3：
+     *
+     * 输入：sentence = "i am tired", searchWord = "you"
+     * 输出：-1
+     * 解释："you" 不是句子中任何单词的前缀。
+     * 示例 4：
+     *
+     * 输入：sentence = "i use triple pillow", searchWord = "pill"
+     * 输出：4
+     * 示例 5：
+     *
+     * 输入：sentence = "hello from the other side", searchWord = "they"
+     * 输出：-1
+     *
+     *
+     * 提示：
+     *
+     * 1 <= sentence.length <= 100
+     * 1 <= searchWord.length <= 10
+     * sentence 由小写英文字母和空格组成。
+     * searchWord 由小写英文字母组成。
+     * 前缀就是紧密附着于词根的语素，中间不能插入其它成分，并且它的位置是固定的——-位于词根之前。（引用自 前缀_百度百科 ）
+     * @param sentence
+     * @param searchWord
+     * @return
+     */
+    public int isPrefixOfWord(String sentence, String searchWord) {
+        String[] words = sentence.split(" ");
+
+        for (int i = 0; i < words.length; i++) {
+            if (words[i].startsWith(searchWord)) {
+                return i+1;
+            }
+        }
+        return -1;
+    }
+
+
+    /**
+     * 5417. 定长子串中元音的最大数目
+     * 题目难度Medium
+     * 给你字符串 s 和整数 k 。
+     *
+     * 请返回字符串 s 中长度为 k 的单个子字符串中可能包含的最大元音字母数。
+     *
+     * 英文中的 元音字母 为（a, e, i, o, u）。
+     *
+     *
+     *
+     * 示例 1：
+     *
+     * 输入：s = "abciiidef", k = 3
+     * 输出：3
+     * 解释：子字符串 "iii" 包含 3 个元音字母。
+     * 示例 2：
+     *
+     * 输入：s = "aeiou", k = 2
+     * 输出：2
+     * 解释：任意长度为 2 的子字符串都包含 2 个元音字母。
+     * 示例 3：
+     *
+     * 输入：s = "leetcode", k = 3
+     * 输出：2
+     * 解释："lee"、"eet" 和 "ode" 都包含 2 个元音字母。
+     * 示例 4：
+     *
+     * 输入：s = "rhythms", k = 4
+     * 输出：0
+     * 解释：字符串 s 中不含任何元音字母。
+     * 示例 5：
+     *
+     * 输入：s = "tryhard", k = 4
+     * 输出：1
+     *
+     *
+     * 提示：
+     *
+     * 1 <= s.length <= 10^5
+     * s 由小写英文字母组成
+     * 1 <= k <= s.length
+     * @param s
+     * @param k
+     * @return
+     */
+    public int maxVowels(String s, int k) {
+        int max = 0;
+        for (int i = 0; i < k; i++) {
+            char c = s.charAt(i);
+            if (vowel(c)) {
+                max++;
+            }
+        }
+        int num = max;
+        for (int i = k; i < s.length(); i++) {
+            if (vowel(s.charAt(i))) {
+                num++;
+            }
+            if (vowel(s.charAt(i - k))) {
+                num--;
+            }
+            max = Math.max(max,num);
+        }
+        return max;
+    }
 }

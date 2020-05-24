@@ -1058,7 +1058,7 @@ public class SearchTest {
         int m = nums1.length;
         int n = nums2.length;
 
-        int midIndex = (m + n)/2;
+        int midIndex = (m + n)>>1;
 
         /*if((index&1)==1){
             System.out.println("奇数！");
@@ -2005,5 +2005,90 @@ public class SearchTest {
         }
 
         return result;
+    }
+
+    @Test
+    public void search4() {
+
+        int[] nums = { 3,1};
+        int target = 3;
+        logResult(search4(nums,target));
+    }
+
+    /**
+     * 81. 搜索旋转排序数组 II
+     * 假设按照升序排序的数组在预先未知的某个点上进行了旋转。
+     *
+     * ( 例如，数组 [0,0,1,2,2,5,6] 可能变为 [2,5,6,0,0,1,2] )。
+     *
+     * 编写一个函数来判断给定的目标值是否存在于数组中。若存在返回 true，否则返回 false。
+     *
+     * 示例 1:
+     *
+     * 输入: nums = [2,5,6,0,0,1,2], target = 0
+     * 输出: true
+     * 示例 2:
+     *
+     * 输入: nums = [2,5,6,0,0,1,2], target = 3
+     * 输出: false
+     * 进阶:
+     *
+     * 这是 搜索旋转排序数组 的延伸题目，本题中的 nums  可能包含重复元素。
+     * 这会影响到程序的时间复杂度吗？会有怎样的影响，为什么？
+     * @param nums
+     * @param target
+     * @return
+     */
+    public boolean search4(int[] nums, int target) {
+        if (nums.length == 0) {
+            return false;
+        }
+        if (nums.length == 1) {
+            return nums[0] == target;
+        }
+        int left = 0;
+        int right = nums.length - 1;
+
+
+        // 思路 ： 二分法找到峰值, 分成两个数组 分别二分
+        while (left < right) {
+            int mid = (left + right) >> 1;
+
+            if (nums[mid] < nums[left]) {
+                right = mid - 1;
+            } else if (nums[mid] > nums[right])   {
+                left = mid + 1;
+            } else {
+                left++;
+            }
+
+        }
+
+        int index = left;
+        log.debug("index:{}",index);
+
+
+        return search4(nums,target,0,index) || search4(nums,target,index + 1,nums.length - 1);
+    }
+
+    private boolean search4(int[] nums, int target,int start,int end) {
+        if (start == end) {
+            if (nums[start] == target) {
+                return true;
+            }
+            return false;
+        }
+
+        while (start < end) {
+            int mid = (start + end) >> 1;
+            if (nums[mid] == target) {
+                return true;
+            } else if (nums[mid] < target) {
+                start = mid + 1;
+            } else {
+                end = mid;
+            }
+        }
+        return false;
     }
 }
