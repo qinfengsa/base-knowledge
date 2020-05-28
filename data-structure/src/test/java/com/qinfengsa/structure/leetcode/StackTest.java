@@ -1,5 +1,6 @@
 package com.qinfengsa.structure.leetcode;
 
+import com.qinfengsa.base.NestedInteger;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 
@@ -221,13 +222,13 @@ public class StackTest {
 
     @Test
     public void decodeString() {
-        String s = "2[abc]ef3[cd]";
-        String result = decodeString2(s);
+        String s = "3[a2[c]]";
+        String result = decodeString(s);
         log.debug("result :{}",result);
     }
 
     /**
-     *  字符串解码
+     * 394	 字符串解码
      * 给定一个经过编码的字符串，返回它解码后的字符串。
      *
      * 编码规则为: k[encoded_string]，表示其中方括号内部的 encoded_string 正好重复 k 次。注意 k 保证为正整数。
@@ -246,11 +247,36 @@ public class StackTest {
      */
     public String decodeString(String s) {
         StringBuilder result = new StringBuilder();
-        // 使用递归算法
+        Deque<Integer> numStack = new LinkedList<>();
+        Deque<String> strStack = new LinkedList<>();
 
+        int num = 0;
+        for (char c : s.toCharArray()) {
+            if (c == '[') {
+                numStack.addLast(num);
+                strStack.addLast(result.toString());
+                num = 0;
+                result.setLength(0);
+            } else if (c == ']') {
+                int count = numStack.removeLast();
+                StringBuilder tmp = new StringBuilder();
+                // 出栈
+                for (int i = 0; i < count; i++) {
+                    tmp.append(result);
+                }
 
+                result = new StringBuilder(strStack.removeLast()).append(tmp);
+            } else if (isNumber(c)) {
+                num = num * 10 + (c - '0');
+            } else {
+                result.append(c);
+            }
+        }
         return result.toString();
     }
+
+
+
 
     public String decodeString2(String s) {
 
@@ -644,7 +670,8 @@ public class StackTest {
 
     @Test
     public void deserialize( ) {
-        String s = "[123,[456,[789]]]";
+        String s = "[123,456,[788,799,833],[[]],10,[]]";
+        logResult(deserialize(s));
     }
 
     /**
@@ -680,11 +707,47 @@ public class StackTest {
      *          a. 一个 integer 包含值 789
      * @param s
      */
-    public void deserialize(String s) {
-        Deque<Integer> stack = new LinkedList<>();
+    public NestedInteger deserialize(String s) {
 
-        int index = 0 ;
+        Deque<NestedInteger> stack = new LinkedList<>();
+
+        boolean positive = true;
+
+
+        NestedInteger result = new NestedInteger();
         int num = 0;
+        // 思路,使用栈
+        for (int i =0; i < s.length(); i++) {
+            char c= s.charAt(i);
+            if (c == '[' ) {
+                result = new NestedInteger();
+                stack.offerLast(result);
+            } else if (c == ']' || c == ',') {
+                if (isNumber(s.charAt(i -1))) {
+                    NestedInteger ni = new NestedInteger(positive?num: -num);
+                    result = stack.peekLast();
+                    result.add(ni);
+                }
+
+                if (c == ']' &&  stack.size() > 1) {
+                    NestedInteger ni = stack.pollLast();
+                    result = stack.peekLast();
+                    result.add(ni);
+
+                }
+
+                num = 0;
+                positive = true;
+            } else if (isNumber(c)) {
+                num = num * 10 + (c - '0');
+            }  else if (c == '-') {
+                positive = false;
+            }
+        }
+        if (num > 0) {
+            result = new NestedInteger(positive?num: -num);
+        }
+        return result;
         /*while (index < s.length()) {
             char c = s.charAt(index);
 

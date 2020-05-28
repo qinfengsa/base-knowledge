@@ -11106,34 +11106,29 @@ public class ArrayTest {
      * @return
      */
     public List<Integer> peopleIndexes(List<List<String>> favoriteCompanies) {
-        /*List<Integer> result = new ArrayList<>();
+        List<Integer> result = new ArrayList<>();
         int len = favoriteCompanies.size();
         for (int i = 0; i < len; i++) {
-            List<String> list = favoriteCompanies.get(i);
+            Set<String> set1 = new HashSet<>(favoriteCompanies.get(i));
             boolean flag = true;
             for (int j = 0; j < len; j++) {
                 if (i == j) {
                     continue;
                 }
-
-                for (int k = 0; k < list.size(); k++) {
-                    if (!favoriteCompanies.get(j).contains(list.get(k)) ) {
-                        flag = false;
-                        break;
-                    }
-                }
-                if (flag) {
-                   break;
+                Set<String> set2 = new HashSet<>(favoriteCompanies.get(j));
+                if (set2.containsAll(set1)) {
+                    flag = false;
+                    break;
                 }
             }
-            if (!flag) {
+            if (flag) {
                 result.add(i);
             }
         }
-        return result;*/
+        return result;
 
 
-        List<Integer> result = new ArrayList<>();
+        /*List<Integer> result = new ArrayList<>();
         Map<String,List<Integer>> favoriteMap = new HashMap<>();
         for (int i = 0; i < favoriteCompanies.size(); i++) {
             for (String key : favoriteCompanies.get(i)) {
@@ -11155,7 +11150,7 @@ public class ArrayTest {
             }
         }
 
-        return result;
+        return result;*/
     }
 
 

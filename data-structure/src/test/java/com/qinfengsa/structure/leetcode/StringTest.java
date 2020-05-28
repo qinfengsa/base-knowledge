@@ -6024,6 +6024,11 @@ public class StringTest {
         return max;
     }
 
+    @Test
+    public void lengthLongestPath() {
+        String input = "dir\n    file.txt" ;
+        logResult(lengthLongestPath(input));
+    }
 
     /**
      * 388. 文件的最长绝对路径
@@ -6065,11 +6070,49 @@ public class StringTest {
      * @return
      */
     public int lengthLongestPath(String input) {
+        int max = 0;
 
 
+        String[] paths = input.split("\n");
+        logResult( paths);
 
+        int[] dirLens = new int[paths.length];
+        int dirLen = 0;
+        int lastIndex = -1;
+        for (int i = 0; i < paths.length; i++) {
+            String path = paths[i];
+            int level = getDirLevel(lastIndex,path);
+            log.debug("level:{}",level);
+            if (level <= 0) {
+                dirLen = 0;
+            } else if (level <= lastIndex) {
+                dirLen = dirLens[level - 1];
+                log.debug("dirLen1:{}",dirLen);
+            }
 
-        return 0;
+            log.debug("dirLen1:{}",dirLen);
+            log.debug("p:{}",path.length());
+            dirLen += path.length() - level + 1;
+            log.debug("dirLen2:{}",dirLen);
+
+            if (path.contains(".")) {
+                log.debug("path:{} , dirLen :{}",path,dirLen);
+                max = Math.max(dirLen,max);
+            } else {
+                dirLens[level] = dirLen;
+            }
+            lastIndex = level;
+        }
+        log.debug("dirLens:{}",dirLens);
+        return max == 0 ? 0 : max - 1 ;
+    }
+
+    private int getDirLevel(int last,String path) {
+        int level = 0;
+        while (path.charAt(level) == '\t') {
+            level++;
+        }
+        return level;
     }
 
 
