@@ -5558,4 +5558,103 @@ public class MathTest {
         int helf = n>>1;
         return 2 * (helf + 1 -  lastRemaining(helf));
     }
+
+
+    /**
+     * 421. 数组中两个数的最大异或值
+     * 给定一个非空数组，数组中元素为 a0, a1, a2, … , an-1，其中 0 ≤ ai < 231 。
+     *
+     * 找到 ai 和aj 最大的异或 (XOR) 运算结果，其中0 ≤ i,  j < n 。
+     *
+     * 你能在O(n)的时间解决这个问题吗？
+     *
+     * 示例:
+     *
+     * 输入: [3, 10, 5, 25, 2, 8]
+     *
+     * 输出: 28
+     *
+     * 解释: 最大的结果是 5 ^ 25 = 28.
+     * @param nums
+     * @return
+     */
+    public int findMaximumXOR(int[] nums) {
+        // 1 暴力法
+        int max = 0;
+        for (int i = 0; i < nums.length; i++) {
+            for (int j = i + 1; j < nums.length; j++) {
+                max = Math.max(max, nums[i] ^ nums[j]);
+            }
+        }
+        return max;
+    }
+
+
+    /**
+     * 423. 从英文中重建数字
+     * 给定一个非空字符串，其中包含字母顺序打乱的英文单词表示的数字0-9。按升序输出原始的数字。
+     *
+     * 注意:
+     *
+     * 输入只包含小写英文字母。
+     * 输入保证合法并可以转换为原始的数字，这意味着像 "abc" 或 "zerone" 的输入是不允许的。
+     * 输入字符串的长度小于 50,000。
+     * 示例 1:
+     *
+     * 输入: "owoztneoer"
+     *
+     * 输出: "012" (zeroonetwo)
+     * 示例 2:
+     *
+     * 输入: "fviefuro"
+     *
+     * 输出: "45" (fourfive)
+     * @param s
+     * @return
+     */
+    public String originalDigits(String s) {
+
+        StringBuilder sb = new StringBuilder();
+        // 建立字符 到 数字的映射
+        // z => 0 zero
+        // w => 2 two
+        // u => 4 four
+        // x => 6 six
+        // g => 8 eight
+        // h => 3 - 8  three eight
+        // f => 5 - 4  five four
+        // s => 7 - 6  seven six
+        // i => 9 - 5 - 6 - 8  nine five six eight
+        // n => 1 - 7 - 2 * 9  one seven nine
+        int[] letters = new int[26];
+        for (char c : s.toCharArray()) {
+            letters[c - 'a']++;
+        }
+
+        int[] counts = new int[10];
+        counts[0] = letters['z' - 'a'];
+        counts[2] = letters['w' - 'a'];
+        counts[4] = letters['u' - 'a'];
+        counts[6] = letters['x' - 'a'];
+        counts[8] = letters['g' - 'a'];
+        counts[3] = letters['h' - 'a'] - counts[8];
+        counts[5] = letters['f' - 'a'] - counts[4];
+        counts[7] = letters['s' - 'a'] - counts[6];
+        counts[9] = letters['i' - 'a'] - counts[5] - counts[6] - counts[8];
+        counts[1] = letters['n' - 'a'] - counts[7] - 2 * counts[9];
+
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < counts[i]; j++) {
+                sb.append(i);
+            }
+        }
+
+
+
+        return sb.toString();
+    }
+
+
+
+
 }
