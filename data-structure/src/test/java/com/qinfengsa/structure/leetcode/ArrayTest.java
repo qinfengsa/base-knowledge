@@ -11340,5 +11340,134 @@ public class ArrayTest {
         }
         return true;
     }
+
+
+    /**
+     * 5424. 数组中两元素的最大乘积
+     * 给你一个整数数组 nums，请你选择数组的两个不同下标 i 和 j，使 (nums[i]-1)*(nums[j]-1) 取得最大值。
+     *
+     * 请你计算并返回该式的最大值。
+     *
+     *
+     *
+     * 示例 1：
+     *
+     * 输入：nums = [3,4,5,2]
+     * 输出：12
+     * 解释：如果选择下标 i=1 和 j=2（下标从 0 开始），则可以获得最大值，(nums[1]-1)*(nums[2]-1) = (4-1)*(5-1) = 3*4 = 12 。
+     * 示例 2：
+     *
+     * 输入：nums = [1,5,4,5]
+     * 输出：16
+     * 解释：选择下标 i=1 和 j=3（下标从 0 开始），则可以获得最大值 (5-1)*(5-1) = 16 。
+     * 示例 3：
+     *
+     * 输入：nums = [3,7]
+     * 输出：12
+     *
+     *
+     * 提示：
+     *
+     * 2 <= nums.length <= 500
+     * 1 <= nums[i] <= 10^3
+     * @param nums
+     * @return
+     */
+    public int maxProduct2(int[] nums) {
+        if (nums.length == 2) {
+            return  (nums[0] - 1) * (nums[1] - 1);
+        }
+        Arrays.sort(nums);
+        return  (nums[nums.length - 1] - 1) * (nums[nums.length - 2] - 1);
+    }
+
+
+    public void maxArea2() {
+        int h = 1000000000,w = 1000000000;
+
+        //logResult(maxArea(h,w,horizontalCuts,verticalCuts));
+    }
+
+    /**
+     * 5425. 切割后面积最大的蛋糕
+     * 矩形蛋糕的高度为 h 且宽度为 w，给你两个整数数组 horizontalCuts 和 verticalCuts，其中 horizontalCuts[i] 是从矩形蛋糕顶部到第
+     * i 个水平切口的距离，类似地， verticalCuts[j] 是从矩形蛋糕的左侧到第 j 个竖直切口的距离。
+     *
+     * 请你按数组 horizontalCuts 和 verticalCuts 中提供的水平和竖直位置切割后，请你找出 面积最大 的那份蛋糕，并返回其 面积 。
+     * 由于答案可能是一个很大的数字，因此需要将结果对 10^9 + 7 取余后返回。
+     *
+     *
+     *
+     * 示例 1：
+     *
+     *
+     *
+     * 输入：h = 5, w = 4, horizontalCuts = [1,2,4], verticalCuts = [1,3]
+     * 输出：4
+     * 解释：上图所示的矩阵蛋糕中，红色线表示水平和竖直方向上的切口。切割蛋糕后，绿色的那份蛋糕面积最大。
+     * 示例 2：
+     *
+     *
+     *
+     * 输入：h = 5, w = 4, horizontalCuts = [3,1], verticalCuts = [1]
+     * 输出：6
+     * 解释：上图所示的矩阵蛋糕中，红色线表示水平和竖直方向上的切口。切割蛋糕后，绿色和黄色的两份蛋糕面积最大。
+     * 示例 3：
+     *
+     * 输入：h = 5, w = 4, horizontalCuts = [3], verticalCuts = [3]
+     * 输出：9
+     *
+     *
+     * 提示：
+     *
+     * 2 <= h, w <= 10^9
+     * 1 <= horizontalCuts.length < min(h, 10^5)
+     * 1 <= verticalCuts.length < min(w, 10^5)
+     * 1 <= horizontalCuts[i] < h
+     * 1 <= verticalCuts[i] < w
+     * 题目数据保证 horizontalCuts 中的所有元素各不相同
+     * 题目数据保证 verticalCuts 中的所有元素各不相同
+     * @param h
+     * @param w
+     * @param horizontalCuts
+     * @param verticalCuts
+     * @return
+     */
+    public int maxArea(int h, int w, int[] horizontalCuts, int[] verticalCuts) {
+        int mod = 1000000007;
+        long maxHeight = 0,maxWidth = 0;
+        Arrays.sort(horizontalCuts);
+        Arrays.sort(verticalCuts);
+        for (int i = 0; i < horizontalCuts.length; i++) {
+            long height ;
+            if (i == 0) {
+                height = horizontalCuts[i];
+            } else  {
+                height = horizontalCuts[i] - horizontalCuts[i - 1];
+            }
+            maxHeight = Math.max(maxHeight,height);
+            if (i == horizontalCuts.length - 1) {
+                height = h - horizontalCuts[i];
+                maxHeight = Math.max(maxHeight,height);
+            }
+        }
+        for (int i = 0; i < verticalCuts.length; i++) {
+            long width  ;
+            if (i == 0) {
+                width = verticalCuts[i];
+            } else  {
+                width = verticalCuts[i] - verticalCuts[i - 1];
+            }
+            maxWidth = Math.max(maxWidth,width);
+            if (i == verticalCuts.length - 1) {
+                width = w - verticalCuts[i];
+                maxWidth = Math.max(maxWidth,width);
+            }
+        }
+
+
+
+        return (int)((maxHeight % mod) * (maxWidth % mod)) % mod;
+    }
 }
 
