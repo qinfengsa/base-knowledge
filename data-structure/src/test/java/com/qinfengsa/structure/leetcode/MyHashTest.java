@@ -2777,6 +2777,74 @@ public class MyHashTest {
         return result;
     }
 
+    @Test
+    public void hasAllCodes() {
+        String s = "00110110";
+        int k = 2;
+        logResult(hasAllCodes(s,k));
+    }
+
+    /**
+     * 5409. 检查一个字符串是否包含所有长度为 K 的二进制子串
+     * 给你一个二进制字符串 s 和一个整数 k 。
+     *
+     * 如果所有长度为 k 的二进制字符串都是 s 的子串，请返回 True ，否则请返回 False 。
+     *
+     *
+     *
+     * 示例 1：
+     *
+     * 输入：s = "00110110", k = 2
+     * 输出：true
+     * 解释：长度为 2 的二进制串包括 "00"，"01"，"10" 和 "11"。它们分别是 s 中下标为 0，1，3，2 开始的长度为 2 的子串。
+     * 示例 2：
+     *
+     * 输入：s = "00110", k = 2
+     * 输出：true
+     * 示例 3：
+     *
+     * 输入：s = "0110", k = 1
+     * 输出：true
+     * 解释：长度为 1 的二进制串包括 "0" 和 "1"，显然它们都是 s 的子串。
+     * 示例 4：
+     *
+     * 输入：s = "0110", k = 2
+     * 输出：false
+     * 解释：长度为 2 的二进制串 "00" 没有出现在 s 中。
+     * 示例 5：
+     *
+     * 输入：s = "0000000001011100", k = 4
+     * 输出：false
+     *
+     *
+     * 提示：
+     *
+     * 1 <= s.length <= 5 * 10^5
+     * s 中只含 0 和 1 。
+     * 1 <= k <= 20
+     * @param s
+     * @param k
+     * @return
+     */
+    public boolean hasAllCodes(String s, int k) {
+        int num = 0;
+        for (int i = 0; i < k && i < s.length(); i++) {
+            num = (num << 1) + (s.charAt(i) - '0');
+        }
+        Set<Integer> set = new HashSet<>();
+        set.add(num);
+        for (int i = k; i < s.length(); i++) {
+            int c = s.charAt(i - k) - '0';
+            log.debug("k :{} num0:{}",c,c << (k - 1));
+            num -= c << (k - 1);
+            num = (num << 1) + (s.charAt(i) - '0');
+            set.add(num);
+            //log.debug("num2:{}",num);
+        }
+        log.debug("set:{}",set);
+        return set.size() == (1 << k);
+    }
+
 }
 
 
