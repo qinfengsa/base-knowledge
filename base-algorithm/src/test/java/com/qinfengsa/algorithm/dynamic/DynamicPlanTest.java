@@ -2794,4 +2794,62 @@ public class DynamicPlanTest {
 
         return dp[nums.length - 1][target];
     }
+
+
+    @Test
+    public void oneEditAway() {
+        String first = "pale",second = "pwle";
+        logResult(oneEditAway(first,second));
+    }
+
+    /**
+     * 面试题 01.05. 一次编辑
+     * 字符串有三种编辑操作:插入一个字符、删除一个字符或者替换一个字符。 给定两个字符串，编写一个函数判定它们是否只需要一次(或者零次)编辑。
+     *
+     *
+     *
+     * 示例 1:
+     *
+     * 输入:
+     * first = "pale"
+     * second = "ple"
+     * 输出: True
+     *
+     *
+     * 示例 2:
+     *
+     * 输入:
+     * first = "pales"
+     * second = "pal"
+     * 输出: False
+     * @param first
+     * @param second
+     * @return
+     */
+    public boolean oneEditAway(String first, String second) {
+        int[][] dp = new int[first.length() + 1][second.length() + 1];
+        dp[0][0] = 0;
+        for (int i = 0; i < first.length(); i++) {
+            dp[i + 1][0] = i + 1;
+        }
+        for (int j = 0; j < second.length(); j++) {
+            dp[0][j + 1] = j + 1;
+        }
+        for (int i = 0; i < first.length(); i++) {
+            for (int j = 0; j < second.length(); j++) {
+                if (first.charAt(i) == second.charAt(j)) {
+                    dp[i + 1][j + 1] = dp[i][j];
+                } else {
+                    dp[i + 1][j + 1] = Math.min(dp[i][j] , Math.min(dp[i + 1][j], dp[i][j + 1]))+ 1;
+                }
+
+
+               // dp[i + 1][j + 1] = dp[i][j] && first.charAt(i) == second.charAt(j);
+            }
+        }
+        logResult(dp);
+
+
+        return dp[first.length()][second.length()] <= 1;
+    }
 }

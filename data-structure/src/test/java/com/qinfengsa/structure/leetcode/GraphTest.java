@@ -5,6 +5,7 @@ import org.junit.Test;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -989,6 +990,122 @@ public class GraphTest {
         return min;
     }
 
-    static int minReorderResult = 0;
+    @Test
+    public void calcEquation() {
+        List<List<String>> equations = new ArrayList<>();
+        equations.add(Arrays.asList("a", "b"));
+        equations.add(Arrays.asList("b", "c"));
+        double[] values = {2.0, 3.0};
+        List<List<String>> queries = new ArrayList<>();
+        queries.add(Arrays.asList("a", "c"));
+        queries.add(Arrays.asList("b", "a"));
+        queries.add(Arrays.asList("a", "e"));
+        queries.add(Arrays.asList("a", "a"));
+        queries.add(Arrays.asList("x", "x"));
+        log.debug("result :{} ",calcEquation(equations,values,queries));
+    }
+
+
+    /**
+     * 399. 除法求值
+     * 给出方程式 A / B = k, 其中 A 和 B 均为用字符串表示的变量， k 是一个浮点型数字。根据已知方程式求解问题，并返回计算结果。如果结果不存在，则返回 -1.0。
+     *
+     * 示例 :
+     * 给定 a / b = 2.0, b / c = 3.0
+     * 问题: a / c = ?, b / a = ?, a / e = ?, a / a = ?, x / x = ?
+     * 返回 [6.0, 0.5, -1.0, 1.0, -1.0 ]
+     *
+     * 输入为: vector<pair<string, string>> equations, vector<double>& values, vector<pair<string, string>> queries(方程式，
+     * 方程式结果，问题方程式)， 其中 equations.size() == values.size()，即方程式的长度与方程式结果长度相等（程式与结果一一对应），并且结果值均为正数。
+     * 以上为方程式的描述。 返回vector<double>类型。
+     *
+     * 基于上述例子，输入如下：
+     *
+     * equations(方程式) = [ ["a", "b"], ["b", "c"] ],
+     * values(方程式结果) = [2.0, 3.0],
+     * queries(问题方程式) = [ ["a", "c"], ["b", "a"], ["a", "e"], ["a", "a"], ["x", "x"] ].
+     * 输入总是有效的。你可以假设除法运算中不会出现除数为0的情况，且不存在任何矛盾的结果。
+     * @param equations
+     * @param values
+     * @param queries
+     * @return
+     */
+    public double[] calcEquation(List<List<String>> equations, double[] values, List<List<String>> queries) {
+        double[] result = new double[queries.size()];
+        // 创建 c -> b -> a -> a 的 单向路径, 记录 路径的value, 通过路径求对应的结果
+        for (int i = 0; i < equations.size(); i++) {
+            String dividend = equations.get(i).get(0);
+            String divisor = equations.get(i).get(1);
+            union(dividend,divisor,values[i]);
+        }
+        for (int i = 0; i < queries.size(); i++) {
+            String dividend = queries.get(i).get(0);
+            String divisor = queries.get(i).get(1);
+            if (!childToParents.containsKey(dividend) || ! childToParents.containsKey(divisor)) {
+                result[i] = -1.0;
+                continue;
+            }
+            if (Objects.equals(dividend,divisor)) {
+                result[i] = 1.0;
+                continue;
+            }
+
+            String p = getRoot(dividend);
+            String c = getRoot(divisor);
+            if (!Objects.equals(p,c)) {
+                result[i] = -1.0;
+                continue;
+            }
+            result[i] = pm(divisor)/pm(dividend);
+
+        }
+
+
+        return result;
+    }
+
+    private double pm(String x){
+        return childToParents.get(x).equals(x)? 1.0:
+                values.get(x) * pm(childToParents.get(x));
+    }
+
+    private void union(String parent,String child,double value) {
+        add(parent);
+        add(child);
+
+        String root1 = getRoot(parent);
+        String root2 = getRoot(child);
+
+        if (!Objects.equals(root1,root2)) {
+            childToParents.put(root2,root1);
+            values.put(root2, value * (pm(parent)/pm(child)));
+        }
+    }
+
+    private void add(String x) {
+        if (!childToParents.containsKey(x)) {
+            childToParents.put(x,x);
+            values.put(x,1.0);
+        }
+    }
+
+    private String getRoot(String child) {
+        while (!child.equals(childToParents.get(child))) {
+            child = childToParents.get(child);
+        }
+        return child;
+    }
+
+    /**
+     * key : 当前节点
+     * value : 其父节点
+     * 除了root -> root 节点,其它节点都是 单向连通
+     */
+    private Map<String, String> childToParents = new HashMap<>();
+    /**
+     * key : 当前节点
+     * value : 父节点/当前节点
+     */
+    private Map<String, Double> values = new HashMap<>();
 
 }
