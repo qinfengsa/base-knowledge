@@ -11547,5 +11547,248 @@ public class ArrayTest {
         }
 
     }
+
+
+    @Test
+    public void findLongestSubarray() {
+        String[] array = {"A","1","B","C","D","2","3","4","E","5","F","G","6","7","H","I","J","K","L","M"};
+        String[] result = findLongestSubarray(array);
+        log.debug("result :{}",Arrays.asList(result));
+    }
+
+    /**
+    * 面试题 17.05. 字母与数字
+     *
+     * 给定一个放有字符和数字的数组，找到最长的子数组，且包含的字符和数字的个数相同。
+    *
+    * 返回该子数组，若存在多个最长子数组，返回左端点最小的。若不存在这样的数组，返回一个空数组。
+    *
+    * 示例 1:
+    *
+    * 输入: ["A","1","B","C","D","2","3","4","E","5","F","G","6","7","H","I","J","K","L","M"]
+    *
+    * 输出: ["A","1","B","C","D","2","3","4","E","5","F","G","6","7"] 示例 2:
+    *
+    * 输入: ["A","A"]
+    *
+    * 输出: [] 提示：
+    *
+    * array.length <= 100000
+    *
+    * @param array
+    * @return
+    */
+    public String[] findLongestSubarray(String[] array) {
+        int letterCount = 0,numCount = 0;
+        int[] counts = new int[array.length];
+        int count = 0;
+        for (int i = 0; i < array.length; i++) {
+            boolean isNum = true;
+            for (char c : array[i].toCharArray()) {
+                if (c < '0' || c > '9') {
+                    isNum = false;
+                    break;
+                }
+            }
+            count += isNum ? -1 : 1;
+            counts[i] = count;
+        }
+        log.debug("counts;{}",counts);
+        Map<Integer, Integer> map = new HashMap<>();
+        int start = 0, end = 0;
+        map.put(0,-1);
+        for (int i = 0; i < counts.length; i++) {
+            if (map.containsKey(counts[i])) {
+                int first = map.get(counts[i]);
+                if (i - first > end - start + 1) {
+                    start = first + 1;
+                    end = i + 1;
+                }
+
+            } else {
+                map.put(counts[i],i);
+            }
+        }
+        log.debug("start :{},end :{}",start,end);
+
+        return Arrays.copyOfRange(array,start,end);
+    }
+
+    /**
+     * 56. 合并区间
+     * 给出一个区间的集合，请合并所有重叠的区间。
+     *
+     * 示例 1:
+     *
+     * 输入: [[1,3],[2,6],[8,10],[15,18]] 输出: [[1,6],[8,10],[15,18]] 解释: 区间 [1,3] 和 [2,6] 重叠, 将它们合并为
+     * [1,6].
+     * 示例 2:
+     *
+     * 输入: [[1,4],[4,5]] 输出: [[1,5]] 解释: 区间 [1,4] 和 [4,5] 可被视为重叠区间。
+     *
+     * @param intervals
+     * @return
+     */
+    public int[][] merge3(int[][] intervals) {
+        if (intervals.length < 2) {
+            return intervals;
+        }
+        List<int[]> list = new ArrayList<>();
+
+        Arrays.sort(intervals,(a,b) -> a[0] == b[0] ? a[1] - b[1] : a[0] - b[0]);
+
+        int[] interval = intervals[0];
+        for (int i = 1; i < intervals.length; i++) {
+            int[] current = intervals[i];
+            if (current[0] > interval[1]) {
+                list.add(interval);
+                interval = current;
+            } else if (current[1] > interval[1])  {
+                interval[1] = current[1];
+            }
+        }
+        list.add(interval);
+
+        return list.toArray(new int[list.size()][2]);
+    }
+
+    @Test
+    public void testMerge3() {
+        int[][] intervals = new int[][]{{1,3},{2,6},{8,10},{15,18}};
+
+        int[][] result = merge(intervals);
+        logResult(result);
+    }
+
+
+    @Test
+    public void testYangHui21() {
+        int numRows = 7;
+        List<List<Integer>> result = generate2(numRows);
+        int index = 0;
+        for (List<Integer> list:result) {
+            index++;
+            log.info("{}:{}",index,list);
+        }
+    }
+
+    /**
+     * 118. 杨辉三角
+     * 给定一个非负整数 numRows，生成杨辉三角的前 numRows 行。
+     *
+     * 在杨辉三角中，每个数是它左上方和右上方的数的和。
+     *
+     * 示例:
+     *
+     * 输入: 5
+     *
+     * 输出: [ [1], [1,1], [1,2,1], [1,3,3,1], [1,4,6,4,1] ]
+     *
+     * @param numRows
+     * @return
+     */
+    public List<List<Integer>> generate2(int numRows) {
+        List<List<Integer>> result = new ArrayList<>();
+        if (numRows == 0) {
+            return result;
+        }
+        int[] nums = new int[numRows];
+        nums[0] = 1;
+        for (int i = 0; i < numRows; i++) {
+            nums[i] = 1;
+            for (int j = i - 1; j > 0; j--) {
+                nums[j] += nums[j-1];
+            }
+            List<Integer> list = new ArrayList<>();
+            for (int j = 0; j <= i; j++) {
+                list.add(nums[j]);
+            }
+            result.add(list);
+        }
+
+        return result;
+    }
+
+    @Test
+    public void testYangHui22() {
+        int rowIndex = 5;
+        List<Integer> result = getRow2(rowIndex);
+        logResult(result);
+    }
+
+    /**
+     * 119. 杨辉三角 II
+     *
+     * 给定一个非负索引 k，其中 k ≤ 33，返回杨辉三角的第 k 行。
+     *
+     * 在杨辉三角中，每个数是它左上方和右上方的数的和。
+     *
+     * 示例:
+     *
+     * 输入: 3 输出: [1,3,3,1] 进阶：
+     *
+     * 你可以优化你的算法到 O(k) 空间复杂度吗？
+     *
+     * @param rowIndex
+     * @return
+     */
+    public List<Integer> getRow2(int rowIndex) {
+        int[] nums = new int[rowIndex + 1];
+        nums[0] = 1;
+        for (int i = 0; i <= rowIndex; i++) {
+            nums[i] = 1;
+            for (int j = i - 1; j > 0; j--) {
+                nums[j] += nums[j - 1];
+            }
+        }
+        List<Integer> list = new ArrayList<>();
+        for (int num : nums) {
+            list.add(num);
+        }
+        return list;
+    }
+
+
+    @Test
+    public void smallestDifference() {
+        int[] a = {-2147483648, 1},b = {2147483647, 0};
+        logResult(smallestDifference(a,b));
+    }
+
+    /**
+     * 面试题 16.06. 最小差
+     *
+     * 给定两个整数数组a和b，计算具有最小差绝对值的一对数值（每个数组中取一个值），并返回该对数值的差
+     *
+     * 示例：
+     *
+     * 输入：{1, 3, 15, 11, 2}, {23, 127, 235, 19, 8}
+     * 输出： 3，即数值对(11, 8)
+     * 提示：1 <= a.length, b.length <= 100000 -2147483648 <= a[i], b[i] <= 2147483647
+     * 正确结果在区间[-2147483648, 2147483647]内
+     *
+     * @param a
+     * @param b
+     * @return
+     */
+    public int smallestDifference(int[] a, int[] b) {
+        long min = Integer.MAX_VALUE;
+        Arrays.sort(a);
+        Arrays.sort(b);
+        int left = 0, right = 0;
+
+        while (left < a.length && right < b.length) {
+            if (a[left] >= b[right]) {
+                min = Math.min(min,(long)a[left] - (long)b[right]);
+                right++;
+            } else {
+                min = Math.min(min,(long)b[right] - (long)a[left]);
+                left++;
+            }
+
+        }
+
+        return (int)min;
+    }
 }
 
