@@ -36,7 +36,7 @@ public class AnimalShelf {
 
 
 
-    private class AnimalNode {
+    static class AnimalNode {
         int[] animal;
         int index;
 

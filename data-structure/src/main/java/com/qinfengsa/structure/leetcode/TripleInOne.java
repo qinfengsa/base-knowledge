@@ -60,7 +60,6 @@ public class TripleInOne {
      */
     public void push(int stackNum, int value) {
         int top = tops[stackNum];
-        int start = stackNum * stackSize;
         int end = (stackNum + 1) * stackSize - 1;
         if (top == end) {
             return;
@@ -71,7 +70,6 @@ public class TripleInOne {
 
     public int pop(int stackNum) {
         int start = stackNum * stackSize;
-        int end = (stackNum + 1) * stackSize - 1;
         int top = tops[stackNum];
         if (top == start - 1) {
             return -1;

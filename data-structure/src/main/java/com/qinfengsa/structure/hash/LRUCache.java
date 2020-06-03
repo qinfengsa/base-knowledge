@@ -19,7 +19,7 @@ public class LRUCache {
     private CacheNode head;
     private CacheNode tail;
 
-    private class CacheNode {
+    static class CacheNode {
         Integer key;
         Integer value;
         CacheNode prev;

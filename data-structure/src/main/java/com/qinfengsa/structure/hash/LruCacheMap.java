@@ -27,7 +27,7 @@ public class LruCacheMap {
     /**
      * 队列，记录key和value,队列维护 key的顺序
      */
-    private class CacheNode {
+    static class CacheNode {
         String key;
         Object value;
         CacheNode prev;

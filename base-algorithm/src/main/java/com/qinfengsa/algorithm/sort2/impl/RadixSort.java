@@ -15,7 +15,6 @@ public class RadixSort implements ISort {
     @Override
     public int[] sort(int[] sortArray) {
 
-        int len = sortArray.length;
         // 先从个位数排序，然后十位，百位
         int max = sortArray[0];
         for (int num : sortArray) {

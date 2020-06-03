@@ -44,7 +44,7 @@ public class LFUCache {
 
     private Map<Integer,CacheNode> cache = new HashMap<>();
 
-    private class CacheNode implements Comparable<CacheNode>{
+    static class CacheNode implements Comparable<CacheNode>{
         Integer key;
         Integer value;
         int rate = 0;

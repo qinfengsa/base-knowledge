@@ -37,7 +37,7 @@ public class LRUCacheTest {
 
     private Map<Integer,Integer> map;
 
-    private class LRULinkedHashMap<K,V> extends LinkedHashMap {
+    static class LRULinkedHashMap<K,V> extends LinkedHashMap {
 
         private Integer capacity;
 

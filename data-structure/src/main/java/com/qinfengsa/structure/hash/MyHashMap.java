@@ -111,13 +111,12 @@ public class MyHashMap {
 
                 return;
             }
-            preNode = node;
             node = node.next;
         }
     }
 
 
-    class HashNode {
+    static class HashNode {
         int key;
 
         int value;

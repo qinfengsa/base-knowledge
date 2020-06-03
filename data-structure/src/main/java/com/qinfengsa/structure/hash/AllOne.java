@@ -40,7 +40,7 @@ public class AllOne {
     /**
      * 双向链表 结点，记录 value 的 大小顺序
      */
-    private class OneNode {
+    static class OneNode {
         String key;
         Integer value;
         OneNode prev;

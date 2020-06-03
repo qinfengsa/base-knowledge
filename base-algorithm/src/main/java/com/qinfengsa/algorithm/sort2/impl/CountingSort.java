@@ -12,7 +12,6 @@ public class CountingSort implements ISort {
 
     @Override
     public int[] sort(int[] sortArray) {
-        int len  = sortArray.length;
         // 核心思想，用空间换取时间, 只能对整形排序
         // 求数组的最大和最小值
         int max = sortArray[0], min = sortArray[0];

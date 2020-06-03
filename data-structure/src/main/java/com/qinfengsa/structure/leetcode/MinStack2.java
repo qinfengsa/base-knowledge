@@ -78,7 +78,7 @@ public class MinStack2 {
         return top.min;
     }
 
-    class StackNode {
+    static class StackNode {
         int val;
         int min;
         StackNode next;

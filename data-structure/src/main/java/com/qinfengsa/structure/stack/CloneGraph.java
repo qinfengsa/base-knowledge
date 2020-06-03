@@ -14,7 +14,6 @@ public class CloneGraph {
 
 
     public static void main(String[] args) {
-        CloneGraph graph = new CloneGraph();
 
     }
 
@@ -91,7 +90,7 @@ public class CloneGraph {
 
 
 
-    class Node {
+    static class Node {
         public int val;
         public List<Node> neighbors;
 

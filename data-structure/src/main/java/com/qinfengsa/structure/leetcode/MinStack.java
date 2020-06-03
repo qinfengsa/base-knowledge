@@ -87,7 +87,7 @@ public class MinStack {
     }
 
 
-    class MyNode {
+    static class MyNode {
         /**
          * 当前节点的值
          */

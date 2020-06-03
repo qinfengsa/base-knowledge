@@ -88,7 +88,6 @@ public class MyHashSet {
 
                 return;
             }
-            preNode = node;
             node = node.next;
         }
     }
@@ -107,7 +106,7 @@ public class MyHashSet {
     }
 
 
-    class HashNode {
+    static class HashNode {
         int val;
 
         HashNode next;

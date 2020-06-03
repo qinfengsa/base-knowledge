@@ -2852,4 +2852,116 @@ public class DynamicPlanTest {
 
         return dp[first.length()][second.length()] <= 1;
     }
+
+
+    @Test
+    public void numberOf2sInRange() {
+        int n = 25;
+        logResult(numberOf2sInRange(n));
+    }
+
+    /**
+     * 面试题 17.06. 2出现的次数
+     *
+     * 编写一个方法，计算从 0 到 n (含 n) 中数字 2 出现的次数。
+     *
+     * 示例:
+     *
+     * 输入: 25 输出: 9 解释: (2, 12, 20, 21, 22, 23, 24, 25)(注意 22 应该算作两次) 提示：
+     *
+     * n <= 10^9
+     *
+     * @param n
+     * @return
+     */
+    public int numberOf2sInRange(int n) {
+        if(n == 0) {
+            return 0;
+        }
+        int digit = (int)Math.log10(n) + 1;
+        int[][] dp = new int[digit+1][2];
+        // dp[i][0] = numberOf2sInRange(n % pow(10, i)) 保存0~n的1-i位组成的数包含2的个数
+        // dp[i][1] = numberOf2sInRange(99..9) 保存i位均为9包含2的个数
+        dp[1][0] = n % 10 >= 2 ? 1:0;
+        dp[1][1] = 1;
+        for(int i = 2; i <= digit; i++) {
+            int k = n/ ((int)Math.pow(10, i-1)) % 10;
+            dp[i][0] = k * dp[i-1][1] + dp[i-1][0];
+            if(k == 2) {
+                dp[i][0] += n % (int)Math.pow(10, i-1) +1;
+            } else if(k > 2){
+                dp[i][0] +=  (int)Math.pow(10, i-1);
+            }
+            dp[i][1] = 10 * dp[i-1][1] + (int)Math.pow(10, i-1); //计算1-i位均为9的值包含2的个数
+        }
+        return dp[digit][0];
+
+    }
+
+
+    /*private int calNumber2(int n,int) {
+
+    }*/
+
+
+
+    /**
+     * 837. 新21点
+     * 爱丽丝参与一个大致基于纸牌游戏 “21点” 规则的游戏，描述如下：
+     *
+     * 爱丽丝以 0 分开始，并在她的得分少于 K 分时抽取数字。 抽取时，她从 [1, W] 的范围中随机获得一个整数作为分数进行累计，其中 W 是整数。 每次抽取都是独立的，其结果具有相同的概率。
+     *
+     * 当爱丽丝获得不少于 K 分时，她就停止抽取数字。 爱丽丝的分数不超过 N 的概率是多少？
+     *
+     * 示例 1：
+     *
+     * 输入：N = 10, K = 1, W = 10
+     * 输出：1.00000
+     * 说明：爱丽丝得到一张卡，然后停止。
+     * 示例 2：
+     *
+     * 输入：N = 6, K = 1, W = 10
+     * 输出：0.60000
+     * 说明：爱丽丝得到一张卡，然后停止。
+     * 在 W = 10 的 6 种可能下，她的得分不超过 N = 6 分。
+     * 示例 3：
+     *
+     * 输入：N = 21, K = 17, W = 10
+     * 输出：0.73278
+     * 提示：
+     *
+     * 		0 <= K <= N <= 10000
+     * 		1 <= W <= 10000
+     * 如果答案与正确答案的误差不超过 10^-5，则该答案将被视为正确答案通过。
+     * 此问题的判断限制时间已经减少。
+     * @param N
+     * @param K
+     * @param W
+     * @return
+     */
+    public double new21Game(int N, int K, int W) {
+        if (K == 0) {
+            return 1.0;
+        }
+        double[] dp = new double[K + W];
+        // dp[x]= dp[x+1]+dp[x+2]+⋯+dp[x+W] /W
+        for (int i = K; i <= N && i < K + W; i++) {
+            dp[i] = 1.0;
+        }
+        /*
+        for (int i = K - 1; i >= 0; i--){
+            double sum = 0.0;
+            for (int j = 1; j <= W; j++) {
+                sum += dp[i + j];
+            }
+            dp[i] = sum /(double)W;
+        }
+
+        return dp[0]; */
+        dp[K - 1] = 1.0 * Math.min(N - K + 1, W) / W;
+        for (int i = K - 2; i >= 0; i--) {
+            dp[i] = dp[i + 1] - (dp[i + W + 1] - dp[i + 1]) / W;
+        }
+        return dp[0];
+    }
 }

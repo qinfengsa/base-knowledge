@@ -44,7 +44,7 @@ public class Trie {
     /**
      * 节点
      */
-    private class TrieNode {
+    static class TrieNode {
         // 有多少单词通过这个节点,即由根至该节点组成的字符串模式出现的次数
         private int num;
         // 所有的儿子节点
