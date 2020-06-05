@@ -1,18 +1,16 @@
 package com.qinfengsa.structure.leetcode;
 
-import lombok.extern.slf4j.Slf4j;
-import org.junit.Test;
+import static com.qinfengsa.structure.util.LogUtils.logResult;
 
 import java.util.ArrayList;
 import java.util.Deque;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-
-import static com.qinfengsa.structure.util.LogUtils.logResult;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.Test;
 
 /**
  * @author: qinfengsa
@@ -23,10 +21,11 @@ public class ListTest {
 
     /**
      * 打印链表
+     *
      * @param head
      * @return
      */
-    private String logNode(ListNode head){
+    private String logNode(ListNode head) {
         StringBuilder sb = new StringBuilder();
 
         sb.append("ListNode{");
@@ -39,26 +38,18 @@ public class ListTest {
             sb.append(head.val);
             head = head.next;
             index++;
-
         }
         sb.append("}");
         sb.append("size=");
         sb.append(index);
         log.debug(sb.toString());
         return sb.toString();
-
     }
 
-
     /**
-     * 两数相加
-     * 给出两个 非空 的链表用来表示两个非负的整数。其中，它们各自的位数是按照 逆序 的方式存储的，并且它们的每个节点只能存储 一位 数字。
-     * 如果，我们将这两个数相加起来，则会返回一个新的链表来表示它们的和。
-     * 您可以假设除了数字 0 之外，这两个数都不会以 0 开头。
-     * 示例：
-     * 输入：(2 -> 4 -> 3) + (5 -> 6 -> 4)
-     * 输出：7 -> 0 -> 8
-     * 原因：342 + 465 = 807
+     * 两数相加 给出两个 非空 的链表用来表示两个非负的整数。其中，它们各自的位数是按照 逆序 的方式存储的，并且它们的每个节点只能存储 一位 数字。
+     * 如果，我们将这两个数相加起来，则会返回一个新的链表来表示它们的和。 您可以假设除了数字 0 之外，这两个数都不会以 0 开头。 示例： 输入：(2 -> 4 -> 3) + (5 ->
+     * 6 -> 4) 输出：7 -> 0 -> 8 原因：342 + 465 = 807
      */
     @Test
     public void addTwoNumbersTest() {
@@ -71,31 +62,26 @@ public class ListTest {
         ListNode node5 = new ListNode(6);
         ListNode node6 = new ListNode(4);
         node1.next = node2;
-        //node2.next = node3;
-        //node3.next = node7;
+        // node2.next = node3;
+        // node3.next = node7;
 
-        //node4.next = node5;
+        // node4.next = node5;
         // node5.next = node6;
 
-        ListNode node = addTwoNumbers(node1,node4);
+        ListNode node = addTwoNumbers(node1, node4);
         log.debug(logNode(node));
     }
 
     /**
-     * 两数相加
-     * 给出两个 非空 的链表用来表示两个非负的整数。其中，它们各自的位数是按照 逆序 的方式存储的，并且它们的每个节点只能存储 一位 数字。
-     * 如果，我们将这两个数相加起来，则会返回一个新的链表来表示它们的和。
-     * 您可以假设除了数字 0 之外，这两个数都不会以 0 开头。
-     * 示例：
-     * 输入：(2 -> 4 -> 3) + (5 -> 6 -> 4)
-     * 输出：7 -> 0 -> 8
-     * 原因：342 + 465 = 807
+     * 两数相加 给出两个 非空 的链表用来表示两个非负的整数。其中，它们各自的位数是按照 逆序 的方式存储的，并且它们的每个节点只能存储 一位 数字。
+     * 如果，我们将这两个数相加起来，则会返回一个新的链表来表示它们的和。 您可以假设除了数字 0 之外，这两个数都不会以 0 开头。 示例： 输入：(2 -> 4 -> 3) + (5 ->
+     * 6 -> 4) 输出：7 -> 0 -> 8 原因：342 + 465 = 807
+     *
      * @param l1
      * @param l2
      * @return
      */
     private ListNode addTwoNumbers(ListNode l1, ListNode l2) {
-
 
         ListNode head = new ListNode(-1);
         ListNode node = head;
@@ -113,7 +99,7 @@ public class ListTest {
             }
 
             int num = a + b + lastNum;
-            if (num >= 10 ) {
+            if (num >= 10) {
                 node.next = new ListNode(num - 10);
                 lastNum = 1;
             } else {
@@ -126,9 +112,7 @@ public class ListTest {
         return head.next;
     }
 
-    /**
-     * 合并两个有效链表
-     */
+    /** 合并两个有效链表 */
     @Test
     public void mergeTwoListsTest() {
         ListNode node1 = new ListNode(1);
@@ -144,12 +128,13 @@ public class ListTest {
         node4.next = node5;
         node5.next = node6;
 
-        ListNode b = mergeTwoLists2(node1,node4);
-        log.info("b:{}",b);
+        ListNode b = mergeTwoLists2(node1, node4);
+        log.info("b:{}", b);
     }
 
     /**
      * 合并两个有效链表
+     *
      * @param l1
      * @param l2
      * @return
@@ -197,7 +182,6 @@ public class ListTest {
             node = node.next;
         }
 
-
         return head;
     }
 
@@ -217,14 +201,11 @@ public class ListTest {
                 return l2;
             }
         }
-
     }
 
-    /**
-     * 回文链表判断
-     */
+    /** 回文链表判断 */
     @Test
-    public void isPalindromeTest()   {
+    public void isPalindromeTest() {
         ListNode node1 = new ListNode(1);
         ListNode node2 = new ListNode(2);
         ListNode node3 = new ListNode(3);
@@ -240,25 +221,18 @@ public class ListTest {
         node5.next = node6;
 
         boolean b = isPalindrome(node1);
-        log.debug("b:{}",b);
+        log.debug("b:{}", b);
     }
 
-
-
     /**
-     * 回文链表判断
-     * 请判断一个链表是否为回文链表。
+     * 回文链表判断 请判断一个链表是否为回文链表。
      *
-     * 示例 1:
+     * <p>示例 1:
      *
-     * 输入: 1->2
-     * 输出: false
-     * 示例 2:
+     * <p>输入: 1->2 输出: false 示例 2:
      *
-     * 输入: 1->2->2->1
-     * 输出: true
-     * 进阶：
-     * 你能否用 O(n) 时间复杂度和 O(1) 空间复杂度解决此题？
+     * <p>输入: 1->2->2->1 输出: true 进阶： 你能否用 O(n) 时间复杂度和 O(1) 空间复杂度解决此题？
+     *
      * @param head
      * @return
      */
@@ -298,7 +272,6 @@ public class ListTest {
         return true;
     }
 
-
     @Test
     public void deleteNode() {
         ListNode head = new ListNode(4);
@@ -314,33 +287,22 @@ public class ListTest {
     }
 
     /**
-     *  删除链表中的节点
-     * 请编写一个函数，使其可以删除某个链表中给定的（非末尾）节点，你将只被给定要求被删除的节点。
+     * 删除链表中的节点 请编写一个函数，使其可以删除某个链表中给定的（非末尾）节点，你将只被给定要求被删除的节点。
      *
-     * 现有一个链表 -- head = [4,5,1,9]，它可以表示为:
+     * <p>现有一个链表 -- head = [4,5,1,9]，它可以表示为:
      *
+     * <p>示例 1:
      *
+     * <p>输入: head = [4,5,1,9], node = 5 输出: [4,1,9] 解释: 给定你链表中值为 5 的第二个节点，那么在调用了你的函数之后，该链表应变为 4 ->
+     * 1 -> 9. 示例 2:
      *
+     * <p>输入: head = [4,5,1,9], node = 1 输出: [4,5,9] 解释: 给定你链表中值为 1 的第三个节点，那么在调用了你的函数之后，该链表应变为 4 ->
+     * 5 -> 9.
      *
+     * <p>说明:
      *
-     * 示例 1:
+     * <p>链表至少包含两个节点。 链表中所有节点的值都是唯一的。 给定的节点为非末尾节点并且一定是链表中的一个有效节点。 不要从你的函数中返回任何结果。
      *
-     * 输入: head = [4,5,1,9], node = 5
-     * 输出: [4,1,9]
-     * 解释: 给定你链表中值为 5 的第二个节点，那么在调用了你的函数之后，该链表应变为 4 -> 1 -> 9.
-     * 示例 2:
-     *
-     * 输入: head = [4,5,1,9], node = 1
-     * 输出: [4,5,9]
-     * 解释: 给定你链表中值为 1 的第三个节点，那么在调用了你的函数之后，该链表应变为 4 -> 5 -> 9.
-     *
-     *
-     * 说明:
-     *
-     * 链表至少包含两个节点。
-     * 链表中所有节点的值都是唯一的。
-     * 给定的节点为非末尾节点并且一定是链表中的一个有效节点。
-     * 不要从你的函数中返回任何结果。
      * @param node
      */
     public void deleteNode(ListNode node) {
@@ -350,10 +312,7 @@ public class ListTest {
         node.val = next.val;
 
         node.next = next.next;
-
-
     }
-
 
     @Test
     public void mergeKLists() {
@@ -377,22 +336,16 @@ public class ListTest {
         lists[1] = node21;
         lists[2] = node31;
         ListNode result = mergeKLists2(lists);
-         logNode(result) ;
+        logNode(result);
     }
 
     /**
-     * 合并K个元素的有序链表
-     * 合并 k 个排序链表，返回合并后的排序链表。请分析和描述算法的复杂度。
+     * 合并K个元素的有序链表 合并 k 个排序链表，返回合并后的排序链表。请分析和描述算法的复杂度。
      *
-     * 示例:
+     * <p>示例:
      *
-     * 输入:
-     * [
-     *   1->4->5,
-     *   1->3->4,
-     *   2->6
-     * ]
-     * 输出: 1->1->2->3->4->4->5->6
+     * <p>输入: [ 1->4->5, 1->3->4, 2->6 ] 输出: 1->1->2->3->4->4->5->6
+     *
      * @param lists
      * @return
      */
@@ -400,7 +353,7 @@ public class ListTest {
 
         ListNode node = getMin(lists);
         ListNode head = node;
-        while (node != null){
+        while (node != null) {
             // 找到最小的结点
             ListNode nextNode = getMin(lists);
             node.next = nextNode;
@@ -448,24 +401,20 @@ public class ListTest {
     }
 
     /**
-     *  排序链表
-     * 在 O(n log n) 时间复杂度和常数级空间复杂度下，对链表进行排序。
+     * 排序链表 在 O(n log n) 时间复杂度和常数级空间复杂度下，对链表进行排序。
      *
-     * 示例 1:
+     * <p>示例 1:
      *
-     * 输入: 4->2->1->3
-     * 输出: 1->2->3->4
-     * 示例 2:
+     * <p>输入: 4->2->1->3 输出: 1->2->3->4 示例 2:
      *
-     * 输入: -1->5->3->4->0
-     * 输出: -1->0->3->4->5
+     * <p>输入: -1->5->3->4->0 输出: -1->0->3->4->5
+     *
      * @param head
      * @return
      */
     public ListNode sortList(ListNode head) {
         // 要求O(n log n) 的时间复杂度，使用归并排序 或者 快速排序
-        if (head == null || head.next == null)
-            return head;
+        if (head == null || head.next == null) return head;
         ListNode fast = head.next, slow = head;
         while (fast != null && fast.next != null) {
             slow = slow.next;
@@ -489,16 +438,15 @@ public class ListTest {
         }
         h.next = left != null ? left : right;
         return res.next;
-
     }
-
 
     /**
      * 快速排序
+     *
      * @param head
      * @return
      */
-   /* private ListNode quickSort(ListNode head) {
+    /* private ListNode quickSort(ListNode head) {
         // 思路 ： 选择一个 结点 是 结点 左边结点< 当前节点，右边节点> 当前节点
         ListNode currentNode = head;
         ListNode node = head;
@@ -529,8 +477,8 @@ public class ListTest {
             }
         }
         ListNode node = head.next;
-        ListNode lowNode = null,aNode = null;
-        ListNode highNode = null,bNode = null;
+        ListNode lowNode = null, aNode = null;
+        ListNode highNode = null, bNode = null;
         while (node != null) {
 
             if (node.val <= head.val) {
@@ -571,9 +519,8 @@ public class ListTest {
         }
 
         head.next = bNode;
-        return  node;
+        return node;
     }
-
 
     @Test
     public void reverseKGroup() {
@@ -588,32 +535,31 @@ public class ListTest {
         node2.next = node3;
         node3.next = node4;
         node4.next = node5;
-        //node5.next = node6;
+        // node5.next = node6;
 
-        ListNode result = reverseKGroup(head,k);
-        logResult(logNode(result)) ;
+        ListNode result = reverseKGroup(head, k);
+        logResult(logNode(result));
     }
 
     /**
-     * 25. K 个一组翻转链表
-     * 给你一个链表，每 k 个节点一组进行翻转，请你返回翻转后的链表。
+     * 25. K 个一组翻转链表 给你一个链表，每 k 个节点一组进行翻转，请你返回翻转后的链表。
      *
-     * k 是一个正整数，它的值小于或等于链表的长度。
+     * <p>k 是一个正整数，它的值小于或等于链表的长度。
      *
-     * 如果节点总数不是 k 的整数倍，那么请将最后剩余的节点保持原有顺序。
+     * <p>如果节点总数不是 k 的整数倍，那么请将最后剩余的节点保持原有顺序。
      *
-     * 示例 :
+     * <p>示例 :
      *
-     * 给定这个链表：1->2->3->4->5
+     * <p>给定这个链表：1->2->3->4->5
      *
-     * 当 k = 2 时，应当返回: 2->1->4->3->5
+     * <p>当 k = 2 时，应当返回: 2->1->4->3->5
      *
-     * 当 k = 3 时，应当返回: 3->2->1->4->5
+     * <p>当 k = 3 时，应当返回: 3->2->1->4->5
      *
-     * 说明 :
+     * <p>说明 :
      *
-     * 你的算法只能使用常数的额外空间。
-     * 你不能只是单纯的改变节点内部的值，而是需要实际的进行节点交换。
+     * <p>你的算法只能使用常数的额外空间。 你不能只是单纯的改变节点内部的值，而是需要实际的进行节点交换。
+     *
      * @param head
      * @param k
      * @return
@@ -625,7 +571,7 @@ public class ListTest {
         ListNode dummy = new ListNode(0);
         dummy.next = head;
 
-        ListNode pre = dummy;  // pre 反转部分的前一个节点
+        ListNode pre = dummy; // pre 反转部分的前一个节点
 
         ListNode node = head;
         while (node != null) {
@@ -640,9 +586,8 @@ public class ListTest {
             }
             node = next;
         }
-        return dummy.next ;
+        return dummy.next;
     }
-
 
     public ListNode reverseKGroupDeque(ListNode head, int k) {
 
@@ -670,7 +615,6 @@ public class ListTest {
                 endNode.next = null;
             }
             node = next;
-
         }
         if (deque.size() > 0 && deque.size() < k) {
             // 出队
@@ -689,12 +633,12 @@ public class ListTest {
             endNode.next = null;
         }
 
-
         return startNode;
     }
 
     /**
      * 反转链表
+     *
      * @param head
      */
     private ListNode reverseNode(ListNode head) {
@@ -710,7 +654,6 @@ public class ListTest {
         }
 
         return pre;
-
     }
 
     @Test
@@ -728,21 +671,18 @@ public class ListTest {
         node5.next = node6;
 
         ListNode result = deleteDuplicates(head);
-        logResult(logNode(result)) ;
+        logResult(logNode(result));
     }
 
     /**
-     * 83. 删除排序链表中的重复元素
-     * 给定一个排序链表，删除所有重复的元素，使得每个元素只出现一次。
+     * 83. 删除排序链表中的重复元素 给定一个排序链表，删除所有重复的元素，使得每个元素只出现一次。
      *
-     * 示例 1:
+     * <p>示例 1:
      *
-     * 输入: 1->1->2
-     * 输出: 1->2
-     * 示例 2:
+     * <p>输入: 1->1->2 输出: 1->2 示例 2:
      *
-     * 输入: 1->1->2->3->3
-     * 输出: 1->2->3
+     * <p>输入: 1->1->2->3->3 输出: 1->2->3
+     *
      * @param head
      * @return
      */
@@ -760,10 +700,8 @@ public class ListTest {
             }
         }
 
-
         return head;
     }
-
 
     @Test
     public void reverseBetween() {
@@ -776,21 +714,19 @@ public class ListTest {
         node2.next = node3;
         node3.next = node4;
         node4.next = node5;
-        ListNode result = reverseBetween(head,1,5);
-        logResult(logNode(result)) ;
+        ListNode result = reverseBetween(head, 1, 5);
+        logResult(logNode(result));
     }
 
     /**
-     * 92. 反转链表 II
-     * 反转从位置 m 到 n 的链表。请使用一趟扫描完成反转。
+     * 92. 反转链表 II 反转从位置 m 到 n 的链表。请使用一趟扫描完成反转。
      *
-     * 说明:
-     * 1 ≤ m ≤ n ≤ 链表长度。
+     * <p>说明: 1 ≤ m ≤ n ≤ 链表长度。
      *
-     * 示例:
+     * <p>示例:
      *
-     * 输入: 1->2->3->4->5->NULL, m = 2, n = 4
-     * 输出: 1->4->3->2->5->NULL
+     * <p>输入: 1->2->3->4->5->NULL, m = 2, n = 4 输出: 1->4->3->2->5->NULL
+     *
      * @param head
      * @param m
      * @param n
@@ -823,60 +759,41 @@ public class ListTest {
         return head;
     }
 
-
     @Test
-    public void getDecimalValue( ) {
+    public void getDecimalValue() {
         ListNode head = new ListNode(1);
         ListNode node2 = new ListNode(0);
         ListNode node3 = new ListNode(1);
-        //ListNode node4 = new ListNode(4);
-        //ListNode node5 = new ListNode(5);
+        // ListNode node4 = new ListNode(4);
+        // ListNode node5 = new ListNode(5);
         head.next = node2;
         node2.next = node3;
-        //node3.next = node4;
-        //node4.next = node5;
+        // node3.next = node4;
+        // node4.next = node5;
         logResult(getDecimalValue(head));
     }
 
-
     /**
-     * 1290. 二进制链表转整数
-     * 给你一个单链表的引用结点 head。链表中每个结点的值不是 0 就是 1。已知此链表是一个整数数字的二进制表示形式。
+     * 1290. 二进制链表转整数 给你一个单链表的引用结点 head。链表中每个结点的值不是 0 就是 1。已知此链表是一个整数数字的二进制表示形式。
      *
-     * 请你返回该链表所表示数字的 十进制值 。
+     * <p>请你返回该链表所表示数字的 十进制值 。
      *
+     * <p>示例 1：
      *
+     * <p>输入：head = [1,0,1] 输出：5 解释：二进制数 (101) 转化为十进制数 (5) 示例 2：
      *
-     * 示例 1：
+     * <p>输入：head = [0] 输出：0 示例 3：
      *
+     * <p>输入：head = [1] 输出：1 示例 4：
      *
+     * <p>输入：head = [1,0,0,1,0,0,1,1,1,0,0,0,0,0,0] 输出：18880 示例 5：
      *
-     * 输入：head = [1,0,1]
-     * 输出：5
-     * 解释：二进制数 (101) 转化为十进制数 (5)
-     * 示例 2：
+     * <p>输入：head = [0,0] 输出：0
      *
-     * 输入：head = [0]
-     * 输出：0
-     * 示例 3：
+     * <p>提示：
      *
-     * 输入：head = [1]
-     * 输出：1
-     * 示例 4：
+     * <p>链表不为空。 链表的结点总数不超过 30。 每个结点的值不是 0 就是 1。
      *
-     * 输入：head = [1,0,0,1,0,0,1,1,1,0,0,0,0,0,0]
-     * 输出：18880
-     * 示例 5：
-     *
-     * 输入：head = [0,0]
-     * 输出：0
-     *
-     *
-     * 提示：
-     *
-     * 链表不为空。
-     * 链表的结点总数不超过 30。
-     * 每个结点的值不是 0 就是 1。
      * @param head
      * @return
      */
@@ -885,40 +802,34 @@ public class ListTest {
         int result = 0;
         while (node != null) {
             int val = node.val;
-            log.debug("val:{}",val);
-            result = result*2 + val;
-            log.debug("k:{}",result);
+            log.debug("val:{}", val);
+            result = result * 2 + val;
+            log.debug("k:{}", result);
             node = node.next;
         }
         return result;
     }
 
-
     /**
-     * 445. 两数相加 II
-     * 给你两个 非空 链表来代表两个非负整数。数字最高位位于链表开始位置。它们的每个节点只存储一位数字。将这两数相加会返回一个新的链表。
+     * 445. 两数相加 II 给你两个 非空 链表来代表两个非负整数。数字最高位位于链表开始位置。它们的每个节点只存储一位数字。将这两数相加会返回一个新的链表。
      *
-     * 你可以假设除了数字 0 之外，这两个数字都不会以零开头。
+     * <p>你可以假设除了数字 0 之外，这两个数字都不会以零开头。
      *
+     * <p>进阶：
      *
+     * <p>如果输入链表不能修改该如何处理？换句话说，你不能对列表中的节点进行翻转。
      *
-     * 进阶：
+     * <p>示例：
      *
-     * 如果输入链表不能修改该如何处理？换句话说，你不能对列表中的节点进行翻转。
+     * <p>输入：(7 -> 2 -> 4 -> 3) + (5 -> 6 -> 4) 输出：7 -> 8 -> 0 -> 7
      *
-     *
-     *
-     * 示例：
-     *
-     * 输入：(7 -> 2 -> 4 -> 3) + (5 -> 6 -> 4)
-     * 输出：7 -> 8 -> 0 -> 7
      * @param l1
      * @param l2
      * @return
      */
     public ListNode addTwoNumbers2(ListNode l1, ListNode l2) {
         // 1 反转链表
-       /* l1 = reverseList(l1);
+        /* l1 = reverseList(l1);
 
         l2 = reverseList(l2);
         ListNode next = null;
@@ -980,12 +891,9 @@ public class ListTest {
             ListNode node = new ListNode(val);
             node.next = next;
             next = node;
-
         }
         return next;
-
     }
-
 
     @Test
     public void reverseList() {
@@ -1000,10 +908,8 @@ public class ListTest {
         node3.next = node4;
         node4.next = node5;
         head = reverseList(head);
-        logNode(head) ;
+        logNode(head);
     }
-
-
 
     private ListNode reverseList(ListNode head) {
         ListNode node = head;
@@ -1014,12 +920,10 @@ public class ListTest {
             next.next = pre;
 
             pre = next;
-
         }
 
         return pre;
     }
-
 
     @Test
     public void removeDuplicateNodes() {
@@ -1035,28 +939,22 @@ public class ListTest {
         node4.next = node5;
         node5.next = node6;
         head = removeDuplicateNodes(head);
-        logNode(head) ;
+        logNode(head);
     }
 
     /**
-     * 面试题 02.01. 移除重复节点
-     * 编写代码，移除未排序链表中的重复节点。保留最开始出现的节点。
+     * 面试题 02.01. 移除重复节点 编写代码，移除未排序链表中的重复节点。保留最开始出现的节点。
      *
-     * 示例1:
+     * <p>示例1:
      *
-     *  输入：[1, 2, 3, 3, 2, 1]
-     *  输出：[1, 2, 3]
-     * 示例2:
+     * <p>输入：[1, 2, 3, 3, 2, 1] 输出：[1, 2, 3] 示例2:
      *
-     *  输入：[1, 1, 1, 1, 2]
-     *  输出：[1, 2]
-     * 提示：
+     * <p>输入：[1, 1, 1, 1, 2] 输出：[1, 2] 提示：
      *
-     * 链表长度在[0, 20000]范围内。
-     * 链表元素在[0, 20000]范围内。
-     * 进阶：
+     * <p>链表长度在[0, 20000]范围内。 链表元素在[0, 20000]范围内。 进阶：
      *
-     * 如果不得使用临时缓冲区，该怎么解决？
+     * <p>如果不得使用临时缓冲区，该怎么解决？
+     *
      * @param head
      * @return
      */
@@ -1085,7 +983,6 @@ public class ListTest {
         return head;
     }
 
-
     @Test
     public void kthToLast() {
         ListNode head = new ListNode(1);
@@ -1100,22 +997,21 @@ public class ListTest {
         node4.next = node5;
         node5.next = node6;
         int k = 2;
-        logResult(kthToLast(head,k)); ;
+        logResult(kthToLast(head, k));
+        ;
     }
 
     /**
-     * 面试题 02.02. 返回倒数第 k 个节点
-     * 实现一种算法，找出单向链表中倒数第 k 个节点。返回该节点的值。
+     * 面试题 02.02. 返回倒数第 k 个节点 实现一种算法，找出单向链表中倒数第 k 个节点。返回该节点的值。
      *
-     * 注意：本题相对原题稍作改动
+     * <p>注意：本题相对原题稍作改动
      *
-     * 示例：
+     * <p>示例：
      *
-     * 输入： 1->2->3->4->5 和 k = 2
-     * 输出： 4
-     * 说明：
+     * <p>输入： 1->2->3->4->5 和 k = 2 输出： 4 说明：
      *
-     * 给定的 k 保证是有效的。
+     * <p>给定的 k 保证是有效的。
+     *
      * @param head
      * @param k
      * @return
@@ -1125,8 +1021,6 @@ public class ListTest {
         while (k-- > 0) {
             fast = fast.next;
         }
-
-
 
         ListNode slow = head;
         while (fast != null) {
@@ -1155,53 +1049,44 @@ public class ListTest {
     }
 
     /**
-     * 面试题 02.03. 删除中间节点
-     * 实现一种算法，删除单向链表中间的某个节点（除了第一个和最后一个节点，不一定是中间节点），假定你只能访问该节点。
+     * 面试题 02.03. 删除中间节点 实现一种算法，删除单向链表中间的某个节点（除了第一个和最后一个节点，不一定是中间节点），假定你只能访问该节点。
      *
+     * <p>示例：
      *
+     * <p>输入：单向链表a->b->c->d->e->f中的节点c 结果：不返回任何数据，但该链表变为a->b->d->e->f
      *
-     * 示例：
-     *
-     * 输入：单向链表a->b->c->d->e->f中的节点c
-     * 结果：不返回任何数据，但该链表变为a->b->d->e->f
      * @param node
      */
     public void deleteNode2(ListNode node) {
-        ListNode fast = node,slow = node;
+        ListNode fast = node, slow = node;
         ListNode pre = null;
         while (fast != null && fast.next != null) {
             pre = slow;
             fast = fast.next.next;
             slow = slow.next;
         }
-        log.debug("pre:{};slow:{}",pre.val,slow.val);
+        log.debug("pre:{};slow:{}", pre.val, slow.val);
     }
 
-
     /**
-     * 面试题18. 删除链表的节点
-     * 给定单向链表的头指针和一个要删除的节点的值，定义一个函数删除该节点。
+     * 面试题18. 删除链表的节点 给定单向链表的头指针和一个要删除的节点的值，定义一个函数删除该节点。
      *
-     * 返回删除后的链表的头节点。
+     * <p>返回删除后的链表的头节点。
      *
-     * 注意：此题对比原题有改动
+     * <p>注意：此题对比原题有改动
      *
-     * 示例 1:
+     * <p>示例 1:
      *
-     * 输入: head = [4,5,1,9], val = 5
-     * 输出: [4,1,9]
-     * 解释: 给定你链表中值为 5 的第二个节点，那么在调用了你的函数之后，该链表应变为 4 -> 1 -> 9.
-     * 示例 2:
+     * <p>输入: head = [4,5,1,9], val = 5 输出: [4,1,9] 解释: 给定你链表中值为 5 的第二个节点，那么在调用了你的函数之后，该链表应变为 4 -> 1
+     * -> 9. 示例 2:
      *
-     * 输入: head = [4,5,1,9], val = 1
-     * 输出: [4,5,9]
-     * 解释: 给定你链表中值为 1 的第三个节点，那么在调用了你的函数之后，该链表应变为 4 -> 5 -> 9.
+     * <p>输入: head = [4,5,1,9], val = 1 输出: [4,5,9] 解释: 给定你链表中值为 1 的第三个节点，那么在调用了你的函数之后，该链表应变为 4 -> 5
+     * -> 9.
      *
+     * <p>说明：
      *
-     * 说明：
+     * <p>题目保证链表中节点的值互不相同 若使用 C 或 C++ 语言，你不需要 free 或 delete 被删除的节点
      *
-     * 题目保证链表中节点的值互不相同
-     * 若使用 C 或 C++ 语言，你不需要 free 或 delete 被删除的节点
      * @param head
      * @param val
      * @return
@@ -1223,54 +1108,36 @@ public class ListTest {
         return root.next;
     }
 
-
     /**
-     * 面试题52. 两个链表的第一个公共节点
-     * 输入两个链表，找出它们的第一个公共节点。
+     * 面试题52. 两个链表的第一个公共节点 输入两个链表，找出它们的第一个公共节点。
      *
-     * 如下面的两个链表：
+     * <p>如下面的两个链表：
      *
+     * <p>在节点 c1 开始相交。
      *
+     * <p>示例 1：
      *
-     * 在节点 c1 开始相交。
+     * <p>输入：intersectVal = 8, listA = [4,1,8,4,5], listB = [5,0,1,8,4,5], skipA = 2, skipB = 3
+     * 输出：Reference of the node with value = 8 输入解释：相交节点的值为 8 （注意，如果两个列表相交则不能为 0）。从各自的表头开始算起，链表 A 为
+     * [4,1,8,4,5]，链表 B 为 [5,0,1,8,4,5]。在 A 中，相交节点前有 2 个节点；在 B 中，相交节点前有 3 个节点。
      *
+     * <p>示例 2：
      *
+     * <p>输入：intersectVal = 2, listA = [0,9,1,2,4], listB = [3,2,4], skipA = 3, skipB = 1
+     * 输出：Reference of the node with value = 2 输入解释：相交节点的值为 2 （注意，如果两个列表相交则不能为 0）。从各自的表头开始算起，链表 A 为
+     * [0,9,1,2,4]，链表 B 为 [3,2,4]。在 A 中，相交节点前有 3 个节点；在 B 中，相交节点前有 1 个节点。
      *
-     * 示例 1：
+     * <p>示例 3：
      *
+     * <p>输入：intersectVal = 0, listA = [2,6,4], listB = [1,5], skipA = 3, skipB = 2 输出：null
+     * 输入解释：从各自的表头开始算起，链表 A 为 [2,6,4]，链表 B 为 [1,5]。由于这两个链表不相交，所以 intersectVal 必须为 0，而 skipA 和 skipB
+     * 可以是任意值。 解释：这两个链表不相交，因此返回 null。
      *
+     * <p>注意：
      *
-     * 输入：intersectVal = 8, listA = [4,1,8,4,5], listB = [5,0,1,8,4,5], skipA = 2, skipB = 3
-     * 输出：Reference of the node with value = 8
-     * 输入解释：相交节点的值为 8 （注意，如果两个列表相交则不能为 0）。从各自的表头开始算起，链表 A 为 [4,1,8,4,5]，链表 B 为 [5,0,1,8,4,5]。在 A 中，相交节点前有 2 个节点；在 B 中，相交节点前有 3 个节点。
-     *
-     *
-     * 示例 2：
-     *
-     *
-     *
-     * 输入：intersectVal = 2, listA = [0,9,1,2,4], listB = [3,2,4], skipA = 3, skipB = 1
-     * 输出：Reference of the node with value = 2
-     * 输入解释：相交节点的值为 2 （注意，如果两个列表相交则不能为 0）。从各自的表头开始算起，链表 A 为 [0,9,1,2,4]，链表 B 为 [3,2,4]。在 A 中，相交节点前有 3 个节点；在 B 中，相交节点前有 1 个节点。
-     *
-     *
-     * 示例 3：
-     *
-     *
-     *
-     * 输入：intersectVal = 0, listA = [2,6,4], listB = [1,5], skipA = 3, skipB = 2
-     * 输出：null
-     * 输入解释：从各自的表头开始算起，链表 A 为 [2,6,4]，链表 B 为 [1,5]。由于这两个链表不相交，所以 intersectVal 必须为 0，而 skipA 和 skipB 可以是任意值。
-     * 解释：这两个链表不相交，因此返回 null。
-     *
-     *
-     * 注意：
-     *
-     * 如果两个链表没有交点，返回 null.
-     * 在返回结果后，两个链表仍须保持原有的结构。
-     * 可假定整个链表结构中没有循环。
-     * 程序尽量满足 O(n) 时间复杂度，且仅用 O(1) 内存。
+     * <p>如果两个链表没有交点，返回 null. 在返回结果后，两个链表仍须保持原有的结构。 可假定整个链表结构中没有循环。 程序尽量满足 O(n) 时间复杂度，且仅用 O(1) 内存。
      * 本题与主站 160 题相同：https://leetcode-cn.com/problems/intersection-of-two-linked-lists/
+     *
      * @param headA
      * @param headB
      * @return
@@ -1301,28 +1168,20 @@ public class ListTest {
                 node2 = node2.next;
             }
         }
-        while (Objects.nonNull(node1) && Objects.nonNull(node2) && node1 != node2 ) {
+        while (Objects.nonNull(node1) && Objects.nonNull(node2) && node1 != node2) {
             node1 = node1.next;
             node2 = node2.next;
         }
         return node1;
-
     }
 
-
     /**
-     * 23. 合并K个排序链表
-     * 合并 k 个排序链表，返回合并后的排序链表。请分析和描述算法的复杂度。
+     * 23. 合并K个排序链表 合并 k 个排序链表，返回合并后的排序链表。请分析和描述算法的复杂度。
      *
-     * 示例:
+     * <p>示例:
      *
-     * 输入:
-     * [
-     *   1->4->5,
-     *   1->3->4,
-     *   2->6
-     * ]
-     * 输出: 1->1->2->3->4->4->5->6
+     * <p>输入: [ 1->4->5, 1->3->4, 2->6 ] 输出: 1->1->2->3->4->4->5->6
+     *
      * @param lists
      * @return
      */
@@ -1330,24 +1189,21 @@ public class ListTest {
 
         int len = lists.length;
 
-        return mergeKLists(lists,0,len-1);
+        return mergeKLists(lists, 0, len - 1);
     }
 
-    public ListNode mergeKLists(ListNode[] lists,int start,int end) {
+    public ListNode mergeKLists(ListNode[] lists, int start, int end) {
         if (start == end) {
             return lists[start];
         }
         int mid = (start + end) >> 1;
-        ListNode left = mergeKLists(lists,start,mid);
-        ListNode right = mergeKLists(lists,mid + 1,end);
-        return mergeTwoLists(left,right);
+        ListNode left = mergeKLists(lists, start, mid);
+        ListNode right = mergeKLists(lists, mid + 1, end);
+        return mergeTwoLists(left, right);
     }
 
-
-
-
     private int getMinNode(ListNode[] lists) {
-        int minIndex = -1,min = -1;
+        int minIndex = -1, min = -1;
         for (int i = 0; i < lists.length; i++) {
             ListNode node = lists[i];
             if (Objects.nonNull(node)) {
@@ -1359,31 +1215,22 @@ public class ListTest {
                     min = node.val;
                 }
             }
-
         }
 
         return minIndex;
     }
 
-
     /**
-     * 面试题 02.06. 回文链表
-     * 编写一个函数，检查输入的链表是否是回文的。
+     * 面试题 02.06. 回文链表 编写一个函数，检查输入的链表是否是回文的。
      *
+     * <p>示例 1：
      *
+     * <p>输入： 1->2 输出： false 示例 2：
      *
-     * 示例 1：
+     * <p>输入： 1->2->2->1 输出： true
      *
-     * 输入： 1->2
-     * 输出： false
-     * 示例 2：
+     * <p>进阶： 你能否用 O(n) 时间复杂度和 O(1) 空间复杂度解决此题？
      *
-     * 输入： 1->2->2->1
-     * 输出： true
-     *
-     *
-     * 进阶：
-     * 你能否用 O(n) 时间复杂度和 O(1) 空间复杂度解决此题？
      * @param head
      * @return
      */
@@ -1416,24 +1263,18 @@ public class ListTest {
             node = node.next;
         }
 
-
         return true;
-
     }
 
-
     /**
-     * 82. 删除排序链表中的重复元素 II
-     * 给定一个排序链表，删除所有含有重复数字的节点，只保留原始链表中 没有重复出现 的数字。
+     * 82. 删除排序链表中的重复元素 II 给定一个排序链表，删除所有含有重复数字的节点，只保留原始链表中 没有重复出现 的数字。
      *
-     * 示例 1:
+     * <p>示例 1:
      *
-     * 输入: 1->2->3->3->4->4->5
-     * 输出: 1->2->5
-     * 示例 2:
+     * <p>输入: 1->2->3->3->4->4->5 输出: 1->2->5 示例 2:
      *
-     * 输入: 1->1->1->2->3
-     * 输出: 2->3
+     * <p>输入: 1->1->1->2->3 输出: 2->3
+     *
      * @param head
      * @return
      */
@@ -1467,20 +1308,17 @@ public class ListTest {
         return root.next;
     }
 
-
     /**
-     * 143. 重排链表
-     * 给定一个单链表 L：L0→L1→…→Ln-1→Ln ，
-     * 将其重新排列后变为： L0→Ln→L1→Ln-1→L2→Ln-2→…
+     * 143. 重排链表 给定一个单链表 L：L0→L1→…→Ln-1→Ln ， 将其重新排列后变为： L0→Ln→L1→Ln-1→L2→Ln-2→…
      *
-     * 你不能只是单纯的改变节点内部的值，而是需要实际的进行节点交换。
+     * <p>你不能只是单纯的改变节点内部的值，而是需要实际的进行节点交换。
      *
-     * 示例 1:
+     * <p>示例 1:
      *
-     * 给定链表 1->2->3->4, 重新排列为 1->4->2->3.
-     * 示例 2:
+     * <p>给定链表 1->2->3->4, 重新排列为 1->4->2->3. 示例 2:
      *
-     * 给定链表 1->2->3->4->5, 重新排列为 1->5->2->4->3.
+     * <p>给定链表 1->2->3->4->5, 重新排列为 1->5->2->4->3.
+     *
      * @param head
      */
     public void reorderList(ListNode head) {
@@ -1490,7 +1328,7 @@ public class ListTest {
             list.add(node);
             node = node.next;
         }
-        int left = 0,right = list.size() - 1;
+        int left = 0, right = list.size() - 1;
         while (left < right) {
             list.get(left).next = list.get(right);
             if (left < (list.size() >> 1)) {
@@ -1500,45 +1338,34 @@ public class ListTest {
             right--;
         }
         list.get(left).next = null;
-
     }
 
-
     /**
-     * 147. 对链表进行插入排序
-     * 对链表进行插入排序。
+     * 147. 对链表进行插入排序 对链表进行插入排序。
      *
+     * <p>插入排序的动画演示如上。从第一个元素开始，该链表可以被认为已经部分排序（用黑色表示）。 每次迭代时，从输入数据中移除一个元素（用红色表示），并原地将其插入到已排好序的链表中。
      *
-     * 插入排序的动画演示如上。从第一个元素开始，该链表可以被认为已经部分排序（用黑色表示）。
-     * 每次迭代时，从输入数据中移除一个元素（用红色表示），并原地将其插入到已排好序的链表中。
+     * <p>插入排序算法：
      *
-     *
-     *
-     * 插入排序算法：
-     *
-     * 插入排序是迭代的，每次只移动一个元素，直到所有元素可以形成一个有序的输出列表。
-     * 每次迭代中，插入排序只从输入数据中移除一个待排序的元素，找到它在序列中适当的位置，并将其插入。
+     * <p>插入排序是迭代的，每次只移动一个元素，直到所有元素可以形成一个有序的输出列表。 每次迭代中，插入排序只从输入数据中移除一个待排序的元素，找到它在序列中适当的位置，并将其插入。
      * 重复直到所有输入数据插入完为止。
      *
+     * <p>示例 1：
      *
-     * 示例 1：
+     * <p>输入: 4->2->1->3 输出: 1->2->3->4 示例 2：
      *
-     * 输入: 4->2->1->3
-     * 输出: 1->2->3->4
-     * 示例 2：
+     * <p>输入: -1->5->3->4->0 输出: -1->0->3->4->5
      *
-     * 输入: -1->5->3->4->0
-     * 输出: -1->0->3->4->5
      * @param head
      * @return
      */
     public ListNode insertionSortList(ListNode head) {
 
-        //ListNode node = head;
+        // ListNode node = head;
 
         ListNode root = new ListNode(0);
         ListNode pre = root;
-        for (ListNode node = head;Objects.nonNull(node);) {
+        for (ListNode node = head; Objects.nonNull(node); ) {
             ListNode current = node;
             node = node.next;
             if (current.val < pre.val) {
@@ -1549,23 +1376,20 @@ public class ListTest {
             }
             current.next = pre.next;
             pre.next = current;
-
         }
 
         return root.next;
     }
 
-
     /**
-     * 86. 分隔链表
-     * 给定一个链表和一个特定值 x，对链表进行分隔，使得所有小于 x 的节点都在大于或等于 x 的节点之前。
+     * 86. 分隔链表 给定一个链表和一个特定值 x，对链表进行分隔，使得所有小于 x 的节点都在大于或等于 x 的节点之前。
      *
-     * 你应当保留两个分区中每个节点的初始相对位置。
+     * <p>你应当保留两个分区中每个节点的初始相对位置。
      *
-     * 示例:
+     * <p>示例:
      *
-     * 输入: head = 1->4->3->2->5->2, x = 3
-     * 输出: 1->2->2->4->3->5
+     * <p>输入: head = 1->4->3->2->5->2, x = 3 输出: 1->2->2->4->3->5
+     *
      * @param head
      * @param x
      * @return
@@ -1593,7 +1417,6 @@ public class ListTest {
         return listHead1.next;
     }
 
-
     @Test
     public void reverseKGroup2() {
         int k = 2;
@@ -1607,35 +1430,30 @@ public class ListTest {
         node2.next = node3;
         node3.next = node4;
         node4.next = node5;
-        //node5.next = node6;
+        // node5.next = node6;
 
-        ListNode result = reverseKGroup2(head,k);
-        logResult(logNode(result)) ;
+        ListNode result = reverseKGroup2(head, k);
+        logResult(logNode(result));
     }
     /**
-     * 25. K 个一组翻转链表
-     * 给你一个链表，每 k 个节点一组进行翻转，请你返回翻转后的链表。
+     * 25. K 个一组翻转链表 给你一个链表，每 k 个节点一组进行翻转，请你返回翻转后的链表。
      *
-     * k 是一个正整数，它的值小于或等于链表的长度。
+     * <p>k 是一个正整数，它的值小于或等于链表的长度。
      *
-     * 如果节点总数不是 k 的整数倍，那么请将最后剩余的节点保持原有顺序。
+     * <p>如果节点总数不是 k 的整数倍，那么请将最后剩余的节点保持原有顺序。
      *
+     * <p>示例：
      *
+     * <p>给你这个链表：1->2->3->4->5
      *
-     * 示例：
+     * <p>当 k = 2 时，应当返回: 2->1->4->3->5
      *
-     * 给你这个链表：1->2->3->4->5
+     * <p>当 k = 3 时，应当返回: 3->2->1->4->5
      *
-     * 当 k = 2 时，应当返回: 2->1->4->3->5
+     * <p>说明：
      *
-     * 当 k = 3 时，应当返回: 3->2->1->4->5
+     * <p>你的算法只能使用常数的额外空间。 你不能只是单纯的改变节点内部的值，而是需要实际进行节点交换。
      *
-     *
-     *
-     * 说明：
-     *
-     * 你的算法只能使用常数的额外空间。
-     * 你不能只是单纯的改变节点内部的值，而是需要实际进行节点交换。
      * @param head
      * @param k
      * @return
@@ -1662,32 +1480,26 @@ public class ListTest {
             node = next;
         }
 
-
-
         return root.next;
     }
 
-
     /**
      * 面试题 02.05. 链表求和
-     * 给定两个用链表表示的整数，每个节点包含一个数位。
      *
-     * 这些数位是反向存放的，也就是个位排在链表首部。
+     * <p>给定两个用链表表示的整数，每个节点包含一个数位。
      *
-     * 编写函数对这两个整数求和，并用链表形式返回结果。
+     * <p>这些数位是反向存放的，也就是个位排在链表首部。
      *
+     * <p>编写函数对这两个整数求和，并用链表形式返回结果。
      *
+     * <p>示例：
      *
-     * 示例：
+     * <p>输入：(7 -> 1 -> 6) + (5 -> 9 -> 2)，即617 + 295 输出：2 -> 1 -> 9，即912 进阶：假设这些数位是正向存放的，请再做一遍。
      *
-     * 输入：(7 -> 1 -> 6) + (5 -> 9 -> 2)，即617 + 295
-     * 输出：2 -> 1 -> 9，即912
-     * 进阶：假设这些数位是正向存放的，请再做一遍。
+     * <p>示例：
      *
-     * 示例：
+     * <p>输入：(6 -> 1 -> 7) + (2 -> 9 -> 5)，即617 + 295 输出：9 -> 1 -> 2，即912
      *
-     * 输入：(6 -> 1 -> 7) + (2 -> 9 -> 5)，即617 + 295
-     * 输出：9 -> 1 -> 2，即912
      * @param l1
      * @param l2
      * @return
@@ -1712,7 +1524,6 @@ public class ListTest {
                     node.next = l1;
                     break;
                 }
-
             }
             if (Objects.isNull(l1)) {
                 int val = l2.val + num;
@@ -1741,13 +1552,62 @@ public class ListTest {
             node = node.next;
             l1 = l1.next;
             l2 = l2.next;
-
         }
         if (num > 0) {
             node.next = new ListNode(num);
         }
 
-
         return head.next;
+    }
+
+    /**
+     * 面试题 02.08. 环路检测
+     *
+     * <p>给定一个有环链表，实现一个算法返回环路的开头节点。 有环链表的定义：在链表中某个节点的next元素指向在它前面出现过的节点，则表明该链表存在环路。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：head = [3,2,0,-4], pos = 1 输出：tail connects to node index 1 解释：链表中有一个环，其尾部连接到第二个节点。
+     *
+     * <p>示例 2：
+     *
+     * <p>输入：head = [1,2], pos = 0 输出：tail connects to node index 0 解释：链表中有一个环，其尾部连接到第一个节点。
+     *
+     * <p>示例 3：
+     *
+     * <p>输入：head = [1], pos = -1 输出：no cycle 解释：链表中没有环。
+     *
+     * <p>进阶： 你是否可以不用额外空间解决此题？
+     *
+     * @param head
+     * @return
+     */
+    public ListNode detectCycle(ListNode head) {
+        if (Objects.isNull(head)) {
+            return null;
+        }
+        // 思路, 快慢指针
+        ListNode fast = head;
+        ListNode slow = head;
+        boolean bCycle = false;
+        while (Objects.nonNull(fast) && Objects.nonNull(fast.next)) {
+            fast = fast.next.next;
+            slow = slow.next;
+            if (fast == slow) {
+                bCycle = true;
+                break;
+            }
+        }
+        if (!bCycle) {
+            return null;
+        }
+        ListNode node1 = head;
+        ListNode node2 = slow;
+        while (node1 != node2) {
+            node1 = node1.next;
+            node2 = node2.next;
+        }
+
+        return node1;
     }
 }

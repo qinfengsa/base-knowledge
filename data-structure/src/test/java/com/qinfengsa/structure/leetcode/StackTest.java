@@ -1,10 +1,8 @@
 package com.qinfengsa.structure.leetcode;
 
-import com.qinfengsa.base.NestedInteger;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.Test;
+import static com.qinfengsa.structure.util.LogUtils.logResult;
 
-import java.lang.reflect.Array;
+import com.qinfengsa.base.NestedInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Deque;
@@ -12,8 +10,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Stack;
-
-import static com.qinfengsa.structure.util.LogUtils.logResult;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.Test;
 
 /**
  * @author: qinfengsa
@@ -22,22 +20,21 @@ import static com.qinfengsa.structure.util.LogUtils.logResult;
 @Slf4j
 public class StackTest {
 
-
     @Test
     public void dailyTemperatures() {
         int[] nums = {73, 74, 75, 71, 69, 72, 76, 73};
         int[] result = dailyTemperatures(nums);
-        log.debug("result:{}",result);
+        log.debug("result:{}", result);
     }
 
-
     /**
-     * 每日温度
-     * 根据每日 气温 列表，请重新生成一个列表，对应位置的输入是你需要再等待多久温度才会升高的天数。如果之后都不会升高，请输入 0 来代替。
+     * 每日温度 根据每日 气温 列表，请重新生成一个列表，对应位置的输入是你需要再等待多久温度才会升高的天数。如果之后都不会升高，请输入 0 来代替。
      *
-     * 例如，给定一个列表 temperatures = [73, 74, 75, 71, 69, 72, 76, 73]，你的输出应该是 [1, 1, 4, 2, 1, 1, 0, 0]。
+     * <p>例如，给定一个列表 temperatures = [73, 74, 75, 71, 69, 72, 76, 73]，你的输出应该是 [1, 1, 4, 2, 1, 1, 0,
+     * 0]。
      *
-     * 提示：气温 列表长度的范围是 [1, 30000]。每个气温的值的都是 [30, 100] 范围内的整数。
+     * <p>提示：气温 列表长度的范围是 [1, 30000]。每个气温的值的都是 [30, 100] 范围内的整数。
+     *
      * @param T
      * @return
      */
@@ -48,7 +45,7 @@ public class StackTest {
 
         Stack<Integer> indexStack = new Stack<>();
 
-        for (int i = 0; i < len ; i++) {
+        for (int i = 0; i < len; i++) {
 
             // 当前温度大于栈顶温度，出栈，并且计算天数差 （下标之差）
             int num = T[i];
@@ -61,52 +58,33 @@ public class StackTest {
             indexStack.push(i);
         }
 
-
-
         return result;
-
     }
-
 
     @Test
     public void evalRPN() {
         String[] tokens = {"10", "6", "9", "3", "+", "-11", "*", "/", "*", "17", "+", "5", "+"};
         int result = evalRPN(tokens);
-        log.debug("result:{}",result);
+        log.debug("result:{}", result);
     }
 
     /**
-     *  逆波兰表达式求值
-     * 根据逆波兰表示法，求表达式的值。
+     * 逆波兰表达式求值 根据逆波兰表示法，求表达式的值。
      *
-     * 有效的运算符包括 +, -, *, / 。每个运算对象可以是整数，也可以是另一个逆波兰表达式。
+     * <p>有效的运算符包括 +, -, *, / 。每个运算对象可以是整数，也可以是另一个逆波兰表达式。
      *
-     * 说明：
+     * <p>说明：
      *
-     * 整数除法只保留整数部分。
-     * 给定逆波兰表达式总是有效的。换句话说，表达式总会得出有效数值且不存在除数为 0 的情况。
-     * 示例 1：
+     * <p>整数除法只保留整数部分。 给定逆波兰表达式总是有效的。换句话说，表达式总会得出有效数值且不存在除数为 0 的情况。 示例 1：
      *
-     * 输入: ["2", "1", "+", "3", "*"]
-     * 输出: 9
-     * 解释: ((2 + 1) * 3) = 9
-     * 示例 2：
+     * <p>输入: ["2", "1", "+", "3", "*"] 输出: 9 解释: ((2 + 1) * 3) = 9 示例 2：
      *
-     * 输入: ["4", "13", "5", "/", "+"]
-     * 输出: 6
-     * 解释: (4 + (13 / 5)) = 6
-     * 示例 3：
+     * <p>输入: ["4", "13", "5", "/", "+"] 输出: 6 解释: (4 + (13 / 5)) = 6 示例 3：
      *
-     * 输入: ["10", "6", "9", "3", "+", "-11", "*", "/", "*", "17", "+", "5", "+"]
-     * 输出: 22
-     * 解释:
-     *   ((10 * (6 / ((9 + 3) * -11))) + 17) + 5
-     * = ((10 * (6 / (12 * -11))) + 17) + 5
-     * = ((10 * (6 / -132)) + 17) + 5
-     * = ((10 * 0) + 17) + 5
-     * = (0 + 17) + 5
-     * = 17 + 5
-     * = 22
+     * <p>输入: ["10", "6", "9", "3", "+", "-11", "*", "/", "*", "17", "+", "5", "+"] 输出: 22 解释: ((10
+     * * (6 / ((9 + 3) * -11))) + 17) + 5 = ((10 * (6 / (12 * -11))) + 17) + 5 = ((10 * (6 / -132))
+     * + 17) + 5 = ((10 * 0) + 17) + 5 = (0 + 17) + 5 = 17 + 5 = 22
+     *
      * @param tokens
      * @return
      */
@@ -120,8 +98,8 @@ public class StackTest {
             if (isCalculate(s)) {
                 int b = stack.pop();
                 int a = stack.pop();
-                result = calculateNum(a,b,s);
-                stack.push( result);
+                result = calculateNum(a, b, s);
+                stack.push(result);
             } else {
                 stack.push(Integer.valueOf(s));
             }
@@ -139,56 +117,63 @@ public class StackTest {
         }
         char c = s.charAt(0);
         switch (c) {
-            case '+' :
-            case '-' :
-            case '*' :
-            case '/' : return true;
-            default:break;
+            case '+':
+            case '-':
+            case '*':
+            case '/':
+                return true;
+            default:
+                break;
         }
         return false;
     }
 
-
     /**
      * 计算
+     *
      * @param a
      * @param b
      * @param s
      * @return
      */
-    private int calculateNum(int a, int b ,String s) {
+    private int calculateNum(int a, int b, String s) {
         char c = s.charAt(0);
         int reuslt = 0;
         switch (c) {
-            case '+' : reuslt = a + b;break;
-            case '-' : reuslt = a - b;break;
-            case '*' : reuslt = a * b;break;
-            case '/' : reuslt = a / b;break;
-            default:break;
+            case '+':
+                reuslt = a + b;
+                break;
+            case '-':
+                reuslt = a - b;
+                break;
+            case '*':
+                reuslt = a * b;
+                break;
+            case '/':
+                reuslt = a / b;
+                break;
+            default:
+                break;
         }
         return reuslt;
     }
 
     @Test
-    public void longestValidParentheses( ) {
+    public void longestValidParentheses() {
         String s = "()(())";
         int result = longestValidParentheses(s);
-        log.debug("result:{}",result);
+        log.debug("result:{}", result);
     }
 
     /**
      * 给定一个只包含 '(' 和 ')' 的字符串，找出最长的包含有效括号的子串的长度。
      *
-     * 示例 1:
+     * <p>示例 1:
      *
-     * 输入: "(()"
-     * 输出: 2
-     * 解释: 最长有效括号子串为 "()"
-     * 示例 2:
+     * <p>输入: "(()" 输出: 2 解释: 最长有效括号子串为 "()" 示例 2:
      *
-     * 输入: ")()())"
-     * 输出: 4
-     * 解释: 最长有效括号子串为 "()()"
+     * <p>输入: ")()())" 输出: 4 解释: 最长有效括号子串为 "()()"
+     *
      * @param s
      * @return
      */
@@ -209,39 +194,38 @@ public class StackTest {
                 } else {
                     // 不为空，栈中的元素肯定是'('
                     list.pop();
-                    result = list.isEmpty() ? Math.max(result, i - start + 1) : Math.max(result, i - list.peek());
+                    result =
+                            list.isEmpty()
+                                    ? Math.max(result, i - start + 1)
+                                    : Math.max(result, i - list.peek());
                 }
-
             }
-
         }
 
         return result;
     }
 
-
     @Test
     public void decodeString() {
         String s = "3[a2[c]]";
         String result = decodeString(s);
-        log.debug("result :{}",result);
+        log.debug("result :{}", result);
     }
 
     /**
-     * 394	 字符串解码
-     * 给定一个经过编码的字符串，返回它解码后的字符串。
+     * 394 字符串解码 给定一个经过编码的字符串，返回它解码后的字符串。
      *
-     * 编码规则为: k[encoded_string]，表示其中方括号内部的 encoded_string 正好重复 k 次。注意 k 保证为正整数。
+     * <p>编码规则为: k[encoded_string]，表示其中方括号内部的 encoded_string 正好重复 k 次。注意 k 保证为正整数。
      *
-     * 你可以认为输入字符串总是有效的；输入字符串中没有额外的空格，且输入的方括号总是符合格式要求的。
+     * <p>你可以认为输入字符串总是有效的；输入字符串中没有额外的空格，且输入的方括号总是符合格式要求的。
      *
-     * 此外，你可以认为原始数据不包含数字，所有的数字只表示重复的次数 k ，例如不会出现像 3a 或 2[4] 的输入。
+     * <p>此外，你可以认为原始数据不包含数字，所有的数字只表示重复的次数 k ，例如不会出现像 3a 或 2[4] 的输入。
      *
-     * 示例:
+     * <p>示例:
      *
-     * s = "3[a]2[bc]", 返回 "aaabcbc".
-     * s = "3[a2[c]]", 返回 "accaccacc".
-     * s = "2[abc]3[cd]ef", 返回 "abcabccdcdcdef".
+     * <p>s = "3[a]2[bc]", 返回 "aaabcbc". s = "3[a2[c]]", 返回 "accaccacc". s = "2[abc]3[cd]ef", 返回
+     * "abcabccdcdcdef".
+     *
      * @param s
      * @return
      */
@@ -275,9 +259,6 @@ public class StackTest {
         return result.toString();
     }
 
-
-
-
     public String decodeString2(String s) {
 
         StringBuilder result = new StringBuilder();
@@ -285,79 +266,41 @@ public class StackTest {
         Deque<Integer> numStack = new LinkedList<>();
         Deque<String> strStack = new LinkedList<>();
 
-
         int num = 0;
-        for(Character c : s.toCharArray()) {
-            if(c == '[') {
+        for (Character c : s.toCharArray()) {
+            if (c == '[') {
                 numStack.addLast(num);
                 strStack.addLast(result.toString());
                 num = 0;
                 result = new StringBuilder();
-            }  else if(c == ']') {
+            } else if (c == ']') {
                 StringBuilder tmp = new StringBuilder();
                 int count = numStack.removeLast();
-                for(int i = 0; i < count; i++) {
+                for (int i = 0; i < count; i++) {
                     tmp.append(result);
                 }
                 result = new StringBuilder(strStack.removeLast() + tmp);
-            } else if(c >= '0' && c <= '9') {
+            } else if (c >= '0' && c <= '9') {
                 num = num * 10 + Integer.parseInt(c + "");
-            }
-            else result.append(c);
+            } else result.append(c);
         }
-        /**for (int i = 0; i < s.length(); i++) {
-            char c = s.charAt(i);
-            if (c == '[') {
-                Integer num = Integer.valueOf(s.substring(numStart,i));
-                numStack.push(num);
-                numStart = -1;
-                strStart = i + 1;
-            } else if (c == ']') {
-                if (strStart != -1) {
-                    String str = s.substring(strStart,i);
-                    strStack.push(str);
-                    strStart = -1;
-                }
-
-                int num = numStack.pop();
-                StringBuilder sub = new StringBuilder();
-                // 循环num次，
-                String top = strStack.pop();
-                for (int j = 0; j < num; j++) {
-                    sub.append(top);
-                }
-                // 如果 strStack 为空, 把 sub 加到 result 上
-                if (strStack.isEmpty()) {
-                    result.append(sub);
-                } else {
-                    // strStack 不为空
-                    String str1 = strStack.pop();
-                    sub.insert(0,str1);
-                    strStack.push(sub.toString());
-                }
-
-
-            } else if (isNumber(c)) {
-                if (numStart == -1) {
-                    numStart = i;
-                }
-                if (strStart != -1) {
-                    String str = s.substring(strStart,i);
-                    strStack.push(str);
-                    strStart = -1;
-                }
-            } else {
-                if (numStack.isEmpty()) {
-                    result.append(c);
-                } else if (strStack.size() == numStack.size() ) {
-                    StringBuilder pop = new StringBuilder(strStack.pop());
-                    pop.append(c);
-                    strStack.push(pop.toString());
-                }
-            }
-        }*/
-
-
+        /**
+         * for (int i = 0; i < s.length(); i++) { char c = s.charAt(i); if (c == '[') { Integer num
+         * = Integer.valueOf(s.substring(numStart,i)); numStack.push(num); numStart = -1; strStart =
+         * i + 1; } else if (c == ']') { if (strStart != -1) { String str = s.substring(strStart,i);
+         * strStack.push(str); strStart = -1; }
+         *
+         * <p>int num = numStack.pop(); StringBuilder sub = new StringBuilder(); // 循环num次， String
+         * top = strStack.pop(); for (int j = 0; j < num; j++) { sub.append(top); } // 如果 strStack
+         * 为空, 把 sub 加到 result 上 if (strStack.isEmpty()) { result.append(sub); } else { // strStack
+         * 不为空 String str1 = strStack.pop(); sub.insert(0,str1); strStack.push(sub.toString()); }
+         *
+         * <p>} else if (isNumber(c)) { if (numStart == -1) { numStart = i; } if (strStart != -1) {
+         * String str = s.substring(strStart,i); strStack.push(str); strStart = -1; } } else { if
+         * (numStack.isEmpty()) { result.append(c); } else if (strStack.size() == numStack.size() )
+         * { StringBuilder pop = new StringBuilder(strStack.pop()); pop.append(c);
+         * strStack.push(pop.toString()); } } }
+         */
         return result.toString();
     }
 
@@ -372,56 +315,36 @@ public class StackTest {
             case '6':
             case '7':
             case '8':
-            case '9': return true;
+            case '9':
+                return true;
         }
         return false;
     }
 
     @Test
     public void calPoints() {
-        String[] ops = {"5","-2","4","C","D","9","+","+"};
+        String[] ops = {"5", "-2", "4", "C", "D", "9", "+", "+"};
         logResult(calPoints(ops));
     }
 
     /**
-     * 682. 棒球比赛
-     * 你现在是棒球比赛记录员。
-     * 给定一个字符串列表，每个字符串可以是以下四种类型之一：
-     * 1.整数（一轮的得分）：直接表示您在本轮中获得的积分数。
-     * 2. "+"（一轮的得分）：表示本轮获得的得分是前两轮有效 回合得分的总和。
-     * 3. "D"（一轮的得分）：表示本轮获得的得分是前一轮有效 回合得分的两倍。
-     * 4. "C"（一个操作，这不是一个回合的分数）：表示您获得的最后一个有效 回合的分数是无效的，应该被移除。
+     * 682. 棒球比赛 你现在是棒球比赛记录员。 给定一个字符串列表，每个字符串可以是以下四种类型之一： 1.整数（一轮的得分）：直接表示您在本轮中获得的积分数。 2.
+     * "+"（一轮的得分）：表示本轮获得的得分是前两轮有效 回合得分的总和。 3. "D"（一轮的得分）：表示本轮获得的得分是前一轮有效 回合得分的两倍。 4.
+     * "C"（一个操作，这不是一个回合的分数）：表示您获得的最后一个有效 回合的分数是无效的，应该被移除。
      *
-     * 每一轮的操作都是永久性的，可能会对前一轮和后一轮产生影响。
-     * 你需要返回你在所有回合中得分的总和。
+     * <p>每一轮的操作都是永久性的，可能会对前一轮和后一轮产生影响。 你需要返回你在所有回合中得分的总和。
      *
-     * 示例 1:
+     * <p>示例 1:
      *
-     * 输入: ["5","2","C","D","+"]
-     * 输出: 30
-     * 解释:
-     * 第1轮：你可以得到5分。总和是：5。
-     * 第2轮：你可以得到2分。总和是：7。
-     * 操作1：第2轮的数据无效。总和是：5。
-     * 第3轮：你可以得到10分（第2轮的数据已被删除）。总数是：15。
-     * 第4轮：你可以得到5 + 10 = 15分。总数是：30。
-     * 示例 2:
+     * <p>输入: ["5","2","C","D","+"] 输出: 30 解释: 第1轮：你可以得到5分。总和是：5。 第2轮：你可以得到2分。总和是：7。
+     * 操作1：第2轮的数据无效。总和是：5。 第3轮：你可以得到10分（第2轮的数据已被删除）。总数是：15。 第4轮：你可以得到5 + 10 = 15分。总数是：30。 示例 2:
      *
-     * 输入: ["5","-2","4","C","D","9","+","+"]
-     * 输出: 27
-     * 解释:
-     * 第1轮：你可以得到5分。总和是：5。
-     * 第2轮：你可以得到-2分。总数是：3。
-     * 第3轮：你可以得到4分。总和是：7。
-     * 操作1：第3轮的数据无效。总数是：3。
-     * 第4轮：你可以得到-4分（第三轮的数据已被删除）。总和是：-1。
-     * 第5轮：你可以得到9分。总数是：8。
-     * 第6轮：你可以得到-4 + 9 = 5分。总数是13。
-     * 第7轮：你可以得到9 + 5 = 14分。总数是27。
-     * 注意：
+     * <p>输入: ["5","-2","4","C","D","9","+","+"] 输出: 27 解释: 第1轮：你可以得到5分。总和是：5。 第2轮：你可以得到-2分。总数是：3。
+     * 第3轮：你可以得到4分。总和是：7。 操作1：第3轮的数据无效。总数是：3。 第4轮：你可以得到-4分（第三轮的数据已被删除）。总和是：-1。 第5轮：你可以得到9分。总数是：8。
+     * 第6轮：你可以得到-4 + 9 = 5分。总数是13。 第7轮：你可以得到9 + 5 = 14分。总数是27。 注意：
      *
-     * 输入列表的大小将介于1和1000之间。
-     * 列表中的每个整数都将介于-30000和30000之间。
+     * <p>输入列表的大小将介于1和1000之间。 列表中的每个整数都将介于-30000和30000之间。
+     *
      * @param ops
      * @return
      */
@@ -430,18 +353,18 @@ public class StackTest {
         Deque<Integer> stack = new LinkedList<>();
 
         for (String op : ops) {
-            if (Objects.equals(op,"C")) {
+            if (Objects.equals(op, "C")) {
                 // 移除 前一回合
                 if (!stack.isEmpty()) {
                     stack.pop();
                 }
-            } else if (Objects.equals(op,"D")) {
+            } else if (Objects.equals(op, "D")) {
                 // 前一轮有效 回合得分的两倍
                 if (!stack.isEmpty()) {
                     Integer num = stack.peek();
-                    stack.push(2*num);
+                    stack.push(2 * num);
                 }
-            } else if (Objects.equals(op,"+")) {
+            } else if (Objects.equals(op, "+")) {
                 // 前两轮有效 回合得分的总和
                 if (!stack.isEmpty()) {
                     Integer num1 = stack.pop();
@@ -452,20 +375,18 @@ public class StackTest {
                     }
                     Integer num2 = stack.peek();
                     stack.push(num1);
-                    stack.push(num1+num2);
+                    stack.push(num1 + num2);
                 }
             } else {
-                stack.push(Integer.valueOf(op) );
+                stack.push(Integer.valueOf(op));
             }
         }
 
         while (!stack.isEmpty()) {
             result += stack.pop();
-
         }
         return result;
     }
-
 
     @Test
     public void removeOuterParentheses() {
@@ -474,46 +395,29 @@ public class StackTest {
     }
 
     /**
-     * 1021. 删除最外层的括号
-     * 有效括号字符串为空 ("")、"(" + A + ")" 或 A + B，
-     * 其中 A 和 B 都是有效的括号字符串，+ 代表字符串的连接。例如，""，"()"，"(())()" 和 "(()(()))" 都是有效的括号字符串。
+     * 1021. 删除最外层的括号 有效括号字符串为空 ("")、"(" + A + ")" 或 A + B， 其中 A 和 B 都是有效的括号字符串，+
+     * 代表字符串的连接。例如，""，"()"，"(())()" 和 "(()(()))" 都是有效的括号字符串。
      *
-     * 如果有效字符串 S 非空，且不存在将其拆分为 S = A+B 的方法，我们称其为原语（primitive），其中 A 和 B 都是非空有效括号字符串。
+     * <p>如果有效字符串 S 非空，且不存在将其拆分为 S = A+B 的方法，我们称其为原语（primitive），其中 A 和 B 都是非空有效括号字符串。
      *
-     * 给出一个非空有效字符串 S，考虑将其进行原语化分解，使得：S = P_1 + P_2 + ... + P_k，其中 P_i 是有效括号字符串原语。
+     * <p>给出一个非空有效字符串 S，考虑将其进行原语化分解，使得：S = P_1 + P_2 + ... + P_k，其中 P_i 是有效括号字符串原语。
      *
-     * 对 S 进行原语化分解，删除分解中每个原语字符串的最外层括号，返回 S 。
+     * <p>对 S 进行原语化分解，删除分解中每个原语字符串的最外层括号，返回 S 。
      *
+     * <p>示例 1：
      *
+     * <p>输入："(()())(())" 输出："()()()" 解释： 输入字符串为 "(()())(())"，原语化分解得到 "(()())" + "(())"，
+     * 删除每个部分中的最外层括号后得到 "()()" + "()" = "()()()"。 示例 2：
      *
-     * 示例 1：
+     * <p>输入："(()())(())(()(()))" 输出："()()()()(())" 解释： 输入字符串为 "(()())(())(()(()))"，原语化分解得到 "(()())"
+     * + "(())" + "(()(()))"， 删除每个部分中的最外层括号后得到 "()()" + "()" + "()(())" = "()()()()(())"。 示例 3：
      *
-     * 输入："(()())(())"
-     * 输出："()()()"
-     * 解释：
-     * 输入字符串为 "(()())(())"，原语化分解得到 "(()())" + "(())"，
-     * 删除每个部分中的最外层括号后得到 "()()" + "()" = "()()()"。
-     * 示例 2：
+     * <p>输入："()()" 输出："" 解释： 输入字符串为 "()()"，原语化分解得到 "()" + "()"， 删除每个部分中的最外层括号后得到 "" + "" = ""。
      *
-     * 输入："(()())(())(()(()))"
-     * 输出："()()()()(())"
-     * 解释：
-     * 输入字符串为 "(()())(())(()(()))"，原语化分解得到 "(()())" + "(())" + "(()(()))"，
-     * 删除每个部分中的最外层括号后得到 "()()" + "()" + "()(())" = "()()()()(())"。
-     * 示例 3：
+     * <p>提示：
      *
-     * 输入："()()"
-     * 输出：""
-     * 解释：
-     * 输入字符串为 "()()"，原语化分解得到 "()" + "()"，
-     * 删除每个部分中的最外层括号后得到 "" + "" = ""。
+     * <p>S.length <= 10000 S[i] 为 "(" 或 ")" S 是一个有效括号字符串
      *
-     *
-     * 提示：
-     *
-     * S.length <= 10000
-     * S[i] 为 "(" 或 ")"
-     * S 是一个有效括号字符串
      * @param S
      * @return
      */
@@ -536,50 +440,39 @@ public class StackTest {
         }
         return sb.toString();*/
         StringBuilder sb = new StringBuilder();
-        int count =0;
-        for(char c:S.toCharArray()){
+        int count = 0;
+        for (char c : S.toCharArray()) {
 
-            if(c==')') count--;
-            if(count>0)sb.append(c);
-            if(c=='(') count++;
+            if (c == ')') count--;
+            if (count > 0) sb.append(c);
+            if (c == '(') count++;
         }
         return sb.toString();
     }
 
-
     @Test
     public void validateStackSequences() {
-        int[] pushed = {1,2,3,4,5}, popped = {4,5,3,2,1};
+        int[] pushed = {1, 2, 3, 4, 5}, popped = {4, 5, 3, 2, 1};
 
-        logResult(validateStackSequences(pushed,popped));
+        logResult(validateStackSequences(pushed, popped));
     }
 
     /**
-     * 面试题31. 栈的压入、弹出序列
-     * 输入两个整数序列，第一个序列表示栈的压入顺序，请判断第二个序列是否为该栈的弹出顺序。假设压入栈的所有数字均不相等。例如，序列 {1,2,3,4,5} 是某栈的压栈序列，序列 {4,5,3,2,1} 是该压栈序列对应的一个弹出序列，但 {4,3,5,1,2} 就不可能是该压栈序列的弹出序列。
+     * 面试题31. 栈的压入、弹出序列 输入两个整数序列，第一个序列表示栈的压入顺序，请判断第二个序列是否为该栈的弹出顺序。假设压入栈的所有数字均不相等。例如，序列 {1,2,3,4,5}
+     * 是某栈的压栈序列，序列 {4,5,3,2,1} 是该压栈序列对应的一个弹出序列，但 {4,3,5,1,2} 就不可能是该压栈序列的弹出序列。
      *
+     * <p>示例 1：
      *
+     * <p>输入：pushed = [1,2,3,4,5], popped = [4,5,3,2,1] 输出：true 解释：我们可以按以下顺序执行： push(1), push(2),
+     * push(3), push(4), pop() -> 4, push(5), pop() -> 5, pop() -> 3, pop() -> 2, pop() -> 1 示例 2：
      *
-     * 示例 1：
+     * <p>输入：pushed = [1,2,3,4,5], popped = [4,3,5,1,2] 输出：false 解释：1 不能在 2 之前弹出。
      *
-     * 输入：pushed = [1,2,3,4,5], popped = [4,5,3,2,1]
-     * 输出：true
-     * 解释：我们可以按以下顺序执行：
-     * push(1), push(2), push(3), push(4), pop() -> 4,
-     * push(5), pop() -> 5, pop() -> 3, pop() -> 2, pop() -> 1
-     * 示例 2：
+     * <p>提示：
      *
-     * 输入：pushed = [1,2,3,4,5], popped = [4,3,5,1,2]
-     * 输出：false
-     * 解释：1 不能在 2 之前弹出。
+     * <p>0 <= pushed.length == popped.length <= 1000 0 <= pushed[i], popped[i] < 1000 pushed 是
+     * popped 的排列。 注意：本题与主站 946 题相同：https://leetcode-cn.com/problems/validate-stack-sequences/
      *
-     *
-     * 提示：
-     *
-     * 0 <= pushed.length == popped.length <= 1000
-     * 0 <= pushed[i], popped[i] < 1000
-     * pushed 是 popped 的排列。
-     * 注意：本题与主站 946 题相同：https://leetcode-cn.com/problems/validate-stack-sequences/
      * @param pushed
      * @param popped
      * @return
@@ -597,62 +490,42 @@ public class StackTest {
         return stack.isEmpty();
     }
 
-
     /**
-     * 5404. 用栈操作构建数组
-     * 给你一个目标数组 target 和一个整数 n。每次迭代，需要从  list = {1,2,3..., n} 中依序读取一个数字。
+     * 5404. 用栈操作构建数组 给你一个目标数组 target 和一个整数 n。每次迭代，需要从 list = {1,2,3..., n} 中依序读取一个数字。
      *
-     * 请使用下述操作来构建目标数组 target ：
+     * <p>请使用下述操作来构建目标数组 target ：
      *
-     * Push：从 list 中读取一个新元素， 并将其推入数组中。
-     * Pop：删除数组中的最后一个元素。
-     * 如果目标数组构建完成，就停止读取更多元素。
+     * <p>Push：从 list 中读取一个新元素， 并将其推入数组中。 Pop：删除数组中的最后一个元素。 如果目标数组构建完成，就停止读取更多元素。
      * 题目数据保证目标数组严格递增，并且只包含 1 到 n 之间的数字。
      *
-     * 请返回构建目标数组所用的操作序列。
+     * <p>请返回构建目标数组所用的操作序列。
      *
-     * 题目数据保证答案是唯一的。
+     * <p>题目数据保证答案是唯一的。
      *
+     * <p>示例 1：
      *
+     * <p>输入：target = [1,3], n = 3 输出：["Push","Push","Pop","Push"] 解释： 读取 1 并自动推入数组 -> [1] 读取 2
+     * 并自动推入数组，然后删除它 -> [1] 读取 3 并自动推入数组 -> [1,3] 示例 2：
      *
-     * 示例 1：
+     * <p>输入：target = [1,2,3], n = 3 输出：["Push","Push","Push"] 示例 3：
      *
-     * 输入：target = [1,3], n = 3
-     * 输出：["Push","Push","Pop","Push"]
-     * 解释：
-     * 读取 1 并自动推入数组 -> [1]
-     * 读取 2 并自动推入数组，然后删除它 -> [1]
-     * 读取 3 并自动推入数组 -> [1,3]
-     * 示例 2：
+     * <p>输入：target = [1,2], n = 4 输出：["Push","Push"] 解释：只需要读取前 2 个数字就可以停止。 示例 4：
      *
-     * 输入：target = [1,2,3], n = 3
-     * 输出：["Push","Push","Push"]
-     * 示例 3：
+     * <p>输入：target = [2,3,4], n = 4 输出：["Push","Pop","Push","Push","Push"]
      *
-     * 输入：target = [1,2], n = 4
-     * 输出：["Push","Push"]
-     * 解释：只需要读取前 2 个数字就可以停止。
-     * 示例 4：
+     * <p>提示：
      *
-     * 输入：target = [2,3,4], n = 4
-     * 输出：["Push","Pop","Push","Push","Push"]
+     * <p>1 <= target.length <= 100 1 <= target[i] <= 100 1 <= n <= 100 target 是严格递增的
      *
-     *
-     * 提示：
-     *
-     * 1 <= target.length <= 100
-     * 1 <= target[i] <= 100
-     * 1 <= n <= 100
-     * target 是严格递增的
      * @param target
      * @param n
      * @return
      */
     public List<String> buildArray(int[] target, int n) {
-        List<String > result = new ArrayList<>();
+        List<String> result = new ArrayList<>();
         int index = 0;
         int len = target.length;
-        for (int i = 1; i <= n ; i++) {
+        for (int i = 1; i <= n; i++) {
             if (index == len) {
                 break;
             }
@@ -663,48 +536,40 @@ public class StackTest {
                 result.add("Push");
                 result.add("Pop");
             }
-
         }
         return result;
     }
 
     @Test
-    public void deserialize( ) {
+    public void deserialize() {
         String s = "[123,456,[788,799,833],[[]],10,[]]";
         logResult(deserialize(s));
     }
 
     /**
-     * 385. 迷你语法分析器
-     * 给定一个用字符串表示的整数的嵌套列表，实现一个解析它的语法分析器。
+     * 385. 迷你语法分析器 给定一个用字符串表示的整数的嵌套列表，实现一个解析它的语法分析器。
      *
-     * 列表中的每个元素只可能是整数或整数嵌套列表
+     * <p>列表中的每个元素只可能是整数或整数嵌套列表
      *
-     * 提示：你可以假定这些字符串都是格式良好的：
+     * <p>提示：你可以假定这些字符串都是格式良好的：
      *
-     * 字符串非空
-     * 字符串不包含空格
-     * 字符串只包含数字0-9, [, - ,, ]
+     * <p>字符串非空 字符串不包含空格 字符串只包含数字0-9, [, - ,, ]
      *
+     * <p>示例 1：
      *
-     * 示例 1：
+     * <p>给定 s = "324",
      *
-     * 给定 s = "324",
+     * <p>你应该返回一个 NestedInteger 对象，其中只包含整数值 324。
      *
-     * 你应该返回一个 NestedInteger 对象，其中只包含整数值 324。
+     * <p>示例 2：
      *
+     * <p>给定 s = "[123,[456,[789]]]",
      *
-     * 示例 2：
+     * <p>返回一个 NestedInteger 对象包含一个有两个元素的嵌套列表：
      *
-     * 给定 s = "[123,[456,[789]]]",
+     * <p>1. 一个 integer 包含值 123 2. 一个包含两个元素的嵌套列表： i. 一个 integer 包含值 456 ii. 一个包含一个元素的嵌套列表 a. 一个
+     * integer 包含值 789
      *
-     * 返回一个 NestedInteger 对象包含一个有两个元素的嵌套列表：
-     *
-     * 1. 一个 integer 包含值 123
-     * 2. 一个包含两个元素的嵌套列表：
-     *     i.  一个 integer 包含值 456
-     *     ii. 一个包含一个元素的嵌套列表
-     *          a. 一个 integer 包含值 789
      * @param s
      */
     public NestedInteger deserialize(String s) {
@@ -713,39 +578,37 @@ public class StackTest {
 
         boolean positive = true;
 
-
         NestedInteger result = new NestedInteger();
         int num = 0;
         // 思路,使用栈
-        for (int i =0; i < s.length(); i++) {
-            char c= s.charAt(i);
-            if (c == '[' ) {
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c == '[') {
                 result = new NestedInteger();
                 stack.offerLast(result);
             } else if (c == ']' || c == ',') {
-                if (isNumber(s.charAt(i -1))) {
-                    NestedInteger ni = new NestedInteger(positive?num: -num);
+                if (isNumber(s.charAt(i - 1))) {
+                    NestedInteger ni = new NestedInteger(positive ? num : -num);
                     result = stack.peekLast();
                     result.add(ni);
                 }
 
-                if (c == ']' &&  stack.size() > 1) {
+                if (c == ']' && stack.size() > 1) {
                     NestedInteger ni = stack.pollLast();
                     result = stack.peekLast();
                     result.add(ni);
-
                 }
 
                 num = 0;
                 positive = true;
             } else if (isNumber(c)) {
                 num = num * 10 + (c - '0');
-            }  else if (c == '-') {
+            } else if (c == '-') {
                 positive = false;
             }
         }
         if (num > 0) {
-            result = new NestedInteger(positive?num: -num);
+            result = new NestedInteger(positive ? num : -num);
         }
         return result;
         /*while (index < s.length()) {
@@ -769,38 +632,33 @@ public class StackTest {
         return c >= '0' && c <= '9';
     }*/
 
-
     @Test
     public void nextGreaterElements() {
-        int[] nums = {1,2,1,4,5,1};
+        int[] nums = {1, 2, 1, 4, 5, 1};
 
         int[] result = nextGreaterElements(nums);
-        log.debug("result:{}",result);
+        log.debug("result:{}", result);
     }
 
     /**
-     * 503. 下一个更大元素 II
-     * 给定一个循环数组（最后一个元素的下一个元素是数组的第一个元素），输出每个元素的下一个更大元素。
-     * 数字 x 的下一个更大的元素是按数组遍历顺序，这个数字之后的第一个比它更大的数，这意味着你应该循环地搜索它的下一个更大的数。如果不存在，则输出 -1。
+     * 503. 下一个更大元素 II 给定一个循环数组（最后一个元素的下一个元素是数组的第一个元素），输出每个元素的下一个更大元素。 数字 x
+     * 的下一个更大的元素是按数组遍历顺序，这个数字之后的第一个比它更大的数，这意味着你应该循环地搜索它的下一个更大的数。如果不存在，则输出 -1。
      *
-     * 示例 1:
+     * <p>示例 1:
      *
-     * 输入: [1,2,1]
-     * 输出: [2,-1,2]
-     * 解释: 第一个 1 的下一个更大的数是 2；
-     * 数字 2 找不到下一个更大的数；
-     * 第二个 1 的下一个最大的数需要循环搜索，结果也是 2。
-     * 注意: 输入数组的长度不会超过 10000。
+     * <p>输入: [1,2,1] 输出: [2,-1,2] 解释: 第一个 1 的下一个更大的数是 2； 数字 2 找不到下一个更大的数； 第二个 1 的下一个最大的数需要循环搜索，结果也是
+     * 2。 注意: 输入数组的长度不会超过 10000。
+     *
      * @param nums
      * @return
      */
     public int[] nextGreaterElements(int[] nums) {
         int[] result = new int[nums.length];
         Deque<Integer> stack = new LinkedList<>();
-        Arrays.fill(result,-1);
+        Arrays.fill(result, -1);
         for (int i = 0; i < 2 * nums.length; i++) {
             int num = nums[i % nums.length];
-            log.debug("num:{}",num);
+            log.debug("num:{}", num);
             while (!stack.isEmpty() && nums[stack.peekLast()] < num) {
                 int index = stack.pollLast();
                 result[index] = num;
@@ -809,20 +667,74 @@ public class StackTest {
         }
 
         /**
-         * for (int i = 2 * nums.length - 1; i >= 0; i--) {
-         *             int index = i % nums.length;
-         *             int num = nums[index];
-         *             log.debug("num:{}",num);
-         *             while (!stack.isEmpty() && nums[stack.peekLast()] <= num) {
-         *                 stack.pollLast();
-         *             }
-         *             result[index] = stack.isEmpty() ? - 1 : nums[stack.peekLast()];
-         *             stack.offerLast(index);
-         *         }
+         * for (int i = 2 * nums.length - 1; i >= 0; i--) { int index = i % nums.length; int num =
+         * nums[index]; log.debug("num:{}",num); while (!stack.isEmpty() && nums[stack.peekLast()]
+         * <= num) { stack.pollLast(); } result[index] = stack.isEmpty() ? - 1 :
+         * nums[stack.peekLast()]; stack.offerLast(index); }
          */
-
-
         return result;
+    }
 
+    @Test
+    public void largestRectangleArea() {
+        int[] heights = {2, 1, 5, 6, 2, 3};
+        logResult(largestRectangleArea(heights));
+    }
+    /**
+     * 84. 柱状图中最大的矩形
+     *
+     * <p>给定 n 个非负整数，用来表示柱状图中各个柱子的高度。每个柱子彼此相邻，且宽度为 1 。
+     *
+     * <p>求在该柱状图中，能够勾勒出来的矩形的最大面积。
+     *
+     * <p>以上是柱状图的示例，其中每个柱子的宽度为 1，给定的高度为 [2,1,5,6,2,3]。
+     *
+     * <p>图中阴影部分为所能勾勒出的最大矩形面积，其面积为 10 个单位。
+     *
+     * <p>示例:
+     *
+     * <p>输入: [2,1,5,6,2,3] 输出: 10
+     *
+     * @param heights
+     * @return
+     */
+    public int largestRectangleArea(int[] heights) {
+        int len = heights.length;
+        if (len == 0) {
+            return 0;
+        }
+        if (len == 1) {
+            return heights[0];
+        }
+        Deque<Integer> stack = new LinkedList<>();
+
+        // 如果当前高度比栈顶的高度小, 出栈, 把 大的移走
+
+        // 2,1,5,6,2,3
+
+        stack.push(-1);
+        int max = 0;
+        for (int i = 0; i < heights.length; i++) {
+            int height = heights[i];
+            while (stack.peek() != -1 && heights[stack.peek()] >= height) {
+                int index = stack.pop();
+                int area = (i - stack.peek() - 1) * heights[index];
+                log.debug("area:{} ,i :{}, index :{}", area, i, index);
+
+                max = Math.max(area, max);
+            }
+            stack.push(i);
+        }
+        logResult(stack);
+        while (!stack.isEmpty() && stack.peek() != -1) {
+            int index = stack.pop();
+            int area = (len - stack.peek() - 1) * heights[index];
+            log.debug("area:{}", area);
+            max = Math.max(area, max);
+        }
+
+        log.debug("max:{}", max);
+
+        return max;
     }
 }

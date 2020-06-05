@@ -1,6 +1,7 @@
 package com.qinfengsa.structure.leetcode;
 
 import static com.qinfengsa.structure.util.LogUtils.logResult;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -2889,7 +2890,9 @@ public class ArrayTest {
     }
 
     /**
-     * 接雨水 给定 n 个非负整数表示每个宽度为 1 的柱子的高度图，计算按此排列的柱子，下雨之后能接多少雨水。 上面是由数组 [0,1,0,2,1,0,1,3,2,1,2,1]
+     * 接雨水
+     *
+     * <p>给定 n 个非负整数表示每个宽度为 1 的柱子的高度图，计算按此排列的柱子，下雨之后能接多少雨水。 上面是由数组 [0,1,0,2,1,0,1,3,2,1,2,1]
      * 表示的高度图，在这种情况下，可以接 6 个单位的雨水（蓝色部分表示雨水）。 感谢 Marcos 贡献此图。
      *
      * <p>示例:
@@ -10125,8 +10128,18 @@ public class ArrayTest {
         return result;
     }
 
+    @Test
+    public void smallestK() {
+        int[] arr = {1, 3, 5, 7, 2, 4, 6, 8};
+        int k = 4;
+
+        log.debug("result:{}", smallestK(arr, k));
+    }
+
     /**
-     * 面试题 17.14. 最小K个数 设计一个算法，找出数组中最小的k个数。以任意顺序返回这k个数均可。
+     * 面试题 17.14. 最小K个数
+     *
+     * <p>设计一个算法，找出数组中最小的k个数。以任意顺序返回这k个数均可。
      *
      * <p>示例：
      *
@@ -10139,10 +10152,39 @@ public class ArrayTest {
      * @return
      */
     public int[] smallestK(int[] arr, int k) {
-        int[] result = new int[k];
-
+        if (arr.length == 0 || k == 0) {
+            return new int[0];
+        }
         // 快速排序思路
 
-        return result;
+        smallestK(arr, k - 1, 0, arr.length - 1);
+        log.debug("arr:{}", arr);
+        return Arrays.copyOf(arr, k);
+    }
+
+    private void smallestK(int[] arr, int k, int start, int end) {
+        int left = start, right = end;
+        int num = arr[left];
+        // 选择主元 num, 从后往前找到第一个比num小的元素
+        // 从前往后找到第一个比num大的元素
+        while (left < right) {
+
+            while (left < right && arr[right] >= num) {
+                right--;
+            }
+            arr[left] = arr[right];
+            while (left < right && arr[left] < num) {
+                left++;
+            }
+            arr[right] = arr[left];
+        }
+
+        arr[left] = num;
+        if (k < left) {
+            smallestK(arr, k, start, left - 1);
+        }
+        if (k > left) {
+            smallestK(arr, k, left + 1, end);
+        }
     }
 }
