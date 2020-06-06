@@ -10187,4 +10187,143 @@ public class ArrayTest {
             smallestK(arr, k, left + 1, end);
         }
     }
+
+    @Test
+    public void findSwapValues() {
+        int[] array1 = {4, 1, 2, 1, 1, 2};
+        int[] array2 = {3, 6, 3, 3};
+
+        logResult(findSwapValues(array1, array2));
+    }
+
+    /**
+     * 面试题 16.21. 交换和
+     *
+     * <p>给定两个整数数组，请交换一对数值（每个数组中取一个数值），使得两个数组所有元素的和相等。
+     *
+     * <p>返回一个数组，第一个元素是第一个数组中要交换的元素，第二个元素是第二个数组中要交换的元素。若有多个答案，返回任意一个均可。 若无满足条件的数值，返回空数组。
+     *
+     * <p>示例:
+     *
+     * <p>输入: array1 = [4, 1, 2, 1, 1, 2], array2 = [3, 6, 3, 3] 输出: [1, 3] 示例:
+     *
+     * <p>输入: array1 = [1, 2, 3], array2 = [4, 5, 6] 输出: [] 提示：
+     *
+     * <p>1 <= array1.length, array2.length <= 100000
+     *
+     * @param array1
+     * @param array2
+     * @return
+     */
+    public int[] findSwapValues(int[] array1, int[] array2) {
+        int sum1 = 0, sum2 = 0;
+        Set<Integer> set = new HashSet<>();
+        for (int num : array1) {
+            sum1 += num;
+        }
+        for (int num : array2) {
+            sum2 += num;
+            set.add(num);
+        }
+        int sum = sum1 + sum2;
+        if ((sum & 1) == 1) {
+            return new int[0];
+        }
+        int helf = sum >> 1;
+
+        int diff = helf - sum1;
+        boolean flag = false;
+        int[] result = new int[2];
+        for (int num : array1) {
+
+            if (set.contains(num + diff)) {
+                flag = true;
+                result[0] = num;
+                result[1] = num + diff;
+                break;
+            }
+        }
+
+        return flag ? result : new int[0];
+    }
+
+    /**
+     * 面试题 16.24. 数对和
+     *
+     * <p>设计一个算法，找出数组中两数之和为指定值的所有整数对。一个数只能属于一个数对。
+     *
+     * <p>示例 1:
+     *
+     * <p>输入: nums = [5,6,5], target = 11 输出: [[5,6]] 示例 2:
+     *
+     * <p>输入: nums = [5,6,5,6], target = 11 输出: [[5,6],[5,6]] 提示：
+     *
+     * <p>nums.length <= 100000
+     *
+     * @param nums
+     * @param target
+     * @return
+     */
+    public List<List<Integer>> pairSums(int[] nums, int target) {
+        /*// HashMap 存储元素次数,遍历
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int num : nums) {
+            int count = map.getOrDefault(num, 0);
+            map.put(num, count + 1);
+        }
+        List<List<Integer>> result = new ArrayList<>();
+
+        for (int k : map.keySet()) {
+            // 相等的情况
+            if (k == target - k) {
+                int count = map.get(k) >> 1;
+                List<Integer> list = Arrays.asList(k, k);
+                for (int i = 0; i < count; i++) {
+                    if (i == 0) {
+                        result.add(list);
+                    } else {
+                        result.add(new ArrayList<>(list));
+                    }
+                }
+                map.put(k, 0);
+                continue;
+            }
+            int count1 = map.get(k), count2 = map.getOrDefault(target - k, 0);
+            if (count2 > 0) {
+                int min = Math.min(count1, count2);
+                List<Integer> list = Arrays.asList(k, target - k);
+                for (int i = 0; i < min; i++) {
+                    if (i == 0) {
+                        result.add(list);
+                    } else {
+                        result.add(new ArrayList<>(list));
+                    }
+                }
+                map.put(k, count1 - min);
+                map.put(target - k, count2 - min);
+            }
+        }
+
+        return result;*/
+
+        List<List<Integer>> result = new ArrayList<>();
+        // 排序双指针
+        Arrays.sort(nums);
+        int left = 0, right = nums.length - 1;
+        while (left < right) {
+            int num1 = nums[left], num2 = nums[right];
+            int sum = num1 + num2;
+            if (sum == target) {
+                result.add(Arrays.asList(num1, num2));
+                left++;
+                right--;
+            } else if (sum > target) {
+                right--;
+            } else {
+                left++;
+            }
+        }
+
+        return result;
+    }
 }
