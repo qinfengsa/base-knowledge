@@ -10326,4 +10326,184 @@ public class ArrayTest {
 
         return result;
     }
+
+    @Test
+    public void wiggleSort() {
+        int[] nums = {5, 3, 1, 2, 3};
+        wiggleSort(nums);
+        log.debug("nums:{}", nums);
+    }
+
+    /**
+     * 面试题 10.11. 峰与谷
+     *
+     * <p>在一个整数数组中，“峰”是大于或等于相邻整数的元素，相应地，“谷”是小于或等于相邻整数的元素。
+     *
+     * <p>例如，在数组{5, 8, 6, 2, 3, 4, 6}中，{8, 6}是峰， {5, 2}是谷。现在给定一个整数数组，将该数组按峰与谷的交替顺序排序。
+     *
+     * <p>示例:
+     *
+     * <p>输入: [5, 3, 1, 2, 3] 输出: [5, 1, 3, 2, 3] 提示：
+     *
+     * <p>nums.length <= 10000
+     *
+     * @param nums
+     */
+    public void wiggleSort(int[] nums) {
+        if (nums.length < 2) {
+            return;
+        }
+        int[] newNums = Arrays.copyOf(nums, nums.length);
+        Arrays.sort(newNums);
+
+        int i = 0, right = nums.length - 1, left = right >> 1;
+        nums[i++] = newNums[left--];
+        while (true) {
+            if (i < nums.length) {
+                nums[i++] = newNums[right--];
+            } else break;
+            if (i < nums.length) {
+                nums[i++] = newNums[left--];
+            } else break;
+        }
+        logResult(nums);
+    }
+
+    /**
+     * 5428. 重新排列数组
+     *
+     * <p>给你一个数组 nums ，数组中有 2n 个元素，按 [x1,x2,...,xn,y1,y2,...,yn] 的格式排列。
+     *
+     * <p>请你将数组按 [x1,y1,x2,y2,...,xn,yn] 格式重新排列，返回重排后的数组。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：nums = [2,5,1,3,4,7], n = 3 输出：[2,3,5,4,1,7] 解释：由于 x1=2, x2=5, x3=1, y1=3, y2=4, y3=7
+     * ，所以答案为 [2,3,5,4,1,7] 示例 2：
+     *
+     * <p>输入：nums = [1,2,3,4,4,3,2,1], n = 4 输出：[1,4,2,3,3,2,4,1] 示例 3：
+     *
+     * <p>输入：nums = [1,1,2,2], n = 2 输出：[1,2,1,2]
+     *
+     * <p>提示：
+     *
+     * <p>1 <= n <= 500 nums.length == 2n 1 <= nums[i] <= 10^3
+     *
+     * @param nums
+     * @param n
+     * @return
+     */
+    public int[] shuffle(int[] nums, int n) {
+        int[] result = new int[nums.length];
+        for (int i = 0; i < n; i++) {
+            result[i << 1] = nums[i];
+            result[(i << 1) + 1] = nums[n + i];
+        }
+
+        return result;
+    }
+
+    @Test
+    public void shuffle() {
+        int[] nums = {1, 2, 3, 4, 4, 3, 2, 1};
+        int n = 4;
+        int[] result = shuffle(nums, n);
+        log.debug("result:{}", result);
+    }
+
+    @Test
+    public void getStrongest() {
+        int[] arr = {1, 1, 3, 5, 5};
+        int k = 2;
+        int[] result = getStrongest(arr, k);
+        log.debug("result :{}", result);
+    }
+
+    /**
+     * 5429. 数组中的 k 个最强值
+     *
+     * <p>给你一个整数数组 arr 和一个整数 k 。
+     *
+     * <p>设 m 为数组的中位数，只要满足下述两个前提之一，就可以判定 arr[i] 的值比 arr[j] 的值更强：
+     *
+     * <p>|arr[i] - m| > |arr[j] - m| |arr[i] - m| == |arr[j] - m|，且 arr[i] > arr[j] 请返回由数组中最强的 k
+     * 个值组成的列表。答案可以以 任意顺序 返回。
+     *
+     * <p>中位数 是一个有序整数列表中处于中间位置的值。形式上，如果列表的长度为 n ，那么中位数就是该有序列表（下标从 0 开始）中位于 ((n - 1) / 2) 的元素。
+     *
+     * <p>例如 arr = [6, -3, 7, 2, 11]，n = 5：数组排序后得到 arr = [-3, 2, 6, 7, 11] ，数组的中间位置为 m = ((5 - 1) /
+     * 2) = 2 ，中位数 arr[m] 的值为 6 。 例如 arr = [-7, 22, 17, 3]，n = 4：数组排序后得到 arr = [-7, 3, 17, 22]
+     * ，数组的中间位置为 m = ((4 - 1) / 2) = 1 ，中位数 arr[m] 的值为 3 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：arr = [1,2,3,4,5], k = 2 输出：[5,1] 解释：中位数为 3，按从强到弱顺序排序后，数组变为 [5,1,4,2,3]。最强的两个元素是 [5,
+     * 1]。[1, 5] 也是正确答案。 注意，尽管 |5 - 3| == |1 - 3| ，但是 5 比 1 更强，因为 5 > 1 。 示例 2：
+     *
+     * <p>输入：arr = [1,1,3,5,5], k = 2 输出：[5,5] 解释：中位数为 3, 按从强到弱顺序排序后，数组变为 [5,5,1,1,3]。最强的两个元素是 [5,
+     * 5]。 示例 3：
+     *
+     * <p>输入：arr = [6,7,11,7,6,8], k = 5 输出：[11,8,6,6,7] 解释：中位数为 7, 按从强到弱顺序排序后，数组变为 [11,8,6,6,7,7]。
+     * [11,8,6,6,7] 的任何排列都是正确答案。 示例 4：
+     *
+     * <p>输入：arr = [6,-3,7,2,11], k = 3 输出：[-3,11,2] 示例 5：
+     *
+     * <p>输入：arr = [-7,22,17,3], k = 2 输出：[22,17]
+     *
+     * <p>提示：
+     *
+     * <p>1 <= arr.length <= 10^5 -10^5 <= arr[i] <= 10^5 1 <= k <= arr.length
+     *
+     * @param arr
+     * @param k
+     * @return
+     */
+    public int[] getStrongest(int[] arr, int k) {
+        Arrays.sort(arr);
+        int half = (arr.length - 1) >> 1;
+        int m = arr[half];
+        int left = 0, right = arr.length - 1;
+        int index = 0;
+        int[] result = new int[k];
+        while (index < k) {
+            int num;
+            if (arr[right] - m == m - arr[left] || arr[right] - m > m - arr[left]) {
+                num = arr[right--];
+            } else {
+                num = arr[left++];
+            }
+
+            result[index++] = num;
+        }
+        return result;
+        /* Comparator<Integer> comparator =
+                (a, b) -> {
+                    if (Math.abs(a - m) == Math.abs(b - m)) {
+                        return a - b;
+                    }
+                    return Math.abs(a - m) - Math.abs(b - m);
+                };
+
+        PriorityQueue<Integer> queue = new PriorityQueue<>(k, comparator);
+
+        for (int num : arr) {
+            if (queue.size() == k) {
+                logResult(queue);
+                log.debug("peek:{}", queue.peek());
+                if (comparator.compare(num, queue.peek()) > 0) {
+                    queue.poll();
+                } else {
+                    continue;
+                }
+            }
+            queue.offer(num);
+        }
+        logResult(queue);
+        int index = 0;
+        int[] result = new int[k];
+        for (Iterator<Integer> iterator = queue.iterator(); iterator.hasNext(); ) {
+            result[index++] = iterator.next();
+        }
+        return result;*/
+    }
 }
