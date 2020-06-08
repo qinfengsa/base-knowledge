@@ -3443,4 +3443,70 @@ public class TreeTest {
         }
         return checkSubTree(t1.left, t2) || checkSubTree(t1.right, t2);
     }
+
+    @Test
+    public void pathSum1() {
+        TreeNode root = new TreeNode(5);
+        TreeNode node21 = new TreeNode(4);
+        TreeNode node22 = new TreeNode(8);
+        TreeNode node31 = new TreeNode(11);
+        TreeNode node33 = new TreeNode(13);
+        TreeNode node34 = new TreeNode(4);
+        TreeNode node41 = new TreeNode(7);
+        TreeNode node42 = new TreeNode(2);
+        TreeNode node47 = new TreeNode(5);
+        TreeNode node48 = new TreeNode(1);
+        root.left = node21;
+        root.right = node22;
+        node21.left = node31;
+        node22.left = node33;
+        node22.right = node34;
+        node31.left = node41;
+        node31.right = node42;
+        node34.left = node47;
+        node34.right = node48;
+        logResult(pathSum1(root, 22));
+    }
+
+    /**
+     * 面试题 04.12. 求和路径
+     *
+     * <p>给定一棵二叉树，其中每个节点都含有一个整数数值(该值或正或负)。设计一个算法，打印节点数值总和等于某个给定值的所有路径的数量。注意，路径不一定非得从二叉树的根节点或叶节点开始或结束，但是其方向必须向下(只能从父节点指向子节点方向)。
+     *
+     * <p>示例: 给定如下二叉树，以及目标和 sum = 22，
+     *
+     * <p>5 / \ 4 8 / / \ 11 13 4 / \ / \ 7 2 5 1 返回:
+     *
+     * <p>3 解释：和为 22 的路径有：[5,4,11,2], [5,8,4,5], [4,11,7] 提示：
+     *
+     * <p>节点总数 <= 10000
+     *
+     * @param root
+     * @param sum
+     * @return
+     */
+    public int pathSum1(TreeNode root, int sum) {
+        int result = 0;
+        if (Objects.isNull(root)) {
+            return 0;
+        }
+        result += getPathSumFromRoot(root, sum);
+        result += pathSum1(root.left, sum);
+        result += pathSum1(root.right, sum);
+        return result;
+    }
+
+    private int getPathSumFromRoot(TreeNode root, int sum) {
+        int result = 0;
+        if (Objects.isNull(root)) {
+            return 0;
+        }
+        if (root.val == sum) {
+            result++;
+        }
+        result += getPathSumFromRoot(root.left, sum - root.val);
+
+        result += getPathSumFromRoot(root.right, sum - root.val);
+        return result;
+    }
 }
