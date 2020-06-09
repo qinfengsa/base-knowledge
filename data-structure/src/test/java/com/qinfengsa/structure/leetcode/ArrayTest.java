@@ -10736,4 +10736,75 @@ public class ArrayTest {
         map.put(name, name);
         return name;
     }
+
+    @Test
+    public void pondSizes() {
+        int[][] land = {{0, 2, 1, 0}, {0, 1, 0, 1}, {1, 1, 0, 1}, {0, 1, 0, 1}};
+        int[] result = pondSizes(land);
+        log.debug("result:{}", result);
+    }
+
+    /**
+     * 面试题 16.19. 水域大小
+     *
+     * <p>你有一个用于表示一片土地的整数矩阵land，该矩阵中每个点的值代表对应地点的海拔高度。若值为0则表示水域。由垂直、水平或对角连接的水域为池塘。
+     *
+     * <p>池塘的大小是指相连接的水域的个数。编写一个方法来计算矩阵中所有池塘的大小，返回值需要从小到大排序。
+     *
+     * <p>示例：
+     *
+     * <p>输入： [ [0,2,1,0], [0,1,0,1], [1,1,0,1], [0,1,0,1] ] 输出： [1,2,4] 提示：
+     *
+     * <p>0 < len(land) <= 1000 0 < len(land[i]) <= 1000
+     *
+     * @param land
+     * @return
+     */
+    public int[] pondSizes(int[][] land) {
+        List<Integer> list = new ArrayList<>();
+        int rows = land.length;
+        if (rows == 0) {
+            return new int[0];
+        }
+        int cols = land[0].length;
+        if (cols == 0) {
+            return new int[0];
+        }
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (land[i][j] != 0) {
+                    continue;
+                }
+                list.add(getPondSizes(land, i, j));
+                logResult(list);
+            }
+        }
+        int[] result = new int[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            result[i] = list.get(i);
+        }
+        Arrays.sort(result);
+        return result;
+    }
+
+    private int getPondSizes(int[][] land, int row, int col) {
+        int result = 0;
+        if (!inArea(row, col, land.length, land[0].length)) {
+            return 0;
+        }
+        if (land[row][col] != 0) {
+            return 0;
+        }
+        result++;
+        land[row][col] = -1;
+        for (int i = -1; i <= 1; i++) {
+            for (int j = -1; j <= 1; j++) {
+                if (i == 0 && j == 0) {
+                    continue;
+                }
+                result += getPondSizes(land, row + i, col + j);
+            }
+        }
+        return result;
+    }
 }

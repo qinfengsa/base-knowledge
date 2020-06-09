@@ -1887,4 +1887,115 @@ public class BackTest {
 
         list.remove(list.size() - 1);
     }
+
+    @Test
+    public void permutation2() {
+        String s = "qwe";
+        String[] result = permutation2(s);
+        logResult(result);
+    }
+
+    /**
+     * 面试题 08.07. 无重复字符串的排列组合
+     *
+     * <p>无重复字符串的排列组合。编写一种方法，计算某字符串的所有排列组合，字符串每个字符均不相同。
+     *
+     * <p>示例1:
+     *
+     * <p>输入：S = "qwe" 输出：["qwe", "qew", "wqe", "weq", "ewq", "eqw"] 示例2:
+     *
+     * <p>输入：S = "ab" 输出：["ab", "ba"] 提示:
+     *
+     * <p>字符都是英文字母。 字符串长度在[1, 9]之间。
+     *
+     * @param S
+     * @return
+     */
+    public String[] permutation2(String S) {
+        List<String> list = new ArrayList<>();
+        char[] chars = S.toCharArray();
+        Arrays.sort(chars);
+        boolean[] visited = new boolean[chars.length];
+        getPermutation(new StringBuilder(), chars, visited, list);
+        return list.toArray(new String[0]);
+    }
+
+    private void getPermutation(
+            StringBuilder sb, char[] chars, boolean[] visited, List<String> list) {
+        if (sb.length() == chars.length) {
+            log.debug("sb:{}", sb.toString());
+            list.add(sb.toString());
+            return;
+        }
+        for (int i = 0; i < chars.length; i++) {
+
+            char c = chars[i];
+            if (visited[i]) {
+                continue;
+            }
+            visited[i] = true;
+            int len = sb.length();
+            sb.append(c);
+            getPermutation(sb, chars, visited, list);
+            sb.setLength(len);
+            visited[i] = false;
+        }
+    }
+
+    @Test
+    public void permutation3() {
+        String s = "qqe";
+        String[] result = permutation3(s);
+        logResult(result);
+    }
+
+    /**
+     * 面试题 08.08. 有重复字符串的排列组合
+     *
+     * <p>有重复字符串的排列组合。编写一种方法，计算某字符串的所有排列组合。
+     *
+     * <p>示例1:
+     *
+     * <p>输入：S = "qqe" 输出：["eqq","qeq","qqe"] 示例2:
+     *
+     * <p>输入：S = "ab" 输出：["ab", "ba"] 提示:
+     *
+     * <p>字符都是英文字母。 字符串长度在[1, 9]之间。
+     *
+     * @param S
+     * @return
+     */
+    public String[] permutation3(String S) {
+        List<String> list = new ArrayList<>();
+        char[] chars = S.toCharArray();
+        Arrays.sort(chars);
+        boolean[] visited = new boolean[chars.length];
+        getPermutation3(new StringBuilder(), chars, visited, list);
+        return list.toArray(new String[0]);
+    }
+
+    private void getPermutation3(
+            StringBuilder sb, char[] chars, boolean[] visited, List<String> list) {
+        if (sb.length() == chars.length) {
+            log.debug("sb:{}", sb.toString());
+            list.add(sb.toString());
+            return;
+        }
+        for (int i = 0; i < chars.length; i++) {
+
+            char c = chars[i];
+            if (i > 0 && chars[i] == chars[i - 1] && !visited[i - 1]) {
+                continue;
+            }
+            if (visited[i]) {
+                continue;
+            }
+            visited[i] = true;
+            int len = sb.length();
+            sb.append(c);
+            getPermutation3(sb, chars, visited, list);
+            sb.setLength(len);
+            visited[i] = false;
+        }
+    }
 }

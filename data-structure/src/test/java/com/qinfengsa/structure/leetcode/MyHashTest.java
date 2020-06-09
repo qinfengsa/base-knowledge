@@ -1,9 +1,10 @@
 package com.qinfengsa.structure.leetcode;
 
+import static com.qinfengsa.structure.util.LogUtils.logResult;
+
 import com.qinfengsa.base.Employee;
 import com.qinfengsa.structure.hash.MyHashMap;
 import com.qinfengsa.structure.hash.MyHashSet;
-import static com.qinfengsa.structure.util.LogUtils.logResult;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -2533,5 +2534,66 @@ public class MyHashTest {
         }
 
         return result;
+    }
+
+    @Test
+    public void maxAliveYear() {
+        int[] birth = {1900, 1901, 1950}, death = {1948, 1951, 2000};
+        logResult(maxAliveYear(birth, death));
+    }
+    /**
+     * 面试题 16.10. 生存人数
+     *
+     * <p>给定N个人的出生年份和死亡年份，第i个人的出生年份为birth[i]，死亡年份为death[i]，实现一个方法以计算生存人数最多的年份。
+     *
+     * <p>你可以假设所有人都出生于1900年至2000年（含1900和2000）之间。如果一个人在某一年的任意时期都处于生存状态，那么他们应该被纳入那一年的统计中。例如，生于1908年、死于1909年的人应当被列入1908年和1909年的计数。
+     *
+     * <p>如果有多个年份生存人数相同且均为最大值，输出其中最小的年份。
+     *
+     * <p>示例：
+     *
+     * <p>输入： birth = {1900, 1901, 1950} death = {1948, 1951, 2000} 输出： 1901 提示：
+     *
+     * <p>0 < birth.length == death.length <= 10000 birth[i] <= death[i]
+     *
+     * @param birth
+     * @param death
+     * @return
+     */
+    public int maxAliveYear(int[] birth, int[] death) {
+        /* int[] alives = new int[101];
+
+        for (int i = 0; i < birth.length; i++) {
+            for (int j = birth[i]; j <= death[i]; j++) {
+                alives[j - 1900]++;
+            }
+        }
+        int result = 0, max = 0;
+        for (int i = 0; i < 101; i++) {
+            if (alives[i] > max) {
+                result = i;
+                max = alives[i];
+            }
+        }
+        return 1900 + result;*/
+        // 出生, 人数 + 1；
+        int[] alives = new int[102];
+        for (int b : birth) {
+            alives[b - 1900]++;
+        }
+        // 死亡的下一年, 人数 - 1；
+        for (int d : death) {
+            alives[d - 1900 + 1]--;
+        }
+
+        int result = 0, max = 0;
+        for (int i = 1; i < 102; i++) {
+            alives[i] += alives[i - 1];
+            if (alives[i] > max) {
+                result = i;
+                max = alives[i];
+            }
+        }
+        return 1900 + result;
     }
 }

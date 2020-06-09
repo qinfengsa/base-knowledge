@@ -1382,7 +1382,9 @@ public class ListTest {
     }
 
     /**
-     * 86. 分隔链表 给定一个链表和一个特定值 x，对链表进行分隔，使得所有小于 x 的节点都在大于或等于 x 的节点之前。
+     * 86. 分隔链表
+     *
+     * <p>给定一个链表和一个特定值 x，对链表进行分隔，使得所有小于 x 的节点都在大于或等于 x 的节点之前。
      *
      * <p>你应当保留两个分区中每个节点的初始相对位置。
      *
@@ -1609,5 +1611,41 @@ public class ListTest {
         }
 
         return node1;
+    }
+
+    /**
+     * 面试题 02.04. 分割链表
+     *
+     * <p>编写程序以 x 为基准分割链表，使得所有小于 x 的节点排在大于或等于 x 的节点之前。如果链表中包含 x，x 只需出现在小于 x 的元素之后(如下所示)。分割元素 x
+     * 只需处于“右半部分”即可，其不需要被置于左右两部分之间。
+     *
+     * <p>示例:
+     *
+     * <p>输入: head = 3->5->8->5->10->2->1, x = 5 输出: 3->1->2->10->5->5->8
+     *
+     * @param head
+     * @param x
+     * @return
+     */
+    public ListNode partition2(ListNode head, int x) {
+        ListNode head1 = new ListNode(-1), head2 = new ListNode(-1);
+        // 小于x的元素放到链表1, 其余元素链表2
+        ListNode node1 = head1, node2 = head2;
+        ListNode node = head;
+        while (Objects.nonNull(node)) {
+            ListNode next = node.next;
+            if (node.val < x) {
+                node1.next = node;
+                node1 = node1.next;
+            } else {
+                node2.next = node;
+                node2 = node2.next;
+            }
+            node = next;
+        }
+        node2.next = null;
+        node1.next = head2.next;
+
+        return head1.next;
     }
 }
