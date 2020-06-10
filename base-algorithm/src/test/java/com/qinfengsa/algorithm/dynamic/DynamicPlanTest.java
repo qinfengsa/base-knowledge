@@ -1,6 +1,7 @@
 package com.qinfengsa.algorithm.dynamic;
 
 import static com.qinfengsa.algorithm.util.LogUtils.logResult;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -2669,5 +2670,83 @@ public class DynamicPlanTest {
                 }
             }*/
         return result[2] == 0 ? new int[0] : result;
+    }
+
+    @Test
+    public void pathWithObstacles() {
+        int[][] obstacleGrid = {{0, 0, 0}, {0, 1, 0}, {0, 0, 0}};
+        logResult(pathWithObstacles(obstacleGrid));
+    }
+
+    /**
+     * 面试题 08.02. 迷路的机器人
+     *
+     * <p>设想有个机器人坐在一个网格的左上角，网格 r 行 c 列。机器人只能向下或向右移动，但不能走到一些被禁止的网格（有障碍物）。设计一种算法，寻找机器人从左上角移动到右下角的路径。
+     *
+     * <p>网格中的障碍物和空位置分别用 1 和 0 来表示。
+     *
+     * <p>返回一条可行的路径，路径由经过的网格的行号和列号组成。左上角为 0 行 0 列。如果没有可行的路径，返回空数组。
+     *
+     * <p>示例 1:
+     *
+     * <p>输入: [ [0,0,0], [0,1,0], [0,0,0] ] 输出: [[0,0],[0,1],[0,2],[1,2],[2,2]] 解释:
+     * 输入中标粗的位置即为输出表示的路径，即 0行0列（左上角） -> 0行1列 -> 0行2列 -> 1行2列 -> 2行2列（右下角） 说明：r 和 c 的值均不超过 100。
+     *
+     * @param obstacleGrid
+     * @return
+     */
+    public List<List<Integer>> pathWithObstacles(int[][] obstacleGrid) {
+        List<List<Integer>> result = new ArrayList<>();
+        int rows = obstacleGrid.length;
+        if (rows == 0) {
+            return result;
+        }
+        int cols = obstacleGrid[0].length;
+        if (cols == 0) {
+            return result;
+        }
+        boolean[][] dp = new boolean[rows][cols];
+        if (obstacleGrid[0][0] == 0) {
+            dp[0][0] = true;
+        }
+        for (int i = 1; i < rows; i++) {
+            if (obstacleGrid[i][0] == 1) {
+                continue;
+            }
+            dp[i][0] = dp[i - 1][0];
+        }
+        for (int j = 1; j < cols; j++) {
+            if (obstacleGrid[0][j] == 1) {
+                continue;
+            }
+            dp[0][j] = dp[0][j - 1];
+        }
+        for (int i = 1; i < rows; i++) {
+            for (int j = 1; j < cols; j++) {
+                if (obstacleGrid[i][j] == 1) {
+                    continue;
+                }
+                dp[i][j] = dp[i - 1][j] || dp[i][j - 1];
+            }
+        }
+        logResult(dp);
+        if (!dp[rows - 1][cols - 1]) {
+            return result;
+        }
+        int row = rows - 1, col = cols - 1;
+        // 从终点反推
+        while (row > 0 || col > 0) {
+            List<Integer> list = Arrays.asList(row, col);
+            result.add(list);
+            if (row > 0 && dp[row - 1][col]) {
+                row--;
+            } else if (col > 0 && dp[row][col - 1]) {
+                col--;
+            }
+        }
+        result.add(Arrays.asList(0, 0));
+        Collections.reverse(result);
+
+        return result;
     }
 }

@@ -10807,4 +10807,74 @@ public class ArrayTest {
         }
         return result;
     }
+
+    @Test
+    public void drawLine() {
+        int length = 1, w = 32, x1 = 22, x2 = 31, y = 0;
+        int[] result = drawLine(length, w, x1, x2, y);
+        log.debug("result:{}", result);
+    }
+
+    /**
+     * 面试题 05.08. 绘制直线
+     *
+     * <p>绘制直线。有个单色屏幕存储在一个一维数组中，使得32个连续像素可以存放在一个 int 里。屏幕宽度为w，且w可被32整除（即一个 int
+     * 不会分布在两行上），屏幕高度可由数组长度及屏幕宽度推算得出。请实现一个函数，绘制从点(x1, y)到点(x2, y)的水平线。
+     *
+     * <p>给出数组的长度 length，宽度 w（以比特为单位）、直线开始位置 x1（比特为单位）、直线结束位置 x2（比特为单位）、直线所在行数 y。返回绘制过后的数组。
+     *
+     * <p>示例1:
+     *
+     * <p>输入：length = 1, w = 32, x1 = 30, x2 = 31, y = 0 输出：[3]
+     * 说明：在第0行的第30位到第31为画一条直线，屏幕表示为[0b000000000000000000000000000000011] 示例2:
+     *
+     * <p>输入：length = 3, w = 96, x1 = 0, x2 = 95, y = 0 输出：[-1, -1, -1]
+     *
+     * @param length
+     * @param w
+     * @param x1
+     * @param x2
+     * @param y
+     * @return
+     */
+    public int[] drawLine(int length, int w, int x1, int x2, int y) {
+        int[] result = new int[length];
+
+        int low = (y * w + x1) / 32;
+        int high = (y * w + x2) / 32;
+        // 中间的全是 -1;
+        for (int i = low; i <= high; i++) {
+            result[i] = -1;
+        }
+        log.debug("low :{} high:{}", low, high);
+        int startCount = x1 % 32;
+        int endCount = x2 % 32;
+        log.debug("startCount :{} endCount:{}", startCount, endCount);
+        result[low] &= (-1 >>> startCount);
+        result[high] &= (-1 << (31 - endCount));
+        /*for (int i = 0; i < length; i++) {
+            if (x1 > 31 + 32 * i) {
+                continue;
+            }
+            int start = Math.max(32 * i, x1);
+            int end = Math.min(31 + 32 * i, x2);
+
+            start -= 32 * i;
+            end -= 32 * i;
+            int num1 = -1;
+            for (int j = end; j >= start; j--) {}
+
+            for (int j = 0; j < start; j++) {
+                num1 = num1 >> 1;
+            }
+            int num2 = -1;
+            for (int j = end; j < 31; j++) {
+                num2 <<= 1;
+            }
+            log.debug("num1:{}  num2 : {}", num1, num2);
+            result[i] = num1 & num2;
+        }*/
+
+        return result;
+    }
 }
