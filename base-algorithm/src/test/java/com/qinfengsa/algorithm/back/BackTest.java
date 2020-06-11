@@ -1998,4 +1998,102 @@ public class BackTest {
             visited[i] = false;
         }
     }
+
+    @Test
+    public void subsets2() {
+        int[] nums = {1, 2, 3, 4};
+        List<List<Integer>> result = subsets2(nums);
+        log.debug("result:{}", result);
+    }
+
+    /**
+     * 面试题 08.04. 幂集
+     *
+     * <p>幂集。编写一种方法，返回某集合的所有子集。集合中不包含重复的元素。
+     *
+     * <p>说明：解集不能包含重复的子集。
+     *
+     * <p>示例:
+     *
+     * <p>输入： nums = [1,2,3] 输出： [ [3], [1], [2], [1,2,3], [1,3], [2,3], [1,2], [] ]
+     *
+     * @param nums
+     * @return
+     */
+    public List<List<Integer>> subsets2(int[] nums) {
+        List<List<Integer>> result = new ArrayList<>();
+
+        subset2(nums, new ArrayList<>(), result, 0);
+        return result;
+    }
+
+    private void subset2(int[] nums, List<Integer> list, List<List<Integer>> result, int start) {
+        result.add(new ArrayList<>(list));
+        // int size = numList.size();
+        for (int i = start; i < nums.length; i++) {
+            int num = nums[i];
+            //  添加当前元素
+            list.add(num);
+            subset2(nums, list, result, i + 1);
+            // 回溯
+            list.remove(list.size() - 1);
+        }
+    }
+
+    @Test
+    public void generateParenthesis3() {
+        int n = 4;
+        List<String> result = generateParenthesis3(n);
+        logResult(result);
+    }
+
+    /**
+     * 面试题 08.09. 括号
+     *
+     * <p>括号。设计一种算法，打印n对括号的所有合法的（例如，开闭一一对应）组合。
+     *
+     * <p>说明：解集不能包含重复的子集。
+     *
+     * <p>例如，给出 n = 3，生成结果为：
+     *
+     * <p>[ "((()))", "(()())", "(())()", "()(())", "()()()" ]
+     *
+     * @param n
+     * @return
+     */
+    public List<String> generateParenthesis3(int n) {
+        List<String> result = new ArrayList<>();
+        generateParenthesis3(0, 0, n, new StringBuilder(), result);
+        return result;
+    }
+
+    private void generateParenthesis3(
+            int leftCount, int rightCount, int n, StringBuilder sb, List<String> result) {
+        if (rightCount == n) {
+            result.add(sb.toString());
+            return;
+        }
+        int len = sb.length();
+        if (leftCount == n) {
+            // 加右括号
+            sb.append(")");
+            generateParenthesis3(leftCount, rightCount + 1, n, sb, result);
+            sb.setLength(len);
+        } else if (leftCount == rightCount) {
+            // 左括号
+            sb.append("(");
+            generateParenthesis3(leftCount + 1, rightCount, n, sb, result);
+            sb.setLength(len);
+        } else {
+
+            // 左括号
+            sb.append("(");
+            generateParenthesis3(leftCount + 1, rightCount, n, sb, result);
+            sb.setLength(len);
+            // 加右括号
+            sb.append(")");
+            generateParenthesis3(leftCount, rightCount + 1, n, sb, result);
+            sb.setLength(len);
+        }
+    }
 }

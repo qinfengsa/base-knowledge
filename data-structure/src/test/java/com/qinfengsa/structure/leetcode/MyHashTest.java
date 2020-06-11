@@ -467,7 +467,9 @@ public class MyHashTest {
     }
 
     /**
-     * 字母异位词分组 给定一个字符串数组，将字母异位词组合在一起。字母异位词指字母相同，但排列不同的字符串。
+     * 字母异位词分组
+     *
+     * <p>给定一个字符串数组，将字母异位词组合在一起。字母异位词指字母相同，但排列不同的字符串。
      *
      * <p>示例:
      *
@@ -2595,5 +2597,47 @@ public class MyHashTest {
             }
         }
         return 1900 + result;
+    }
+
+    /**
+     * 面试题 10.02. 变位词组
+     *
+     * <p>编写一种方法，对字符串数组进行排序，将所有变位词组合在一起。变位词是指字母相同，但排列不同的字符串。
+     *
+     * <p>注意：本题相对原题稍作修改
+     *
+     * <p>示例:
+     *
+     * <p>输入: ["eat", "tea", "tan", "ate", "nat", "bat"], 输出: [ ["ate","eat","tea"], ["nat","tan"],
+     * ["bat"] ] 说明：
+     *
+     * <p>所有输入均为小写字母。 不考虑答案输出的顺序。
+     *
+     * @param strs
+     * @return
+     */
+    public List<List<String>> groupAnagrams2(String[] strs) {
+        // 利用HashMap 分组
+        // 问题,找到合适的hash算法区分不同的单词
+        HashMap<String, List<String>> map = new HashMap<>();
+        for (String str : strs) {
+            String key = getAnagramsKey(str);
+            List<String> list = map.computeIfAbsent(key, k -> new ArrayList<>());
+            list.add(str);
+        }
+        return new ArrayList<>(map.values());
+    }
+
+    private String getAnagramsKey(String str) {
+        int[] letters = new int[26];
+        for (char c : str.toCharArray()) {
+            letters[c - 'a']++;
+        }
+        StringBuilder sb = new StringBuilder();
+
+        for (int num : letters) {
+            sb.append(num).append('.');
+        }
+        return sb.toString();
     }
 }
