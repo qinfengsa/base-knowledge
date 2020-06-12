@@ -2749,4 +2749,47 @@ public class DynamicPlanTest {
 
         return result;
     }
+
+    /**
+     * 面试题 17.08. 马戏团人塔
+     *
+     * <p>有个马戏团正在设计叠罗汉的表演节目，一个人要站在另一人的肩膀上。出于实际和美观的考虑，在上面的人要比下面的人矮一点且轻一点。已知马戏团每个人的身高和体重，请编写代码计算叠罗汉最多能叠几个人。
+     *
+     * <p>示例：
+     *
+     * <p>输入：height = [65,70,56,75,60,68] weight = [100,150,90,190,95,110] 输出：6 解释：从上往下数，叠罗汉最多能叠 6
+     * 层：(56,90), (60,95), (65,100), (68,110), (70,150), (75,190) 提示：
+     *
+     * <p>height.length == weight.length <= 10000
+     *
+     * @param height
+     * @param weight
+     * @return
+     */
+    public int bestSeqAtIndex(int[] height, int[] weight) {
+        // 俄罗斯套娃问题
+        int len = height.length;
+        int[][] person = new int[len][2];
+        for (int i = 0; i < len; i++) {
+            person[i] = new int[] {height[i], weight[i]};
+        }
+        // height 升序排列, height相同 weight 降序
+        Arrays.sort(person, (a, b) -> a[0] == b[0] ? b[1] - a[1] : a[0] - b[0]);
+        // 查询 weight的最长递增子序列
+        int[] dp = new int[len];
+        int result = 0;
+        for (int[] pair : person) {
+            // 二分法查找 0 ~ result 下标 第一个 pair[1]的下标
+            int i = Arrays.binarySearch(dp, 0, result, pair[1]);
+            if (i < 0) {
+                i = -(i + 1);
+            }
+            dp[i] = pair[1];
+            if (i == result) {
+                ++result;
+            }
+        }
+
+        return result;
+    }
 }

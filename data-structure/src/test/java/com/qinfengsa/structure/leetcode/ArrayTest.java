@@ -10949,4 +10949,239 @@ public class ArrayTest {
 
         return result;
     }
+
+    @Test
+    public void threeSum() {
+        int[] nums = {-2, 0, 0, 2, 2};
+        List<List<Integer>> result = threeSum(nums);
+        logResult(result);
+    }
+
+    /**
+     * 15. 三数之和
+     *
+     * <p>给你一个包含 n 个整数的数组 nums，判断 nums 中是否存在三个元素 a，b，c ，使得 a + b + c = 0 ？请你找出所有满足条件且不重复的三元组。
+     *
+     * <p>注意：答案中不可以包含重复的三元组。
+     *
+     * <p>示例：
+     *
+     * <p>给定数组 nums = [-1, 0, 1, 2, -1, -4]，
+     *
+     * <p>满足要求的三元组集合为： [ [-1, 0, 1], [-1, -1, 2] ]
+     *
+     * @param nums
+     * @return
+     */
+    public List<List<Integer>> threeSum(int[] nums) {
+        List<List<Integer>> result = new ArrayList<>();
+        Arrays.sort(nums);
+        for (int i = 0; i < nums.length - 2; i++) {
+            // 选择一个元素作为主元
+            int num = nums[i];
+            if (nums[i] > 0) {
+                break;
+            }
+            if (i > 0 && nums[i] == nums[i - 1]) {
+                continue;
+            }
+
+            int left = i + 1, right = nums.length - 1;
+            while (left < right) {
+                if (left > i + 1 && nums[left] == nums[left - 1]) {
+                    left++;
+                    continue;
+                }
+                int sum = nums[left] + nums[right];
+                if (sum == -num) {
+                    List<Integer> list = new ArrayList<>();
+                    list.add(num);
+                    list.add(nums[left]);
+                    list.add(nums[right]);
+                    result.add(list);
+                    left++;
+                    right--;
+                } else if (sum > -num) {
+                    right--;
+                } else {
+                    left++;
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 面试题 16.04. 井字游戏
+     *
+     * <p>设计一个算法，判断玩家是否赢了井字游戏。输入是一个 N x N 的数组棋盘，由字符" "，"X"和"O"组成，其中字符" "代表一个空位。
+     *
+     * <p>以下是井字游戏的规则：
+     *
+     * <p>玩家轮流将字符放入空位（" "）中。 第一个玩家总是放字符"O"，且第二个玩家总是放字符"X"。 "X"和"O"只允许放置在空位中，不允许对已放有字符的位置进行填充。
+     * 当有N个相同（且非空）的字符填充任何行、列或对角线时，游戏结束，对应该字符的玩家获胜。 当所有位置非空时，也算为游戏结束。 如果游戏结束，玩家不允许再放置字符。
+     * 如果游戏存在获胜者，就返回该游戏的获胜者使用的字符（"X"或"O"）；如果游戏以平局结束，则返回 "Draw"；如果仍会有行动（游戏未结束），则返回 "Pending"。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入： board = ["O X"," XO","X O"] 输出： "X" 示例 2：
+     *
+     * <p>输入： board = ["OOX","XXO","OXO"] 输出： "Draw" 解释： 没有玩家获胜且不存在空位 示例 3：
+     *
+     * <p>输入： board = ["OOX","XXO","OX "] 输出： "Pending" 解释： 没有玩家获胜且仍存在空位 提示：
+     *
+     * <p>1 <= board.length == board[i].length <= 100 输入一定遵循井字棋规则
+     *
+     * @param board
+     * @return
+     */
+    public String tictactoe2(String[] board) {
+
+        int n = board.length;
+
+        char[][] chars = new char[n][n];
+        for (int i = 0; i < board.length; i++) {
+            chars[i] = board[i].toCharArray();
+        }
+        // 检查所有行,所有列 和对角线
+        int blankCount = 0;
+        // 检查所有行
+        for (int i = 0; i < n; i++) {
+            char c = chars[i][0];
+            if (c == ' ') {
+                blankCount++;
+                continue;
+            }
+            boolean flag = true;
+
+            for (int j = 1; j < n; j++) {
+                if (chars[i][j] != c) {
+                    flag = false;
+                }
+                if (chars[i][j] == ' ') {
+                    blankCount++;
+                }
+            }
+
+            if (flag) {
+                return String.valueOf(c);
+            }
+        }
+        // 所有列
+        for (int j = 0; j < n; j++) {
+            char c = chars[0][j];
+            if (c == ' ') {
+                blankCount++;
+                continue;
+            }
+            boolean flag = true;
+
+            for (int i = 1; i < n; i++) {
+                if (chars[i][j] != c) {
+                    flag = false;
+                    break;
+                }
+            }
+            if (flag) {
+                return String.valueOf(c);
+            }
+        }
+        // 对角线
+        char c = chars[0][0];
+        if (c != ' ') {
+            boolean flag = true;
+
+            for (int i = 1; i < n; i++) {
+                if (chars[i][i] != c) {
+                    flag = false;
+                    break;
+                }
+            }
+            if (flag) {
+                return String.valueOf(c);
+            }
+        }
+        c = chars[0][n - 1];
+        if (c != ' ') {
+            boolean flag = true;
+            for (int i = 1; i < n; i++) {
+                if (chars[i][n - 1 - i] != c) {
+                    flag = false;
+                    break;
+                }
+            }
+            if (flag) {
+                return String.valueOf(c);
+            }
+        }
+
+        if (blankCount > 0) {
+            return "Pending";
+        }
+        return "Draw";
+        /*int step = 0;
+        int[] winList = {7, 56, 448, 73, 146, 292, 273, 84};
+        int x = 0, o = 0;
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[i].length(); j++) {
+                int k = i * 3 + j;
+                if (board[i].charAt(j) == 'X') {
+                    x += 1 << k;
+                    step++;
+                }
+                if (board[i].charAt(j) == 'O') {
+                    o += 1 << k;
+                    step++;
+                }
+            }
+        }
+        if (step < 5) {
+            return "Pending";
+        }
+        for (int win : winList) {
+            if ((x & win) == win ) {
+                return "X";
+            }
+            if ((o & win) == win ) {
+                return "O";
+            }
+        }
+        if (step < ) {
+
+        }*/
+    }
+
+    /**
+     * 面试题 17.09. 第 k 个数
+     *
+     * <p>有些数的素因子只有 3，5，7，请设计一个算法找出第 k 个数。注意，不是必须有这些素因子，而是必须不包含其他的素因子。例如，前几个数按顺序应该是 1，3，5，7，9，15，21。
+     *
+     * <p>示例 1:
+     *
+     * <p>输入: k = 5
+     *
+     * <p>输出: 9
+     *
+     * @param k
+     * @return
+     */
+    public int getKthMagicNumber(int k) {
+        int idx1 = 0, idx2 = 0, idx3 = 0;
+        int[] nums = new int[k];
+        nums[0] = 1;
+        for (int i = 1; i < k; i++) {
+            nums[i] = Math.min(nums[idx1] * 3, Math.min(nums[idx2] * 5, nums[idx3] * 7));
+            if (nums[i] == nums[idx1] * 3) {
+                idx1++;
+            }
+            if (nums[i] == nums[idx2] * 5) {
+                idx2++;
+            }
+            if (nums[i] == nums[idx3] * 7) {
+                idx3++;
+            }
+        }
+
+        return nums[k - 1];
+    }
 }
