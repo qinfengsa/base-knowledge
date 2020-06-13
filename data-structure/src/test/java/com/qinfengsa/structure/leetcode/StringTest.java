@@ -5510,4 +5510,205 @@ public class StringTest {
         }
         return min;
     }
+
+    @Test
+    public void countEval() {
+        String s = "1^0|0|1";
+        int result = 0;
+        logResult(countEval(s, result));
+    }
+
+    /**
+     * 面试题 08.14. 布尔运算
+     *
+     * <p>给定一个布尔表达式和一个期望的布尔结果 result，布尔表达式由 0 (false)、1 (true)、& (AND)、 | (OR) 和 ^ (XOR)
+     * 符号组成。实现一个函数，算出有几种可使该表达式得出 result 值的括号方法。
+     *
+     * <p>示例 1:
+     *
+     * <p>输入: s = "1^0|0|1", result = 0
+     *
+     * <p>输出: 2 解释: 两种可能的括号方法是 1^(0|(0|1)) 1^((0|0)|1) 示例 2:
+     *
+     * <p>输入: s = "0&0&0&1^1|0", result = 1
+     *
+     * <p>输出: 10 提示：
+     *
+     * <p>运算符的数量不超过 19 个
+     *
+     * @param s
+     * @param result
+     * @return
+     */
+    public int countEval(String s, int result) {
+        int n = s.length() >> 1;
+
+        char[] opts = new char[n];
+        int[] nums = new int[n + 1];
+
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            int index = i >> 1;
+            if ((i & 1) == 0) {
+                nums[index] = c - '0';
+            } else {
+                opts[index] = c;
+            }
+        }
+        log.debug("nums:{}", nums);
+        log.debug("opts:{}", opts);
+        int[][][] dp = new int[n + 1][n + 1][2];
+        for (int i = 0; i <= n; i++) {
+            dp[i][i][nums[i] & 1] = 1;
+        }
+        for (int i = n - 1; i >= 0; i--) {
+            for (int j = i + 1; j <= n; j++) {
+                // 计算 i ~ j 的结果
+                // 操作符
+                for (int k = i; k < j; k++) {
+                    switch (opts[k]) {
+                        case '&':
+                            // 两个都为1
+                            dp[i][j][1] += dp[i][k][1] * dp[k + 1][j][1];
+                            // 只要有1个为0 就是0
+                            dp[i][j][0] += dp[i][k][1] * dp[k + 1][j][0];
+                            dp[i][j][0] += dp[i][k][0] * dp[k + 1][j][1];
+                            dp[i][j][0] += dp[i][k][0] * dp[k + 1][j][0];
+                            break;
+                        case '|':
+                            // 只要有1个为1 就是1
+                            dp[i][j][1] += dp[i][k][1] * dp[k + 1][j][1];
+                            dp[i][j][1] += dp[i][k][1] * dp[k + 1][j][0];
+                            dp[i][j][1] += dp[i][k][0] * dp[k + 1][j][1];
+                            // 两个都为0
+                            dp[i][j][0] += dp[i][k][0] * dp[k + 1][j][0];
+                            break;
+                        case '^':
+                            // 相同为0
+                            dp[i][j][0] += dp[i][k][1] * dp[k + 1][j][1];
+                            dp[i][j][0] += dp[i][k][0] * dp[k + 1][j][0];
+                            // 不同为1
+                            dp[i][j][1] += dp[i][k][1] * dp[k + 1][j][0];
+                            dp[i][j][1] += dp[i][k][0] * dp[k + 1][j][1];
+                            break;
+                    }
+                }
+            }
+        }
+        logResult(dp);
+        return dp[0][n][result];
+    }
+
+    @Test
+    public void patternMatching() {
+        String pattern = "baabab", value = "eimmieimmieeimmiee";
+        logResult(patternMatching(pattern, value));
+    }
+
+    /**
+     * 面试题 16.18. 模式匹配
+     *
+     * <p>你有两个字符串，即pattern和value。pattern字符串由字母"a"和"b"组成，用于描述字符串中的模式。
+     * 例如，字符串"catcatgocatgo"匹配模式"aabab"（其中"cat"是"a"，"go"是"b"），该字符串也匹配像"a"、"ab"和"b"这样的模式。
+     * 但需注意"a"和"b"不能同时表示相同的字符串。编写一个方法判断value字符串是否匹配pattern字符串。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入： pattern = "abba", value = "dogcatcatdog" 输出： true 示例 2：
+     *
+     * <p>输入： pattern = "abba", value = "dogcatcatfish" 输出： false 示例 3：
+     *
+     * <p>输入： pattern = "aaaa", value = "dogcatcatdog" 输出： false 示例 4：
+     *
+     * <p>输入： pattern = "abba", value = "dogdogdogdog" 输出： true 解释： "a"="dogdog",b=""，反之也符合规则 提示：
+     *
+     * <p>0 <= len(pattern) <= 1000 0 <= len(value) <= 1000 你可以假设pattern只包含字母"a"和"b"，value仅包含小写字母。
+     *
+     * @param pattern
+     * @param value
+     * @return
+     */
+    public boolean patternMatching(String pattern, String value) {
+        if (Objects.isNull(pattern) || pattern.length() == 0) {
+            return value.length() == 0;
+        }
+        int countA = 0, countB = 0;
+        for (char c : pattern.toCharArray()) {
+            if (c == 'a') {
+                countA++;
+            }
+            if (c == 'b') {
+                countB++;
+            }
+        }
+        if (countA == 0) {
+            return singleCount(countB, value);
+        }
+        if (countB == 0) {
+            return singleCount(countA, value);
+        }
+        // 可以是 a , b 映射为""
+        if (singleCount(countA, value)) {
+            return true;
+        }
+        if (singleCount(countB, value)) {
+            return true;
+        }
+
+        int len = value.length();
+        // countA * lenA + countB * lenB = len;
+
+        //  countA,countB都不为空; 枚举a, b匹配的长度，使得countA * lenA + countB * lenB = len
+        for (int lenA = 1; lenA * countA <= len - countB; lenA++) {
+            if ((len - lenA * countA) % countB != 0) {
+                continue;
+            }
+            int lenB = (len - lenA * countA) / countB;
+            if (checkPatternMatching(pattern, value, lenA, lenB)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean checkPatternMatching(String pattern, String value, int lenA, int lenB) {
+        String a = "", b = "";
+        for (int i = 0, j = 0; i < pattern.length(); i++) { // i, j指针都是恰当长度的
+            if (pattern.charAt(i) == 'a') {
+                if (a.length() == 0) {
+                    a = value.substring(j, j + lenA);
+                } else if (!Objects.equals(a, value.substring(j, j + lenA))) {
+                    return false;
+                }
+                j += lenA;
+            } else if (pattern.charAt(i) == 'b') {
+                if (b.length() == 0) {
+                    b = value.substring(j, j + lenB);
+                } else if (!Objects.equals(b, value.substring(j, j + lenB))) {
+                    return false;
+                }
+                j += lenB;
+            }
+        }
+        return true;
+    }
+
+    private boolean singleCount(int count, String value) {
+        if (value.length() % count != 0) {
+            return false;
+        }
+        int singleLen = value.length() / count;
+
+        for (int i = 0; i < singleLen; i++) {
+            char c = value.charAt(i);
+            for (int j = 1; j < count; j++) {
+                char c1 = value.charAt(j * singleLen + i);
+                if (c1 != c) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 }
