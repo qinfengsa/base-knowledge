@@ -11184,4 +11184,151 @@ public class ArrayTest {
 
         return nums[k - 1];
     }
+
+    @Test
+    public void finalPrices() {
+        int[] prices = {10, 1, 1, 1};
+        int[] result = finalPrices(prices);
+        log.debug("result:{}", result);
+    }
+
+    /**
+     * 5420. 商品折扣后的最终价格
+     *
+     * <p>给你一个数组 prices ，其中 prices[i] 是商店里第 i 件商品的价格。
+     *
+     * <p>商店里正在进行促销活动，如果你要买第 i 件商品，那么你可以得到与 prices[j] 相等的折扣，其中 j 是满足 j > i 且 prices[j] <= prices[i]
+     * 的 最小下标 ，如果没有满足条件的 j ，你将没有任何折扣。
+     *
+     * <p>请你返回一个数组，数组中第 i 个元素是折扣后你购买商品 i 最终需要支付的价格。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：prices = [8,4,6,2,3] 输出：[4,2,4,2,3] 解释： 商品 0 的价格为 price[0]=8 ，你将得到 prices[1]=4
+     * 的折扣，所以最终价格为 8 - 4 = 4 。 商品 1 的价格为 price[1]=4 ，你将得到 prices[3]=2 的折扣，所以最终价格为 4 - 2 = 2 。 商品 2
+     * 的价格为 price[2]=6 ，你将得到 prices[3]=2 的折扣，所以最终价格为 6 - 2 = 4 。 商品 3 和 4 都没有折扣。 示例 2：
+     *
+     * <p>输入：prices = [1,2,3,4,5] 输出：[1,2,3,4,5] 解释：在这个例子中，所有商品都没有折扣。 示例 3：
+     *
+     * <p>输入：prices = [10,1,1,6] 输出：[9,0,1,6]
+     *
+     * <p>提示：
+     *
+     * <p>1 <= prices.length <= 500 1 <= prices[i] <= 10^3
+     *
+     * @param prices
+     * @return
+     */
+    public int[] finalPrices(int[] prices) {
+        int len = prices.length;
+        int[] result = new int[len];
+        Deque<Integer> stack = new LinkedList<>();
+        stack.push(0);
+
+        for (int i = 1; i < len; i++) {
+            int price = prices[i];
+            while (!stack.isEmpty() && prices[stack.peek()] >= price) {
+                result[stack.peek()] = prices[stack.peek()] - price;
+                stack.pop();
+            }
+            stack.push(i);
+        }
+        while (!stack.isEmpty()) {
+            int index = stack.pop();
+            result[index] = prices[index];
+        }
+
+        return result;
+    }
+
+    @Test
+    public void minSumOfLengths() {
+        int[] arr = {31, 1, 1, 18, 15, 3, 15, 14};
+        int target = 33;
+        logResult(minSumOfLengths(arr, target));
+    }
+
+    /**
+     * 5423. 找两个和为目标值且不重叠的子数组
+     *
+     * <p>给你一个整数数组 arr 和一个整数值 target 。
+     *
+     * <p>请你在 arr 中找 两个互不重叠的子数组 且它们的和都等于 target 。可能会有多种方案，请你返回满足要求的两个子数组长度和的 最小值 。
+     *
+     * <p>请返回满足要求的最小长度和，如果无法找到这样的两个子数组，请返回 -1 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：arr = [3,2,2,4,3], target = 3 输出：2 解释：只有两个子数组和为 3 （[3] 和 [3]）。它们的长度和为 2 。 示例 2：
+     *
+     * <p>输入：arr = [7,3,4,7], target = 7 输出：2 解释：尽管我们有 3 个互不重叠的子数组和为 7 （[7], [3,4] 和
+     * [7]），但我们会选择第一个和第三个子数组，因为它们的长度和 2 是最小值。 示例 3：
+     *
+     * <p>输入：arr = [4,3,2,6,2,3,4], target = 6 输出：-1 解释：我们只有一个和为 6 的子数组。 示例 4：
+     *
+     * <p>输入：arr = [5,5,4,4,5], target = 3 输出：-1 解释：我们无法找到和为 3 的子数组。 示例 5：
+     *
+     * <p>输入：arr = [3,1,1,1,5,1,2,1], target = 3 输出：3 解释：注意子数组 [1,2] 和 [2,1] 不能成为一个方案因为它们重叠了。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= arr.length <= 10^5 1 <= arr[i] <= 1000 1 <= target <= 10^8
+     *
+     * @param arr
+     * @param target
+     * @return
+     */
+    public int minSumOfLengths(int[] arr, int target) {
+        List<int[]> list = new ArrayList<>();
+        // 先用滑动窗口求和为target的序列
+        int left = 0, right = 0;
+        int sum = 0;
+        while (left <= right && right <= arr.length) {
+
+            if (sum == target) {
+                int[] child = {left, right - left};
+                list.add(child);
+                sum -= arr[left];
+                left++;
+            } else if (sum > target) {
+                sum -= arr[left];
+                left++;
+            } else {
+                if (right < arr.length) {
+                    sum += arr[right];
+                    right++;
+                } else {
+                    break;
+                }
+            }
+        }
+
+        if (list.size() < 2) {
+            return -1;
+        }
+        Collections.sort(list, (a, b) -> a[1] - b[1] == 0 ? a[0] - b[0] : a[1] - b[1]);
+        for (int i = 0; i < list.size(); i++) {
+            log.debug("{} :{}", i, list.get(i));
+        }
+        // 判断有没有重合
+
+        int[] pair1 = list.get(0);
+        int result = pair1[1];
+        boolean flag = false;
+        for (int i = 1; i < list.size(); i++) {
+            int[] pair = list.get(i);
+            // 重合
+            if (pair1[0] < pair[0] && pair1[0] + pair1[1] > pair[0]) {
+                continue;
+            }
+            if (pair1[0] > pair[0] && pair[0] + pair[1] > pair1[0]) {
+                continue;
+            }
+            flag = true;
+            result += pair[1];
+            break;
+        }
+
+        return flag ? result : -1;
+    }
 }
