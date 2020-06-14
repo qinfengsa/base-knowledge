@@ -2640,4 +2640,87 @@ public class MyHashTest {
         }
         return sb.toString();
     }
+
+    @Test
+    public void bestLine() {
+        int[][] points = {{0, 0}, {1, 1}, {1, 0}, {2, 0}};
+        int[] point = bestLine(points);
+        log.debug("point:{}", point);
+    }
+    /**
+     * 面试题 16.14. 最佳直线
+     *
+     * <p>给定一个二维平面及平面上的 N 个点列表Points，其中第i个点的坐标为Points[i]=[Xi,Yi]。请找出一条直线，其通过的点的数目最多。
+     *
+     * <p>设穿过最多点的直线所穿过的全部点编号从小到大排序的列表为S，你仅需返回[S[0],S[1]]作为答案，若有多条直线穿过了相同数量的点，则选择S[0]值较小的直线返回，
+     * S[0]相同则选择S[1]值较小的直线返回。
+     *
+     * <p>示例：
+     *
+     * <p>输入： [[0,0],[1,1],[1,0],[2,0]] 输出： [0,2] 解释： 所求直线穿过的3个点的编号为[0,2,3] 提示：
+     *
+     * <p>2 <= len(Points) <= 300 len(Points[i]) = 2
+     *
+     * @param points
+     * @return
+     */
+    public int[] bestLine(int[][] points) {
+
+        // Arrays.sort(points, (a, b) -> a[0] == b[0] ? a[1] - b[1] : a[0] - b[0]);
+        List<Integer> result = new ArrayList<>();
+        for (int i = 0; i < points.length - 1; i++) {
+
+            Map<Double, List<Integer>> map = new HashMap<>();
+            for (int j = i + 1; j < points.length; j++) {
+                // 使用 斜率作为key
+                int dx = points[j][0] - points[i][0], dy = points[j][1] - points[i][1];
+
+                double key = compute(dx, dy);
+
+                int finalI = i;
+                List<Integer> list =
+                        map.computeIfAbsent(
+                                key,
+                                k -> {
+                                    List<Integer> a = new ArrayList<>();
+                                    a.add(finalI);
+                                    return a;
+                                });
+                list.add(j);
+                if (list.size() > result.size()) {
+                    result = list;
+                }
+            }
+        }
+
+        return new int[] {result.get(0), result.get(1)};
+    }
+
+    private double compute(int diffx, int diffy) {
+        if (diffx == 0) {
+            return Integer.MIN_VALUE;
+        } else if (diffy == 0) {
+            return 0.0;
+        } else {
+            return (double) diffy / (double) diffx;
+        }
+    }
+
+    // 最大公约数
+    public static int getGcd(int a, int b) {
+        int max, min;
+        max = Math.max(a, b);
+        min = Math.min(a, b);
+
+        if (max % min != 0) {
+            return getGcd(min, max % min);
+        }
+        return min;
+    }
+
+    @Test
+    public void testGcg() {
+        int a = -10, b = 15;
+        logResult(getGcd(a, b));
+    }
 }

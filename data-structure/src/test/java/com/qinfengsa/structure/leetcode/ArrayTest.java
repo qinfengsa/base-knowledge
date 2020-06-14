@@ -1808,7 +1808,9 @@ public class ArrayTest {
     }
 
     /**
-     * 滑动窗口最大值 给定一个数组 nums，有一个大小为 k 的滑动窗口从数组的最左侧移动到数组的最右侧。你只可以看到在滑动窗口内的 k 个数字。滑动窗口每次只向右移动一位。
+     * 滑动窗口最大值
+     *
+     * <p>给定一个数组 nums，有一个大小为 k 的滑动窗口从数组的最左侧移动到数组的最右侧。你只可以看到在滑动窗口内的 k 个数字。滑动窗口每次只向右移动一位。
      *
      * <p>返回滑动窗口中的最大值。
      *
@@ -1838,6 +1840,27 @@ public class ArrayTest {
         }
         int maxLen = len - k + 1;
         int[] result = new int[maxLen];
+
+        // 双端队列
+        Deque<Integer> deque = new LinkedList<>();
+        for (int i = 0; i < k; i++) {
+            while (!deque.isEmpty() && deque.peekLast() < nums[i]) {
+                deque.removeLast();
+            }
+            deque.addLast(nums[i]);
+        }
+        result[0] = deque.peekFirst();
+
+        for (int i = k; i < nums.length; i++) {
+            if (!deque.isEmpty() && deque.peekFirst() == nums[i - k]) {
+                deque.removeFirst();
+            }
+            while (!deque.isEmpty() && deque.peekLast() < nums[i]) {
+                deque.removeLast();
+            }
+            deque.addLast(nums[i]);
+            result[i - k + 1] = deque.peekFirst();
+        }
 
         /*int [] left = new int[len];
         left[0] = nums[0];
@@ -11330,5 +11353,244 @@ public class ArrayTest {
         }
 
         return flag ? result : -1;
+    }
+
+    @Test
+    public void findBestValue() {
+        int[] arr = {2, 3, 5};
+        int target = 11;
+        logResult(findBestValue(arr, target));
+    }
+
+    /**
+     * 1300. 转变数组后最接近目标值的数组和
+     *
+     * <p>给你一个整数数组 arr 和一个目标值 target ，请你返回一个整数 value ，使得将数组中所有大于 value 的值变成 value 后，数组的和最接近 target
+     * （最接近表示两者之差的绝对值最小）。
+     *
+     * <p>如果有多种使得和最接近 target 的方案，请你返回这些整数中的最小值。
+     *
+     * <p>请注意，答案不一定是 arr 中的数字。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：arr = [4,9,3], target = 10 输出：3 解释：当选择 value 为 3 时，数组会变成 [3, 3, 3]，和为 9 ，这是最接近 target
+     * 的方案。 示例 2：
+     *
+     * <p>输入：arr = [2,3,5], target = 10 输出：5 示例 3：
+     *
+     * <p>输入：arr = [60864,25176,27249,21296,20204], target = 56803 输出：11361
+     *
+     * <p>提示：
+     *
+     * <p>1 <= arr.length <= 10^4 1 <= arr[i], target <= 10^5
+     *
+     * @param arr
+     * @param target
+     * @return
+     */
+    public int findBestValue(int[] arr, int target) {
+        // 排序
+        Arrays.sort(arr);
+        // 确定区间 left ~ right
+        int pre = 0;
+        int len = arr.length;
+        int index = -1;
+        for (int i = 0; i < len; i++) {
+            int num = arr[i];
+            int sum = pre + num * (len - i);
+            if (sum == target) {
+                return num;
+            }
+            if (sum > target) {
+                index = i;
+                break;
+            }
+            pre += num;
+        }
+        log.debug("arr:{}", arr);
+        // index == -1 说明总和 < target
+        if (index == -1) {
+            return arr[len - 1];
+        }
+
+        int sum = target - pre;
+        log.debug("index:{} sum :{} ,pre :{}", index, sum, pre);
+        int indexLen = len - index;
+        // 结果在 index - 1 和 index 之间 直接计算
+        int result = sum / indexLen;
+        log.debug("result:{} ", result);
+        if ((result + 1) * indexLen - sum < sum - result * indexLen) {
+            return result + 1;
+        }
+
+        return result;
+    }
+
+    /**
+     * 5436. 一维数组的动态和
+     *
+     * <p>给你一个数组 nums 。数组「动态和」的计算公式为：runningSum[i] = sum(nums[0]…nums[i]) 。
+     *
+     * <p>请返回 nums 的动态和。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：nums = [1,2,3,4] 输出：[1,3,6,10] 解释：动态和计算过程为 [1, 1+2, 1+2+3, 1+2+3+4] 。 示例 2：
+     *
+     * <p>输入：nums = [1,1,1,1,1] 输出：[1,2,3,4,5] 解释：动态和计算过程为 [1, 1+1, 1+1+1, 1+1+1+1, 1+1+1+1+1] 。 示例
+     * 3：
+     *
+     * <p>输入：nums = [3,1,2,10,1] 输出：[3,4,6,16,17]
+     *
+     * <p>提示：
+     *
+     * <p>1 <= nums.length <= 1000 -10^6 <= nums[i] <= 10^6
+     *
+     * @param nums
+     * @return
+     */
+    public int[] runningSum(int[] nums) {
+        for (int i = 1; i < nums.length; i++) {
+            nums[i] += nums[i - 1];
+        }
+        return nums;
+    }
+
+    @Test
+    public void findLeastNumOfUniqueInts() {
+        int[] arr = {5, 5, 4};
+        int k = 1;
+        logResult(findLeastNumOfUniqueInts(arr, k));
+    }
+
+    /**
+     * 5437. 不同整数的最少数目
+     *
+     * <p>给你一个整数数组 arr 和一个整数 k 。现需要从数组中恰好移除 k 个元素，请找出移除后数组中不同整数的最少数目。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：arr = [5,5,4], k = 1 输出：1 解释：移除 1 个 4 ，数组中只剩下 5 一种整数。 示例 2：
+     *
+     * <p>输入：arr = [4,3,1,1,3,3,2], k = 3 输出：2 解释：先移除 4、2 ，然后再移除两个 1 中的任意 1 个或者三个 3 中的任意 1 个，最后剩下 1
+     * 和 3 两种整数。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= arr.length <= 10^5 1 <= arr[i] <= 10^9 0 <= k <= arr.length
+     *
+     * @param arr
+     * @param k
+     * @return
+     */
+    public int findLeastNumOfUniqueInts(int[] arr, int k) {
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int num : arr) {
+            map.compute(num, (key, v) -> Objects.isNull(v) ? 1 : v + 1);
+        }
+        List<Integer> list = new ArrayList<>(map.keySet());
+        Collections.sort(list, Comparator.comparingInt(map::get));
+        int i = 0;
+        for (; i < list.size(); i++) {
+            int count = map.get(list.get(i));
+            if (k >= count) {
+                k -= count;
+            } else {
+                break;
+            }
+        }
+
+        return list.size() - i;
+    }
+
+    /**
+     * 5438. 制作 m 束花所需的最少天数
+     *
+     * <p>给你一个整数数组 bloomDay，以及两个整数 m 和 k 。
+     *
+     * <p>现需要制作 m 束花。制作花束时，需要使用花园中 相邻的 k 朵花 。
+     *
+     * <p>花园中有 n 朵花，第 i 朵花会在 bloomDay[i] 时盛开，恰好 可以用于 一束 花中。
+     *
+     * <p>请你返回从花园中摘 m 束花需要等待的最少的天数。如果不能摘到 m 束花则返回 -1 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：bloomDay = [1,10,3,10,2], m = 3, k = 1 输出：3 解释：让我们一起观察这三天的花开过程，x 表示花开，而 _ 表示花还未开。
+     * 现在需要制作 3 束花，每束只需要 1 朵。 1 天后：[x, _, _, _, _] // 只能制作 1 束花 2 天后：[x, _, _, _, x] // 只能制作 2 束花 3
+     * 天后：[x, _, x, _, x] // 可以制作 3 束花，答案为 3 示例 2：
+     *
+     * <p>输入：bloomDay = [1,10,3,10,2], m = 3, k = 2 输出：-1 解释：要制作 3 束花，每束需要 2 朵花，也就是一共需要 6 朵花。而花园中只有
+     * 5 朵花，无法满足制作要求，返回 -1 。 示例 3：
+     *
+     * <p>输入：bloomDay = [7,7,7,7,12,7,7], m = 2, k = 3 输出：12 解释：要制作 2 束花，每束需要 3 朵。 花园在 7 天后和 12
+     * 天后的情况如下： 7 天后：[x, x, x, x, _, x, x] 可以用前 3 朵盛开的花制作第一束花。但不能使用后 3 朵盛开的花，因为它们不相邻。 12 天后：[x, x,
+     * x, x, x, x, x] 显然，我们可以用不同的方式制作两束花。 示例 4：
+     *
+     * <p>输入：bloomDay = [1000000000,1000000000], m = 1, k = 1 输出：1000000000 解释：需要等 1000000000
+     * 天才能采到花来制作花束 示例 5：
+     *
+     * <p>输入：bloomDay = [1,10,2,9,3,8,4,7,5,6], m = 4, k = 2 输出：9
+     *
+     * <p>提示：
+     *
+     * <p>bloomDay.length == n 1 <= n <= 10^5 1 <= bloomDay[i] <= 10^9 1 <= m <= 10^6 1 <= k <= n
+     *
+     * @param bloomDay
+     * @param m
+     * @param k
+     * @return
+     */
+    public int minDays(int[] bloomDay, int m, int k) {
+        int len = bloomDay.length;
+        int total = m * k;
+        if (len < total) {
+            return -1;
+        } else if (len == total) {
+            int max = 0;
+            for (int day : bloomDay) {
+                max = Math.max(max, day);
+            }
+            return max;
+        }
+
+        if (k == 1) {
+            Arrays.sort(bloomDay);
+            int max = 0;
+            for (int i = 0; i < m; i++) {
+                max += bloomDay[i];
+            }
+            return max;
+        }
+
+        // 滑动窗口
+
+        int maxLen = len - k + 1;
+        int[] maxDays = new int[maxLen];
+
+        // 双端队列
+        Deque<Integer> deque = new LinkedList<>();
+        for (int i = 0; i < k; i++) {
+            while (!deque.isEmpty() && deque.peekLast() < bloomDay[i]) {
+                deque.removeLast();
+            }
+            deque.addLast(bloomDay[i]);
+        }
+        maxDays[0] = deque.peekFirst();
+
+        for (int i = k; i < bloomDay.length; i++) {
+            if (!deque.isEmpty() && deque.peekFirst() == bloomDay[i - k]) {
+                deque.removeFirst();
+            }
+            while (!deque.isEmpty() && deque.peekLast() < bloomDay[i]) {
+                deque.removeLast();
+            }
+            deque.addLast(bloomDay[i]);
+            maxDays[i - k + 1] = deque.peekFirst();
+        }
+        // 动态规划
+
+        return 0;
     }
 }
