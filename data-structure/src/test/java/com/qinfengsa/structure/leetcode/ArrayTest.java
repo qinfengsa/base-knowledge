@@ -11504,6 +11504,30 @@ public class ArrayTest {
         return list.size() - i;
     }
 
+    @Test
+    public void minDays() {
+        int[] bloomDay = {
+            1542, 5142, 4695, 4385, 2629, 2492, 933, 1068, 151, 3960, 3790, 1196, 3842, 5147, 5526,
+            5528, 2259, 1708, 2714, 5462, 3016, 3262, 1175, 4348, 4826, 80, 789, 5285, 3855, 3455,
+            3480, 4277, 648, 1748, 625, 4256, 3931, 4938, 4553, 2129, 4480, 824, 3048, 2383, 3036,
+            2192, 2156, 7, 438, 5258, 2430, 2459, 3769, 1694, 1687, 5130, 70, 3219, 4140, 2341,
+            1159, 3952, 4934, 4335, 2786, 3124, 5344, 803, 4586, 1000, 2821, 4769, 629, 4673, 3920,
+            3437, 4533, 2984, 3576, 5364, 1255, 1876, 2309, 5619, 2402, 1978, 4127, 1668, 147, 4139,
+            292, 1499, 1786, 2435, 1988, 146, 500, 3377, 3789, 1301, 1193, 1686, 3501, 3895, 1321,
+            1587, 4263, 593, 1580, 3652, 1638, 4905, 1927, 567, 2797, 2082, 1349, 4158, 679, 4944,
+            4638, 4770, 3458, 2117, 2620, 938, 4121, 2374, 1478, 5269, 5548, 5125, 5237, 1693, 2188,
+            690, 4640, 827, 2721, 2329, 430, 4423, 5510, 2312, 2493, 4884, 223, 1904, 4660, 5124,
+            2851, 5227, 4160, 694, 5660, 5571, 834, 1704, 4550, 988, 573, 3373, 5419, 311, 4280,
+            399, 5319, 4723, 5467, 1155, 4267, 303, 4233, 770, 3087, 3306, 1042, 4192, 3736, 893,
+            5087, 1903, 3650, 393, 5304, 2767, 3562, 5501, 4789, 1863, 1653, 2528, 5521, 3802, 3925,
+            2718, 5402, 2642, 304, 4171, 4356, 5486, 1426, 4526, 4541, 4310, 2160, 4542, 2850, 2396,
+            1612, 4780, 3921, 5219, 2585, 4027, 1861, 3799, 101, 1434, 996, 203, 1216, 1654, 4382,
+            3791, 3417, 1912, 5337, 814, 352, 3892, 3851, 3432, 2400
+        };
+        int m = 49, k = 4;
+        logResult(minDays(bloomDay, m, k));
+    }
+
     /**
      * 5438. 制作 m 束花所需的最少天数
      *
@@ -11547,26 +11571,32 @@ public class ArrayTest {
         int total = m * k;
         if (len < total) {
             return -1;
-        } else if (len == total) {
-            int max = 0;
-            for (int day : bloomDay) {
-                max = Math.max(max, day);
-            }
-            return max;
         }
-
         if (k == 1) {
             Arrays.sort(bloomDay);
-            int max = 0;
-            for (int i = 0; i < m; i++) {
-                max += bloomDay[i];
-            }
+            return bloomDay[m - 1];
+        }
+        int max = 0;
+        for (int day : bloomDay) {
+            max = Math.max(max, day);
+        }
+        if (len == total) {
             return max;
         }
+        int left = 0, right = max;
+        while (left < right) {
+            int mid = (left + right) >> 1;
+            if (getCount(bloomDay, k, mid) >= m) {
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+        return left;
 
         // 滑动窗口
 
-        int maxLen = len - k + 1;
+        /*int maxLen = len - k + 1;
         int[] maxDays = new int[maxLen];
 
         // 双端队列
@@ -11591,6 +11621,209 @@ public class ArrayTest {
         }
         // 动态规划
 
-        return 0;
+        return 0;*/
+    }
+
+    /**
+     * 是否能 制作 m 束花
+     *
+     * @param bloomDay
+     * @param k
+     * @param day
+     * @return
+     */
+    private int getCount(int[] bloomDay, int k, int day) {
+        int count = 0, result = 0;
+        for (int i = 0; i < bloomDay.length; i++) {
+            if (bloomDay[i] <= day) {
+                count++;
+            } else {
+                count = 0;
+            }
+            if (count == k) {
+                result++;
+                count = 0;
+            }
+        }
+        return result;
+    }
+
+    @Test
+    public void shortestSeq() {
+        int[] big = {7, 5, 9, 0, 2, 1, 3, 5, 7, 9, 1, 1, 5, 8, 8, 9, 7}, small = {1, 5, 9};
+        int[] result = shortestSeq(big, small);
+        log.debug("result:{}", result);
+    }
+
+    /**
+     * 面试题 17.18. 最短超串
+     *
+     * <p>假设你有两个数组，一个长一个短，短的元素均不相同。找到长数组中包含短数组所有的元素的最短子数组，其出现顺序无关紧要。
+     *
+     * <p>返回最短子数组的左端点和右端点，如有多个满足条件的子数组，返回左端点最小的一个。若不存在，返回空数组。
+     *
+     * <p>示例 1:
+     *
+     * <p>输入: big = [7,5,9,0,2,1,3,5,7,9,1,1,5,8,8,9,7] small = [1,5,9] 输出: [7,10] 示例 2:
+     *
+     * <p>输入: big = [1,2,3] small = [4] 输出: [] 提示：
+     *
+     * <p>big.length <= 100000 1 <= small.length <= 100000
+     *
+     * @param big
+     * @param small
+     * @return
+     */
+    public int[] shortestSeq(int[] big, int[] small) {
+        int[] result = new int[2];
+        Map<Integer, Integer> indexMap = new HashMap<>();
+        Set<Integer> set = new HashSet<>();
+        for (int num : small) {
+            set.add(num);
+        }
+
+        int minLen = Integer.MAX_VALUE;
+        // 滑动窗口
+        for (int i = 0; i < big.length; i++) {
+            if (set.contains(big[i])) {
+                indexMap.put(big[i], i);
+            } else {
+                continue;
+            }
+            if (set.size() != indexMap.size()) {
+                continue;
+            }
+            int min = Integer.MAX_VALUE;
+            for (int val : indexMap.values()) {
+                min = Math.min(min, val);
+            }
+            int len = i - min + 1;
+            if (len < minLen) {
+                minLen = len;
+                result[0] = min;
+                result[1] = i;
+            }
+        }
+
+        return minLen == Integer.MAX_VALUE ? new int[0] : result;
+    }
+
+    @Test
+    public void printKMoves() {
+        int k = 2;
+        List<String> result = printKMoves(k);
+        for (String s : result) {
+            log.debug(s);
+        }
+    }
+
+    /**
+     * 面试题 16.22. 兰顿蚂蚁
+     *
+     * <p>一只蚂蚁坐在由白色和黑色方格构成的无限网格上。开始时，网格全白，蚂蚁面向右侧。每行走一步，蚂蚁执行以下操作。
+     *
+     * <p>(1) 如果在白色方格上，则翻转方格的颜色，向右(顺时针)转 90 度，并向前移动一个单位。 (2) 如果在黑色方格上，则翻转方格的颜色，向左(逆时针方向)转 90
+     * 度，并向前移动一个单位。
+     *
+     * <p>编写程序来模拟蚂蚁执行的前 K 个动作，并返回最终的网格。
+     *
+     * <p>网格由数组表示，每个元素是一个字符串，代表网格中的一行，黑色方格由 'X' 表示，白色方格由 '_' 表示，蚂蚁所在的位置由 'L', 'U', 'R', 'D'
+     * 表示，分别表示蚂蚁 左、上、右、下 的朝向。只需要返回能够包含蚂蚁走过的所有方格的最小矩形。
+     *
+     * <p>示例 1:
+     *
+     * <p>输入: 0 输出: ["R"] 示例 2:
+     *
+     * <p>输入: 2 输出: [ "_X", "LX" ] 示例 3:
+     *
+     * <p>输入: 5 输出: [ "_U", "X_", "XX" ] 说明：
+     *
+     * <p>K <= 100000
+     *
+     * @param K
+     * @return
+     */
+    public List<String> printKMoves(int K) {
+        // 方向
+        int[] dirRow = {0, 1, 0, -1};
+        int[] dirCol = {1, 0, -1, 0};
+        char[] directions = {'R', 'D', 'L', 'U'};
+        int minRow = 0, maxRow = 0, minCol = 0, maxCol = 0;
+
+        int dirIdx = 0;
+        int row = 0, col = 0;
+        Set<Position> blackSet = new HashSet<>();
+        for (int i = 0; i < K; i++) {
+
+            Position t = new Position(row, col);
+            // 放入集合, 成功， 说明脚下目前是白色，右旋转90
+            if (blackSet.add(t)) {
+                // 顺时针 转 90 度
+                dirIdx = (dirIdx + 1) % 4;
+            }
+            // 没成功说明已经是黑色了，删除，左旋
+            else {
+                // 逆时针方向 转 90 度
+                dirIdx = (dirIdx + 3) % 4;
+                blackSet.remove(t);
+            }
+
+            row += dirRow[dirIdx];
+            col += dirCol[dirIdx];
+            minRow = Math.min(minRow, row);
+            maxRow = Math.max(maxRow, row);
+            minCol = Math.min(minCol, col);
+            maxCol = Math.max(maxCol, col);
+        }
+        logResult(blackSet);
+        log.debug("rows:{} cols:{}", maxRow - minRow + 1, maxCol - minCol + 1);
+        // 返回的数组
+        char[][] grid = new char[maxRow - minRow + 1][maxCol - minCol + 1];
+
+        for (char[] chars : grid) {
+            Arrays.fill(chars, '_');
+        }
+
+        // 替换黑块
+        for (Position pos : blackSet) {
+            grid[pos.row - minRow][pos.col - minCol] = 'X';
+        }
+        logResult(grid);
+        // 替换蚂蚁
+        grid[row - minRow][col - minCol] = directions[dirIdx];
+        List<String> result = new ArrayList<>();
+        for (char[] chars : grid) {
+            result.add(new String(chars));
+        }
+        return result;
+    }
+
+    private class Position {
+        int row, col;
+
+        // 构造方法
+        public Position(int row, int col) {
+            this.row = row;
+            this.col = col;
+        }
+
+        // 重写equals
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == this) {
+                return true;
+            }
+            if (!(obj instanceof Position)) {
+                return false;
+            }
+            Position o = (Position) obj;
+            return this.row == o.row && this.col == o.col;
+        }
+
+        // 重写哈希算法，使两个Postion对象可以比较坐标
+        @Override
+        public int hashCode() {
+            return 31 * row + col;
+        }
     }
 }

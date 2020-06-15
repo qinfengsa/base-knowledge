@@ -5711,4 +5711,190 @@ public class StringTest {
         }
         return true;
     }
+
+    @Test
+    public void multiSearch() {
+        String big = "mississippi";
+        String[] smalls = {"is", "ppi", "hi", "sis", "i", "ssippi"};
+        logResult(multiSearch(big, smalls));
+    }
+
+    /**
+     * 面试题 17.17. 多次搜索
+     *
+     * <p>给定一个较长字符串big和一个包含较短字符串的数组smalls，设计一个方法，根据smalls中的每一个较短字符串，对big进行搜索。输出smalls中的字符串在big里出现的所有位置positions，其中positions[i]为smalls[i]出现的所有位置。
+     *
+     * <p>示例：
+     *
+     * <p>输入： big = "mississippi" smalls = ["is","ppi","hi","sis","i","ssippi"] 输出：
+     * [[1,4],[8],[],[3],[1,4,7,10],[5]] 提示：
+     *
+     * <p>0 <= len(big) <= 1000 0 <= len(smalls[i]) <= 1000 smalls的总字符数不会超过 100000。
+     * 你可以认为smalls中没有重复字符串。 所有出现的字符均为英文小写字母。
+     *
+     * @param big
+     * @param smalls
+     * @return
+     */
+    public int[][] multiSearch(String big, String[] smalls) {
+        Trie2 trie = new Trie2();
+        for (int i = 0; i < smalls.length; i++) {
+            trie.insert(smalls[i], i);
+        }
+        List<Integer>[] lists = new List[smalls.length];
+        for (int i = 0; i < smalls.length; i++) {
+            lists[i] = new ArrayList<>();
+        }
+        int[][] result = new int[smalls.length][];
+        for (int i = 0; i < big.length(); i++) {
+            List<Integer> ids = trie.multiSearch(big.substring(i));
+            for (int index : ids) {
+                lists[index].add(i);
+            }
+        }
+        for (int i = 0; i < smalls.length; i++) {
+            List<Integer> list = lists[i];
+            int[] arr = new int[list.size()];
+            for (int j = 0; j < list.size(); j++) {
+                arr[j] = list.get(j);
+            }
+
+            result[i] = arr;
+        }
+
+        return result;
+    }
+
+    @Test
+    public void longestWord() {
+        String[] words = {"cat", "banana", "dog", "nana", "walk", "walker", "dogwalker"};
+        logResult(longestWord(words));
+    }
+
+    /**
+     * 面试题 17.15. 最长单词
+     *
+     * <p>给定一组单词words，编写一个程序，找出其中的最长单词，且该单词由这组单词中的其他单词组合而成。若有多个长度相同的结果，返回其中字典序最小的一项，若没有符合要求的单词则返回空字符串。
+     *
+     * <p>示例：
+     *
+     * <p>输入： ["cat","banana","dog","nana","walk","walker","dogwalker"] 输出： "dogwalker" 解释：
+     * "dogwalker"可由"dog"和"walker"组成。 提示：
+     *
+     * <p>0 <= len(words) <= 100 1 <= len(words[i]) <= 100
+     *
+     * @param words
+     * @return
+     */
+    public String longestWord(String[] words) {
+        Arrays.sort(
+                words,
+                (a, b) -> a.length() == b.length() ? a.compareTo(b) : a.length() - b.length());
+        HashSet<String> set = new HashSet<>(Arrays.asList(words));
+        String result = "";
+        for (String word : words) {
+            set.remove(word);
+            if (isMergeWord(word, set) && word.length() > result.length()) {
+                result = word;
+            }
+            set.add(word);
+        }
+        return result;
+    }
+
+    private boolean isMergeWord(String word, Set<String> set) {
+        if (word.length() == 0) {
+            return true;
+        }
+        for (int i = 0; i < word.length(); i++) {
+            if (set.contains(word.substring(0, i + 1)) && isMergeWord(word.substring(i + 1), set)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isMergeWord(String word, int start, Set<String> set) {
+        if (start == word.length()) {
+            return true;
+        }
+        boolean flag = false;
+        for (String str : set) {
+            if (str.charAt(0) != word.charAt(start)) {
+                continue;
+            }
+            int index = start;
+            int i = 0;
+            for (; i < str.length() && index < word.length(); i++) {
+                if (word.charAt(index) != str.charAt(i)) {
+                    break;
+                }
+                index++;
+            }
+            if (i != str.length()) {
+                continue;
+            }
+            if (isMergeWord(word, index, set)) {
+                flag = true;
+                break;
+            }
+        }
+        return flag;
+    }
+
+    @Test
+    public void respace() {
+        String[] dictionary = {"looked", "just", "like", "her", "brother"};
+        String sentence = "jesslookedjustliketimherbrother";
+        logResult(respace(dictionary, sentence));
+    }
+    /**
+     * 面试题 17.13. 恢复空格
+     *
+     * <p>哦，不！你不小心把一个长篇文章中的空格、标点都删掉了，并且大写也弄成了小写。像句子"I reset the computer. It still didn’t
+     * boot!"已经变成了"iresetthecomputeritstilldidntboot"。在处理标点符号和大小写之前，你得先把它断成词语。当然了，你有一本厚厚的词典dictionary，不过，有些词没在词典里。假设文章用sentence表示，设计一个算法，把文章断开，要求未识别的字符最少，返回未识别的字符数。
+     *
+     * <p>注意：本题相对原题稍作改动，只需返回未识别的字符数
+     *
+     * <p>示例：
+     *
+     * <p>输入： dictionary = ["looked","just","like","her","brother"] sentence =
+     * "jesslookedjustliketimherbrother" 输出： 7 解释： 断句后为"jess looked just like tim her
+     * brother"，共7个未识别字符。 提示：
+     *
+     * <p>0 <= len(sentence) <= 1000 dictionary中总字符数不超过 150000。 你可以认为dictionary和sentence中只包含小写字母。
+     *
+     * @param dictionary
+     * @param sentence
+     * @return
+     */
+    public int respace(String[] dictionary, String sentence) {
+        int len = sentence.length();
+
+        Map<Character, Set<String>> map = new HashMap<>();
+        for (String word : dictionary) {
+            Set<String> set =
+                    map.computeIfAbsent(word.charAt(word.length() - 1), k -> new HashSet<>());
+            set.add(word);
+        }
+        int[] dp = new int[len + 1];
+        for (int i = 0; i < len; i++) {
+            dp[i + 1] = dp[i] + 1;
+            char c = sentence.charAt(i);
+            if (!map.containsKey(c)) {
+                continue;
+            }
+            for (String word : map.get(c)) {
+                int index = i + 1 - word.length();
+                if (index < 0) {
+                    continue;
+                }
+                if (Objects.equals(word, sentence.substring(index, i + 1))) {
+                    dp[i + 1] = Math.min(dp[i + 1], dp[index]);
+                }
+            }
+        }
+
+        return dp[len];
+    }
 }
