@@ -2792,4 +2792,61 @@ public class DynamicPlanTest {
 
         return result;
     }
+
+    @Test
+    public void isMatch() {
+        String s = "ab", p = ".*";
+        logResult(isMatch(s, p));
+    }
+
+    /**
+     * 面试题19. 正则表达式匹配
+     *
+     * <p>请实现一个函数用来匹配包含'.'和'*'的正则表达式。模式中的字符'.'表示任意一个字符，而'*'表示它前面的字符可以出现任意次（含0次）。
+     * 在本题中，匹配是指字符串的所有字符匹配整个模式。例如，字符串"aaa"与模式"a.a"和"ab*ac*a"匹配，但与"aa.a"和"ab*a"均不匹配。
+     *
+     * <p>示例 1:
+     *
+     * <p>输入: s = "aa" p = "a" 输出: false 解释: "a" 无法匹配 "aa" 整个字符串。 示例 2:
+     *
+     * <p>输入: s = "aa" p = "a*" 输出: true 解释: 因为 '*' 代表可以匹配零个或多个前面的那一个元素, 在这里前面的元素就是 'a'。因此，字符串 "aa"
+     * 可被视为 'a' 重复了一次。 示例 3:
+     *
+     * <p>输入: s = "ab" p = ".*" 输出: true 解释: ".*" 表示可匹配零个或多个（'*'）任意字符（'.'）。 示例 4:
+     *
+     * <p>输入: s = "aab" p = "c*a*b" 输出: true 解释: 因为 '*' 表示零个或多个，这里 'c' 为 0 个, 'a' 被重复一次。因此可以匹配字符串
+     * "aab"。 示例 5:
+     *
+     * <p>输入: s = "mississippi" p = "mis*is*p*." 输出: false s 可能为空，且只包含从 a-z 的小写字母。 p 可能为空，且只包含从 a-z
+     * 的小写字母以及字符 . 和 *，无连续的 '*'。 注意：本题与主站 10
+     * 题相同：https://leetcode-cn.com/problems/regular-expression-matching/
+     *
+     * @param s
+     * @param p
+     * @return
+     */
+    public boolean isMatch(String s, String p) {
+        int m = s.length(), n = p.length();
+        boolean[][] match = new boolean[m + 1][n + 1];
+        match[m][n] = true;
+        for (int j = n - 2; j >= 0; j--) {
+            match[m][j] = p.charAt(j + 1) == '*' && match[m][j + 2];
+        }
+        for (int i = m - 1; i >= 0; i--) {
+            for (int j = n - 1; j >= 0; j--) {
+                char c1 = s.charAt(i), c2 = p.charAt(j);
+                // 同位置的字符相同或者有.号, 查看后面一位是否匹配
+                boolean charMatch = c1 == c2 || c2 == '.';
+                // 当前位置后面是 *
+                if (j < n - 1 && p.charAt(j + 1) == '*') {
+                    match[i][j] = match[i][j + 2] || charMatch && match[i + 1][j];
+                } else {
+                    match[i][j] = charMatch && match[i + 1][j + 1];
+                }
+            }
+        }
+        logResult(match);
+
+        return match[0][0];
+    }
 }
