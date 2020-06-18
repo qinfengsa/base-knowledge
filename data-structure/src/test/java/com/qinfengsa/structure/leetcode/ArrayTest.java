@@ -11826,4 +11826,97 @@ public class ArrayTest {
             return 31 * row + col;
         }
     }
+
+    @Test
+    public void maxScoreSightseeingPair() {
+        int[] A = {8, 1, 5, 2, 6};
+        logResult(maxScoreSightseeingPair(A));
+    }
+
+    /**
+     * 1014. 最佳观光组合
+     *
+     * <p>给定正整数数组 A，A[i] 表示第 i 个观光景点的评分，并且两个景点 i 和 j 之间的距离为 j - i。
+     *
+     * <p>一对景点（i < j）组成的观光组合的得分为（A[i] + A[j] + i - j）：景点的评分之和减去它们两者之间的距离。
+     *
+     * <p>返回一对观光景点能取得的最高分。
+     *
+     * <p>示例：
+     *
+     * <p>输入：[8,1,5,2,6] 输出：11 解释：i = 0, j = 2, A[i] + A[j] + i - j = 8 + 5 + 0 - 2 = 11
+     *
+     * <p>提示：
+     *
+     * <p>2 <= A.length <= 50000 1 <= A[i] <= 1000
+     *
+     * @param A
+     * @return
+     */
+    public int maxScoreSightseeingPair(int[] A) {
+        int max = 0;
+        int len = A.length;
+        int[] arr1 = new int[len];
+        int[] arr2 = new int[len];
+
+        for (int i = 0; i < len; i++) {
+            arr1[i] = A[i] + i;
+            arr2[i] = A[i] - i;
+        }
+        // 思路 数组1, 当前位置i 最大的 A[i] + i
+        for (int i = 1; i < len; i++) {
+            arr1[i] = Math.max(arr1[i], arr1[i - 1]);
+        }
+        // 思路 数组1, 当前位置i 最大的 A[i] + i + A[j]  - j
+        for (int i = 1; i < len; i++) {
+            arr2[i] = Math.max(arr1[i - 1] + arr2[i], arr2[i - 1]);
+        }
+        max = arr2[len - 1];
+        return max;
+    }
+
+    @Test
+    public void trap2() {
+        int[] height = {0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1};
+        logResult(trap2(height));
+    }
+
+    /**
+     * 面试题 17.21. 直方图的水量
+     *
+     * <p>给定一个直方图(也称柱状图)，假设有人从上面源源不断地倒水，最后直方图能存多少水量?直方图的宽度为 1。
+     *
+     * <p>上面是由数组 [0,1,0,2,1,0,1,3,2,1,2,1] 表示的直方图，在这种情况下，可以接 6 个单位的水（蓝色部分表示水）。 感谢 Marcos 贡献此图。
+     *
+     * <p>示例:
+     *
+     * <p>输入: [0,1,0,2,1,0,1,3,2,1,2,1] 输出: 6
+     *
+     * @param height
+     * @return
+     */
+    public int trap2(int[] height) {
+        int len = height.length;
+        if (len <= 2) {
+            return 0;
+        }
+        // 波峰数组
+        int[] leftHeight = new int[len];
+        leftHeight[0] = height[0];
+        for (int i = 1; i < len; i++) {
+            leftHeight[i] = Math.max(height[i], leftHeight[i - 1]);
+        }
+        int[] rightHeight = new int[len];
+        rightHeight[len - 1] = height[len - 1];
+        for (int i = len - 2; i > 0; i--) {
+            rightHeight[i] = Math.max(height[i], rightHeight[i + 1]);
+        }
+
+        int result = 0;
+        for (int i = 1; i < len - 1; i++) {
+            result += Math.min(leftHeight[i], rightHeight[i]) - height[i];
+        }
+
+        return result;
+    }
 }

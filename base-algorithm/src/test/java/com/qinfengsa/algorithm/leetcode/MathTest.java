@@ -4855,4 +4855,144 @@ public class MathTest {
                     : new double[] {topX, topY, bottonX, bottonY};
         }
     }
+
+    /**
+     * 面试题 16.08. 整数的英语表示 给定一个整数，打印该整数的英文描述。
+     *
+     * <p>示例 1:
+     *
+     * <p>输入: 123 输出: "One Hundred Twenty Three" 示例 2:
+     *
+     * <p>输入: 12345 输出: "Twelve Thousand Three Hundred Forty Five" 示例 3:
+     *
+     * <p>输入: 1234567 输出: "One Million Two Hundred Thirty Four Thousand Five Hundred Sixty Seven" 示例
+     * 4:
+     *
+     * <p>输入: 1234567891 输出: "One Billion Two Hundred Thirty Four Million Five Hundred Sixty Seven
+     * Thousand Eight Hundred Ninety One"
+     *
+     * @param num
+     * @return
+     */
+    public String numberToWords(int num) {
+        if (num == 0) {
+            return "Zero";
+        }
+        List<String> list = new ArrayList<>();
+
+        numberToWords(num, list);
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i).length() == 0) {
+                continue;
+            }
+            if (sb.length() > 0) {
+                sb.append(" ");
+            }
+            sb.append(list.get(i));
+        }
+        log.debug("len:{}", sb.length());
+        return sb.toString();
+    }
+
+    @Test
+    public void testNumberToWords() {
+        int num = 20;
+        logResult(numberToWords(num));
+    }
+
+    private void numberToWords(int num, List<String> list) {
+        int[] factors = {1000000000, 1000000, 1000};
+        for (int i = 0; i < 3; i++) {
+            if (num >= factors[i]) {
+                int bigNum = num / factors[i];
+                num = num % factors[i];
+
+                numberToWords(bigNum, list);
+                list.add(GENS[i]);
+            }
+        }
+        if (num >= 100) {
+            int hundredNum = num / 100;
+            num = num % 100;
+            numberToWords(hundredNum, list);
+            list.add("Hundred");
+        }
+        if (num >= 20) {
+            int tenIndex = num / 10;
+            num = num % 10;
+            list.add(NUM_0_90[tenIndex]);
+        }
+        list.add(NUM_0_19[num]);
+    }
+
+    static String[] NUM_0_19 = {
+        "",
+        "One",
+        "Two",
+        "Three",
+        "Four",
+        "Five",
+        "Six",
+        "Seven",
+        "Eight",
+        "Nine",
+        "Ten",
+        "Eleven",
+        "Twelve",
+        "Thirteen",
+        "Fourteen",
+        "Fifteen",
+        "Sixteen",
+        "Seventeen",
+        "Eighteen",
+        "Nineteen"
+    };
+    static String[] NUM_0_90 = {
+        "", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"
+    };
+    static String[] GENS = {"Billion", "Million", "Thousand", ""};
+
+    @Test
+    public void missingTwo() {
+        int[] nums = {1};
+        logResult(missingTwo(nums));
+    }
+    /**
+     * 面试题 17.19. 消失的两个数字
+     *
+     * <p>给定一个数组，包含从 1 到 N 所有的整数，但其中缺了两个数字。你能在 O(N) 时间内只用 O(1) 的空间找到它们吗？
+     *
+     * <p>以任意顺序返回这两个数字均可。
+     *
+     * <p>示例 1:
+     *
+     * <p>输入: [1] 输出: [2,3] 示例 2:
+     *
+     * <p>输入: [2,3] 输出: [1,4] 提示：
+     *
+     * <p>nums.length <= 30000
+     *
+     * @param nums
+     * @return
+     */
+    public int[] missingTwo(int[] nums) {
+        // 求和
+        int n = nums.length + 2;
+        int sum = 0;
+        for (int num : nums) {
+            sum += num;
+        }
+        int twoSum = (n * (n + 1) >> 1) - sum;
+        logResult(twoSum);
+        int limit = twoSum >> 1;
+        sum = 0;
+        for (int num : nums) {
+            if (num <= limit) {
+                sum += num;
+            }
+        }
+        int small = (limit * (limit + 1) >> 1) - sum;
+        return new int[] {small, twoSum - small};
+    }
 }
