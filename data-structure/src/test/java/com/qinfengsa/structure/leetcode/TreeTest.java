@@ -3509,4 +3509,228 @@ public class TreeTest {
         result += getPathSumFromRoot(root.right, sum - root.val);
         return result;
     }
+
+    @Test
+    public void BSTSequences() {
+        //      10
+        //    5     17
+        //  3  7  13  20
+        // 1 4      18  21
+        TreeNode root = new TreeNode(10);
+        TreeNode node21 = new TreeNode(5);
+        TreeNode node22 = new TreeNode(17);
+        TreeNode node31 = new TreeNode(3);
+        TreeNode node32 = new TreeNode(7);
+        TreeNode node33 = new TreeNode(13);
+        TreeNode node34 = new TreeNode(20);
+        TreeNode node41 = new TreeNode(1);
+        TreeNode node42 = new TreeNode(4);
+        TreeNode node47 = new TreeNode(18);
+        TreeNode node48 = new TreeNode(21);
+        root.left = node21;
+        root.right = node22;
+        node21.left = node31;
+        node21.right = node32;
+        node22.left = node33;
+        node22.right = node34;
+        // node31.left = node41;
+        // node31.right = node42;
+        // node34.left = node47;
+        // node34.right = node48;
+        List<List<Integer>> result = BSTSequences(root);
+        for (int i = 0; i < result.size(); i++) {
+            log.debug("{} : {}", i, result.get(i));
+        }
+    }
+
+    /**
+     * 面试题 04.09. 二叉搜索树序列
+     *
+     * <p>从左向右遍历一个数组，通过不断将其中的元素插入树中可以逐步地生成一棵二叉搜索树。 给定一个由不同节点组成的二叉树，输出所有可能生成此树的数组。
+     *
+     * <p>示例: 给定如下二叉树
+     *
+     * <p>2 / \ 1 3 返回:
+     *
+     * <p>[ [2,1,3], [2,3,1] ]
+     *
+     * @param root
+     * @return
+     */
+    public List<List<Integer>> BSTSequences(TreeNode root) {
+        List<List<Integer>> result = new ArrayList<>();
+        if (Objects.isNull(root)) {
+            result.add(new ArrayList<>());
+            return result;
+        }
+        List<Integer> list = new ArrayList<>();
+        list.add(root.val);
+        addList(root, new LinkedList<>(), list, result);
+        return result;
+    }
+
+    private void addList(
+            TreeNode root,
+            List<TreeNode> nextNodeList,
+            List<Integer> list,
+            List<List<Integer>> result) {
+        if (Objects.isNull(root)) {
+            return;
+        }
+        boolean left = Objects.nonNull(root.left);
+        boolean right = Objects.nonNull(root.right);
+        // 下个节点的所有值
+        if (left) {
+            nextNodeList.add(root.left);
+        }
+        if (right) {
+            nextNodeList.add(root.right);
+        }
+        // 没有下一个元素
+        if (nextNodeList.isEmpty()) {
+            result.add(new ArrayList<>(list));
+        }
+
+        for (int i = 0; i < nextNodeList.size(); i++) {
+            TreeNode node = nextNodeList.remove(i);
+            list.add(node.val);
+            addList(node, new ArrayList<>(nextNodeList), list, result);
+            nextNodeList.add(i, node);
+            list.remove(list.size() - 1);
+        }
+    }
+
+    @Test
+    public void recoverFromPreorder() {
+
+        String s = "1-2--3---4-5--6---7";
+        TreeNode root = recoverFromPreorder2(s);
+        logResult(root);
+    }
+
+    /**
+     * 1028. 从先序遍历还原二叉树
+     *
+     * <p>我们从二叉树的根节点 root 开始进行深度优先搜索。
+     *
+     * <p>在遍历中的每个节点处，我们输出 D 条短划线（其中 D 是该节点的深度），然后输出该节点的值。（如果节点的深度为 D，则其直接子节点的深度为 D + 1。根节点的深度为 0）。
+     *
+     * <p>如果节点只有一个子节点，那么保证该子节点为左子节点。
+     *
+     * <p>给出遍历输出 S，还原树并返回其根节点 root。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入："1-2--3--4-5--6--7" 输出：[1,2,5,3,4,6,7] 示例 2：
+     *
+     * <p>输入："1-2--3---4-5--6---7" 输出：[1,2,5,3,null,6,null,4,null,7] 示例 3：
+     *
+     * <p>输入："1-401--349---90--88" 输出：[1,401,null,349,88,90]
+     *
+     * <p>提示：
+     *
+     * <p>原始树中的节点数介于 1 和 1000 之间。 每个节点的值介于 1 和 10 ^ 9 之间。
+     *
+     * @param S
+     * @return
+     */
+    public TreeNode recoverFromPreorder(String S) {
+        if (S.length() == 0) {
+            return null;
+        }
+        int val = 0;
+        int start = 0;
+        char[] chars = S.toCharArray();
+        while (start < chars.length && isNumber(chars[start])) {
+            val = val * 10 + (chars[start] - '0');
+            start++;
+        }
+        TreeNode root = new TreeNode(val);
+        val = 0;
+        int depth = 0;
+        Deque<TreeNode> stack = new LinkedList<>();
+        Deque<Integer> depthStack = new LinkedList<>();
+        stack.push(root);
+        depthStack.push(0);
+        for (int i = start; i <= chars.length; i++) {
+            if (i < chars.length && isNumber(chars[i])) {
+                val = val * 10 + (chars[i] - '0');
+                continue;
+            }
+            if (i - 1 > start && isNumber(chars[i - 1])) {
+                // 添加节点
+                log.debug("val:{} depth :{}", val, depth);
+                // 找到对应的父节点
+                while (depthStack.size() > 1 && depthStack.peek() >= depth) {
+                    depthStack.pop();
+                    stack.pop();
+                }
+                TreeNode parent = stack.peek();
+
+                TreeNode node = new TreeNode(val);
+                if (Objects.isNull(parent.left)) {
+                    parent.left = node;
+                } else {
+                    parent.right = node;
+                }
+                stack.push(node);
+                depthStack.push(depth);
+                depth = 0;
+            }
+            val = 0;
+            depth++;
+        }
+
+        return root;
+    }
+
+    public TreeNode recoverFromPreorder2(String S) {
+        recoverIndex = 0;
+
+        return getRecoverTreeNode(S, 0);
+    }
+
+    public TreeNode getRecoverTreeNode(String S, int depth) {
+        if (recoverIndex >= S.length()) {
+            return null;
+        }
+        int curDepth = 0;
+        int depthIndex = recoverIndex;
+        while (depthIndex < S.length() && S.charAt(depthIndex) == '-') {
+            curDepth++;
+            depthIndex++;
+        }
+        if (curDepth != depth) {
+            return null;
+        }
+        recoverIndex = depthIndex;
+        int val = 0;
+        while (recoverIndex < S.length() && isNumber(S.charAt(recoverIndex))) {
+            val = val * 10 + (S.charAt(recoverIndex) - '0');
+            recoverIndex++;
+        }
+        TreeNode root = new TreeNode(val);
+        root.left = getRecoverTreeNode(S, depth + 1);
+        root.right = getRecoverTreeNode(S, depth + 1);
+        return root;
+    }
+
+    private int recoverIndex;
+
+    private boolean isNumber(char c) {
+        switch (c) {
+            case '0':
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9':
+                return true;
+        }
+        return false;
+    }
 }

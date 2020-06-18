@@ -2849,4 +2849,123 @@ public class DynamicPlanTest {
 
         return match[0][0];
     }
+
+    @Test
+    public void getMaxMatrix() {
+
+        int[][] matrix = {{9, -8, 1, 3, -2}, {-3, 7, 6, -2, 4}, {6, -4, -4, 8, -7}};
+        int[] result = getMaxMatrix(matrix);
+        log.debug("result:{}", result);
+    }
+    /**
+     * 面试题 17.24. 最大子矩阵
+     *
+     * <p>给定一个正整数和负整数组成的 N × M 矩阵，编写代码找出元素总和最大的子矩阵。
+     *
+     * <p>返回一个数组 [r1, c1, r2, c2]，其中 r1, c1 分别代表子矩阵左上角的行号和列号，r2, c2
+     * 分别代表右下角的行号和列号。若有多个满足条件的子矩阵，返回任意一个均可。
+     *
+     * <p>注意：本题相对书上原题稍作改动
+     *
+     * <p>示例:
+     *
+     * <p>输入: [ [-1,0], [0,-1] ] 输出: [0,1,0,1] 解释: 输入中标粗的元素即为输出所表示的矩阵 说明：
+     *
+     * <p>1 <= matrix.length, matrix[0].length <= 200
+     *
+     * @param matrix
+     * @return
+     */
+    public int[] getMaxMatrix(int[][] matrix) {
+        int[] result = new int[4];
+        int rows = matrix.length;
+        int cols = matrix[0].length;
+        int max = Integer.MIN_VALUE;
+        // int[][] dp = new int[rows + 1][cols + 1];
+
+        int startRow = 0, startCol = 0;
+        //
+        for (int i = 0; i < rows; i++) {
+            int[] dp = new int[cols];
+            for (int j = i; j < rows; j++) {
+                // 计算每一行的和
+                int sum = 0;
+                for (int k = 0; k < cols; k++) {
+                    dp[k] += matrix[j][k];
+                    if (sum > 0) {
+                        sum += dp[k];
+                    } else {
+                        sum = dp[k];
+                        startRow = i;
+                        startCol = k;
+                    }
+                    if (sum > max) {
+                        max = sum;
+                        result[0] = startRow;
+                        result[1] = startCol;
+                        result[2] = j;
+                        result[3] = k;
+                    }
+                }
+            }
+        }
+
+        logResult(max);
+
+        return result;
+    }
+
+    /**
+     * 面试题 08.13.堆箱子
+     *
+     * <p>堆箱子。给你一堆n个箱子，箱子宽 wi、深 di、高
+     * hi。箱子不能翻转，将箱子堆起来时，下面箱子的宽度、高度和深度必须大于上面的箱子。实现一种方法，搭出最高的一堆箱子。箱堆的高度为每个箱子高度的总和。
+     *
+     * <p>输入使用数组[wi, di, hi]表示每个箱子。
+     *
+     * <p>示例1:
+     *
+     * <p>输入：box = [[1, 1, 1], [2, 2, 2], [3, 3, 3]] 输出：6 示例2:
+     *
+     * <p>输入：box = [[1, 1, 1], [2, 3, 4], [2, 6, 7], [3, 4, 5]] 输出：10 提示:
+     *
+     * <p>箱子的数目不大于3000个。
+     *
+     * @param box
+     * @return
+     */
+    public int pileBox(int[][] box) {
+        int len = box.length;
+        if (len == 0) {
+            return 0;
+        }
+
+        int[] dp = new int[len];
+        Arrays.sort(
+                box,
+                (a, b) -> {
+                    if (a[0] != b[0]) {
+                        return a[0] - b[0];
+                    }
+                    if (a[1] != b[1]) {
+                        return a[1] - b[1];
+                    }
+                    return a[2] - b[2];
+                });
+        dp[0] = box[0][2];
+        int result = dp[0];
+        for (int i = 1; i < len; i++) {
+            int[] cur = box[i];
+            int max = 0;
+            for (int j = 0; j < i; j++) {
+                if (cur[0] > box[j][0] && cur[1] > box[j][1] && cur[2] > box[j][2]) {
+                    max = Math.max(max, dp[j]);
+                }
+            }
+            dp[i] = max + cur[2];
+            result = Math.max(result, dp[i]);
+        }
+
+        return result;
+    }
 }
