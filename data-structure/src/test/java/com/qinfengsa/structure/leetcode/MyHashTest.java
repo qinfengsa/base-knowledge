@@ -2723,4 +2723,182 @@ public class MyHashTest {
         int a = -10, b = 15;
         logResult(getGcd(a, b));
     }
+
+    @Test
+    public void maxRectangle() {
+        String[] words = {"this", "real", "hard", "trh", "hea", "iar", "sld"};
+        logResult(maxRectangle(words));
+    }
+
+    /**
+     * 面试题 17.25. 单词矩阵
+     *
+     * <p>给定一份单词的清单，设计一个算法，创建由字母组成的面积最大的矩形，其中每一行组成一个单词(自左向右)，每一列也组成一个单词(自上而下)。不要求这些单词在清单里连续出现，但要求所有行等长，所有列等高。
+     *
+     * <p>如果有多个面积最大的矩形，输出任意一个均可。一个单词可以重复使用。
+     *
+     * <p>示例 1:
+     *
+     * <p>输入: ["this", "real", "hard", "trh", "hea", "iar", "sld"] 输出: [ "this", "real", "hard" ] 示例
+     * 2:
+     *
+     * <p>输入: ["aa"] 输出: ["aa","aa"] 说明：
+     *
+     * <p>words.length <= 1000 words[i].length <= 100 数据保证单词足够随机
+     *
+     * @param words
+     * @return
+     */
+    public String[] maxRectangle(String[] words) {
+        trieNode = new Trie2.TrieNode();
+        lenMap = new HashMap<>();
+        maxRectangleResult = new ArrayList<>();
+        maxArea = 0;
+        maxLength = 0;
+        for (String word : words) {
+            Set<String> set = lenMap.computeIfAbsent(word.length(), k -> new HashSet<>());
+            set.add(word);
+            maxLength = Math.max(word.length(), maxLength);
+
+            Trie2.TrieNode node = trieNode;
+            for (int i = 0; i < word.length(); i++) {
+                char c = word.charAt(i);
+                Trie2.TrieNode currentNode = node.children[c - 'a'];
+                if (Objects.isNull(currentNode)) {
+                    currentNode = new Trie2.TrieNode();
+                    node.children[c - 'a'] = currentNode;
+                }
+                node = currentNode;
+            }
+            node.isEnd = true;
+        }
+
+        List<String> path = new ArrayList<>();
+        for (int key : lenMap.keySet()) {
+            path.clear();
+            // 回溯需要的参数是：相同长度单词的集合，存放路径的列表，当前单词的长度
+            maxRectangleDfs(lenMap.get(key), path, key);
+        }
+
+        String[] result = new String[maxRectangleResult.size()];
+        return maxRectangleResult.toArray(result);
+    }
+
+    private void maxRectangleDfs(Set<String> strings, List<String> path, int wordLen) {
+        if (wordLen * maxLength <= maxArea) {
+            return;
+        }
+        // 超过了最长的单词
+        if (path.size() > maxLength) {
+            return;
+        }
+        for (String str : strings) {
+            path.add(str);
+            boolean[] result = isValidRectangle(path);
+            if (result[0]) {
+                int area = path.size() * path.get(0).length();
+                if (result[1] && (area > maxArea)) { // 每列都是单词的矩阵
+                    maxArea = area;
+                    // ans = path;   一定注意这里不能直接把path引用交给答案
+                    maxRectangleResult = new ArrayList<>(path);
+                }
+                // 回溯
+                maxRectangleDfs(strings, path, wordLen);
+            }
+
+            path.remove(path.size() - 1);
+        }
+    }
+
+    /**
+     * @param input
+     * @return
+     */
+    private boolean[] isValidRectangle(List<String> input) {
+        boolean allLeaf = true;
+        int m = input.size();
+        int n = input.get(0).length();
+        for (int j = 0; j < n; j++) {
+            // 按列来看单词是否在字典树
+            Trie2.TrieNode node = trieNode;
+            for (int i = 0; i < m; i++) {
+                int c = input.get(i).charAt(j) - 'a';
+                if (node.children[c] == null) {
+                    return new boolean[] {false, false};
+                }
+                node = node.children[c];
+            }
+            if (!node.isEnd) {
+                allLeaf = false;
+            }
+        }
+        return new boolean[] {true, allLeaf};
+    }
+
+    Trie2.TrieNode trieNode;
+    // 把清单根据单词长度集合起来
+    Map<Integer, Set<String>> lenMap;
+    int maxArea;
+    int maxLength;
+    List<String> maxRectangleResult;
+
+    @Test
+    public void computeSimilarities() {
+        int[][] docs = {{14, 15, 100, 9, 3}, {32, 1, 9, 3, 5}, {15, 29, 2, 6, 8, 7}, {7, 10}};
+        logResult(computeSimilarities(docs));
+    }
+    /**
+     * 面试题 17.26. 稀疏相似度
+     *
+     * <p>两个(具有不同单词的)文档的交集(intersection)中元素的个数除以并集(union)中元素的个数，就是这两个文档的相似度。例如，{1, 5, 3} 和 {1, 7, 2,
+     * 3} 的相似度是 0.4，其中，交集的元素有 2 个，并集的元素有 5 个。给定一系列的长篇文档，每个文档元素各不相同，并与一个 ID 相关联。它们的相似度非常“稀疏”，也就是说任选 2
+     * 个文档，相似度都很接近 0。请设计一个算法返回每对文档的 ID 及其相似度。只需输出相似度大于 0 的组合。请忽略空文档。为简单起见，可以假定每个文档由一个含有不同整数的数组表示。
+     *
+     * <p>输入为一个二维数组 docs，docs[i] 表示 id 为 i 的文档。返回一个数组，其中每个元素是一个字符串，代表每对相似度大于 0 的文档，其格式为 {id1},{id2}:
+     * {similarity}，其中 id1 为两个文档中较小的 id，similarity 为相似度，精确到小数点后 4 位。以任意顺序返回数组均可。
+     *
+     * <p>示例:
+     *
+     * <p>输入: [ [14, 15, 100, 9, 3], [32, 1, 9, 3, 5], [15, 29, 2, 6, 8, 7], [7, 10] ] 输出: [ "0,1:
+     * 0.2500", "0,2: 0.1000", "2,3: 0.1429" ] 提示：
+     *
+     * <p>docs.length <= 500 docs[i].length <= 500 相似度大于 0 的文档对数不会超过 1000
+     *
+     * @param docs
+     * @return
+     */
+    public List<String> computeSimilarities(int[][] docs) {
+        List<String> result = new ArrayList<>();
+        int len = docs.length;
+        // 记录每个元素 出现的下标集合
+        // map的key就是遍历到的数字，value是一个由数组index组成的list
+        Map<Integer, List<Integer>> dict = new HashMap<>();
+        // 用一个help矩阵来存储数组与数组之间有多少交集
+        int[][] help = new int[docs.length][docs.length];
+        for (int i = 0; i < len; i++) {
+            for (int j = 0; j < docs[i].length; j++) {
+                int key = docs[i][j];
+                List<Integer> indexList = dict.computeIfAbsent(key, k -> new ArrayList<>());
+                // 当前 i位置与其他位置存在交集, 记录交集元素个数
+                for (int index : indexList) {
+                    help[i][index]++;
+                }
+                indexList.add(i);
+            }
+            for (int j = 0; j < len; j++) {
+                int count = help[i][j];
+                if (count > 0) {
+                    result.add(
+                            String.format(
+                                    "%d,%d: %.4f",
+                                    j,
+                                    i,
+                                    (double) count
+                                            / (double) (docs[i].length + docs[j].length - count)));
+                }
+            }
+        }
+
+        return result;
+    }
 }

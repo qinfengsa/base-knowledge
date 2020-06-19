@@ -15,7 +15,7 @@ import java.util.Objects;
 public class Trie2 {
     private static final int SIZE = 26;
 
-    class TrieNode {
+    static class TrieNode {
         int id;
         TrieNode[] children = new TrieNode[SIZE];
         boolean isEnd;
