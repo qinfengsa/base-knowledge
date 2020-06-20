@@ -2795,7 +2795,7 @@ public class DynamicPlanTest {
 
     @Test
     public void isMatch() {
-        String s = "ab", p = ".*";
+        String s = "aab", p = "c*a*b";
         logResult(isMatch(s, p));
     }
 
@@ -2967,5 +2967,65 @@ public class DynamicPlanTest {
         }
 
         return result;
+    }
+
+    @Test
+    public void isMatch2() {
+        String s = "aab", p = "c*a*b";
+        logResult(isMatch2(s, p));
+    }
+
+    /**
+     * 10. 正则表达式匹配
+     *
+     * <p>给你一个字符串 s 和一个字符规律 p，请你来实现一个支持 '.' 和 '*' 的正则表达式匹配。
+     *
+     * <p>'.' 匹配任意单个字符 '*' 匹配零个或多个前面的那一个元素 所谓匹配，是要涵盖 整个 字符串 s的，而不是部分字符串。
+     *
+     * <p>说明:
+     *
+     * <p>s 可能为空，且只包含从 a-z 的小写字母。 p 可能为空，且只包含从 a-z 的小写字母，以及字符 . 和 *。 示例 1:
+     *
+     * <p>输入: s = "aa" p = "a" 输出: false 解释: "a" 无法匹配 "aa" 整个字符串。 示例 2:
+     *
+     * <p>输入: s = "aa" p = "a*" 输出: true 解释: 因为 '*' 代表可以匹配零个或多个前面的那一个元素, 在这里前面的元素就是 'a'。因此，字符串 "aa"
+     * 可被视为 'a' 重复了一次。 示例 3:
+     *
+     * <p>输入: s = "ab" p = ".*" 输出: true 解释: ".*" 表示可匹配零个或多个（'*'）任意字符（'.'）。 示例 4:
+     *
+     * <p>输入: s = "aab" p = "c*a*b" 输出: true 解释: 因为 '*' 表示零个或多个，这里 'c' 为 0 个, 'a' 被重复一次。因此可以匹配字符串
+     * "aab"。 示例 5:
+     *
+     * <p>输入: s = "mississippi" p = "mis*is*p*." 输出: false
+     *
+     * @param s
+     * @param p
+     * @return
+     */
+    public boolean isMatch2(String s, String p) {
+        int m = s.length(), n = p.length();
+        boolean[][] dp = new boolean[m + 1][n + 1];
+        dp[m][n] = true;
+        for (int j = n - 2; j >= 0; j--) {
+            dp[m][j] = p.charAt(j + 1) == '*' && dp[m][j + 2];
+        }
+        for (int i = m - 1; i >= 0; i--) {
+            for (int j = n - 1; j >= 0; j--) {
+                char c1 = s.charAt(i), c2 = p.charAt(j);
+                // 同位置的字符相同或者有.号, 查看后面一位是否匹配
+                boolean charMatch = c1 == c2 || c2 == '.';
+                // 后面一位是*
+                if (j < n - 1 && p.charAt(j + 1) == '*') {
+                    // 1 * 匹配 1 或 多个 dp[i + 1][j] 后一位 为 true + charMatch
+                    // 2 * 匹配 0 个 dp[i][j + 2]
+                    dp[i][j] = charMatch && dp[i + 1][j] || dp[i][j + 2];
+                } else {
+                    dp[i][j] = charMatch && dp[i + 1][j + 1];
+                }
+            }
+        }
+        logResult(dp);
+
+        return dp[0][0];
     }
 }

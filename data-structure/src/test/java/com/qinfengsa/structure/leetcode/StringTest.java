@@ -5897,4 +5897,91 @@ public class StringTest {
 
         return dp[len];
     }
+
+    @Test
+    public void minMutation() {
+        String start = "AACCGGTT", end = "AAACGGTA";
+        String[] bank = {"AACCGGTA", "AACCGCTA", "AAACGGTA"};
+        logResult(minMutation(start, end, bank));
+    }
+    /**
+     * 433. 最小基因变化
+     *
+     * <p>一条基因序列由一个带有8个字符的字符串表示，其中每个字符都属于 "A", "C", "G", "T"中的任意一个。
+     *
+     * <p>假设我们要调查一个基因序列的变化。一次基因变化意味着这个基因序列中的一个字符发生了变化。
+     *
+     * <p>例如，基因序列由"AACCGGTT" 变化至 "AACCGGTA" 即发生了一次基因变化。
+     *
+     * <p>与此同时，每一次基因变化的结果，都需要是一个合法的基因串，即该结果属于一个基因库。
+     *
+     * <p>现在给定3个参数 — start, end,
+     * bank，分别代表起始基因序列，目标基因序列及基因库，请找出能够使起始基因序列变化为目标基因序列所需的最少变化次数。如果无法实现目标变化，请返回 -1。
+     *
+     * <p>注意:
+     *
+     * <p>起始基因序列默认是合法的，但是它并不一定会出现在基因库中。 所有的目标基因序列必须是合法的。 假定起始基因序列与目标基因序列是不一样的。 示例 1:
+     *
+     * <p>start: "AACCGGTT" end: "AACCGGTA" bank: ["AACCGGTA"]
+     *
+     * <p>返回值: 1 示例 2:
+     *
+     * <p>start: "AACCGGTT" end: "AAACGGTA" bank: ["AACCGGTA", "AACCGCTA", "AAACGGTA"]
+     *
+     * <p>返回值: 2 示例 3:
+     *
+     * <p>start: "AAAAACCC" end: "AACCCCCC" bank: ["AAAACCCC", "AAACCCCC", "AACCCCCC"]
+     *
+     * <p>返回值: 3
+     *
+     * @param start
+     * @param end
+     * @param bank
+     * @return
+     */
+    public int minMutation(String start, String end, String[] bank) {
+        Set<String> bankSet = new HashSet<>(Arrays.asList(bank));
+        if (!bankSet.contains(end)) {
+            return -1;
+        }
+        Set<String> visited = new HashSet<>();
+
+        return minMutation(start, end, bankSet, visited);
+    }
+
+    static char[] factors = {'A', 'C', 'G', 'T'};
+
+    private int minMutation(String start, String end, Set<String> bankSet, Set<String> visited) {
+
+        if (Objects.equals(start, end)) {
+            return 0;
+        }
+        int min = Integer.MAX_VALUE;
+        char[] chars = start.toCharArray();
+        for (int i = 0; i < chars.length; i++) {
+            char c = chars[i];
+            for (int j = 0; j < 4; j++) {
+                if (c == factors[j]) {
+                    continue;
+                }
+                chars[i] = factors[j];
+                String str = new String(chars);
+                if (!bankSet.contains(str)) {
+                    continue;
+                }
+                if (visited.contains(str)) {
+                    continue;
+                }
+                visited.add(str);
+                int count = minMutation(str, end, bankSet, visited);
+                if (count != -1) {
+                    min = Math.min(count + 1, min);
+                }
+                visited.remove(str);
+            }
+            chars[i] = c;
+        }
+
+        return min == Integer.MAX_VALUE ? -1 : min;
+    }
 }
