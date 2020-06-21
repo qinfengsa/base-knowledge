@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
@@ -1972,5 +1973,93 @@ public class SearchTest {
         }
 
         return false;
+    }
+
+    @Test
+    public void findRightInterval() {
+
+        int[][] intervals = {{1, 4}, {2, 3}, {3, 4}};
+        int[] result = findRightInterval(intervals);
+        log.debug("result:{}", result);
+    }
+
+    /**
+     * 436. 寻找右区间
+     *
+     * <p>给定一组区间，对于每一个区间 i，检查是否存在一个区间 j，它的起始点大于或等于区间 i 的终点，这可以称为 j 在 i 的“右侧”。
+     *
+     * <p>对于任何区间，你需要存储的满足条件的区间 j 的最小索引，这意味着区间 j 有最小的起始点可以使其成为“右侧”区间。如果区间 j 不存在，则将区间 i 存储为
+     * -1。最后，你需要输出一个值为存储的区间值的数组。
+     *
+     * <p>注意:
+     *
+     * <p>你可以假设区间的终点总是大于它的起始点。 你可以假定这些区间都不具有相同的起始点。 示例 1:
+     *
+     * <p>输入: [ [1,2] ] 输出: [-1]
+     *
+     * <p>解释:集合中只有一个区间，所以输出-1。 示例 2:
+     *
+     * <p>输入: [ [3,4], [2,3], [1,2] ] 输出: [-1, 0, 1]
+     *
+     * <p>解释:对于[3,4]，没有满足条件的“右侧”区间。 对于[2,3]，区间[3,4]具有最小的“右”起点; 对于[1,2]，区间[2,3]具有最小的“右”起点。 示例 3:
+     *
+     * <p>输入: [ [1,4], [2,3], [3,4] ] 输出: [-1, 2, -1]
+     *
+     * <p>解释:对于区间[1,4]和[3,4]，没有满足条件的“右侧”区间。 对于[2,3]，区间[3,4]有最小的“右”起点。
+     *
+     * @param intervals
+     * @return
+     */
+    public int[] findRightInterval(int[][] intervals) {
+        int len = intervals.length;
+        int[] result = new int[len];
+        Map<Integer, Integer> indexMap = new HashMap<>();
+        int[] left = new int[len];
+        for (int i = 0; i < len; i++) {
+            indexMap.put(intervals[i][0], i);
+            left[i] = intervals[i][0];
+        }
+        Arrays.sort(left);
+        for (int i = 0; i < len; i++) {
+            int right = intervals[i][1];
+            int index = getLeft(left, right);
+            logResult(index);
+            if (index < 0) {
+                result[i] = -1;
+            } else {
+                result[i] = indexMap.get(left[index]);
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * 获取左区间值
+     *
+     * @param leftNum
+     * @param target
+     * @return
+     */
+    private int getLeft(int[] leftNum, int target) {
+        int low = 0, high = leftNum.length - 1;
+        if (target > leftNum[high]) {
+            return -1;
+        }
+        if (target <= leftNum[low]) {
+            return 0;
+        }
+        while (low < high) {
+            int mid = (low + high) >> 1;
+            if (leftNum[mid] == target) {
+                return mid;
+            }
+            if (leftNum[mid] > target) {
+                high = mid;
+            } else {
+                low = mid + 1;
+            }
+        }
+        return low;
     }
 }

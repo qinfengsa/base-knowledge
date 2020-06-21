@@ -3733,4 +3733,96 @@ public class TreeTest {
         }
         return false;
     }
+
+    @Test
+    public void maxPathSum2() {
+        /*TreeNode root = new TreeNode(5);
+        TreeNode node2 = new TreeNode(3);
+        TreeNode node3 = new TreeNode(6);
+        TreeNode node4 = new TreeNode(2);
+        TreeNode node5 = new TreeNode(4);
+        root.left = node2;
+        root.right = node3;
+        node2.left = node4;
+        node2.right = node5;
+        node4.left = new TreeNode(1);
+        TreeNode root = new TreeNode(1);
+        root.left = new TreeNode(2);
+        root.right = new TreeNode(3);*/
+        /* TreeNode root = new TreeNode(-1);
+        TreeNode node2 = new TreeNode(6);
+        root.left = node2;
+        node2.left = new TreeNode(0);
+        node2.right = new TreeNode(-6);*/
+        TreeNode root = new TreeNode(9);
+        TreeNode node11 = new TreeNode(6);
+        TreeNode node12 = new TreeNode(-3);
+
+        TreeNode node23 = new TreeNode(-6);
+        TreeNode node24 = new TreeNode(2);
+
+        TreeNode node37 = new TreeNode(2);
+
+        // [9,6,-3,null,null,-6,2,null,null,2,null,-6,-6,-6]
+        int result = maxPathSum2(root);
+        logResult(result);
+    }
+
+    /**
+     * 124. 二叉树中的最大路径和
+     *
+     * <p>给定一个非空二叉树，返回其最大路径和。
+     *
+     * <p>本题中，路径被定义为一条从树中任意节点出发，达到任意节点的序列。该路径至少包含一个节点，且不一定经过根节点。
+     *
+     * <p>示例 1:
+     *
+     * <p>输入: [1,2,3]
+     *
+     * <p>1 / \ 2 3
+     *
+     * <p>输出: 6 示例 2:
+     *
+     * <p>输入: [-10,9,20,null,null,15,7]
+     *
+     * <p>-10 / \ 9 20 / \ 15 7
+     *
+     * <p>输出: 42
+     *
+     * @param root
+     * @return
+     */
+    public int maxPathSum2(TreeNode root) {
+        getMaxPathSumNode(root);
+        return maxPathSum;
+    }
+
+    /**
+     * 获取root 到子节点的最大路径和
+     *
+     * @param root
+     * @return
+     */
+    private int getMaxPathSumNode(TreeNode root) {
+        if (Objects.isNull(root)) {
+            return 0;
+        }
+        int val = root.val;
+        int left = getMaxPathSumNode(root.left);
+        int right = getMaxPathSumNode(root.right);
+
+        int maxChild = Math.max(left, right);
+        int result = val;
+        if (maxChild > 0) {
+            result = Math.max(left, right) + val;
+        }
+
+        int sum = val + left + right;
+        maxPathSum = Math.max(result, maxPathSum);
+        maxPathSum = Math.max(sum, maxPathSum);
+
+        return result;
+    }
+
+    int maxPathSum = Integer.MIN_VALUE;
 }
