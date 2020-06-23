@@ -12154,4 +12154,188 @@ public class ArrayTest {
         }
         return result;
     }
+
+    /**
+     * 457. 环形数组循环
+     *
+     * <p>给定一个含有正整数和负整数的环形数组 nums。 如果某个索引中的数 k 为正数，则向前移动 k 个索引。相反，如果是负数 (-k)，则向后移动 k
+     * 个索引。因为数组是环形的，所以可以假设最后一个元素的下一个元素是第一个元素，而第一个元素的前一个元素是最后一个元素。
+     *
+     * <p>确定 nums 中是否存在循环（或周期）。循环必须在相同的索引处开始和结束并且循环长度 >
+     * 1。此外，一个循环中的所有运动都必须沿着同一方向进行。换句话说，一个循环中不能同时包括向前的运动和向后的运动。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：[2,-1,1,2,2] 输出：true 解释：存在循环，按索引 0 -> 2 -> 3 -> 0 。循环长度为 3 。 示例 2：
+     *
+     * <p>输入：[-1,2] 输出：false 解释：按索引 1 -> 1 -> 1 ... 的运动无法构成循环，因为循环的长度为 1 。根据定义，循环的长度必须大于 1 。 示例 3:
+     *
+     * <p>输入：[-2,1,-1,-2,-2] 输出：false 解释：按索引 1 -> 2 -> 1 -> ... 的运动无法构成循环，因为按索引 1 -> 2
+     * 的运动是向前的运动，而按索引 2 -> 1 的运动是向后的运动。一个循环中的所有运动都必须沿着同一方向进行。
+     *
+     * <p>提示：
+     *
+     * <p>-1000 ≤ nums[i] ≤ 1000 nums[i] ≠ 0 0 ≤ nums.length ≤ 5000
+     *
+     * <p>进阶：
+     *
+     * <p>你能写出时间时间复杂度为 O(n) 和额外空间复杂度为 O(1) 的算法吗？
+     *
+     * @param nums
+     * @return
+     */
+    public boolean circularArrayLoop(int[] nums) {
+        if (nums.length < 2) {
+            return false;
+        }
+        for (int i = 0; i < nums.length; i++) {
+            // 将无法成环的下标置为0
+            if (nums[i] == 0) {
+                continue;
+            }
+            int lastSlow, lastFast;
+            int slow = i, fast = i;
+            while (true) {
+                lastSlow = slow;
+                slow = (slow + nums[slow] + 5000 * nums.length) % nums.length;
+                // nums[lastSlow] * nums[slow] < 0 前后方向不一致
+                // lastSlow == slow 只有一个元素成环
+                if (nums[lastSlow] * nums[slow] < 0 || nums[slow] == 0 || lastSlow == slow) {
+                    setZero(nums, i);
+                    break;
+                }
+                lastFast = fast;
+                fast = (fast + nums[fast] + 5000 * nums.length) % nums.length;
+                if (nums[lastFast] * nums[fast] < 0 || nums[fast] == 0 || lastFast == fast) {
+                    setZero(nums, i);
+                    break;
+                }
+                lastFast = fast;
+                fast = (fast + nums[fast] + 5000 * nums.length) % nums.length;
+                if (nums[lastFast] * nums[fast] < 0 || nums[fast] == 0 || lastFast == fast) {
+                    setZero(nums, i);
+                    break;
+                }
+
+                // 快慢指针相遇
+                if (fast == slow) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private void setZero(int[] nums, int i) {
+        int j;
+        while (true) {
+            j = (i + nums[i] + 5000 * nums.length) % nums.length;
+            if (nums[j] == 0 || nums[i] * nums[j] < 0) {
+                nums[i] = 0;
+                break;
+            }
+            nums[i] = 0;
+            i = j;
+        }
+    }
+
+    @Test
+    public void makesquare() {
+        int[] nums = {1, 1, 2, 2, 2};
+        logResult(makesquare(nums));
+    }
+
+    /**
+     * 473. 火柴拼正方形
+     *
+     * <p>还记得童话《卖火柴的小女孩》吗？现在，你知道小女孩有多少根火柴，请找出一种能使用所有火柴拼成一个正方形的方法。不能折断火柴，可以把火柴连接起来，并且每根火柴都要用到。
+     *
+     * <p>输入为小女孩拥有火柴的数目，每根火柴用其长度表示。输出即为是否能用所有的火柴拼成正方形。
+     *
+     * <p>示例 1:
+     *
+     * <p>输入: [1,1,2,2,2] 输出: true
+     *
+     * <p>解释: 能拼成一个边长为2的正方形，每边两根火柴。 示例 2:
+     *
+     * <p>输入: [3,3,3,3,4] 输出: false
+     *
+     * <p>解释: 不能用所有火柴拼成一个正方形。 注意:
+     *
+     * <p>给定的火柴长度和在 0 到 10^9之间。 火柴数组的长度不超过15。
+     *
+     * @param nums
+     * @return
+     */
+    public boolean makesquare(int[] nums) {
+        if (nums.length < 4) {
+            return false;
+        }
+        int sum = 0;
+        int max = 0;
+        for (int num : nums) {
+            sum += num;
+            max = Math.max(max, num);
+        }
+        if (sum % 4 != 0) {
+            return false;
+        }
+        int sideLen = sum >> 2;
+        if (max > sideLen) {
+            return false;
+        }
+        Arrays.sort(nums);
+        // 从大到小
+        boolean[] visited = new boolean[nums.length];
+        boolean result = true;
+        for (int i = 0; i < 4; i++) {
+            result = result & makeSquare(nums, nums.length - 1, sideLen, visited);
+        }
+        return result;
+    }
+
+    private boolean makeSquare(int[] nums, int start, int sideLen, boolean[] visited) {
+        if (sideLen < 0) {
+            return false;
+        }
+        if (sideLen == 0) {
+            return true;
+        }
+        for (int i = start; i >= 0; i--) {
+            if (visited[i]) {
+                continue;
+            }
+            visited[i] = true;
+            if (makeSquare(nums, i - 1, sideLen - nums[i], visited)) {
+                return true;
+            }
+            visited[i] = false;
+        }
+        return false;
+    }
+
+    boolean makeSquareResult = false;
+
+    /*private void backtrack(int[] nums, int index, int sideLen, int[] sides) {
+        if (makeSquareResult) {
+            return;
+        }
+        if (index == -1) {
+            for (int side : sides) {
+                if (side != sideLen) {
+                    return;
+                }
+            }
+            makeSquareResult = true;
+            return;
+        }
+        for (int i = 0; i < sides.length; i++) {
+            int side = sides[i];
+            sides[i] += nums[index];
+            if (sides[i] <= sideLen) {
+                backtrack(nums, index - 1, sideLen, sides);
+            }
+            sides[i] = side;
+        }
+    }*/
 }

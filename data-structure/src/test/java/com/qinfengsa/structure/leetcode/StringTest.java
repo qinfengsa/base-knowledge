@@ -5984,4 +5984,68 @@ public class StringTest {
 
         return min == Integer.MAX_VALUE ? -1 : min;
     }
+
+    @Test
+    public void addBinary2() {
+        String a = "11";
+        String b = "1111";
+        String result = addBinary(a, b);
+        logResult(result);
+    }
+
+    /**
+     * 67. 二进制求和
+     *
+     * <p>给你两个二进制字符串，返回它们的和（用二进制表示）。
+     *
+     * <p>输入为 非空 字符串且只包含数字 1 和 0。
+     *
+     * <p>示例 1:
+     *
+     * <p>输入: a = "11", b = "1" 输出: "100" 示例 2:
+     *
+     * <p>输入: a = "1010", b = "1011" 输出: "10101"
+     *
+     * <p>提示：
+     *
+     * <p>每个字符串仅由字符 '0' 或 '1' 组成。 1 <= a.length, b.length <= 10^4 字符串如果不是 "0" ，就都不含前导零。
+     *
+     * @param a
+     * @param b
+     * @return
+     */
+    public String addBinary2(String a, String b) {
+
+        char[] chars1 = a.toCharArray(), chars2 = b.toCharArray();
+        int len = Math.max(chars1.length, chars2.length);
+        char[] chars = new char[len];
+        int last = 0;
+        for (int i = 0; i < len; i++) {
+            int num1 = 0, num2 = 0;
+            if (i < a.length()) {
+                num1 = a.charAt(a.length() - 1 - i) - '0';
+            }
+            if (i < b.length()) {
+                num2 = b.charAt(b.length() - 1 - i) - '0';
+            }
+            int val = num1 + num2 + last;
+            if (val >= 2) {
+                val -= 2;
+                last = 1;
+            } else {
+                last = 0;
+            }
+            if (val == 1) {
+                chars[len - 1 - i] = '1';
+            } else {
+                chars[len - 1 - i] = '0';
+            }
+        }
+        StringBuilder sb = new StringBuilder();
+        if (last != 0) {
+            sb.append(last);
+        }
+        sb.append(chars);
+        return sb.toString();
+    }
 }
