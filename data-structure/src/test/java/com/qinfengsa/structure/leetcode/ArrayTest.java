@@ -12338,4 +12338,61 @@ public class ArrayTest {
             sides[i] = side;
         }
     }*/
+
+    @Test
+    public void threeSumClosest2() {
+        int[] nums = {1, 1, 1, 1};
+        int target = 0;
+        int result = threeSumClosest2(nums, target);
+        log.debug("result : {}", result);
+    }
+
+    /**
+     * 16. 最接近的三数之和
+     *
+     * <p>给定一个包括 n 个整数的数组 nums 和 一个目标值 target。找出 nums 中的三个整数，使得它们的和与 target
+     * 最接近。返回这三个数的和。假定每组输入只存在唯一答案。
+     *
+     * <p>示例：
+     *
+     * <p>输入：nums = [-1,2,1,-4], target = 1 输出：2 解释：与 target 最接近的和是 2 (-1 + 2 + 1 = 2) 。
+     *
+     * <p>提示：
+     *
+     * <p>3 <= nums.length <= 10^3 -10^3 <= nums[i] <= 10^3 -10^4 <= target <= 10^4
+     *
+     * @param nums
+     * @param target
+     * @return
+     */
+    public int threeSumClosest2(int[] nums, int target) {
+        Arrays.sort(nums);
+        int min = Integer.MAX_VALUE;
+        int result = target;
+        for (int i = 0; i < nums.length - 2; i++) {
+            int b = target - nums[i];
+            int left = i + 1, right = nums.length - 1;
+            while (left < right) {
+                int sum = nums[left] + nums[right];
+                if (sum == b) {
+                    min = 0;
+                    break;
+                }
+                if (Math.abs(sum - b) < min) {
+                    min = Math.abs(sum - b);
+                    result = sum + nums[i];
+                }
+                if (sum < b) {
+                    left++;
+                } else {
+                    right--;
+                }
+            }
+            if (min == 0) {
+                result = target;
+                break;
+            }
+        }
+        return result;
+    }
 }

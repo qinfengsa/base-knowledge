@@ -3091,4 +3091,59 @@ public class DynamicPlanTest {
         map.put(key, false);
         return false;
     }
+
+    @Test
+    public void findSubstringInWraproundString() {
+        String s = "cac";
+        logResult(findSubstringInWraproundString(s));
+    }
+
+    /**
+     * 467. 环绕字符串中唯一的子字符串
+     *
+     * <p>把字符串 s 看作是“abcdefghijklmnopqrstuvwxyz”的无限环绕字符串，所以 s
+     * 看起来是这样的："...zabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcd....".
+     *
+     * <p>现在我们有了另一个字符串 p 。你需要的是找出 s 中有多少个唯一的 p 的非空子串，尤其是当你的输入是字符串 p ，你需要输出字符串 s 中 p 的不同的非空子串的数目。
+     *
+     * <p>注意: p 仅由小写的英文字母组成，p 的大小可能超过 10000。
+     *
+     * <p>示例 1:
+     *
+     * <p>输入: "a" 输出: 1 解释: 字符串 S 中只有一个"a"子字符。
+     *
+     * <p>示例 2:
+     *
+     * <p>输入: "cac" 输出: 2 解释: 字符串 S 中的字符串“cac”只有两个子串“a”、“c”。.
+     *
+     * <p>示例 3:
+     *
+     * <p>输入: "zab" 输出: 6 解释: 在字符串 S 中有六个子串“z”、“a”、“b”、“za”、“ab”、“zab”。.
+     *
+     * @param p
+     * @return
+     */
+    public int findSubstringInWraproundString(String p) {
+        if (p.length() == 0) {
+            return 0;
+        }
+        // 思路： 记录每个字母结尾的最大长度
+        int[] dp = new int[26];
+        int count = 0;
+        for (int i = 0; i < p.length(); i++) {
+            char c = p.charAt(i);
+            if (i > 0 && (c - p.charAt(i - 1) - 1) % 26 == 0) {
+                count++;
+            } else {
+                count = 1;
+            }
+            dp[c - 'a'] = Math.max(dp[c - 'a'], count);
+        }
+        int sum = 0;
+        for (int n : dp) {
+            sum += n;
+        }
+
+        return sum;
+    }
 }
