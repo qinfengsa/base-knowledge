@@ -3146,4 +3146,210 @@ public class DynamicPlanTest {
 
         return sum;
     }
+
+    @Test
+    public void wordBreak() {
+        // String s = "catsandog";
+        String s =
+                "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab";
+        List<String> wordDict = new ArrayList<>();
+        /*wordDict.add("cats");
+        wordDict.add("dog");
+        wordDict.add("and");
+        wordDict.add("cat");*/
+        wordDict.add("a");
+        wordDict.add("aa");
+        wordDict.add("aaa");
+        wordDict.add("aaaa");
+        wordDict.add("aaaaa");
+        wordDict.add("aaaaaa");
+        wordDict.add("aaaaaaaaaaaaaaaaaaa");
+        boolean result = wordBreak(s, wordDict);
+        logResult(result);
+    }
+
+    /**
+     * 139. 单词拆分
+     *
+     * <p>给定一个非空字符串 s 和一个包含非空单词列表的字典 wordDict，判定 s 是否可以被空格拆分为一个或多个在字典中出现的单词。
+     *
+     * <p>说明：
+     *
+     * <p>拆分时可以重复使用字典中的单词。 你可以假设字典中没有重复的单词。 示例 1：
+     *
+     * <p>输入: s = "leetcode", wordDict = ["leet", "code"] 输出: true 解释: 返回 true 因为 "leetcode" 可以被拆分成
+     * "leet code"。 示例 2：
+     *
+     * <p>输入: s = "applepenapple", wordDict = ["apple", "pen"] 输出: true 解释: 返回 true 因为
+     * "applepenapple" 可以被拆分成 "apple pen apple"。 注意你可以重复使用字典中的单词。 示例 3：
+     *
+     * <p>输入: s = "catsandog", wordDict = ["cats", "dog", "sand", "and", "cat"] 输出: false
+     *
+     * @param s
+     * @param wordDict
+     * @return
+     */
+    public boolean wordBreak(String s, List<String> wordDict) {
+        boolean[] dp = new boolean[s.length() + 1];
+        dp[0] = true;
+        for (int i = 1; i <= s.length(); i++) {
+            if (dp[i]) {
+                continue;
+            }
+            for (int j = 0; j < wordDict.size(); j++) {
+                String word = wordDict.get(j);
+                if (i >= word.length()
+                        && dp[i - word.length()]
+                        && Objects.equals(word, s.substring(i - word.length(), i))) {
+                    dp[i] = true;
+                }
+            }
+        }
+
+        return dp[s.length()];
+    }
+
+    @Test
+    public void test2() {
+        String s = "abcdefg";
+        int len = 2;
+
+        for (int i = 1; i < s.length(); i++) {
+            if (i >= len) {
+                log.debug("i :{} s :{}", i, s.substring(i - len, i));
+            }
+        }
+    }
+
+    @Test
+    public void findMaxForm() {
+        String[] strs = {"10", "0001", "111001", "1", "0"};
+        int m = 3, n = 4;
+        logResult(findMaxForm(strs, m, n));
+    }
+    /**
+     * 474. 一和零
+     *
+     * <p>在计算机界中，我们总是追求用有限的资源获取最大的收益。
+     *
+     * <p>现在，假设你分别支配着 m 个 0 和 n 个 1。另外，还有一个仅包含 0 和 1 字符串的数组。
+     *
+     * <p>你的任务是使用给定的 m 个 0 和 n 个 1 ，找到能拼出存在于数组中的字符串的最大数量。每个 0 和 1 至多被使用一次。
+     *
+     * <p>注意:
+     *
+     * <p>给定 0 和 1 的数量都不会超过 100。 给定字符串数组的长度不会超过 600。 示例 1:
+     *
+     * <p>输入: Array = {"10", "0001", "111001", "1", "0"}, m = 5, n = 3 输出: 4
+     *
+     * <p>解释: 总共 4 个字符串可以通过 5 个 0 和 3 个 1 拼出，即 "10","0001","1","0" 。 示例 2:
+     *
+     * <p>输入: Array = {"10", "0", "1"}, m = 1, n = 1 输出: 2
+     *
+     * <p>解释: 你可以拼出 "10"，但之后就没有剩余数字了。更好的选择是拼出 "0" 和 "1"
+     *
+     * @param strs
+     * @param m
+     * @param n
+     * @return
+     */
+    public int findMaxForm(String[] strs, int m, int n) {
+        // 0 1 背包问题
+        int[] zeroCounts = new int[strs.length];
+        int[] oneCounts = new int[strs.length];
+        for (int i = 0; i < strs.length; i++) {
+            String str = strs[i];
+            int oneCount = 0, zeroCount = 0;
+            for (char c : str.toCharArray()) {
+                switch (c) {
+                    case '0':
+                        zeroCount++;
+                        break;
+                    case '1':
+                        oneCount++;
+                        break;
+                }
+            }
+            zeroCounts[i] = zeroCount;
+            oneCounts[i] = oneCount;
+        }
+        log.debug("zeroCounts :{}", zeroCounts);
+        log.debug("oneCounts :{}", oneCounts);
+        int[][][] dp = new int[strs.length + 1][m + 1][n + 1];
+        for (int i = 1; i <= strs.length; i++) {
+            int zeroCount = zeroCounts[i - 1], oneCount = oneCounts[i - 1];
+            for (int j = 0; j <= m; j++) {
+                if (n + 1 >= 0) System.arraycopy(dp[i - 1][j], 0, dp[i][j], 0, n + 1);
+            }
+            for (int j = zeroCount; j <= m; j++) {
+                for (int k = oneCount; k <= n; k++) {
+                    dp[i][j][k] =
+                            Math.max(dp[i - 1][j][k], dp[i - 1][j - zeroCount][k - oneCount] + 1);
+                }
+            }
+        }
+        logResult(dp);
+
+        return dp[strs.length][m][n];
+    }
+
+    /**
+     * 486. 预测赢家
+     *
+     * <p>给定一个表示分数的非负整数数组。
+     * 玩家1从数组任意一端拿取一个分数，随后玩家2继续从剩余数组任意一端拿取分数，然后玩家1拿，……。每次一个玩家只能拿取一个分数，分数被拿取之后不再可取。直到没有剩余分数可取时游戏结束。最终获得分数总和最多的玩家获胜。
+     *
+     * <p>给定一个表示分数的数组，预测玩家1是否会成为赢家。你可以假设每个玩家的玩法都会使他的分数最大化。
+     *
+     * <p>示例 1:
+     *
+     * <p>输入: [1, 5, 2] 输出: False 解释: 一开始，玩家1可以从1和2中进行选择。
+     * 如果他选择2（或者1），那么玩家2可以从1（或者2）和5中进行选择。如果玩家2选择了5，那么玩家1则只剩下1（或者2）可选。 所以，玩家1的最终分数为 1 + 2 = 3，而玩家2为
+     * 5。 因此，玩家1永远不会成为赢家，返回 False。 示例 2:
+     *
+     * <p>输入: [1, 5, 233, 7] 输出: True 解释: 玩家1一开始选择1。然后玩家2必须从5和7中进行选择。无论玩家2选择了哪个，玩家1都可以选择233。
+     * 最终，玩家1（234分）比玩家2（12分）获得更多的分数，所以返回 True，表示玩家1可以成为赢家。 注意:
+     *
+     * <p>1 <= 给定的数组长度 <= 20. 数组里所有分数都为非负数且不会大于10000000。 如果最终两个玩家的分数相等，那么玩家1仍为赢家。
+     *
+     * @param nums
+     * @return
+     */
+    public boolean PredictTheWinner(int[] nums) {
+        // 使用动态规划来解决这个问题。用 dp(i, j) 表示当剩下的数为 nums[i .. j]
+        // 时，当前操作的选手（注意，不一定是先手）与另一位选手最多的分数差。当前操作的选手可以选择 nums[i] 并留下 nums[i+1 .. j]，或选择 nums[j] 并留下
+        // nums[i .. j-1]，因此状态转移方程为：
+        //
+        //
+        // dp(i, j) = max(nums[i] - dp(i+1, j), nums[j] - dp(i, j-1))
+        // dp(i, i) = nums[i]
+        //
+        int[][] dp = new int[nums.length + 1][nums.length];
+        for (int i = nums.length; i >= 0; i--) {
+            for (int j = i + 1; j < nums.length; j++) {
+                int a = nums[i] - dp[i + 1][j];
+                int b = nums[j] - dp[i][j - 1];
+                dp[i][j] = Math.max(a, b);
+            }
+        }
+
+        return dp[0][nums.length - 1] >= 0;
+    }
+
+    private void predictTheWinner(int[] nums, int left, int right, int index, int[] dp) {
+        if (left == right) {
+            dp[index] = nums[left];
+            return;
+        }
+        if (index - 2 < nums.length) {
+            dp[index] = dp[index + 2];
+        }
+        if (nums[left] >= nums[right]) {
+            dp[index] = nums[left];
+            predictTheWinner(nums, left + 1, right, index + 1, dp);
+        } else {
+            dp[index] += nums[right];
+            predictTheWinner(nums, left, right - 1, index + 1, dp);
+        }
+    }
 }
