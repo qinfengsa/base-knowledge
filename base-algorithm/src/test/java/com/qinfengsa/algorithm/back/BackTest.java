@@ -2201,4 +2201,57 @@ public class BackTest {
             flag2[n - 1 - row + col] = false;
         }
     }
+
+    @Test
+    public void findSubsequences() {
+        int[] nums = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 1, 1, 1, 1};
+        logResult(findSubsequences(nums));
+    }
+
+    /**
+     * 491. 递增子序列
+     *
+     * <p>给定一个整型数组, 你的任务是找到所有该数组的递增子序列，递增子序列的长度至少是2。
+     *
+     * <p>示例:
+     *
+     * <p>输入: [4, 6, 7, 7] 输出: [[4, 6], [4, 7], [4, 6, 7], [4, 6, 7, 7], [6, 7], [6, 7, 7], [7,7],
+     * [4,7,7]] 说明:
+     *
+     * <p>给定数组的长度不会超过15。 数组中的整数范围是 [-100,100]。 给定数组中可能包含重复数字，相等的数字应该被视为递增的一种情况。
+     *
+     * @param nums
+     * @return
+     */
+    public List<List<Integer>> findSubsequences(int[] nums) {
+        List<List<Integer>> result = new ArrayList<>();
+        if (nums.length < 2) {
+            return result;
+        }
+        findSubsequencesBack(0, nums, new ArrayList<>(), result);
+        return result;
+    }
+
+    private void findSubsequencesBack(
+            int index, int[] nums, List<Integer> list, List<List<Integer>> result) {
+        if (index >= nums.length) {
+            if (list.size() >= 2) {
+                log.debug("list:{}", list);
+                result.add(new ArrayList<>(list));
+            }
+            return;
+        }
+        int size = list.size();
+        // 把第 index 个元素加进 list 中
+        if (list.isEmpty() || list.get(size - 1) <= nums[index]) {
+            list.add(nums[index]);
+            findSubsequencesBack(index + 1, nums, list, result);
+            list.remove(size);
+        }
+        if (index > 0 && !list.isEmpty() && nums[index] == list.get(size - 1)) {
+            return;
+        }
+        // 不把第 index 个元素加进 list 中
+        findSubsequencesBack(index + 1, nums, list, result);
+    }
 }

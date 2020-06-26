@@ -3336,20 +3336,45 @@ public class DynamicPlanTest {
         return dp[0][nums.length - 1] >= 0;
     }
 
-    private void predictTheWinner(int[] nums, int left, int right, int index, int[] dp) {
-        if (left == right) {
-            dp[index] = nums[left];
-            return;
+    /**
+     * 516. 最长回文子序列
+     *
+     * <p>给定一个字符串 s ，找到其中最长的回文子序列，并返回该序列的长度。可以假设 s 的最大长度为 1000 。
+     *
+     * <p>示例 1: 输入:
+     *
+     * <p>"bbbab" 输出:
+     *
+     * <p>4 一个可能的最长回文子序列为 "bbbb"。
+     *
+     * <p>示例 2: 输入:
+     *
+     * <p>"cbbd" 输出:
+     *
+     * <p>2 一个可能的最长回文子序列为 "bb"。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= s.length <= 1000 s 只包含小写英文字母
+     *
+     * @param s
+     * @return
+     */
+    public int longestPalindromeSubseq(String s) {
+        int len = s.length();
+        // dp[i][j] 表示 i ~ j 最长的回文子序列长度
+        int[][] dp = new int[len][len];
+        for (int i = len - 1; i >= 0; i--) {
+            dp[i][i] = 1;
+            for (int j = i + 1; j < len; j++) {
+                if (s.charAt(i) == s.charAt(j)) {
+                    dp[i][j] = dp[i + 1][j - 1] + 2;
+                } else {
+                    dp[i][j] = Math.max(dp[i + 1][j], dp[i][j - 1]);
+                }
+            }
         }
-        if (index - 2 < nums.length) {
-            dp[index] = dp[index + 2];
-        }
-        if (nums[left] >= nums[right]) {
-            dp[index] = nums[left];
-            predictTheWinner(nums, left + 1, right, index + 1, dp);
-        } else {
-            dp[index] += nums[right];
-            predictTheWinner(nums, left, right - 1, index + 1, dp);
-        }
+
+        return dp[0][len - 1];
     }
 }
