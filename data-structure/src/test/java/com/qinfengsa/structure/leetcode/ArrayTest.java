@@ -12550,4 +12550,124 @@ public class ArrayTest {
 
         return nums[left];
     }
+
+    /**
+     * 5432. 去掉最低工资和最高工资后的工资平均值
+     *
+     * <p>给你一个整数数组 salary ，数组里每个数都是 唯一 的，其中 salary[i] 是第 i 个员工的工资。
+     *
+     * <p>请你返回去掉最低工资和最高工资以后，剩下员工工资的平均值。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：salary = [4000,3000,1000,2000] 输出：2500.00000 解释：最低工资和最高工资分别是 1000 和 4000 。
+     * 去掉最低工资和最高工资以后的平均工资是 (2000+3000)/2= 2500 示例 2：
+     *
+     * <p>输入：salary = [1000,2000,3000] 输出：2000.00000 解释：最低工资和最高工资分别是 1000 和 3000 。
+     * 去掉最低工资和最高工资以后的平均工资是 (2000)/1= 2000 示例 3：
+     *
+     * <p>输入：salary = [6000,5000,4000,3000,2000,1000] 输出：3500.00000 示例 4：
+     *
+     * <p>输入：salary = [8000,9000,2000,3000,6000,1000] 输出：4750.00000
+     *
+     * <p>提示：
+     *
+     * <p>3 <= salary.length <= 100 10^3 <= salary[i] <= 10^6 salary[i] 是唯一的。 与真实值误差在 10^-5
+     * 以内的结果都将视为正确答案。
+     *
+     * @param salary
+     * @return
+     */
+    public double average(int[] salary) {
+        int len = salary.length;
+        int max = 0, min = Integer.MAX_VALUE;
+        int sum = 0;
+        for (int num : salary) {
+            sum += num;
+            max = Math.max(max, num);
+            min = Math.min(min, num);
+        }
+        sum -= min;
+        sum -= max;
+        return (double) sum / (double) (len - 2);
+    }
+
+    @Test
+    public void longestSubarray() {
+        int[] nums = {1, 1, 1, 0};
+        logResult(longestSubarray(nums));
+    }
+
+    /**
+     * 5434. 删掉一个元素以后全为 1 的最长子数组
+     *
+     * <p>给你一个二进制数组 nums ，你需要从中删掉一个元素。
+     *
+     * <p>请你在删掉元素的结果数组中，返回最长的且只包含 1 的非空子数组的长度。
+     *
+     * <p>如果不存在这样的子数组，请返回 0 。
+     *
+     * <p>提示 1：
+     *
+     * <p>输入：nums = [1,1,0,1] 输出：3 解释：删掉位置 2 的数后，[1,1,1] 包含 3 个 1 。 示例 2：
+     *
+     * <p>输入：nums = [0,1,1,1,0,1,1,0,1] 输出：5 解释：删掉位置 4 的数字后，[0,1,1,1,1,1,0,1] 的最长全 1 子数组为
+     * [1,1,1,1,1] 。 示例 3：
+     *
+     * <p>输入：nums = [1,1,1] 输出：2 解释：你必须要删除一个元素。 示例 4：
+     *
+     * <p>输入：nums = [1,1,0,0,1,1,1,0,1] 输出：4 示例 5：
+     *
+     * <p>输入：nums = [0,0,0] 输出：0
+     *
+     * <p>提示：
+     *
+     * <p>1 <= nums.length <= 10^5 nums[i] 要么是 0 要么是 1 。
+     *
+     * @param nums
+     * @return
+     */
+    public int longestSubarray(int[] nums) {
+        // 删掉一个元素 dp
+        int[] deldp = new int[nums.length];
+        // 不删掉一个元素 dp
+        int[] undeldp = new int[nums.length];
+        if (nums[0] == 1) {
+            deldp[0] = 1;
+            undeldp[0] = 1;
+        }
+        for (int i = 1; i < nums.length; i++) {
+            if (nums[i] == 0) {
+                continue;
+            }
+            if (nums[i - 1] == 0) {
+                // 删掉 i - 1
+                if (i - 2 >= 0) {
+                    deldp[i] = undeldp[i - 2] + 1;
+                } else {
+                    deldp[i] = 1;
+                }
+                // 不删掉
+                undeldp[i] = 1;
+            } else {
+                // 删掉
+                deldp[i] = deldp[i - 1] + 1;
+                // 不删掉
+                undeldp[i] = undeldp[i - 1] + 1;
+            }
+        }
+        log.debug("del:{}", deldp);
+        log.debug("undeldp:{}", undeldp);
+        int max = 0;
+        for (int i = 0; i < nums.length; i++) {
+            max = Math.max(max, deldp[i]);
+            max = Math.max(max, undeldp[i]);
+        }
+        if (max == nums.length) {
+            // 必须要删除一个元素, 全为1时 - 1
+            return max - 1;
+        }
+
+        return max;
+    }
 }
