@@ -12437,4 +12437,117 @@ public class ArrayTest {
         }
         return result;
     }
+
+    @Test
+    public void firstMissingPositive2() {
+        int[] nums = {0, 1, 2};
+        int result = firstMissingPositive2(nums);
+        log.debug("result:{}", result);
+    }
+
+    /**
+     * 41. 缺失的第一个正数
+     *
+     * <p>给你一个未排序的整数数组，请你找出其中没有出现的最小的正整数。
+     *
+     * <p>示例 1:
+     *
+     * <p>输入: [1,2,0] 输出: 3 示例 2:
+     *
+     * <p>输入: [3,4,-1,1] 输出: 2 示例 3:
+     *
+     * <p>输入: [7,8,9,11,12] 输出: 1
+     *
+     * <p>提示：
+     *
+     * <p>你的算法的时间复杂度应为O(n)，并且只能使用常数级别的额外空间。
+     *
+     * @param nums
+     * @return
+     */
+    public int firstMissingPositive2(int[] nums) {
+        int len = nums.length;
+        for (int i = 0; i < nums.length; i++) {
+            if (i + 1 == nums[i]) {
+                continue;
+            }
+            modifyNums(nums, nums[i]);
+        }
+
+        for (int i = 0; i < len; i++) {
+            if (nums[i] != i + 1) {
+                return i + 1;
+            }
+        }
+        log.debug("result:{}", nums);
+        return len;
+    }
+
+    private void modifyNums(int[] nums, int index) {
+        if (index - 1 < 0 || index - 1 >= nums.length) {
+            return;
+        }
+        if (nums[index - 1] == index) {
+            return;
+        }
+        int tmp = nums[index - 1];
+        nums[index - 1] = index;
+        log.debug("nums:{}", nums);
+        modifyNums(nums, tmp);
+    }
+
+    @Test
+    public void singleNonDuplicate() {
+        int[] nums = {3, 3, 7, 7, 10, 11, 11};
+        logResult(singleNonDuplicate(nums));
+    }
+
+    /**
+     * 540. 有序数组中的单一元素
+     *
+     * <p>给定一个只包含整数的有序数组，每个元素都会出现两次，唯有一个数只会出现一次，找出这个数。
+     *
+     * <p>示例 1:
+     *
+     * <p>输入: [1,1,2,3,3,4,4,8,8] 输出: 2 示例 2:
+     *
+     * <p>输入: [3,3,7,7,10,11,11] 输出: 10 注意: 您的方案应该在 O(log n)时间复杂度和 O(1)空间复杂度中运行。
+     *
+     * @param nums
+     * @return
+     */
+    public int singleNonDuplicate(int[] nums) {
+        if (nums.length == 1) {
+            return nums[0];
+        }
+        if (nums[0] != nums[1]) {
+            return nums[0];
+        }
+        if (nums[nums.length - 1] != nums[nums.length - 2]) {
+            return nums[nums.length - 1];
+        }
+        int left = 0, right = nums.length - 1;
+
+        while (left < right) {
+            int mid = (left + right) >> 1;
+            if (mid > 0 && nums[mid] != nums[mid - 1] && nums[mid] != nums[mid + 1]) {
+                return nums[mid];
+            }
+            if ((mid & 1) == 0) {
+                if (nums[mid] == nums[mid - 1]) {
+                    right = mid;
+                } else {
+                    left = mid + 1;
+                }
+            } else {
+                if (nums[mid] == nums[mid - 1]) {
+                    left = mid + 1;
+                } else {
+                    right = mid;
+                }
+            }
+        }
+
+        return nums[left];
+    }
 }
