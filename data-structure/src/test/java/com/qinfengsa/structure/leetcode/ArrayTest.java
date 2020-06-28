@@ -12670,4 +12670,100 @@ public class ArrayTest {
 
         return max;
     }
+
+    /**
+     * 209. 长度最小的子数组
+     *
+     * <p>给定一个含有 n 个正整数的数组和一个正整数 s ，找出该数组中满足其和 ≥ s 的长度最小的连续子数组，并返回其长度。如果不存在符合条件的连续子数组，返回 0。
+     *
+     * <p>示例:
+     *
+     * <p>输入: s = 7, nums = [2,3,1,2,4,3] 输出: 2 解释: 子数组 [4,3] 是该条件下的长度最小的连续子数组。 进阶:
+     *
+     * <p>如果你已经完成了O(n) 时间复杂度的解法, 请尝试 O(n log n) 时间复杂度的解法。
+     *
+     * @param s
+     * @param nums
+     * @return
+     */
+    public int minSubArrayLen(int s, int[] nums) {
+        if (nums.length == 0) {
+            return 0;
+        }
+        int result = nums.length + 1;
+        int left = -1, right = 0;
+        int sum = nums[right];
+        while (right < nums.length) {
+            if (sum < s && right + 1 < nums.length) {
+                sum += nums[++right];
+            } else {
+                sum -= nums[left++];
+            }
+            if (sum >= s) {
+                result = Math.min(result, right - left + 1);
+            }
+        }
+
+        return result > nums.length ? 0 : result;
+    }
+
+    /**
+     * 5449. 检查数组对是否可以被 k 整除
+     *
+     * <p>给你一个整数数组 arr 和一个整数 k ，其中数组长度是偶数，值为 n 。
+     *
+     * <p>现在需要把数组恰好分成 n / 2 对，以使每对数字的和都能够被 k 整除。
+     *
+     * <p>如果存在这样的分法，请返回 True ；否则，返回 False 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：arr = [1,2,3,4,5,10,6,7,8,9], k = 5 输出：true 解释：划分后的数字对为 (1,9),(2,8),(3,7),(4,6) 以及
+     * (5,10) 。 示例 2：
+     *
+     * <p>输入：arr = [1,2,3,4,5,6], k = 7 输出：true 解释：划分后的数字对为 (1,6),(2,5) 以及 (3,4) 。 示例 3：
+     *
+     * <p>输入：arr = [1,2,3,4,5,6], k = 10 输出：false 解释：无法在将数组中的数字分为三对的同时满足每对数字和能够被 10 整除的条件。 示例 4：
+     *
+     * <p>输入：arr = [-10,10], k = 2 输出：true 示例 5：
+     *
+     * <p>输入：arr = [-1,1,-2,2,-3,3,-4,4], k = 3 输出：true
+     *
+     * <p>提示：
+     *
+     * <p>arr.length == n 1 <= n <= 10^5 n 为偶数 -10^9 <= arr[i] <= 10^9 1 <= k <= 10^5
+     *
+     * @param arr
+     * @param k
+     * @return
+     */
+    public boolean canArrange(int[] arr, int k) {
+        int len = arr.length >> 1;
+        // 同余问题
+        int[] counts = new int[k];
+        for (int i = 0; i < arr.length; i++) {
+            int num = arr[i];
+            arr[i] = num % k;
+            if (arr[i] < 0) {
+                arr[i] += k;
+            }
+            counts[arr[i]]++;
+        }
+
+        if ((counts[0] & 1) == 1) {
+            return false;
+        }
+        // k 是偶数 k = 8  余数4 必须是偶数
+        if ((k & 1) == 0 && (counts[k >> 1] & 1) == 1) {
+            return false;
+        }
+        int left = 1, right = k - 1;
+        while (left < right) {
+            if (counts[left++] != counts[right--]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }
