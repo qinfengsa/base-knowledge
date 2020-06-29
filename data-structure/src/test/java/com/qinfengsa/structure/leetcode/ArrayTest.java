@@ -12766,4 +12766,98 @@ public class ArrayTest {
 
         return true;
     }
+
+    @Test
+    public void findKthLargest2() {
+        int[] nums = {3, 2, 1, 5, 6, 4};
+        int k = 2;
+        int result = findKthLargest2(nums, k);
+        log.debug("nums:{}", nums);
+        log.debug("result:{}", result);
+    }
+
+    /**
+     * 215. 数组中的第K个最大元素
+     *
+     * <p>在未排序的数组中找到第 k 个最大的元素。请注意，你需要找的是数组排序后的第 k 个最大的元素，而不是第 k 个不同的元素。
+     *
+     * <p>示例 1:
+     *
+     * <p>输入: [3,2,1,5,6,4] 和 k = 2 输出: 5 示例 2:
+     *
+     * <p>输入: [3,2,3,1,2,4,5,5,6] 和 k = 4 输出: 4 说明:
+     *
+     * <p>你可以假设 k 总是有效的，且 1 ≤ k ≤ 数组的长度。
+     *
+     * @param nums
+     * @param k
+     * @return
+     */
+    public int findKthLargest2(int[] nums, int k) {
+        // 利用快速排序的思路
+        findKthLargest2(nums, 0, nums.length - 1, nums.length - k);
+        return nums[nums.length - k];
+    }
+
+    private void findKthLargest2(int[] nums, int start, int end, int k) {
+        if (start >= end) {
+            return;
+        }
+        // 快速排序：选择一个主元 a一般取第一个, 把比a小的元素放左边,比a大的元素放右边
+        int tmp = nums[start];
+        int left = start, right = end;
+        while (left < right) {
+            // 从后往前找到第一个小于 tmp的 元素
+            while (left < right && nums[right] >= tmp) {
+                right--;
+            }
+            nums[left] = nums[right];
+            // 从前往后找到第一个大于tmp的 元素
+            while (left < right && nums[left] <= tmp) {
+                left++;
+            }
+            nums[right] = nums[left];
+        }
+        nums[left] = tmp;
+        if (k == left) {
+            return;
+        }
+        if (k < left) {
+            findKthLargest2(nums, start, left - 1, k);
+        } else {
+            findKthLargest2(nums, left + 1, end, k);
+        }
+    }
+
+    /**
+     * 525. 连续数组
+     *
+     * <p>给定一个二进制数组, 找到含有相同数量的 0 和 1 的最长连续子数组（的长度）。
+     *
+     * <p>示例 1:
+     *
+     * <p>输入: [0,1] 输出: 2 说明: [0, 1] 是具有相同数量0和1的最长连续子数组。 示例 2:
+     *
+     * <p>输入: [0,1,0] 输出: 2 说明: [0, 1] (或 [1, 0]) 是具有相同数量0和1的最长连续子数组。
+     *
+     * <p>注意: 给定的二进制数组的长度不会超过50000。
+     *
+     * @param nums
+     * @return
+     */
+    public int findMaxLength(int[] nums) {
+        // 用map记录索引
+        Map<Integer, Integer> map = new HashMap<>();
+        map.put(0, -1);
+        int max = 0, count = 0;
+        for (int i = 0; i < nums.length; i++) {
+            count += nums[i] == 1 ? 1 : -1;
+            if (map.containsKey(count)) {
+                max = Math.max(max, i - map.get(count));
+            } else {
+                map.put(count, i);
+            }
+        }
+        return max;
+    }
 }

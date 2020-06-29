@@ -2254,4 +2254,51 @@ public class BackTest {
         // 不把第 index 个元素加进 list 中
         findSubsequencesBack(index + 1, nums, list, result);
     }
+
+    /**
+     * 526. 优美的排列
+     *
+     * <p>假设有从 1 到 N 的 N 个整数，如果从这 N 个数字中成功构造出一个数组，使得数组的第 i 位 (1 <= i <= N)
+     * 满足如下两个条件中的一个，我们就称这个数组为一个优美的排列。条件：
+     *
+     * <p>第 i 位的数字能被 i 整除 i 能被第 i 位上的数字整除 现在给定一个整数 N，请问可以构造多少个优美的排列？
+     *
+     * <p>示例1:
+     *
+     * <p>输入: 2 输出: 2 解释:
+     *
+     * <p>第 1 个优美的排列是 [1, 2]: 第 1 个位置（i=1）上的数字是1，1能被 i（i=1）整除 第 2 个位置（i=2）上的数字是2，2能被 i（i=2）整除
+     *
+     * <p>第 2 个优美的排列是 [2, 1]: 第 1 个位置（i=1）上的数字是2，2能被 i（i=1）整除 第 2 个位置（i=2）上的数字是1，i（i=2）能被 1 整除 说明:
+     *
+     * <p>N 是一个正整数，并且不会超过15。
+     *
+     * @param N
+     * @return
+     */
+    public int countArrangement(int N) {
+        countArrangementResult = 0;
+        boolean[] visited = new boolean[N + 1];
+        countArrangement(visited, N, 1);
+        return countArrangementResult;
+    }
+
+    private int countArrangementResult;
+
+    private void countArrangement(boolean[] visited, int N, int index) {
+        if (index > N) {
+            countArrangementResult++;
+        }
+
+        for (int i = 1; i <= N; i++) {
+            if (visited[i]) {
+                continue;
+            }
+            if (index % i == 0 || i % index == 0) {
+                visited[i] = true;
+                countArrangement(visited, N, index + 1);
+                visited[i] = false;
+            }
+        }
+    }
 }
