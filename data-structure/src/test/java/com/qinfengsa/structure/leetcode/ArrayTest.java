@@ -12860,4 +12860,35 @@ public class ArrayTest {
         }
         return max;
     }
+
+    /**
+     * 539. 最小时间差
+     *
+     * <p>给定一个 24 小时制（小时:分钟）的时间列表，找出列表中任意两个时间的最小时间差并以分钟数表示。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入: ["23:59","00:00"] 输出: 1
+     *
+     * <p>备注:
+     *
+     * <p>列表中时间数在 2~20000 之间。 每个时间取值在 00:00~23:59 之间。
+     *
+     * @param timePoints
+     * @return
+     */
+    public int findMinDifference(List<String> timePoints) {
+        int[] minuteArr = new int[timePoints.size()];
+        for (int i = 0; i < timePoints.size(); i++) {
+            int h = Integer.parseInt(timePoints.get(i).substring(0, 2));
+            int m = Integer.parseInt(timePoints.get(i).substring(3));
+            minuteArr[i] = h * 60 + m;
+        }
+        Arrays.sort(minuteArr);
+        int min = 24 * 60 - (minuteArr[minuteArr.length - 1] - minuteArr[0]);
+        for (int i = 1; i < minuteArr.length; i++) {
+            min = Math.min(min, minuteArr[i] - minuteArr[i - 1]);
+        }
+        return min;
+    }
 }
