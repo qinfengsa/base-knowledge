@@ -6297,4 +6297,141 @@ public class StringTest {
         }
         return null;
     }
+
+    /**
+     * 521. 最长特殊序列 I
+     *
+     * <p>给你两个字符串，请你从这两个字符串中找出最长的特殊序列。
+     *
+     * <p>「最长特殊序列」定义如下：该序列为某字符串独有的最长子序列（即不能是其他字符串的子序列）。
+     *
+     * <p>子序列 可以通过删去字符串中的某些字符实现，但不能改变剩余字符的相对顺序。空序列为所有字符串的子序列，任何字符串为其自身的子序列。
+     *
+     * <p>输入为两个字符串，输出最长特殊序列的长度。如果不存在，则返回 -1。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入: "aba", "cdc" 输出: 3 解释: 最长特殊序列可为 "aba" (或 "cdc")，两者均为自身的子序列且不是对方的子序列。 示例 2：
+     *
+     * <p>输入：a = "aaa", b = "bbb" 输出：3 示例 3：
+     *
+     * <p>输入：a = "aaa", b = "aaa" 输出：-1
+     *
+     * <p>提示：
+     *
+     * <p>两个字符串长度均处于区间 [1 - 100] 。 字符串中的字符仅含有 'a'~'z'
+     *
+     * @param a
+     * @param b
+     * @return
+     */
+    public int findLUSlength(String a, String b) {
+        if (a.equals(b)) return -1;
+        return Math.max(a.length(), b.length());
+    }
+
+    /**
+     * 522. 最长特殊序列 II
+     *
+     * <p>给定字符串列表，你需要从它们中找出最长的特殊序列。最长特殊序列定义如下：该序列为某字符串独有的最长子序列（即不能是其他字符串的子序列）。
+     *
+     * <p>子序列可以通过删去字符串中的某些字符实现，但不能改变剩余字符的相对顺序。空序列为所有字符串的子序列，任何字符串为其自身的子序列。
+     *
+     * <p>输入将是一个字符串列表，输出是最长特殊序列的长度。如果最长特殊序列不存在，返回 -1 。
+     *
+     * <p>示例：
+     *
+     * <p>输入: "aba", "cdc", "eae" 输出: 3
+     *
+     * <p>提示：
+     *
+     * <p>所有给定的字符串长度不会超过 10 。 给定字符串列表的长度将在 [2, 50 ] 之间。
+     *
+     * @param strs
+     * @return
+     */
+    public int findLUSlength(String[] strs) {
+        // 先按长度排序
+        Arrays.sort(strs, (a, b) -> b.length() - a.length());
+
+        for (int i = 0; i < strs.length; i++) {
+            boolean flag = true;
+            // 判断是否是其他字符串的子串
+            for (int j = 0; j < strs.length; j++) {
+                if (i == j) {
+                    continue;
+                }
+                if (isSubsequence2(strs[i], strs[j])) {
+                    flag = false;
+                    break;
+                }
+            }
+            if (flag) {
+                return strs[i].length();
+            }
+        }
+
+        return -1;
+    }
+
+    /**
+     * 判断 x 是否为 y 的子序列
+     *
+     * @param x
+     * @param y
+     * @return
+     */
+    public boolean isSubsequence2(String x, String y) {
+        if (x.length() > y.length()) {
+            return false;
+        }
+        if (Objects.equals(x, y)) {
+            return true;
+        }
+        int index = 0;
+        for (int i = 0; i < y.length() && index < x.length(); i++) {
+            if (x.charAt(index) == y.charAt(i)) {
+                index++;
+            }
+        }
+        return index == x.length();
+    }
+
+    /**
+     * 524. 通过删除字母匹配到字典里最长单词
+     *
+     * <p>给定一个字符串和一个字符串字典，找到字典里面最长的字符串， 该字符串可以通过删除给定字符串的某些字符来得到。
+     * 如果答案不止一个，返回长度最长且字典顺序最小的字符串。如果答案不存在，则返回空字符串。
+     *
+     * <p>示例 1:
+     *
+     * <p>输入: s = "abpcplea", d = ["ale","apple","monkey","plea"]
+     *
+     * <p>输出: "apple" 示例 2:
+     *
+     * <p>输入: s = "abpcplea", d = ["a","b","c"]
+     *
+     * <p>输出: "a" 说明:
+     *
+     * <p>所有输入的字符串只包含小写字母。 字典的大小不会超过 1000。 所有输入的字符串长度不会超过 1000。
+     *
+     * @param s
+     * @param d
+     * @return
+     */
+    public String findLongestWord(String s, List<String> d) {
+
+        String result = "";
+        for (String str : d) {
+            if (result.length() > str.length()
+                    || (result.length() == str.length() && result.compareTo(str) < 0)) {
+                continue;
+            }
+
+            if (isSubsequence2(str, s)) {
+                result = str;
+            }
+        }
+        return result;
+    }
 }

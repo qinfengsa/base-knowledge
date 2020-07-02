@@ -1108,4 +1108,88 @@ public class GraphTest {
         }
         return findLeader(letters, letters[index]);
     }
+
+    @Test
+    public void minNumberOfSemesters() {
+        int n = 8, k = 3; // 3
+        int[][] dependencies = {{1, 6}, {2, 7}, {8, 7}, {2, 5}, {3, 4}};
+        logResult(minNumberOfSemesters(n, dependencies, k));
+    }
+
+    /**
+     * 5435. 并行课程 II
+     *
+     * <p>给你一个整数 n 表示某所大学里课程的数目，编号为 1 到 n ，数组 dependencies 中， dependencies[i] = [xi, yi]
+     * 表示一个先修课的关系，也就是课程 xi 必须在课程 yi 之前上。同时你还有一个整数 k 。
+     *
+     * <p>在一个学期中，你 最多 可以同时上 k 门课，前提是这些课的先修课在之前的学期里已经上过了。
+     *
+     * <p>请你返回上完所有课最少需要多少个学期。题目保证一定存在一种上完所有课的方式。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：n = 4, dependencies = [[2,1],[3,1],[1,4]], k = 2 输出：3 解释：上图展示了题目输入的图。在第一个学期中，我们可以上课程 2
+     * 和课程 3 。然后第二个学期上课程 1 ，第三个学期上课程 4 。 示例 2：
+     *
+     * <p>输入：n = 5, dependencies = [[2,1],[3,1],[4,1],[1,5]], k = 2 输出：4
+     * 解释：上图展示了题目输入的图。一个最优方案是：第一学期上课程 2 和 3，第二学期上课程 4 ，第三学期上课程 1 ，第四学期上课程 5 。 示例 3：
+     *
+     * <p>输入：n = 11, dependencies = [], k = 2 输出：6
+     *
+     * <p>提示：
+     *
+     * <p>1 <= n <= 15 1 <= k <= n 0 <= dependencies.length <= n * (n-1) / 2 dependencies[i].length
+     * == 2 1 <= xi, yi <= n xi != yi 所有先修关系都是不同的，也就是说 dependencies[i] != dependencies[j] 。
+     * 题目输入的图是个有向无环图。
+     *
+     * @param n
+     * @param dependencies
+     * @param k
+     * @return
+     */
+    public int minNumberOfSemesters(int n, int[][] dependencies, int k) {
+        if (dependencies.length == 0) {
+            return (n - 1) / k + 1;
+        }
+        // 入度
+        int[] inDegree = new int[n + 1];
+        // 出度
+        int[] outDegree = new int[n + 1];
+        boolean[][] graph = new boolean[n + 1][n + 1];
+        for (int[] dependency : dependencies) {
+            outDegree[dependency[0]]++;
+            inDegree[dependency[1]]++;
+            graph[dependency[0]][dependency[1]] = true;
+        }
+        // 入度为0的点开始遍历
+        minNumberOfSemesters(n, k, inDegree, graph);
+        return minNumberOfSemestersResult;
+    }
+
+    private int minNumberOfSemestersResult = 0;
+
+    private void minNumberOfSemesters(int n, int k, int[] inDegree, boolean[][] graph) {
+        int count = 0;
+        List<Integer> list = new ArrayList<>();
+        for (int i = 1; i <= n; i++) {
+            if (inDegree[i] != 0) {
+                continue;
+            }
+            list.add(i);
+            inDegree[i] = -1;
+            count++;
+        }
+        if (count == 0) {
+            return;
+        }
+        for (int i : list) {
+            for (int j = 1; j <= n; j++) {
+                if (graph[i][j]) {
+                    inDegree[j]--;
+                }
+            }
+        }
+        minNumberOfSemestersResult += (count - 1) / k + 1;
+        minNumberOfSemesters(n, k, inDegree, graph);
+    }
 }
