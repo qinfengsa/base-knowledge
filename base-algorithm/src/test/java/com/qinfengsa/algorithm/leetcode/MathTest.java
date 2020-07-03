@@ -5193,8 +5193,8 @@ public class MathTest {
      * @return
      */
     public String complexNumberMultiply(String a, String b) {
-        String num1[] = a.split("[+i]");
-        String num2[] = b.split("[+i]");
+        String[] num1 = a.split("[+i]");
+        String[] num2 = b.split("[+i]");
         StringBuilder sb = new StringBuilder();
         int num1Real = Integer.parseInt(num1[0]);
         int num1Imag = Integer.parseInt(num1[1]);
@@ -5206,5 +5206,121 @@ public class MathTest {
                 .append(num1Real * num2Imag + num1Imag * num2Real)
                 .append("i");
         return sb.toString();
+    }
+
+    /**
+     * 553. 最优除法
+     *
+     * <p>给定一组正整数，相邻的整数之间将会进行浮点除法操作。例如， [2,3,4] -> 2 / 3 / 4 。
+     *
+     * <p>但是，你可以在任意位置添加任意数目的括号，来改变算数的优先级。你需要找出怎么添加括号，才能得到最大的结果，并且返回相应的字符串格式的表达式。你的表达式不应该含有冗余的括号。
+     *
+     * <p>示例：
+     *
+     * <p>输入: [1000,100,10,2] 输出: "1000/(100/10/2)" 解释: 1000/(100/10/2) = 1000/((100/10)/2) = 200
+     * 但是，以下加粗的括号 "1000/((100/10)/2)" 是冗余的， 因为他们并不影响操作的优先级，所以你需要返回 "1000/(100/10/2)"。
+     *
+     * <p>其他用例: 1000/(100/10)/2 = 50 1000/(100/(10/2)) = 50 1000/100/10/2 = 0.5 1000/100/(10/2) = 2
+     * 说明:
+     *
+     * <p>输入数组的长度在 [1, 10] 之间。 数组中每个元素的大小都在 [2, 1000] 之间。 每个测试用例只有一个最优除法解。
+     *
+     * @param nums
+     * @return
+     */
+    public String optimalDivision(int[] nums) {
+        // 最大被除数
+        int[] maxDividend = new int[nums.length - 1];
+        // 最小除数
+        int[] minDivisor = new int[nums.length - 1];
+        if (nums.length == 1) {
+            return String.valueOf(nums[0]);
+        }
+        if (nums.length == 2) {
+
+            return nums[0] + "/" + nums[1];
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append(nums[0]).append("/(").append(nums[1]);
+        for (int i = 2; i < nums.length; i++) {
+            sb.append("/").append(nums[i]);
+        }
+        sb.append(")");
+        return sb.toString();
+    }
+
+    @Test
+    public void nextGreaterElement() {
+        int n = 101;
+        logResult(nextGreaterElement(n));
+    }
+
+    /**
+     * 556. 下一个更大元素 III
+     *
+     * <p>给定一个32位正整数 n，你需要找到最小的32位整数，其与 n 中存在的位数完全相同，并且其值大于n。如果不存在这样的32位整数，则返回-1。
+     *
+     * <p>示例 1:
+     *
+     * <p>输入: 12 输出: 21 示例 2:
+     *
+     * <p>输入: 21 输出: -1
+     *
+     * @param n
+     * @return
+     */
+    public int nextGreaterElement(int n) {
+        int[] nums = new int[32];
+        Arrays.fill(nums, -1);
+        int index = nums.length - 1;
+        while (n > 0) {
+            nums[index--] = n % 10;
+            n /= 10;
+        }
+
+        // 1 从后往前,找到第一个递增（从后往前递增,从前往后递减）
+        // 2 然后 获取前一位数字a, 如果前一位是0或不存在,返回-1
+        // 3 在 后面的数字中找到比a大的最小值, 放到a的位置
+        // 4 对后面的数字排序,(逆序即可)
+        index = -1;
+        for (int i = nums.length - 2; i >= 0; i--) {
+            if (nums[i] != -1 && nums[i] < nums[i + 1]) {
+                index = i;
+                break;
+            }
+        }
+        if (index == -1) {
+            return -1;
+        }
+
+        int left = index + 1, right = nums.length - 1;
+        while (left < right) {
+            swap(nums, left++, right--);
+        }
+        for (int i = index + 1; i < nums.length; i++) {
+            if (nums[i] > nums[index]) {
+                swap(nums, index, i);
+                break;
+            }
+        }
+        int max = Integer.MAX_VALUE / 10;
+        int num = 0;
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] == -1) {
+                continue;
+            }
+            if (num > max || (num == max && nums[i] > 7)) {
+                return -1;
+            }
+            num = num * 10 + nums[i];
+        }
+
+        return num;
+    }
+
+    private void swap(int[] nums, int i, int j) {
+        int tmp = nums[i];
+        nums[i] = nums[j];
+        nums[j] = tmp;
     }
 }
