@@ -1311,7 +1311,7 @@ public class DynamicPlanTest {
     @Test
     public void longestValidParentheses() {
         String s = ")()())()";
-        logResult(longestValidParenthesesStack(s));
+        logResult(longestValidParentheses(s));
     }
 
     /**
@@ -3616,5 +3616,95 @@ public class DynamicPlanTest {
             }
         }
         return max;
+    }
+
+    @Test
+    public void longestValidParentheses2() {
+        String s = "((()))";
+        logResult(longestValidParentheses2(s));
+    }
+
+    /**
+     * 32. 最长有效括号
+     *
+     * <p>给定一个只包含 '(' 和 ')' 的字符串，找出最长的包含有效括号的子串的长度。
+     *
+     * <p>示例 1:
+     *
+     * <p>输入: "(()" 输出: 2 解释: 最长有效括号子串为 "()" 示例 2:
+     *
+     * <p>输入: ")()())" 输出: 4 解释: 最长有效括号子串为 "()()"
+     *
+     * @param s
+     * @return
+     */
+    public int longestValidParentheses2(String s) {
+        char[] chars = s.toCharArray();
+        int max = 0;
+        int[] dp = new int[chars.length];
+        for (int i = 1; i < chars.length; i++) {
+            char c = chars[i];
+            if (chars[i] == ')') {
+                if (chars[i - 1] == '(') {
+                    dp[i] = (i > 2 ? dp[i - 2] : 0) + 2;
+                } else {
+                    int lastLeft = i - dp[i - 1] - 1;
+                    if (lastLeft >= 0 && chars[lastLeft] == '(') {
+                        dp[i] = dp[i - 1] + 2 + (lastLeft - 1 >= 0 ? dp[lastLeft - 1] : 0);
+                    }
+                }
+
+                max = Math.max(dp[i], max);
+            }
+        }
+        log.debug("dp:{}", dp);
+        return max;
+    }
+
+    @Test
+    public void minDistance3() {
+        String word1 = "sea", word2 = "eat";
+
+        logResult(minDistance3(word1, word2));
+    }
+
+    /**
+     * 583. 两个字符串的删除操作
+     *
+     * <p>给定两个单词 word1 和 word2，找到使得 word1 和 word2 相同所需的最小步数，每步可以删除任意一个字符串中的一个字符。
+     *
+     * <p>示例：
+     *
+     * <p>输入: "sea", "eat" 输出: 2 解释: 第一步将"sea"变为"ea"，第二步将"eat"变为"ea"
+     *
+     * <p>提示：
+     *
+     * <p>给定单词的长度不超过500。 给定单词中的字符只含有小写字母。
+     *
+     * @param word1
+     * @param word2
+     * @return
+     */
+    public int minDistance3(String word1, String word2) {
+        if (Objects.equals(word1, word2)) {
+            return 0;
+        }
+        int len1 = word1.length(), len2 = word2.length();
+        if (len1 * len2 == 0) {
+            return len1 + len2;
+        }
+        int[][] dp = new int[len1 + 1][len2 + 1];
+        for (int i = 0; i < len1; i++) {
+            for (int j = 0; j < len2; j++) {
+                if (word1.charAt(i) == word2.charAt(j)) {
+                    dp[i + 1][j + 1] = dp[i][j] + 1;
+                } else {
+                    dp[i + 1][j + 1] = Math.max(dp[i + 1][j], dp[i][j + 1]);
+                }
+            }
+        }
+        logResult(dp);
+        int max = dp[len1][len2];
+        return len1 + len2 - 2 * max;
     }
 }
