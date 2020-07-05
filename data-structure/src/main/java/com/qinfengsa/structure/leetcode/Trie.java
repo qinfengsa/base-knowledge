@@ -1,32 +1,26 @@
 package com.qinfengsa.structure.leetcode;
 
-import lombok.extern.slf4j.Slf4j;
-
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
 
 /**
- * 实现 Trie (前缀树)
- * 实现一个 Trie (前缀树)，包含 insert, search, 和 startsWith 这三个操作。
+ * 实现 Trie (前缀树) 实现一个 Trie (前缀树)，包含 insert, search, 和 startsWith 这三个操作。
  *
- * 示例:
+ * <p>示例:
  *
- * Trie trie = new Trie();
+ * <p>Trie trie = new Trie();
  *
- * trie.insert("apple");
- * trie.search("apple");   // 返回 true
- * trie.search("app");     // 返回 false
- * trie.startsWith("app"); // 返回 true
- * trie.insert("app");
- * trie.search("app");     // 返回 true
- * 说明:
+ * <p>trie.insert("apple"); trie.search("apple"); // 返回 true trie.search("app"); // 返回 false
+ * trie.startsWith("app"); // 返回 true trie.insert("app"); trie.search("app"); // 返回 true 说明:
  *
- * 你可以假设所有的输入都是由小写字母 a-z 构成的。
- * 保证所有输入均为非空字符串。
+ * <p>你可以假设所有的输入都是由小写字母 a-z 构成的。 保证所有输入均为非空字符串。
+ *
  * @author: qinfengsa
  * @date: 2020/2/15 22:48
  */
@@ -41,9 +35,7 @@ public class Trie {
         root = new TrieNode();
     }
 
-    /**
-     * 节点
-     */
+    /** 节点 */
     static class TrieNode {
         // 有多少单词通过这个节点,即由根至该节点组成的字符串模式出现的次数
         private int num;
@@ -55,15 +47,15 @@ public class Trie {
         private String val;
 
         TrieNode() {
-            num = 1;
+            num = 0;
             children = new TrieNode[SIZE];
             isEnd = false;
         }
     }
 
-
     /**
      * 逆序插入
+     *
      * @param word
      */
     public void reverseInsert(String word) {
@@ -79,9 +71,8 @@ public class Trie {
             if (currentNode == null) {
                 currentNode = new TrieNode();
                 node.children[c - 'a'] = currentNode;
-            } else {
-                currentNode.num++;
             }
+            currentNode.num++;
             // 判断是否 end
             if (i == 0) {
                 currentNode.isEnd = true;
@@ -90,7 +81,6 @@ public class Trie {
             node = currentNode;
         }
     }
-
 
     public int minimumLengthEncoding() {
         // 深度优先遍历
@@ -113,11 +103,7 @@ public class Trie {
             if (count == 0) {
                 result += val.length() + 1;
             }
-
-
         }
-
-
 
         return result;
     }
@@ -129,23 +115,15 @@ public class Trie {
         }
         TrieNode node = root;
         // 遍历word
-        for (int i = 0; i < word.length(); i++) {
-            char c = word.charAt(i);
-            // 取子节点
-            TrieNode currentNode = node.children[c - 'a'];
-            if (currentNode == null) {
-                currentNode = new TrieNode();
-                node.children[c - 'a'] = currentNode;
-            } else {
-                currentNode.num++;
+        for (char c : word.toCharArray()) {
+            if (Objects.isNull(node.children[c - 'a'])) {
+                node.children[c - 'a'] = new TrieNode();
             }
-            // 判断是否 end
-            if (i == word.length() - 1) {
-                currentNode.isEnd = true;
-                currentNode.val = word;
-            }
-            node = currentNode;
+            node = node.children[c - 'a'];
+            node.num++;
         }
+        node.isEnd = true;
+        node.val = word;
     }
 
     /** Returns if the word is in the trie. */
@@ -168,7 +146,6 @@ public class Trie {
         }
         return false;
     }
-
 
     /** Returns if there is any word in the trie that starts with the given prefix. */
     public boolean startsWith(String prefix) {
@@ -213,15 +190,23 @@ public class Trie {
                     }
                 }
             }
-
-
         }
-
-
-
         return result;
     }
 
+    public String getReplaceWord(String word) {
+        TrieNode node = root;
+        for (char c : word.toCharArray()) {
+            if (Objects.isNull(node.children[c - 'a'])) {
+                break;
+            }
+            node = node.children[c - 'a'];
+            if (node.isEnd) {
+                break;
+            }
+        }
+        return node.isEnd ? node.val : word;
+    }
 
     public static void main(String[] args) {
         /*Trie trie = new Trie();
@@ -268,7 +253,7 @@ public class Trie {
         boolean b23 = trie.startsWith("jam");
         log.debug("b23：{} ",b23);*/
 
-       /* trie.insert("apple");
+        /* trie.insert("apple");
         boolean a = trie.search("apple");
         log.debug("a：{} // 返回 true",a);
         boolean b = trie.search("app");
@@ -279,21 +264,22 @@ public class Trie {
         boolean d = trie.search("app");
         log.debug("d：{} // 返回 true",d);*/
 
-
-
-
     }
 
     static class Solution {
 
         public static void main(String[] args) {
             Solution solution = new Solution();
-            char[][] board ={{'o','a','a','n'},{'e','t','a','e'},{'i','h','k','r'},{'i','f','l','v'}};
-            String[] words = {"oath","pea","eat","rain"};
-            List<String> result = solution.findWords(board,words);
-            log.debug("result:{}",result);
+            char[][] board = {
+                {'o', 'a', 'a', 'n'},
+                {'e', 't', 'a', 'e'},
+                {'i', 'h', 'k', 'r'},
+                {'i', 'f', 'l', 'v'}
+            };
+            String[] words = {"oath", "pea", "eat", "rain"};
+            List<String> result = solution.findWords(board, words);
+            log.debug("result:{}", result);
         }
-
 
         public List<String> findWords(char[][] board, String[] words) {
             Set<String> set = new HashSet<>();
@@ -312,14 +298,21 @@ public class Trie {
             }
             for (int i = 0; i < rowNum; i++) {
                 for (int j = 0; j < colNum; j++) {
-                    findWord(board,marked, i, j, trie.root , set);
+                    findWord(board, marked, i, j, trie.root, set);
                 }
             }
             List<String> result = new ArrayList<>(set);
             return result;
         }
-        private void findWord(char[][] board,boolean[][] marked,int row, int col,TrieNode node, Set<String> set) {
-            if (!inArea(row,col,board.length,board[0].length) || marked[row][col]) {
+
+        private void findWord(
+                char[][] board,
+                boolean[][] marked,
+                int row,
+                int col,
+                TrieNode node,
+                Set<String> set) {
+            if (!inArea(row, col, board.length, board[0].length) || marked[row][col]) {
                 return;
             }
             char c = board[row][col];
@@ -331,15 +324,15 @@ public class Trie {
             if (node.isEnd) {
                 set.add(node.val);
             }
-            findWord(board,marked, row - 1, col, node , set);
-            findWord(board,marked, row + 1, col, node , set);
-            findWord(board,marked, row, col - 1, node , set);
-            findWord(board,marked, row, col + 1, node , set);
+            findWord(board, marked, row - 1, col, node, set);
+            findWord(board, marked, row + 1, col, node, set);
+            findWord(board, marked, row, col - 1, node, set);
+            findWord(board, marked, row, col + 1, node, set);
             marked[row][col] = false;
         }
 
-        private boolean inArea(int row, int col,int rowNum,int colNum) {
-            return row >= 0 && row < rowNum && col >= 0 &&col < colNum;
+        private boolean inArea(int row, int col, int rowNum, int colNum) {
+            return row >= 0 && row < rowNum && col >= 0 && col < colNum;
         }
     }
 }

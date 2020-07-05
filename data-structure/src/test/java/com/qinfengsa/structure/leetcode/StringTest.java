@@ -6434,4 +6434,109 @@ public class StringTest {
         }
         return result;
     }
+
+    @Test
+    public void isMatch() {
+        String s = "acdcb", p = "a*c?b";
+        boolean result = isMatch(s, p);
+        logResult(result);
+    }
+
+    /**
+     * 44. 通配符匹配
+     *
+     * <p>给定一个字符串 (s) 和一个字符模式 (p) ，实现一个支持 '?' 和 '*' 的通配符匹配。
+     *
+     * <p>'?' 可以匹配任何单个字符。 '*' 可以匹配任意字符串（包括空字符串）。 两个字符串完全匹配才算匹配成功。
+     *
+     * <p>说明:
+     *
+     * <p>s 可能为空，且只包含从 a-z 的小写字母。 p 可能为空，且只包含从 a-z 的小写字母，以及字符 ? 和 *。 示例 1:
+     *
+     * <p>输入: s = "aa" p = "a" 输出: false 解释: "a" 无法匹配 "aa" 整个字符串。 示例 2:
+     *
+     * <p>输入: s = "aa" p = "*" 输出: true 解释: '*' 可以匹配任意字符串。 示例 3:
+     *
+     * <p>输入: s = "cb" p = "?a" 输出: false 解释: '?' 可以匹配 'c', 但第二个 'a' 无法匹配 'b'。 示例 4:
+     *
+     * <p>输入: s = "adceb" p = "*a*b" 输出: true 解释: 第一个 '*' 可以匹配空字符串, 第二个 '*' 可以匹配字符串 "dce". 示例 5:
+     *
+     * <p>输入: s = "acdcb" p = "a*c?b" 输出: false
+     *
+     * @param s
+     * @param p
+     * @return
+     */
+    public boolean isMatch(String s, String p) {
+        int sLen = s.length(), pLen = p.length();
+        boolean[][] dp = new boolean[sLen + 1][pLen + 1];
+        dp[0][0] = true;
+        for (int j = 0; j < pLen; j++) {
+            if (p.charAt(j) == '*') {
+                dp[0][j + 1] = dp[0][j];
+            }
+        }
+        for (int i = 0; i < sLen; i++) {
+            for (int j = 0; j < pLen; j++) {
+                char c1 = s.charAt(i), c2 = p.charAt(j);
+                boolean same = c1 == c2 || c2 == '?';
+                if (same) {
+                    dp[i + 1][j + 1] = dp[i][j];
+                    continue;
+                }
+                if (c2 == '*') {
+                    dp[i + 1][j + 1] = dp[i + 1][j] || dp[i][j + 1];
+                }
+            }
+        }
+
+        return dp[sLen][pLen];
+    }
+
+    @Test
+    public void replaceWords() {
+        List<String> dict = Arrays.asList("a", "aa", "aaa", "aaaa");
+        String sentence = "a aa a aaaa aaa aaa aaa aaaaaa bbb baba ababa";
+        logResult(replaceWords(dict, sentence));
+    }
+    /**
+     * 648. 单词替换
+     *
+     * <p>在英语中，我们有一个叫做 词根(root)的概念，它可以跟着其他一些词组成另一个较长的单词——我们称这个词为 继承词(successor)。例如，词根an，跟随着单词
+     * other(其他)，可以形成新的单词 another(另一个)。
+     *
+     * <p>现在，给定一个由许多词根组成的词典和一个句子。你需要将句子中的所有继承词用词根替换掉。如果继承词有许多可以形成它的词根，则用最短的词根替换它。
+     *
+     * <p>你需要输出替换之后的句子。
+     *
+     * <p>示例：
+     *
+     * <p>输入：dict(词典) = ["cat", "bat", "rat"] sentence(句子) = "the cattle was rattled by the battery"
+     * 输出："the cat was rat by the bat"
+     *
+     * <p>提示：
+     *
+     * <p>输入只包含小写字母。 1 <= dict.length <= 1000 1 <= dict[i].length <= 100 1 <= 句中词语数 <= 1000 1 <=
+     * 句中词语长度 <= 1000
+     *
+     * @param dict
+     * @param sentence
+     * @return
+     */
+    public String replaceWords(List<String> dict, String sentence) {
+        StringBuilder result = new StringBuilder();
+        Trie trie = new Trie();
+
+        for (String word : dict) {
+            trie.insert(word);
+        }
+        for (String word : sentence.split(" ")) {
+            if (result.length() > 0) {
+                result.append(" ");
+            }
+            result.append(trie.getReplaceWord(word));
+        }
+
+        return result.toString();
+    }
 }
