@@ -967,7 +967,13 @@ public class DynamicPlanTest {
      *
      * <p>输入:
      *
-     * <p>1 0 1 0 0 1 0 1 1 1 1 1 1 1 1 1 0 0 1 0
+     * <p>1 0 1 0 0
+     *
+     * <p>1 0 1 1 1
+     *
+     * <p>1 1 1 1 1
+     *
+     * <p>1 0 0 1 0
      *
      * <p>输出: 4
      *
@@ -3706,5 +3712,205 @@ public class DynamicPlanTest {
         logResult(dp);
         int max = dp[len1][len2];
         return len1 + len2 - 2 * max;
+    }
+
+    @Test
+    public void numSubmat() {
+        int[][] mat = {
+            {1, 1, 1, 1, 0, 1, 0},
+            {1, 1, 1, 0, 0, 0, 1},
+            {0, 1, 1, 1, 1, 0, 0},
+            {1, 1, 0, 1, 1, 0, 1},
+            {1, 0, 0, 0, 0, 0, 1},
+            {1, 1, 0, 1, 1, 1, 1},
+            {1, 1, 0, 0, 1, 1, 1}
+        };
+
+        logResult(numSubmat(mat));
+    }
+    /**
+     * 5454. 统计全 1 子矩形
+     *
+     * <p>给你一个只包含 0 和 1 的 rows * columns 矩阵 mat ，请你返回有多少个 子矩形 的元素全部都是 1 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：mat = [[1,0,1], [1,1,0], [1,1,0]] 输出：13 解释： 有 6 个 1x1 的矩形。 有 2 个 1x2 的矩形。 有 3 个 2x1
+     * 的矩形。 有 1 个 2x2 的矩形。 有 1 个 3x1 的矩形。 矩形数目总共 = 6 + 2 + 3 + 1 + 1 = 13 。 示例 2：
+     *
+     * <p>输入：mat = [[0,1,1,0], [0,1,1,1], [1,1,1,0]] 输出：24 解释： 有 8 个 1x1 的子矩形。 有 5 个 1x2 的子矩形。 有 2 个
+     * 1x3 的子矩形。 有 4 个 2x1 的子矩形。 有 2 个 2x2 的子矩形。 有 2 个 3x1 的子矩形。 有 1 个 3x2 的子矩形。 矩形数目总共 = 8 + 5 + 2
+     * + 4 + 2 + 2 + 1 = 24 。 示例 3：
+     *
+     * <p>输入：mat = [[1,1,1,1,1,1]] 输出：21 示例 4：
+     *
+     * <p>输入：mat = [[1,0,1],[0,1,0],[1,0,1]] 输出：5
+     *
+     * <p>提示：
+     *
+     * <p>1 <= rows <= 150 1 <= columns <= 150 0 <= mat[i][j] <= 1
+     *
+     * @param mat
+     * @return
+     */
+    public int numSubmat(int[][] mat) {
+        int rows = mat.length, cols = mat[0].length;
+        int[][] dp = new int[rows + 1][cols + 1];
+        // 长度
+        int[][] side = new int[rows][cols];
+        int result = 0;
+        for (int i = 0; i < rows; i++) {
+            int len = 0;
+            for (int j = 0; j < cols; j++) {
+                if (mat[i][j] == 1) {
+                    len++;
+                } else {
+                    len = 0;
+                }
+                // 长度
+                side[i][j] = len;
+            }
+        }
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                int min = Integer.MAX_VALUE;
+                for (int k = i; k >= 0; k--) {
+                    if (side[k][j] == 0) {
+                        break;
+                    }
+                    min = Math.min(min, side[k][j]);
+                    result += min;
+                }
+            }
+        }
+        return result;
+    }
+
+    @Test
+    public void findPaths() {
+        int m = 8, n = 50, N = 23, i = 5, j = 26;
+        logResult(findPaths(m, n, N, i, j));
+    }
+
+    /**
+     * 576. 出界的路径数
+     *
+     * <p>给定一个 m × n 的网格和一个球。球的起始坐标为 (i,j) ，你可以将球移到相邻的单元格内，或者往上、下、左、右四个方向上移动使球穿过网格边界。但是，你最多可以移动 N
+     * 次。找出可以将球移出边界的路径数量。答案可能非常大，返回 结果 mod 109 + 7 的值。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入: m = 2, n = 2, N = 2, i = 0, j = 0 输出: 6 解释:
+     *
+     * <p>示例 2：
+     *
+     * <p>输入: m = 1, n = 3, N = 3, i = 0, j = 1 输出: 12 解释:
+     *
+     * <p>说明:
+     *
+     * <p>球一旦出界，就不能再被移动回网格内。 网格的长度和高度在 [1,50] 的范围内。 N 在 [0,50] 的范围内。
+     *
+     * @param m
+     * @param n
+     * @param N
+     * @param i
+     * @param j
+     * @return
+     */
+    public int findPaths(int m, int n, int N, int i, int j) {
+        if (N == 0) {
+            return 0;
+        }
+        int MOD = 1_000_000_007;
+        // 最外层加一圈
+        int[][][] dp = new int[m + 2][n + 2][N + 1];
+
+        for (int l = 0; l <= m + 1; l++) {
+            dp[l][0][0] = 1;
+            dp[l][n + 1][0] = 1;
+        }
+        for (int o = 0; o <= n + 1; o++) {
+            dp[0][o][0] = 1;
+            dp[m + 1][o][0] = 1;
+        }
+        for (int k = 1; k <= N; k++) {
+            for (int l = 1; l <= m; l++) {
+                for (int o = 1; o <= n; o++) {
+                    dp[l][o][k] += dp[l - 1][o][k - 1];
+                    dp[l][o][k] %= MOD;
+                    dp[l][o][k] += dp[l + 1][o][k - 1];
+                    dp[l][o][k] %= MOD;
+                    dp[l][o][k] += dp[l][o - 1][k - 1];
+                    dp[l][o][k] %= MOD;
+                    dp[l][o][k] += dp[l][o + 1][k - 1];
+                    dp[l][o][k] %= MOD;
+                }
+            }
+        }
+        int result = 0;
+        for (int k = 1; k <= N; k++) {
+            result = (result + dp[i + 1][j + 1][k]) % MOD;
+        }
+        return result;
+    }
+
+    @Test
+    public void maximalRectangle() {
+        char[][] matrix = {
+            {'1', '0', '1', '0', '0'},
+            {'1', '0', '1', '1', '1'},
+            {'1', '1', '1', '1', '1'},
+            {'1', '0', '0', '1', '0'}
+        };
+        logResult(maximalRectangle(matrix));
+    }
+    /**
+     * 85. 最大矩形
+     *
+     * <p>给定一个仅包含 0 和 1 的二维二进制矩阵，找出只包含 1 的最大矩形，并返回其面积。
+     *
+     * <p>示例:
+     *
+     * <p>输入: [ ["1","0","1","0","0"], ["1","0","1","1","1"], ["1","1","1","1","1"],
+     * ["1","0","0","1","0"] ] 输出: 6
+     *
+     * @param matrix
+     * @return
+     */
+    public int maximalRectangle(char[][] matrix) {
+        int rows = matrix.length;
+        if (rows == 0) {
+            return 0;
+        }
+        int cols = matrix[0].length;
+        int[][] side = new int[rows][cols];
+        for (int i = 0; i < rows; i++) {
+            int len = 0;
+            for (int j = 0; j < cols; j++) {
+                if (matrix[i][j] == '1') {
+                    len++;
+                } else {
+                    len = 0;
+                }
+                side[i][j] = len;
+            }
+        }
+        int max = 0;
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                int min = Integer.MAX_VALUE;
+                for (int k = i; k >= 0; k--) {
+                    if (side[k][j] == 0) {
+                        break;
+                    }
+                    // 最短边长
+                    min = Math.min(min, side[k][j]);
+                    // 边长 * 高度
+                    max = Math.max(min * (i - k + 1), max);
+                }
+            }
+        }
+        logResult(side);
+        return max;
     }
 }

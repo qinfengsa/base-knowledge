@@ -13070,4 +13070,99 @@ public class ArrayTest {
         }
         return set.size();
     }
+
+    /**
+     * 5452. 判断能否形成等差数列
+     *
+     * <p>给你一个数字数组 arr 。
+     *
+     * <p>如果一个数列中，任意相邻两项的差总等于同一个常数，那么这个数列就称为 等差数列 。
+     *
+     * <p>如果可以重新排列数组形成等差数列，请返回 true ；否则，返回 false 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：arr = [3,5,1] 输出：true 解释：对数组重新排序得到 [1,3,5] 或者 [5,3,1] ，任意相邻两项的差分别为 2 或 -2 ，可以形成等差数列。 示例
+     * 2：
+     *
+     * <p>输入：arr = [1,2,4] 输出：false 解释：无法通过重新排序得到等差数列。
+     *
+     * <p>提示：
+     *
+     * <p>2 <= arr.length <= 1000 -10^6 <= arr[i] <= 10^6
+     *
+     * @param arr
+     * @return
+     */
+    public boolean canMakeArithmeticProgression(int[] arr) {
+        if (arr.length == 2) {
+            return true;
+        }
+        Arrays.sort(arr);
+        int val = arr[1] - arr[0];
+        for (int i = 2; i < arr.length; i++) {
+            if (arr[i] - arr[i - 1] != val) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Test
+    public void getLastMoment() {
+        int[] left = {5};
+        int[] right = {4};
+        int n = 9;
+        logResult(getLastMoment(n, left, right));
+    }
+
+    /**
+     * 5453. 所有蚂蚁掉下来前的最后一刻
+     *
+     * <p>有一块木板，长度为 n 个 单位 。一些蚂蚁在木板上移动，每只蚂蚁都以 每秒一个单位 的速度移动。其中，一部分蚂蚁向 左 移动，其他蚂蚁向 右 移动。
+     *
+     * <p>当两只向 不同 方向移动的蚂蚁在某个点相遇时，它们会同时改变移动方向并继续移动。假设更改方向不会花费任何额外时间。
+     *
+     * <p>而当蚂蚁在某一时刻 t 到达木板的一端时，它立即从木板上掉下来。
+     *
+     * <p>给你一个整数 n 和两个整数数组 left 以及 right 。两个数组分别标识向左或者向右移动的蚂蚁在 t = 0 时的位置。请你返回最后一只蚂蚁从木板上掉下来的时刻。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：n = 4, left = [4,3], right = [0,1] 输出：4 解释：如上图所示： -下标 0 处的蚂蚁命名为 A 并向右移动。 -下标 1 处的蚂蚁命名为
+     * B 并向右移动。 -下标 3 处的蚂蚁命名为 C 并向左移动。 -下标 4 处的蚂蚁命名为 D 并向左移动。 请注意，蚂蚁在木板上的最后时刻是 t = 4
+     * 秒，之后蚂蚁立即从木板上掉下来。（也就是说在 t = 4.0000000001 时，木板上没有蚂蚁）。 示例 2：
+     *
+     * <p>输入：n = 7, left = [], right = [0,1,2,3,4,5,6,7] 输出：7 解释：所有蚂蚁都向右移动，下标为 0 的蚂蚁需要 7 秒才能从木板上掉落。
+     * 示例 3：
+     *
+     * <p>输入：n = 7, left = [0,1,2,3,4,5,6,7], right = [] 输出：7 解释：所有蚂蚁都向左移动，下标为 7 的蚂蚁需要 7 秒才能从木板上掉落。
+     * 示例 4：
+     *
+     * <p>输入：n = 9, left = [5], right = [4] 输出：5 解释：t = 1 秒时，两只蚂蚁将回到初始位置，但移动方向与之前相反。 示例 5：
+     *
+     * <p>输入：n = 6, left = [6], right = [0] 输出：6
+     *
+     * <p>提示：
+     *
+     * <p>1 <= n <= 10^4 0 <= left.length <= n + 1 0 <= left[i] <= n 0 <= right.length <= n + 1 0 <=
+     * right[i] <= n 1 <= left.length + right.length <= n + 1 left 和 right 中的所有值都是唯一的，并且每个值
+     * 只能出现在二者之一 中。
+     *
+     * @param n
+     * @param left
+     * @param right
+     * @return
+     */
+    public int getLastMoment(int n, int[] left, int[] right) {
+        int max = 0;
+        for (int num : left) {
+            max = Math.max(max, num);
+        }
+        for (int num : right) {
+            max = Math.max(max, n - num);
+        }
+
+        return max;
+    }
 }

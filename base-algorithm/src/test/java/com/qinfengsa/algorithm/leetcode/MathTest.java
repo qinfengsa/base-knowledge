@@ -791,7 +791,7 @@ public class MathTest {
         return  dp[N];*/
     }
 
-    public int f(int x, int K, int N) {
+    /*public int f(int x, int K, int N) {
         int ans = 0, r = 1;
         for (int i = 1; i <= K; ++i) {
             r *= x - i + 1;
@@ -800,7 +800,7 @@ public class MathTest {
             if (ans >= N) break;
         }
         return ans;
-    }
+    }*/
 
     @Test
     public void judgePoint24() {
@@ -5322,5 +5322,110 @@ public class MathTest {
         int tmp = nums[i];
         nums[i] = nums[j];
         nums[j] = tmp;
+    }
+
+    @Test
+    public void fractionAddition() {
+        String expression = "5/3+1/3";
+        logResult(fractionAddition(expression));
+    }
+
+    /**
+     * 592. 分数加减运算
+     *
+     * <p>给定一个表示分数加减运算表达式的字符串，你需要返回一个字符串形式的计算结果。 这个结果应该是不可约分的分数，即最简分数。 如果最终结果是一个整数，例如
+     * 2，你需要将它转换成分数形式，其分母为 1。所以在上述例子中, 2 应该被转换为 2/1。
+     *
+     * <p>示例 1:
+     *
+     * <p>输入:"-1/2+1/2" 输出: "0/1" 示例 2:
+     *
+     * <p>输入:"-1/2+1/2+1/3" 输出: "1/3" 示例 3:
+     *
+     * <p>输入:"1/3-1/2" 输出: "-1/6" 示例 4:
+     *
+     * <p>输入:"5/3+1/3" 输出: "2/1" 说明:
+     *
+     * <p>输入和输出字符串只包含 '0' 到 '9' 的数字，以及 '/', '+' 和 '-'。 输入和输出分数格式均为 ±分子/分母。如果输入的第一个分数或者输出的分数是正数，则 '+'
+     * 会被省略掉。 输入只包含合法的最简分数，每个分数的分子与分母的范围是 [1,10]。 如果分母是1，意味着这个分数实际上是一个整数。 输入的分数个数范围是 [1,10]。
+     * 最终结果的分子与分母保证是 32 位整数范围内的有效整数。
+     *
+     * @param expression
+     * @return
+     */
+    public String fractionAddition(String expression) {
+        /*FractionNode last = null;
+        FractionNode node = null;
+        int numerator = 0;
+        int denominator = 0;*/
+        List<Boolean> addFlags = new ArrayList<>();
+        for (int i = 1; i < expression.length(); i++) {
+            char c = expression.charAt(i);
+            switch (c) {
+                case '+':
+                    addFlags.add(true);
+                    break;
+                case '-':
+                    addFlags.add(false);
+                    break;
+            }
+        }
+        List<FractionNode> list = new ArrayList<>();
+        for (String num : expression.split("[+-]")) {
+            log.debug("num:{}", num);
+            if (num.length() > 0) {
+                String[] fracts = num.split("/");
+                list.add(
+                        new FractionNode(Integer.parseInt(fracts[0]), Integer.parseInt(fracts[1])));
+            }
+        }
+        FractionNode node = list.get(0);
+        if (expression.charAt(0) == '-') {
+            node.numerator *= -1;
+        }
+        for (int i = 0; i < addFlags.size(); i++) {
+            boolean flag = addFlags.get(i);
+            FractionNode currentNode = list.get(i + 1);
+            if (!flag) {
+                currentNode.numerator *= -1;
+            }
+            node = addFraction(node, currentNode);
+        }
+        StringBuilder sb = new StringBuilder();
+        if (node.numerator == 0) {
+            return "0/1";
+        }
+
+        int gcd = getGcd(Math.abs(node.numerator), node.denominator);
+
+        sb.append(node.numerator / gcd).append("/").append(node.denominator / gcd);
+        return sb.toString();
+    }
+
+    class FractionNode {
+
+        // 分子
+        private int numerator;
+        // 分母
+        private int denominator;
+
+        FractionNode(int numerator, int denominator) {
+            this.numerator = numerator;
+            this.denominator = denominator;
+        }
+    }
+
+    private FractionNode addFraction(FractionNode node1, FractionNode node2) {
+        if (Objects.isNull(node1)) {
+            return node2;
+        }
+        int gcd = getGcd(node1.denominator, node2.denominator);
+
+        int denominator = node1.denominator * node2.denominator / gcd;
+
+        int numerator =
+                (node1.numerator * node2.denominator + node2.numerator * node1.denominator) / gcd;
+
+        return new FractionNode(numerator, denominator);
     }
 }
