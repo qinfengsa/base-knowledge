@@ -13165,4 +13165,120 @@ public class ArrayTest {
 
         return max;
     }
+
+    /**
+     * 611. 有效三角形的个数
+     *
+     * <p>给定一个包含非负整数的数组，你的任务是统计其中可以组成三角形三条边的三元组个数。
+     *
+     * <p>示例 1:
+     *
+     * <p>输入: [2,2,3,4] 输出: 3 解释: 有效的组合是: 2,3,4 (使用第一个 2) 2,3,4 (使用第二个 2) 2,2,3 注意:
+     *
+     * <p>数组长度不超过1000。 数组里整数的范围为 [0, 1000]。
+     *
+     * @param nums
+     * @return
+     */
+    public int triangleNumber(int[] nums) {
+        int count = 0;
+        Arrays.sort(nums);
+        int len = nums.length;
+        for (int i = len - 1; i > 1; i--) {
+
+            int left = 0, right = i - 1;
+            while (left < right) {
+                if (nums[left] + nums[right] > nums[i]) {
+                    count += right - left;
+                    right--;
+                } else {
+                    left++;
+                }
+            }
+        }
+        /*for (int i = 0; i < nums.length - 2; i++) {
+                    // 0 在 最前面,只需要判断nums[i] 即可
+                    if (nums[i] == 0) {
+                        continue;
+                    }
+                    //
+                    for (int j = i + 1; j < nums.length - 1; j++) {
+                        int k = i + 2;
+                        // 两边之和大于第三边
+                        while (k < nums.length && nums[k] < nums[i] + nums[j]) {
+                            k++;
+                        }
+                        count += k - j - 1;
+                    }
+                }
+        */
+        return count;
+    }
+
+    /**
+     * 593. 有效的正方形
+     *
+     * <p>给定二维空间中四点的坐标，返回四点是否可以构造一个正方形。
+     *
+     * <p>一个点的坐标（x，y）由一个有两个整数的整数数组表示。
+     *
+     * <p>示例:
+     *
+     * <p>输入: p1 = [0,0], p2 = [1,1], p3 = [1,0], p4 = [0,1] 输出: True
+     *
+     * <p>注意:
+     *
+     * <p>所有输入整数都在 [-10000，10000] 范围内。 一个有效的正方形有四个等长的正长和四个等角（90度角）。 输入点没有顺序。
+     *
+     * @param p1
+     * @param p2
+     * @param p3
+     * @param p4
+     * @return
+     */
+    public boolean validSquare(int[] p1, int[] p2, int[] p3, int[] p4) {
+        int[] side = new int[6];
+
+        side[0] = getSideSquare(p1, p2);
+        side[1] = getSideSquare(p1, p3);
+        side[2] = getSideSquare(p1, p4);
+        side[3] = getSideSquare(p2, p3);
+        side[4] = getSideSquare(p2, p4);
+        side[5] = getSideSquare(p3, p4);
+        Arrays.sort(side);
+
+        return checkSide(side);
+    }
+
+    private boolean checkSide(int[] side) {
+
+        int sideLen = side[0], diagonal = side[4];
+        if (sideLen == 0) {
+            return false;
+        }
+        // 前4条相等
+        if (side[1] != sideLen || side[2] != sideLen || side[3] != sideLen) {
+            return false;
+        }
+        // 后2条相等
+        if (side[5] != diagonal) {
+            return false;
+        }
+        // 对角线的平方是 边长平方的两倍
+        if (sideLen * 2 != diagonal) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 长度的平方
+     *
+     * @param p1
+     * @param p2
+     * @return
+     */
+    private int getSideSquare(int[] p1, int[] p2) {
+        return (p1[0] - p2[0]) * (p1[0] - p2[0]) + (p1[1] - p2[1]) * (p1[1] - p2[1]);
+    }
 }
