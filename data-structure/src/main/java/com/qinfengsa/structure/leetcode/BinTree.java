@@ -316,7 +316,7 @@ public class BinTree {
             rightHeight = getHeight(root.right);
         }
 
-        int height = leftHeight > rightHeight ? leftHeight : rightHeight;
+        int height = Math.max(leftHeight, rightHeight);
 
         height++;
         return height;

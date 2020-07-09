@@ -3928,4 +3928,147 @@ public class TreeTest {
 
         return root;
     }
+
+    @Test
+    public void constructMaximumBinaryTree() {
+        int[] nums = {3, 2, 1, 6, 0, 5};
+        TreeNode root = constructMaximumBinaryTree(nums);
+        logResult("1");
+    }
+
+    /**
+     * 654. 最大二叉树
+     *
+     * <p>给定一个不含重复元素的整数数组。一个以此数组构建的最大二叉树定义如下：
+     *
+     * <p>二叉树的根是数组中的最大元素。 左子树是通过数组中最大值左边部分构造出的最大二叉树。 右子树是通过数组中最大值右边部分构造出的最大二叉树。
+     * 通过给定的数组构建最大二叉树，并且输出这个树的根节点。
+     *
+     * <p>示例 ：
+     *
+     * <p>输入：[3,2,1,6,0,5] 输出：返回下面这棵树的根节点：
+     *
+     * <p>6 / \ 3 5 \ / 2 0 \ 1
+     *
+     * <p>提示：
+     *
+     * <p>给定的数组的大小在 [1, 1000] 之间。
+     *
+     * @param nums
+     * @return
+     */
+    public TreeNode constructMaximumBinaryTree(int[] nums) {
+        int len = nums.length;
+        if (len == 0) {
+            return null;
+        }
+        TreeNode root = new TreeNode(nums[0]);
+
+        for (int i = 1; i < len; i++) {
+            // 1 找到右子树中 第一个比 nums[i] 小的 node 和 parent
+            // parent.right = curNode
+            // curNode.left = node
+            TreeNode curNode = new TreeNode(nums[i]);
+
+            TreeNode parent = null, node = root;
+
+            while (Objects.nonNull(node) && node.val >= nums[i]) {
+                parent = node;
+                node = node.right;
+            }
+            if (Objects.nonNull(parent)) {
+                parent.right = curNode;
+            }
+            curNode.left = node;
+            if (node == root) {
+                root = curNode;
+            }
+        }
+        return root;
+    }
+
+    @Test
+    public void printTree() {
+        TreeNode root = new TreeNode(1);
+        TreeNode node11 = new TreeNode(2);
+        TreeNode node12 = new TreeNode(3);
+        TreeNode node22 = new TreeNode(4);
+        root.left = node11;
+        root.right = node12;
+        node11.right = node22;
+        List<List<String>> result = printTree(root);
+
+        for (List<String> list : result) {
+            logResult(list);
+        }
+    }
+    /**
+     * 655. 输出二叉树
+     *
+     * <p>在一个 m*n 的二维字符串数组中输出二叉树，并遵守以下规则：
+     *
+     * <p>行数 m 应当等于给定二叉树的高度。 列数 n 应当总是奇数。
+     * 根节点的值（以字符串格式给出）应当放在可放置的第一行正中间。根节点所在的行与列会将剩余空间划分为两部分（左下部分和右下部分）。你应该将左子树输出在左下部分，右子树输出在右下部分。左下和右下部分应当有相同的大小。即使一个子树为空而另一个非空，你不需要为空的子树输出任何东西，但仍需要为另一个子树留出足够的空间。然而，如果两个子树都为空则不需要为它们留出任何空间。
+     * 每个未使用的空间应包含一个空的字符串""。 使用相同的规则输出子树。 示例 1:
+     *
+     * <p>输入: 1 / 2 输出: [["", "1", ""], ["2", "", ""]] 示例 2:
+     *
+     * <p>输入: 1 / \ 2 3 \ 4 输出: [["", "", "", "1", "", "", ""], ["", "2", "", "", "", "3", ""], ["",
+     * "", "4", "", "", "", ""]] 示例 3:
+     *
+     * <p>输入: 1 / \ 2 5 / 3 / 4 输出: [["", "", "", "", "", "", "", "1", "", "", "", "", "", "", ""]
+     * ["", "", "", "2", "", "", "", "", "", "", "", "5", "", "", ""] ["", "3", "", "", "", "", "",
+     * "", "", "", "", "", "", "", ""] ["4", "", "", "", "", "", "", "", "", "", "", "", "", "",
+     * ""]] 注意: 二叉树的高度在范围 [1, 10] 中。
+     *
+     * @param root
+     * @return
+     */
+    public List<List<String>> printTree(TreeNode root) {
+        List<List<String>> result = new ArrayList<>();
+        int height = getHeight(root);
+        int len = (1 << height) - 1;
+
+        for (int i = 0; i < height; i++) {
+            List<String> list = new ArrayList<>();
+            for (int j = 0; j < len; j++) {
+                list.add("");
+            }
+            result.add(list);
+        }
+        printTreeNode(root, 0, len - 1, result, 0);
+        return result;
+    }
+
+    private void printTreeNode(
+            TreeNode root, int start, int end, List<List<String>> result, int index) {
+        if (Objects.isNull(root)) {
+            return;
+        }
+        int mid = (start + end) >> 1;
+        result.get(index).set(mid, String.valueOf(root.val));
+        printTreeNode(root.left, start, mid - 1, result, index + 1);
+        printTreeNode(root.right, mid + 1, end, result, index + 1);
+    }
+
+    private int getHeight(TreeNode root) {
+        if (Objects.isNull(root.left) && Objects.isNull(root.right)) {
+            return 1;
+        }
+
+        int leftHeight = 0;
+        int rightHeight = 0;
+
+        if (Objects.nonNull(root.left)) {
+            leftHeight = getHeight(root.left);
+        }
+        if (Objects.nonNull(root.right)) {
+            rightHeight = getHeight(root.right);
+        }
+
+        int height = Math.max(leftHeight, rightHeight);
+
+        height++;
+        return height;
+    }
 }
