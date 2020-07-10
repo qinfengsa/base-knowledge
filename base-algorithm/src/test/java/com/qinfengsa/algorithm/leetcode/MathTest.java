@@ -5428,4 +5428,146 @@ public class MathTest {
 
         return new FractionNode(numerator, denominator);
     }
+
+    @Test
+    public void maximumSwap() {
+        int num = 98368;
+        logResult(maximumSwap(num));
+    }
+
+    /**
+     * 670. 最大交换
+     *
+     * <p>给定一个非负整数，你至多可以交换一次数字中的任意两位。返回你能得到的最大值。
+     *
+     * <p>示例 1 :
+     *
+     * <p>输入: 2736 输出: 7236 解释: 交换数字2和数字7。 示例 2 :
+     *
+     * <p>输入: 9973 输出: 9973 解释: 不需要交换。 注意:
+     *
+     * <p>给定数字的范围是 [0, 108]
+     *
+     * @param num
+     * @return
+     */
+    public int maximumSwap(int num) {
+        int[] nums = new int[9];
+        int len = nums.length;
+        int index = len - 1;
+        while (num > 0) {
+            nums[index--] = num % 10;
+            num /= 10;
+        }
+        // 从后往前记录最多值
+        int maxIndex = len - 1;
+        int[] maxIndexs = new int[len];
+        for (int i = len - 1; i > index; i--) {
+            if (nums[i] > nums[maxIndex]) {
+                maxIndex = i;
+            }
+            maxIndexs[i] = maxIndex;
+        }
+        log.debug("maxIndexs:{}", maxIndexs);
+        for (int i = index + 1; i < len; i++) {
+            if (nums[maxIndexs[i]] != nums[i]) {
+                swap(nums, i, maxIndexs[i]);
+                break;
+            }
+        }
+        log.debug("nums:{}", nums);
+        num = 0;
+        for (int i = index + 1; i < len; i++) {
+            num = num * 10 + nums[i];
+        }
+
+        return num;
+    }
+
+    @Test
+    public void solveEquation() {
+        String equation = "-x=-2";
+        logResult(solveEquation(equation));
+    }
+    /**
+     * 640. 求解方程
+     *
+     * <p>求解一个给定的方程，将x以字符串"x=#value"的形式返回。该方程仅包含'+'，' - '操作，变量 x 和其对应系数。
+     *
+     * <p>如果方程没有解，请返回“No solution”。
+     *
+     * <p>如果方程有无限解，则返回“Infinite solutions”。
+     *
+     * <p>如果方程中只有一个解，要保证返回值 x 是一个整数。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入: "x+5-3+x=6+x-2" 输出: "x=2" 示例 2:
+     *
+     * <p>输入: "x=x" 输出: "Infinite solutions" 示例 3:
+     *
+     * <p>输入: "2x=x" 输出: "x=0" 示例 4:
+     *
+     * <p>输入: "2x+3x-6x=x+2" 输出: "x=-1" 示例 5:
+     *
+     * <p>输入: "x=x+2" 输出: "No solution"
+     *
+     * @param equation
+     * @return
+     */
+    public String solveEquation(String equation) {
+        String[] arr = equation.split("=");
+        Equation left = new Equation(arr[0]);
+        Equation right = new Equation(arr[1]);
+
+        int xNum = left.xNum - right.xNum;
+        int value = right.value - left.value;
+        if (xNum == 0) {
+            return value == 0 ? "Infinite solutions" : "No solution";
+        }
+        return "x" + "=" + value / xNum;
+    }
+
+    class Equation {
+        int xNum;
+        int value;
+
+        Equation(String expression) {
+            List<Boolean> addFlags = new ArrayList<>();
+            addFlags.add(!expression.startsWith("-"));
+            for (int i = 1; i < expression.length(); i++) {
+                char c = expression.charAt(i);
+                switch (c) {
+                    case '+':
+                        addFlags.add(true);
+                        break;
+                    case '-':
+                        addFlags.add(false);
+                        break;
+                }
+            }
+            xNum = 0;
+            value = 0;
+            List<String> numList = new ArrayList<>();
+            for (String num : expression.split("[+-]")) {
+                if (num.length() > 0) {
+                    numList.add(num);
+                }
+            }
+            for (int i = 0; i < numList.size(); i++) {
+                boolean flag = addFlags.get(i);
+                String num = numList.get(i);
+                if (num.endsWith("x")) {
+                    int val = 1;
+                    if (num.length() > 1) {
+                        val = Integer.parseInt(num.substring(0, num.length() - 1));
+                    }
+                    xNum += flag ? val : -val;
+                } else {
+                    int val = Integer.parseInt(num);
+                    value += flag ? val : -val;
+                }
+            }
+        }
+    }
 }
