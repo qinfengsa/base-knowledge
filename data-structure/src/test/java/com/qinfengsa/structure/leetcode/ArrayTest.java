@@ -13281,4 +13281,202 @@ public class ArrayTest {
     private int getSideSquare(int[] p1, int[] p2) {
         return (p1[0] - p2[0]) * (p1[0] - p2[0]) + (p1[1] - p2[1]) * (p1[1] - p2[1]);
     }
+
+    @Test
+    public void countSmaller() {
+        int[] nums = {
+            26, 78, 27, 100, 33, 67, 90, 23, 66, 5, 38, 7, 35, 23, 52, 22, 83, 51, 98, 69, 81, 32,
+            78, 28, 94, 13, 2, 97, 3, 76, 99, 51, 9, 21, 84, 66, 65, 36, 100, 41
+        };
+        List<Integer> result = countSmaller(nums);
+        logResult(result);
+    }
+
+    /**
+     * 315. 计算右侧小于当前元素的个数
+     *
+     * <p>给定一个整数数组 nums，按要求返回一个新数组 counts。数组 counts 有该性质： counts[i] 的值是 nums[i] 右侧小于 nums[i] 的元素的数量。
+     *
+     * <p>示例:
+     *
+     * <p>输入: [5,2,6,1] 输出: [2,1,1,0] 解释: 5 的右侧有 2 个更小的元素 (2 和 1). 2 的右侧仅有 1 个更小的元素 (1). 6 的右侧有 1
+     * 个更小的元素 (1). 1 的右侧有 0 个更小的元素.
+     *
+     * @param nums
+     * @return
+     */
+    public List<Integer> countSmaller(int[] nums) {
+        // 构建索引数组
+        int len = nums.length;
+
+        LinkedList<Integer> list = new LinkedList<>();
+        if (len == 0) {
+            return list;
+        }
+        // 从右往左,进行插入排序
+        list.addFirst(0);
+        for (int i = len - 2; i >= 0; i--) {
+            int num = nums[i];
+            if (num > nums[len - 1]) {
+                list.addFirst(len - i - 1);
+                System.arraycopy(nums, i + 1, nums, i, len - i - 1);
+                nums[len - 1] = num;
+                log.debug("1nums:{}", nums);
+                continue;
+            }
+            if (num < nums[i + 1]) {
+                list.addFirst(0);
+                log.debug("2nums:{}", nums);
+                continue;
+            }
+            int index = getIndex(nums, i + 1, len - 1, num);
+            System.arraycopy(nums, i + 1, nums, i, index - 1 - i);
+            nums[index - 1] = num;
+            list.addFirst(index - 1 - i);
+            log.debug("index:{}", index);
+            log.debug("3nums:{}", nums);
+        }
+        return list;
+    }
+
+    private int getIndex(int[] nums, int start, int end, int target) {
+        // 二分查找
+        int left = start, right = end;
+        while (left < right) {
+            int mid = (left + right) >> 1;
+            if (target > nums[mid]) {
+                left = mid + 1;
+            } else {
+                right = mid;
+            }
+        }
+        return left;
+    }
+
+    @Test
+    public void constructArray() {
+        int n = 7, k = 5;
+        int[] result = constructArray(n, k);
+        log.debug("nums:{}", result);
+    }
+
+    /**
+     * 667. 优美的排列 II
+     *
+     * <p>给定两个整数 n 和 k，你需要实现一个数组，这个数组包含从 1 到 n 的 n 个不同整数，同时满足以下条件：
+     *
+     * <p>① 如果这个数组是 [a1, a2, a3, ... , an] ，那么数组 [|a1 - a2|, |a2 - a3|, |a3 - a4|, ... , |an-1 -
+     * an|] 中应该有且仅有 k 个不同整数；.
+     *
+     * <p>② 如果存在多种答案，你只需实现并返回其中任意一种.
+     *
+     * <p>示例 1:
+     *
+     * <p>输入: n = 3, k = 1 输出: [1, 2, 3] 解释: [1, 2, 3] 包含 3 个范围在 1-3 的不同整数， 并且 [1, 1] 中有且仅有 1 个不同整数
+     * : 1
+     *
+     * <p>示例 2:
+     *
+     * <p>输入: n = 3, k = 2 输出: [1, 3, 2] 解释: [1, 3, 2] 包含 3 个范围在 1-3 的不同整数， 并且 [2, 1] 中有且仅有 2 个不同整数:
+     * 1 和 2
+     *
+     * <p>提示:
+     *
+     * <p>n 和 k 满足条件 1 <= k < n <= 104.
+     *
+     * @param n
+     * @param k
+     * @return
+     */
+    public int[] constructArray(int n, int k) {
+        int[] nums = new int[n];
+        int index = 0;
+        int left = 1, right = n;
+        boolean flag = true;
+        for (int i = 0; i < k - 1; i++) {
+            if (flag) {
+                nums[i] = left++;
+            } else {
+                nums[i] = right--;
+            }
+            flag = !flag;
+        }
+        k--;
+        for (int i = left; i <= right; i++) {
+            nums[k++] = flag ? i : right + left - i;
+        }
+        return nums;
+    }
+
+    /**
+     * 659. 分割数组为连续子序列
+     *
+     * <p>给你一个按升序排序的整数数组 num（可能包含重复数字），请你将它们分割成一个或多个子序列，其中每个子序列都由连续整数组成且长度至少为 3 。
+     *
+     * <p>如果可以完成上述分割，则返回 true ；否则，返回 false 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入: [1,2,3,3,4,5] 输出: True 解释: 你可以分割出这样两个连续子序列 : 1, 2, 3 3, 4, 5
+     *
+     * <p>示例 2：
+     *
+     * <p>输入: [1,2,3,3,4,4,5,5] 输出: True 解释: 你可以分割出这样两个连续子序列 : 1, 2, 3, 4, 5 3, 4, 5
+     *
+     * <p>示例 3：
+     *
+     * <p>输入: [1,2,3,4,4,5] 输出: False
+     *
+     * <p>提示：
+     *
+     * <p>输入的数组长度范围为 [1, 10000]
+     *
+     * @param nums
+     * @return
+     */
+    public boolean isPossible(int[] nums) {
+        // nc[i]：存储原数组中数字i出现的次数 tail[i]：存储以数字i结尾的且符合题意的连续子序列个数
+        // 1. 先去寻找一个长度为3的连续子序列i, i+1, i+2，找到后就将nc[i], nc[i+1],
+        // nc[i+2]中对应数字消耗1个（即-1），并将tail[i+2]加1，即以i+2结尾的子序列个数+1。
+        // 2. 如果后续发现有能够接在这个连续子序列的数字i+3，
+        // 则延长以i+2为结尾的连续子序列到i+3，此时消耗nc[i+3]一个，由于子序列已延长，因此tail[i+2]减1，tail[i+3]加1
+        // 在不满足上面的情况下
+        // 3. 如果nc[i]为0，说明这个数字已经消耗完，可以不管了
+        // 4. 如果nc[i]不为0，说明这个数字多出来了，且无法组成连续子序列，所以可以直接返回false了
+        Counter counts = new Counter();
+        Counter tail = new Counter();
+
+        for (int num : nums) {
+            counts.add(num, 1);
+        }
+        for (int num : nums) {
+            if (counts.get(num) == 0) {
+                continue;
+            } else if (tail.get(num - 1) > 0) {
+
+                tail.add(num - 1, -1);
+                tail.add(num, 1);
+            } else if (counts.get(num + 1) > 0 && counts.get(num + 2) > 0) {
+
+                counts.add(num + 1, -1);
+                counts.add(num + 2, -1);
+                tail.add(num + 2, 1);
+            } else {
+                return false;
+            }
+            counts.add(num, -1);
+        }
+
+        return true;
+    }
+
+    class Counter extends HashMap<Integer, Integer> {
+        public int get(int k) {
+            return super.getOrDefault(k, 0);
+        }
+
+        public void add(int k, int v) {
+            put(k, get(k) + v);
+        }
+    }
 }
