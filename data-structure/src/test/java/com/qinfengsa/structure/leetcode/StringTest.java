@@ -6539,4 +6539,99 @@ public class StringTest {
 
         return result.toString();
     }
+
+    /**
+     * 5177. 转变日期格式
+     *
+     * <p>给你一个字符串 date ，它的格式为 Day Month Year ，其中：
+     *
+     * <p>Day 是集合 {"1st", "2nd", "3rd", "4th", ..., "30th", "31st"} 中的一个元素。 Month 是集合 {"Jan", "Feb",
+     * "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"} 中的一个元素。 Year 的范围在
+     * ​[1900, 2100] 之间。 请你将字符串转变为 YYYY-MM-DD 的格式，其中：
+     *
+     * <p>YYYY 表示 4 位的年份。 MM 表示 2 位的月份。 DD 表示 2 位的天数。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：date = "20th Oct 2052" 输出："2052-10-20" 示例 2：
+     *
+     * <p>输入：date = "6th Jun 1933" 输出："1933-06-06" 示例 3：
+     *
+     * <p>输入：date = "26th May 1960" 输出："1960-05-26"
+     *
+     * <p>提示：
+     *
+     * <p>给定日期保证是合法的，所以不需要处理异常输入。
+     *
+     * @param date
+     * @return
+     */
+    public String reformatDate(String date) {
+        String[] dates = date.split(" ");
+
+        String year = dates[2];
+        String day = dates[0].substring(0, dates[0].length() - 2);
+        Map<String, String> monthMap = new HashMap<>();
+        for (int i = 0; i < months.length; i++) {
+            int m = i + 1;
+            String month = "" + (m < 10 ? "0" + m : m);
+            monthMap.put(months[i], month);
+        }
+        String result =
+                year + "-" + monthMap.get(dates[1]) + "-" + (day.length() == 1 ? "0" + day : day);
+        return result;
+    }
+
+    static String[] months = {
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    };
+
+    @Test
+    public void numSub() {
+        String s = "000";
+        logResult(numSub(s));
+    }
+
+    /**
+     * 5461. 仅含 1 的子串数
+     *
+     * <p>给你一个二进制字符串 s（仅由 '0' 和 '1' 组成的字符串）。
+     *
+     * <p>返回所有字符都为 1 的子字符串的数目。
+     *
+     * <p>由于答案可能很大，请你将它对 10^9 + 7 取模后返回。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：s = "0110111" 输出：9 解释：共有 9 个子字符串仅由 '1' 组成 "1" -> 5 次 "11" -> 3 次 "111" -> 1 次 示例 2：
+     *
+     * <p>输入：s = "101" 输出：2 解释：子字符串 "1" 在 s 中共出现 2 次 示例 3：
+     *
+     * <p>输入：s = "111111" 输出：21 解释：每个子字符串都仅由 '1' 组成 示例 4：
+     *
+     * <p>输入：s = "000" 输出：0
+     *
+     * <p>提示：
+     *
+     * <p>s[i] == '0' 或 s[i] == '1' 1 <= s.length <= 10^5
+     *
+     * @param s
+     * @return
+     */
+    public int numSub(String s) {
+        int result = 0;
+        // 动态规划
+        int[] dp = new int[s.length() + 1];
+        int MOD = 1_000_000_007;
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c == '1') {
+                dp[i + 1] = (dp[i] + 1) % MOD;
+                result += dp[i + 1];
+                result %= MOD;
+            }
+        }
+
+        return result;
+    }
 }
