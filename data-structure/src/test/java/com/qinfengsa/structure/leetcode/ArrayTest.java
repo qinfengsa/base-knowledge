@@ -10532,151 +10532,8 @@ public class ArrayTest {
 
     @Test
     public void trulyMostPopular() {
-        String[] names = {
-            "Fcclu(70)",
-            "Ommjh(63)",
-            "Dnsay(60)",
-            "Qbmk(45)",
-            "Unsb(26)",
-            "Gauuk(75)",
-            "Wzyyim(34)",
-            "Bnea(55)",
-            "Kri(71)",
-            "Qnaakk(76)",
-            "Gnplfi(68)",
-            "Hfp(97)",
-            "Qoi(70)",
-            "Ijveol(46)",
-            "Iidh(64)",
-            "Qiy(26)",
-            "Mcnef(59)",
-            "Hvueqc(91)",
-            "Obcbxb(54)",
-            "Dhe(79)",
-            "Jfq(26)",
-            "Uwjsu(41)",
-            "Wfmspz(39)",
-            "Ebov(96)",
-            "Ofl(72)",
-            "Uvkdpn(71)",
-            "Avcp(41)",
-            "Msyr(9)",
-            "Pgfpma(95)",
-            "Vbp(89)",
-            "Koaak(53)",
-            "Qyqifg(85)",
-            "Dwayf(97)",
-            "Oltadg(95)",
-            "Mwwvj(70)",
-            "Uxf(74)",
-            "Qvjp(6)",
-            "Grqrg(81)",
-            "Naf(3)",
-            "Xjjol(62)",
-            "Ibink(32)",
-            "Qxabri(41)",
-            "Ucqh(51)",
-            "Mtz(72)",
-            "Aeax(82)",
-            "Kxutz(5)",
-            "Qweye(15)",
-            "Ard(82)",
-            "Chycnm(4)",
-            "Hcvcgc(97)",
-            "Knpuq(61)",
-            "Yeekgc(11)",
-            "Ntfr(70)",
-            "Lucf(62)",
-            "Uhsg(23)",
-            "Csh(39)",
-            "Txixz(87)",
-            "Kgabb(80)",
-            "Weusps(79)",
-            "Nuq(61)",
-            "Drzsnw(87)",
-            "Xxmsn(98)",
-            "Onnev(77)",
-            "Owh(64)",
-            "Fpaf(46)",
-            "Hvia(6)",
-            "Kufa(95)",
-            "Chhmx(66)",
-            "Avmzs(39)",
-            "Okwuq(96)",
-            "Hrschk(30)",
-            "Ffwni(67)",
-            "Wpagta(25)",
-            "Npilye(14)",
-            "Axwtno(57)",
-            "Qxkjt(31)",
-            "Dwifi(51)",
-            "Kasgmw(95)",
-            "Vgxj(11)",
-            "Nsgbth(26)",
-            "Nzaz(51)",
-            "Owk(87)",
-            "Yjc(94)",
-            "Hljt(21)",
-            "Jvqg(47)",
-            "Alrksy(69)",
-            "Tlv(95)",
-            "Acohsf(86)",
-            "Qejo(60)",
-            "Gbclj(20)",
-            "Nekuam(17)",
-            "Meutux(64)",
-            "Tuvzkd(85)",
-            "Fvkhz(98)",
-            "Rngl(12)",
-            "Gbkq(77)",
-            "Uzgx(65)",
-            "Ghc(15)",
-            "Qsc(48)",
-            "Siv(47)"
-        };
-        String[] synonyms = {
-            "(Gnplfi,Qxabri)",
-            "(Uzgx,Siv)",
-            "(Bnea,Lucf)",
-            "(Qnaakk,Msyr)",
-            "(Grqrg,Gbclj)",
-            "(Uhsg,Qejo)",
-            "(Csh,Wpagta)",
-            "(Xjjol,Lucf)",
-            "(Qoi,Obcbxb)",
-            "(Npilye,Vgxj)",
-            "(Aeax,Ghc)",
-            "(Txixz,Ffwni)",
-            "(Qweye,Qsc)",
-            "(Kri,Tuvzkd)",
-            "(Ommjh,Vbp)",
-            "(Pgfpma,Xxmsn)",
-            "(Uhsg,Csh)",
-            "(Qvjp,Kxutz)",
-            "(Qxkjt,Tlv)",
-            "(Wfmspz,Owk)",
-            "(Dwayf,Chycnm)",
-            "(Iidh,Qvjp)",
-            "(Dnsay,Rngl)",
-            "(Qweye,Tlv)",
-            "(Wzyyim,Kxutz)",
-            "(Hvueqc,Qejo)",
-            "(Tlv,Ghc)",
-            "(Hvia,Fvkhz)",
-            "(Msyr,Owk)",
-            "(Hrschk,Hljt)",
-            "(Owh,Gbclj)",
-            "(Dwifi,Uzgx)",
-            "(Iidh,Fpaf)",
-            "(Iidh,Meutux)",
-            "(Txixz,Ghc)",
-            "(Gbclj,Qsc)",
-            "(Kgabb,Tuvzkd)",
-            "(Uwjsu,Grqrg)",
-            "(Vbp,Dwayf)",
-            "(Xxmsn,Chhmx)",
-            "(Uxf,Uzgx)"
-        };
+        String[] names = {};
+        String[] synonyms = {};
         logResult(trulyMostPopular(names, synonyms));
     }
 
@@ -13599,5 +13456,54 @@ public class ArrayTest {
             countMap.put(num, count + 1);
         }
         return result;
+    }
+
+    /**
+     * 350. 两个数组的交集 II
+     *
+     * <p>给定两个数组，编写一个函数来计算它们的交集。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：nums1 = [1,2,2,1], nums2 = [2,2] 输出：[2,2] 示例 2:
+     *
+     * <p>输入：nums1 = [4,9,5], nums2 = [9,4,9,8,4] 输出：[4,9]
+     *
+     * <p>说明：
+     *
+     * <p>输出结果中每个元素出现的次数，应与元素在两个数组中出现次数的最小值一致。 我们可以不考虑输出结果的顺序。 进阶：
+     *
+     * <p>如果给定的数组已经排好序呢？你将如何优化你的算法？ 如果 nums1 的大小比 nums2 小很多，哪种方法更优？ 如果 nums2
+     * 的元素存储在磁盘上，磁盘内存是有限的，并且你不能一次加载所有的元素到内存中，你该怎么办？
+     *
+     * @param nums1
+     * @param nums2
+     * @return
+     */
+    public int[] intersect(int[] nums1, int[] nums2) {
+
+        Map<Integer, Integer> countMap = new HashMap<>();
+        if (nums1.length > nums2.length) {
+            int[] tmp = nums1;
+            nums1 = nums2;
+            nums2 = tmp;
+        }
+        for (int num : nums1) {
+            int count = countMap.getOrDefault(num, 0);
+            countMap.put(num, count + 1);
+        }
+        List<Integer> list = new ArrayList<>();
+        for (int num : nums2) {
+            int count = countMap.getOrDefault(num, 0);
+            if (count > 0) {
+                list.add(num);
+                countMap.put(num, count - 1);
+            }
+        }
+        int[] nums = new int[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            nums[i] = list.get(i);
+        }
+        return nums;
     }
 }

@@ -1192,4 +1192,170 @@ public class GraphTest {
         minNumberOfSemestersResult += (count - 1) / k + 1;
         minNumberOfSemesters(n, k, inDegree, graph);
     }
+
+    @Test
+    public void maxProbability() {
+        int[][] edges = {{0, 1}, {1, 2}, {0, 2}};
+        double[] succProb = {0.5, 0.5, 0.3};
+        int n = 3, start = 0, end = 2;
+        logResult(maxProbability(n, edges, succProb, start, end));
+    }
+
+    /**
+     * 5211. 概率最大的路径
+     *
+     * <p>给你一个由 n 个节点（下标从 0 开始）组成的无向加权图，该图由一个描述边的列表组成，其中 edges[i] = [a, b] 表示连接节点 a 和 b
+     * 的一条无向边，且该边遍历成功的概率为 succProb[i] 。
+     *
+     * <p>指定两个节点分别作为起点 start 和终点 end ，请你找出从起点到终点成功概率最大的路径，并返回其成功概率。
+     *
+     * <p>如果不存在从 start 到 end 的路径，请 返回 0 。只要答案与标准答案的误差不超过 1e-5 ，就会被视作正确答案。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：n = 3, edges = [[0,1],[1,2],[0,2]], succProb = [0.5,0.5,0.2], start = 0, end = 2
+     * 输出：0.25000 解释：从起点到终点有两条路径，其中一条的成功概率为 0.2 ，而另一条为 0.5 * 0.5 = 0.25 示例 2：
+     *
+     * <p>输入：n = 3, edges = [[0,1],[1,2],[0,2]], succProb = [0.5,0.5,0.3], start = 0, end = 2
+     * 输出：0.30000 示例 3：
+     *
+     * <p>输入：n = 3, edges = [[0,1]], succProb = [0.5], start = 0, end = 2 输出：0.00000 解释：节点 0 和 节点 2
+     * 之间不存在路径
+     *
+     * <p>提示：
+     *
+     * <p>2 <= n <= 10^4 0 <= start, end < n start != end 0 <= a, b < n a != b 0 <= succProb.length
+     * == edges.length <= 2*10^4 0 <= succProb[i] <= 1 每两个节点之间最多有一条边
+     *
+     * @param n
+     * @param edges
+     * @param succProb
+     * @param start
+     * @param end
+     * @return
+     */
+    public double maxProbability(int n, int[][] edges, double[] succProb, int start, int end) {
+        Map<Integer, Map<Integer, Double>> map = new HashMap<>();
+        for (int i = 0; i < edges.length; i++) {
+            int[] edge = edges[i];
+            double succ = succProb[i];
+            // 无向图
+            Map<Integer, Double> endMap = map.computeIfAbsent(edge[0], k -> new HashMap<>());
+            endMap.put(edge[1], succ);
+            Map<Integer, Double> endMap2 = map.computeIfAbsent(edge[1], k -> new HashMap<>());
+            endMap2.put(edge[0], succ);
+        }
+        // 深度优先遍历
+        // 使用队列广度优先遍历
+
+        Queue<Integer> queue = new LinkedList<>();
+        queue.offer(start);
+        double[] probs = new double[n];
+        boolean[] visited = new boolean[n];
+        probs[start] = 1.0;
+        visited[start] = true;
+        while (!queue.isEmpty()) {
+            int tmp = queue.poll();
+            visited[tmp] = false;
+            Map<Integer, Double> fromStart = map.get(tmp);
+            if (Objects.isNull(fromStart)) {
+                continue;
+            }
+            for (Integer key : fromStart.keySet()) {
+                double value = fromStart.get(key);
+                if (probs[key] < probs[tmp] * value) {
+                    probs[key] = probs[tmp] * value;
+                    if (!visited[key]) {
+                        queue.offer(key);
+                        visited[key] = true;
+                    }
+                }
+            }
+        }
+
+        return probs[end];
+    }
+
+    @Test
+    public void findRedundantConnection() {
+        int[][] edges = {{1, 2}, {2, 3}, {3, 4}, {1, 4}, {1, 5}};
+        logResult(findRedundantConnection(edges));
+    }
+
+    /**
+     * 684. 冗余连接
+     *
+     * <p>在本问题中, 树指的是一个连通且无环的无向图。
+     *
+     * <p>输入一个图，该图由一个有着N个节点 (节点值不重复1, 2, ..., N) 的树及一条附加的边构成。附加的边的两个顶点包含在1到N中间，这条附加的边不属于树中已存在的边。
+     *
+     * <p>结果图是一个以边组成的二维数组。每一个边的元素是一对[u, v] ，满足 u < v，表示连接顶点u 和v的无向图的边。
+     *
+     * <p>返回一条可以删去的边，使得结果图是一个有着N个节点的树。如果有多个答案，则返回二维数组中最后出现的边。答案边 [u, v] 应满足相同的格式 u < v。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入: [[1,2], [1,3], [2,3]] 输出: [2,3] 解释: 给定的无向图为: 1 / \ 2 - 3 示例 2：
+     *
+     * <p>输入: [[1,2], [2,3], [3,4], [1,4], [1,5]] 输出: [1,4] 解释: 给定的无向图为: 5 - 1 - 2 | | 4 - 3 注意:
+     *
+     * <p>输入的二维数组大小在 3 到 1000。 二维数组中的整数在1到N之间，其中N是输入数组的大小。 更新(2017-09-26): 我们已经重新检查了问题描述及测试用例，明确图是无向
+     * 图。对于有向图详见冗余连接II。对于造成任何不便，我们深感歉意。
+     *
+     * @param edges
+     * @return
+     */
+    public int[] findRedundantConnection(int[][] edges) {
+        // 使用并查集
+        /*Map<Integer, Integer> rootMap = new HashMap<>();
+        for (int[] edge : edges) {
+            int num1 = getRoot(rootMap, edge[0]);
+            int num2 = getRoot(rootMap, edge[1]);
+            if (num1 == num2) {
+                return edge;
+            }
+            rootMap.put(num2, num1);
+        }*/
+        // 数组并查集
+        int[] nums = new int[edges.length + 1];
+        for (int[] edge : edges) {
+            int num1 = findRoot(nums, edge[0]);
+            int num2 = findRoot(nums, edge[1]);
+            if (num1 == num2) {
+                return edge;
+            } else {
+                unionRedundant(nums, num1, num2);
+            }
+        }
+
+        return null;
+    }
+
+    private void unionRedundant(int[] nums, int start, int end) {
+        nums[end] = start;
+    }
+
+    private int findRoot(int[] nums, int num) {
+        if (nums[num] == 0) {
+            nums[num] = num;
+            return num;
+        }
+        if (nums[num] == num) {
+            return num;
+        }
+        return findRoot(nums, nums[num]);
+    }
+
+    private int getRoot(Map<Integer, Integer> rootMap, int num) {
+
+        if (!rootMap.containsKey(num)) {
+            rootMap.put(num, num);
+            return num;
+        }
+        int result = rootMap.get(num);
+        if (result == num) {
+            return result;
+        }
+        return getRoot(rootMap, result);
+    }
 }
