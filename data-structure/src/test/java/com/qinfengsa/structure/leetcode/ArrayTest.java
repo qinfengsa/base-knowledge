@@ -13522,4 +13522,139 @@ public class ArrayTest {
 
         return count;
     }
+
+    /**
+     * 1509. 三次操作后最大值与最小值的最小差
+     *
+     * <p>给你一个数组 nums ，每次操作你可以选择 nums 中的任意一个元素并将它改成任意值。
+     *
+     * <p>请你返回三次操作后， nums 中最大值与最小值的差的最小值。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：nums = [5,3,2,4] 输出：0 解释：将数组 [5,3,2,4] 变成 [2,2,2,2]. 最大值与最小值的差为 2-2 = 0 。 示例 2：
+     *
+     * <p>输入：nums = [1,5,0,10,14] 输出：1 解释：将数组 [1,5,0,10,14] 变成 [1,1,0,1,1] 。 最大值与最小值的差为 1-0 = 1 。 示例
+     * 3：
+     *
+     * <p>输入：nums = [6,6,0,1,1,4,6] 输出：2 示例 4：
+     *
+     * <p>输入：nums = [1,5,6,14,15] 输出：1
+     *
+     * <p>提示：
+     *
+     * <p>1 <= nums.length <= 10^5 -10^9 <= nums[i] <= 10^9 通过次数1,817提交次数3,490
+     *
+     * @param nums
+     * @return
+     */
+    public int minDifference(int[] nums) {
+        if (nums.length < 5) {
+            return 0;
+        }
+        int result = Integer.MAX_VALUE;
+        Arrays.sort(nums);
+        for (int i = 0; i <= 3; i++) {
+            result = Math.min(result, nums[nums.length - 4 + i] - nums[i]);
+        }
+
+        return result;
+    }
+
+    /**
+     * 1438. 绝对差不超过限制的最长连续子数组
+     *
+     * <p>给你一个整数数组 nums ，和一个表示限制的整数 limit，请你返回最长连续子数组的长度，该子数组中的任意两个元素之间的绝对差必须小于或者等于 limit 。
+     *
+     * <p>如果不存在满足条件的子数组，则返回 0 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：nums = [8,2,4,7], limit = 4 输出：2 解释：所有子数组如下： [8] 最大绝对差 |8-8| = 0 <= 4. [8,2] 最大绝对差
+     * |8-2| = 6 > 4. [8,2,4] 最大绝对差 |8-2| = 6 > 4. [8,2,4,7] 最大绝对差 |8-2| = 6 > 4. [2] 最大绝对差 |2-2| =
+     * 0 <= 4. [2,4] 最大绝对差 |2-4| = 2 <= 4. [2,4,7] 最大绝对差 |2-7| = 5 > 4. [4] 最大绝对差 |4-4| = 0 <= 4.
+     * [4,7] 最大绝对差 |4-7| = 3 <= 4. [7] 最大绝对差 |7-7| = 0 <= 4. 因此，满足题意的最长子数组的长度为 2 。 示例 2：
+     *
+     * <p>输入：nums = [10,1,2,4,7,2], limit = 5 输出：4 解释：满足题意的最长子数组是 [2,4,7,2]，其最大绝对差 |2-7| = 5 <= 5 。
+     * 示例 3：
+     *
+     * <p>输入：nums = [4,2,2,2,4,4,2,2], limit = 0 输出：3
+     *
+     * <p>提示：
+     *
+     * <p>1 <= nums.length <= 10^5 1 <= nums[i] <= 10^9 0 <= limit <= 10^9
+     *
+     * @param nums
+     * @param limit
+     * @return
+     */
+    public int longestSubarray(int[] nums, int limit) {
+        int max = 0;
+        int left = 0;
+        Deque<Integer> maxQueue = new LinkedList<>();
+        Deque<Integer> minQueue = new LinkedList<>();
+        for (int right = 0; right < nums.length; right++) {
+            int num = nums[right];
+            // 右沿元素进入窗口、维护最大值单调队列
+            while (!maxQueue.isEmpty() && nums[maxQueue.peekLast()] < num) {
+                maxQueue.pollLast();
+            }
+            maxQueue.add(right);
+            // 右沿元素进入窗口、维护最小值单调队列
+            while (!minQueue.isEmpty() && nums[minQueue.peekLast()] > num) {
+                minQueue.pollLast();
+            }
+            minQueue.add(right);
+
+            // 如果当前窗口的最大值最小值的差大于 limit，则不断缩小窗口（左沿++），直至最大值变小或者最小值变大从而满足 limit 限制
+            while (!maxQueue.isEmpty()
+                    && !minQueue.isEmpty()
+                    && nums[maxQueue.peek()] - nums[minQueue.peek()] > limit) {
+                if (maxQueue.peek() <= left) maxQueue.poll();
+                if (minQueue.peek() <= left) minQueue.poll();
+                left++;
+            }
+            max = Math.max(max, right - left + 1);
+        }
+
+        return max;
+    }
+
+    /**
+     * 1437. 是否所有 1 都至少相隔 k 个元素
+     *
+     * <p>给你一个由若干 0 和 1 组成的数组 nums 以及整数 k。如果所有 1 都至少相隔 k 个元素，则返回 True ；否则，返回 False 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：nums = [1,0,0,0,1,0,0,1], k = 2 输出：true 解释：每个 1 都至少相隔 2 个元素。 示例 2：
+     *
+     * <p>输入：nums = [1,0,0,1,0,1], k = 2 输出：false 解释：第二个 1 和第三个 1 之间只隔了 1 个元素。 示例 3：
+     *
+     * <p>输入：nums = [1,1,1,1,1], k = 0 输出：true 示例 4：
+     *
+     * <p>输入：nums = [0,1,0,1], k = 1 输出：true
+     *
+     * <p>提示：
+     *
+     * <p>1 <= nums.length <= 10^5 0 <= k <= nums.length nums[i] 的值为 0 或 1
+     *
+     * @param nums
+     * @param k
+     * @return
+     */
+    public boolean kLengthApart(int[] nums, int k) {
+        int count = 0;
+        int lastIndex = -1;
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] == 1) {
+                if (lastIndex >= 0 && i - lastIndex - 1 < k) {
+                    return false;
+                }
+                lastIndex = i;
+            }
+        }
+
+        return true;
+    }
 }
