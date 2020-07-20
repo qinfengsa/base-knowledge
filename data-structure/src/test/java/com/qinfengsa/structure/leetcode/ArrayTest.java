@@ -13768,4 +13768,180 @@ public class ArrayTest {
         }
         return queries;
     }
+
+    /**
+     * LCP 08. 剧情触发时间
+     *
+     * <p>在战略游戏中，玩家往往需要发展自己的势力来触发各种新的剧情。一个势力的主要属性有三种，分别是文明等级（C），资源储备（R）以及人口数量（H）。在游戏开始时（第 0
+     * 天），三种属性的值均为 0。
+     *
+     * <p>随着游戏进程的进行，每一天玩家的三种属性都会对应增加，我们用一个二维数组 increase 来表示每天的增加情况。这个二维数组的每个元素是一个长度为 3 的一维数组，例如
+     * [[1,2,1],[3,4,2]] 表示第一天三种属性分别增加 1,2,1 而第二天分别增加 3,4,2。
+     *
+     * <p>所有剧情的触发条件也用一个二维数组 requirements 表示。这个二维数组的每个元素是一个长度为 3 的一维数组，对于某个剧情的触发条件 c[i], r[i],
+     * h[i]，如果当前 C >= c[i] 且 R >= r[i] 且 H >= h[i] ，则剧情会被触发。
+     *
+     * <p>根据所给信息，请计算每个剧情的触发时间，并以一个数组返回。如果某个剧情不会被触发，则该剧情对应的触发时间为 -1 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入： increase = [[2,8,4],[2,5,0],[10,9,8]] requirements =
+     * [[2,11,3],[15,10,7],[9,17,12],[8,1,14]]
+     *
+     * <p>输出: [2,-1,3,-1]
+     *
+     * <p>解释：
+     *
+     * <p>初始时，C = 0，R = 0，H = 0
+     *
+     * <p>第 1 天，C = 2，R = 8，H = 4
+     *
+     * <p>第 2 天，C = 4，R = 13，H = 4，此时触发剧情 0
+     *
+     * <p>第 3 天，C = 14，R = 22，H = 12，此时触发剧情 2
+     *
+     * <p>剧情 1 和 3 无法触发。
+     *
+     * <p>示例 2：
+     *
+     * <p>输入： increase = [[0,4,5],[4,8,8],[8,6,1],[10,10,0]] requirements =
+     * [[12,11,16],[20,2,6],[9,2,6],[10,18,3],[8,14,9]]
+     *
+     * <p>输出: [-1,4,3,3,3]
+     *
+     * <p>示例 3：
+     *
+     * <p>输入： increase = [[1,1,1]] requirements = [[0,0,0]]
+     *
+     * <p>输出: [0]
+     *
+     * <p>限制：
+     *
+     * <p>1 <= increase.length <= 10000 1 <= requirements.length <= 100000 0 <= increase[i] <= 10 0
+     * <= requirements[i] <= 100000
+     *
+     * @param increase
+     * @param requirements
+     * @return
+     */
+    public int[] getTriggerTime(int[][] increase, int[][] requirements) {
+        int[] result = new int[requirements.length];
+        // 累加属性值,形成一个玩家每天属性值的数组
+        for (int i = 1; i < increase.length; i++) {
+            increase[i][0] += increase[i - 1][0];
+            increase[i][1] += increase[i - 1][1];
+            increase[i][2] += increase[i - 1][2];
+        }
+        // 二分查找 遍历触发条件，得到每个触发条件对应的天数
+        for (int i = 0; i < requirements.length; i++) {
+            if (requirements[i][0] == 0 && requirements[i][1] == 0 && requirements[i][2] == 0) {
+                result[i] = 0;
+                continue;
+            }
+            // 二分查找, 查看第几天符合要求
+            int left = 0, right = increase.length - 1;
+            while (left <= right) {
+                int mid = (left + right) >> 1;
+                if (increase[mid][0] < requirements[i][0]
+                        || increase[mid][1] < requirements[i][1]
+                        || increase[mid][2] < requirements[i][2]) {
+                    left = mid + 1;
+                } else {
+                    right = mid;
+                }
+            }
+            if (left < increase.length
+                    && increase[left][0] >= requirements[i][0]
+                    && increase[left][1] >= requirements[i][1]
+                    && increase[left][2] >= requirements[i][2]) {
+                result[i] = left + 1;
+            } else {
+                result[i] = -1;
+            }
+        }
+
+        return result;
+    }
+
+    @Test
+    public void minTime2() {
+        int[] time = {1, 2, 3, 3, 3};
+        int m = 2;
+        logResult(minTime(time, m));
+    }
+
+    /**
+     * LCP 12. 小张刷题计划
+     *
+     * <p>为了提高自己的代码能力，小张制定了 LeetCode 刷题计划，他选中了 LeetCode 题库中的 n 道题，编号从 0 到 n-1，并计划在 m
+     * 天内按照题目编号顺序刷完所有的题目（注意，小张不能用多天完成同一题）。
+     *
+     * <p>在小张刷题计划中，小张需要用 time[i] 的时间完成编号 i
+     * 的题目。此外，小张还可以使用场外求助功能，通过询问他的好朋友小杨题目的解法，可以省去该题的做题时间。为了防止“小张刷题计划”变成“小杨刷题计划”，小张每天最多使用一次求助。
+     *
+     * <p>我们定义 m 天中做题时间最多的一天耗时为 T（小杨完成的题目不计入做题总时间）。请你帮小张求出最小的 T是多少。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：time = [1,2,3,3], m = 2
+     *
+     * <p>输出：3
+     *
+     * <p>解释：第一天小张完成前三题，其中第三题找小杨帮忙；第二天完成第四题，并且找小杨帮忙。这样做题时间最多的一天花费了 3 的时间，并且这个值是最小的。
+     *
+     * <p>示例 2：
+     *
+     * <p>输入：time = [999,999,999], m = 4
+     *
+     * <p>输出：0
+     *
+     * <p>解释：在前三天中，小张每天求助小杨一次，这样他可以在三天内完成所有的题目并不花任何时间。
+     *
+     * <p>限制：
+     *
+     * <p>1 <= time.length <= 10^5 1 <= time[i] <= 10000 1 <= m <= 1000
+     *
+     * @param time
+     * @param m
+     * @return
+     */
+    public int minTime(int[] time, int m) {
+        // 二分法
+        int left = 0, right = 0;
+        for (int t : time) {
+            right += t;
+        }
+        while (left <= right) {
+            int mid = (left + right) >> 1;
+            if (canSplitTime(time, m, mid)) {
+                right = mid - 1;
+            } else {
+                left = mid + 1;
+            }
+        }
+        return left;
+    }
+
+    /**
+     * 判断 limit 时间下能否完成刷题
+     *
+     * @param time
+     * @param limit
+     * @return
+     */
+    private boolean canSplitTime(int[] time, int m, int limit) {
+        int cnt = 0;
+        int sum = 0;
+        int maxT = 0;
+        for (int t : time) {
+            sum += t;
+            maxT = Math.max(maxT, t);
+            if (sum - maxT > limit) {
+                if (++cnt == m) return false;
+                sum = t;
+                maxT = t;
+            }
+        }
+        return true;
+    }
 }
