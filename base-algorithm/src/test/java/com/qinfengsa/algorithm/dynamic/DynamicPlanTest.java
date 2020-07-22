@@ -4211,4 +4211,59 @@ public class DynamicPlanTest {
 
         return Math.max(dp[len - 1][0], dp[len - 1][1]);
     }
+
+    @Test
+    public void deleteAndEarn() {
+        int[] nums = {2, 2, 3, 3, 3, 4};
+        logResult(deleteAndEarn(nums));
+    }
+
+    /**
+     * 740. 删除与获得点数
+     *
+     * <p>给定一个整数数组 nums ，你可以对它进行一些操作。
+     *
+     * <p>每次操作中，选择任意一个 nums[i] ，删除它并获得 nums[i] 的点数。之后，你必须删除每个等于 nums[i] - 1 或 nums[i] + 1 的元素。
+     *
+     * <p>开始你拥有 0 个点数。返回你能通过这些操作获得的最大点数。
+     *
+     * <p>示例 1:
+     *
+     * <p>输入: nums = [3, 4, 2] 输出: 6 解释: 删除 4 来获得 4 个点数，因此 3 也被删除。 之后，删除 2 来获得 2 个点数。总共获得 6 个点数。 示例
+     * 2:
+     *
+     * <p>输入: nums = [2, 2, 3, 3, 3, 4] 输出: 9 解释: 删除 3 来获得 3 个点数，接着要删除两个 2 和 4 。 之后，再次删除 3 获得 3
+     * 个点数，再次删除 3 获得 3 个点数。 总共获得 9 个点数。 注意:
+     *
+     * <p>nums的长度最大为20000。 每个整数nums[i]的大小都在[1, 10000]范围内。
+     *
+     * @param nums
+     * @return
+     */
+    public int deleteAndEarn(int[] nums) {
+        if (nums.length == 0) {
+            return 0;
+        }
+        if (nums.length == 1) {
+            return nums[0];
+        }
+        int max = 0;
+        for (int num : nums) {
+            max = Math.max(max, num);
+        }
+        int[] counts = new int[max + 1];
+
+        for (int num : nums) {
+            counts[num]++;
+        }
+        int[] dp = new int[max + 1];
+        dp[1] = counts[1];
+        int result = 0;
+        for (int i = 2; i <= max; i++) {
+            dp[i] = Math.max(dp[i - 1], dp[i - 2] + i * counts[i]);
+            result = Math.max(result, dp[i]);
+        }
+
+        return result;
+    }
 }
