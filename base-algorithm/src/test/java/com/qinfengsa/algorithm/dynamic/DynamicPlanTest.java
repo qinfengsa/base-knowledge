@@ -4266,4 +4266,61 @@ public class DynamicPlanTest {
 
         return result;
     }
+
+    @Test
+    public void minimumDeleteSum() {
+        String s1 = "delete", s2 = "";
+        logResult(minimumDeleteSum(s1, s2));
+    }
+
+    /**
+     * 712. 两个字符串的最小ASCII删除和
+     *
+     * <p>给定两个字符串s1, s2，找到使两个字符串相等所需删除字符的ASCII值的最小和。
+     *
+     * <p>示例 1:
+     *
+     * <p>输入: s1 = "sea", s2 = "eat" 输出: 231 解释: 在 "sea" 中删除 "s" 并将 "s" 的值(115)加入总和。 在 "eat" 中删除 "t"
+     * 并将 116 加入总和。 结束时，两个字符串相等，115 + 116 = 231 就是符合条件的最小和。 示例 2:
+     *
+     * <p>输入: s1 = "delete", s2 = "leet" 输出: 403 解释: 在 "delete" 中删除 "dee" 字符串变成 "let"， 将
+     * 100[d]+101[e]+101[e] 加入总和。在 "leet" 中删除 "e" 将 101[e] 加入总和。 结束时，两个字符串都等于 "let"，结果即为
+     * 100+101+101+101 = 403 。 如果改为将两个字符串转换为 "lee" 或 "eet"，我们会得到 433 或 417 的结果，比答案更大。 注意:
+     *
+     * <p>0 < s1.length, s2.length <= 1000。 所有字符串中的字符ASCII值在[97, 122]之间。
+     *
+     * @param s1
+     * @param s2
+     * @return
+     */
+    public int minimumDeleteSum(String s1, String s2) {
+        int len1 = s1.length(), len2 = s2.length();
+        int[][] dp = new int[len1 + 1][len2 + 1];
+        // 状态：使用 dp[i][j]表示s1前i个字符和s2前j个字符的最小和结果
+        // 转移：如果当前字符相等 dp[i][j] = dp[i-1][j-1]
+        // dp[i][j] =
+        // min(dp[i-1][j]+ascii(s1[i]),dp[i][j-1]+ascii(s2[j])) 表示删除，加上ascii的值更新
+        //
+        // 注意边界，对于空串就是将其所有ascii值相加
+
+        for (int i = 0; i < len1; i++) {
+            dp[i + 1][0] = dp[i][0] + s1.codePointAt(i);
+        }
+        for (int j = 0; j < len2; j++) {
+            dp[0][j + 1] = dp[0][j] + s2.codePointAt(j);
+        }
+
+        for (int i = 0; i < len1; i++) {
+            for (int j = 0; j < len2; j++) {
+                char c1 = s1.charAt(i), c2 = s2.charAt(j);
+                if (c1 == c2) {
+                    dp[i + 1][j + 1] = dp[i][j];
+                } else {
+                    dp[i + 1][j + 1] = Math.min(dp[i][j + 1] + c1, dp[i + 1][j] + c2);
+                }
+            }
+        }
+        logResult(dp);
+        return dp[len1][len2];
+    }
 }

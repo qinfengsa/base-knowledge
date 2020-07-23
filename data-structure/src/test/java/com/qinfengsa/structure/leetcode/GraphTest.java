@@ -1408,4 +1408,101 @@ public class GraphTest {
 
         return true;
     }
+
+    @Test
+    public void networkDelayTime() {
+        int[][] times = {{2, 1, 1}, {2, 3, 1}, {3, 4, 1}};
+        int N = 4, K = 2;
+        /*int[][] times = {{1, 2, 1}, {2, 1, 3}};
+        int N = 2, K = 2;*/
+        logResult(networkDelayTime(times, N, K));
+    }
+    /**
+     * 743. 网络延迟时间
+     *
+     * <p>有 N 个网络节点，标记为 1 到 N。
+     *
+     * <p>给定一个列表 times，表示信号经过有向边的传递时间。 times[i] = (u, v, w)，其中 u 是源节点，v 是目标节点， w
+     * 是一个信号从源节点传递到目标节点的时间。
+     *
+     * <p>现在，我们从某个节点 K 发出一个信号。需要多久才能使所有节点都收到信号？如果不能使所有节点收到信号，返回 -1。
+     *
+     * <p>示例：
+     *
+     * <p>输入：times = [[2,1,1],[2,3,1],[3,4,1]], N = 4, K = 2 输出：2
+     *
+     * <p>注意:
+     *
+     * <p>N 的范围在 [1, 100] 之间。 K 的范围在 [1, N] 之间。 times 的长度在 [1, 6000] 之间。 所有的边 times[i] = (u, v, w)
+     * 都有 1 <= u, v <= N 且 0 <= w <= 100。
+     *
+     * @param times
+     * @param N
+     * @param K
+     * @return
+     */
+    public int networkDelayTime(int[][] times, int N, int K) {
+        int maxTime = 0;
+
+        int[][] graph = new int[N + 1][N + 1];
+        for (int i = 1; i < N + 1; i++) {
+            for (int j = 1; j < N + 1; j++) {
+                graph[i][j] = -1;
+            }
+        }
+        for (int[] time : times) {
+            graph[time[0]][time[1]] = time[2];
+        }
+        // 从 K 开始遍历
+        int[] dist = new int[N + 1];
+        Arrays.fill(dist, Integer.MAX_VALUE);
+        dist[0] = 0;
+        dist[K] = 0;
+        // 广度优先遍历
+        Queue<Integer> queue = new LinkedList<>();
+        queue.offer(K);
+        while (!queue.isEmpty()) {
+            int start = queue.poll();
+            for (int i = 1; i <= N; i++) {
+                if (graph[start][i] == -1) {
+                    continue;
+                }
+                if (dist[i] > dist[start] + graph[start][i]) {
+                    dist[i] = dist[start] + graph[start][i];
+                    if (!queue.contains(i)) {
+                        queue.offer(i);
+                    }
+                }
+            }
+        }
+        log.debug("dist:{}", dist);
+        for (int t : dist) {
+            if (t == Integer.MAX_VALUE) {
+                return -1;
+            }
+            maxTime = Math.max(t, maxTime);
+        }
+
+        return maxTime;
+    }
+
+    int networkDelayTimeResult = 0;
+
+    private void dfsNetworkDelayTime(
+            Map<Integer, Map<Integer, Integer>> map, int start, int time, Set<Integer> visited) {
+        if (visited.contains(start)) {
+            return;
+        }
+        visited.add(start);
+        networkDelayTimeResult = Math.max(networkDelayTimeResult, time);
+        if (!map.containsKey(start)) {
+            return;
+        }
+
+        Map<Integer, Integer> timeMap = map.get(start);
+        timeMap.forEach(
+                (k, v) -> {
+                    dfsNetworkDelayTime(map, k, time + v, visited);
+                });
+    }
 }
