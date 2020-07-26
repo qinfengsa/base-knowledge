@@ -4191,4 +4191,122 @@ public class TreeTest {
         }
         return result;
     }
+
+    @Test
+    public void countPairs() {
+        TreeNode root = new TreeNode(1);
+        TreeNode node11 = new TreeNode(2);
+        TreeNode node12 = new TreeNode(3);
+
+        TreeNode node21 = new TreeNode(4);
+        TreeNode node22 = new TreeNode(5);
+
+        TreeNode node23 = new TreeNode(6);
+        TreeNode node24 = new TreeNode(7);
+
+        TreeNode node31 = new TreeNode(31);
+        TreeNode node32 = new TreeNode(32);
+
+        TreeNode node33 = new TreeNode(33);
+        TreeNode node34 = new TreeNode(34);
+        TreeNode node35 = new TreeNode(35);
+        TreeNode node36 = new TreeNode(36);
+
+        TreeNode node37 = new TreeNode(37);
+        TreeNode node38 = new TreeNode(38);
+        root.left = node11;
+        root.right = node12;
+        node11.left = node21;
+        node11.right = node22;
+        node12.left = node23;
+        node12.right = node24;
+        node21.left = node31;
+        node21.right = node32;
+
+        node22.left = node33;
+        node22.right = node34;
+
+        node23.left = node35;
+        node23.right = node36;
+
+        node24.left = node37;
+        node24.right = node38;
+        int distance = 3;
+        logResult(countPairs(root, distance));
+    }
+    /**
+     * 5474. 好叶子节点对的数量
+     *
+     * <p>给你二叉树的根节点 root 和一个整数 distance 。
+     *
+     * <p>如果二叉树中两个 叶 节点之间的 最短路径长度 小于或者等于 distance ，那它们就可以构成一组 好叶子节点对 。
+     *
+     * <p>返回树中 好叶子节点对的数量 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：root = [1,2,3,null,4], distance = 3 输出：1 解释：树的叶节点是 3 和 4 ，它们之间的最短路径的长度是 3 。这是唯一的好叶子节点对。
+     * 示例 2：
+     *
+     * <p>输入：root = [1,2,3,4,5,6,7], distance = 3 输出：2 解释：好叶子节点对为 [4,5] 和 [6,7] ，最短路径长度都是 2 。但是叶子节点对
+     * [4,6] 不满足要求，因为它们之间的最短路径长度为 4 。 示例 3：
+     *
+     * <p>输入：root = [7,1,4,6,null,5,3,null,null,null,null,null,2], distance = 3 输出：1 解释：唯一的好叶子节点对是
+     * [2,5] 。 示例 4：
+     *
+     * <p>输入：root = [100], distance = 1 输出：0 示例 5：
+     *
+     * <p>输入：root = [1,1,1], distance = 2 输出：1
+     *
+     * <p>提示：
+     *
+     * <p>tree 的节点数在 [1, 2^10] 范围内。 每个节点的值都在 [1, 100] 之间。 1 <= distance <= 10
+     *
+     * @param root
+     * @param distance
+     * @return
+     */
+    public int countPairs(TreeNode root, int distance) {
+        int result = 0;
+        // 递归
+        if (Objects.isNull(root)) {
+            return 0;
+        }
+
+        for (int d = 2; d <= distance; d++) {
+            for (int i = 1; i < d; i++) {
+                result += getCountPairs(root.left, i) * getCountPairs(root.right, d - i);
+            }
+        }
+
+        // 左叶子节点
+        result += countPairs(root.left, distance);
+        log.debug("左：{}  {}", root.left, result);
+        // 右叶子节点
+        result += countPairs(root.right, distance);
+        log.debug("右：{}  {}", root.right, result);
+        return result;
+    }
+
+    private int getCountPairs(TreeNode root, int distance) {
+        int count = 0;
+        if (distance == 0) {
+            return 0;
+        }
+
+        if (Objects.isNull(root)) {
+            return 0;
+        }
+
+        if (Objects.isNull(root.left) && Objects.isNull(root.right) && distance == 1) {
+            return 1;
+        }
+
+        count += getCountPairs(root.left, distance - 1);
+        log.debug("count left：{}  {}", root.left, count);
+        count += getCountPairs(root.right, distance - 1);
+        log.debug("count right：{}  {}", root.right, count);
+        log.debug("count :{}", count);
+        return count;
+    }
 }
