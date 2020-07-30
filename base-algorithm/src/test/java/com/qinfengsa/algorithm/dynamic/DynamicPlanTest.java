@@ -4475,4 +4475,64 @@ public class DynamicPlanTest {
 
         return max;
     }
+
+    @Test
+    public void knightProbability() {
+        int N = 3, K = 2, r = 0, c = 0;
+        logResult(knightProbability(N, K, r, c));
+    }
+
+    /**
+     * 688. “马”在棋盘上的概率
+     *
+     * <p>已知一个 NxN 的国际象棋棋盘，棋盘的行号和列号都是从 0 开始。即最左上角的格子记为 (0, 0)，最右下角的记为 (N-1, N-1)。
+     *
+     * <p>现有一个 “马”（也译作 “骑士”）位于 (r, c) ，并打算进行 K 次移动。
+     *
+     * <p>如下图所示，国际象棋的 “马” 每一步先沿水平或垂直方向移动 2 个格子，然后向与之相垂直的方向再移动 1 个格子，共有 8 个可选的位置。
+     *
+     * <p>现在 “马” 每一步都从可选的位置（包括棋盘外部的）中独立随机地选择一个进行移动，直到移动了 K 次或跳到了棋盘外面。
+     *
+     * <p>求移动结束后，“马” 仍留在棋盘上的概率。
+     *
+     * <p>示例：
+     *
+     * <p>输入: 3, 2, 0, 0 输出: 0.0625 解释: 输入的数据依次为 N, K, r, c 第 1 步时，有且只有 2 种走法令 “马”
+     * 可以留在棋盘上（跳到（1,2）或（2,1））。对于以上的两种情况，各自在第2步均有且只有2种走法令 “马” 仍然留在棋盘上。 所以 “马” 在结束后仍在棋盘上的概率为 0.0625。
+     *
+     * <p>注意：
+     *
+     * <p>N 的取值范围为 [1, 25] K 的取值范围为 [0, 100] 开始时，“马” 总是位于棋盘上
+     *
+     * @param N
+     * @param K
+     * @param r
+     * @param c
+     * @return
+     */
+    public double knightProbability(int N, int K, int r, int c) {
+        double[][][] dp = new double[N][N][K + 1];
+        int[] dr = {2, 2, 1, 1, -1, -1, -2, -2};
+        int[] dc = {1, -1, 2, -2, 2, -2, 1, -1};
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                dp[i][j][0] = 1.0;
+            }
+        }
+        for (int k = 1; k <= K; k++) {
+            for (int i = 0; i < N; i++) {
+                for (int j = 0; j < N; j++) {
+                    for (int l = 0; l < 8; l++) {
+                        int row = i + dr[l];
+                        int col = j + dc[l];
+                        if (row >= 0 && row < N && col >= 0 && col < N) {
+                            dp[row][col][k] += dp[i][j][k - 1] / 8.0;
+                        }
+                    }
+                }
+            }
+        }
+
+        return dp[r][c][K];
+    }
 }
