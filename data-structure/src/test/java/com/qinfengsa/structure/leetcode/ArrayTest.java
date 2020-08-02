@@ -14007,4 +14007,198 @@ public class ArrayTest {
         }
         return false;
     }
+
+    /**
+     * 5475. 统计好三元组
+     *
+     * <p>给你一个整数数组 arr ，以及 a、b 、c 三个整数。请你统计其中好三元组的数量。
+     *
+     * <p>如果三元组 (arr[i], arr[j], arr[k]) 满足下列全部条件，则认为它是一个 好三元组 。
+     *
+     * <p>0 <= i < j < k < arr.length |arr[i] - arr[j]| <= a |arr[j] - arr[k]| <= b |arr[i] -
+     * arr[k]| <= c 其中 |x| 表示 x 的绝对值。
+     *
+     * <p>返回 好三元组的数量 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：arr = [3,0,1,1,9,7], a = 7, b = 2, c = 3 输出：4 解释：一共有 4 个好三元组：[(3,0,1), (3,0,1),
+     * (3,1,1), (0,1,1)] 。 示例 2：
+     *
+     * <p>输入：arr = [1,1,2,2,3], a = 0, b = 0, c = 1 输出：0 解释：不存在满足所有条件的三元组。
+     *
+     * <p>提示：
+     *
+     * <p>3 <= arr.length <= 100 0 <= arr[i] <= 1000 0 <= a, b, c <= 1000
+     *
+     * @param arr
+     * @param a
+     * @param b
+     * @param c
+     * @return
+     */
+    public int countGoodTriplets(int[] arr, int a, int b, int c) {
+        int count = 0;
+        int len = arr.length;
+        for (int i = 0; i < len - 2; i++) {
+            for (int j = i + 1; j < len - 1; j++) {
+                for (int k = j + 1; k < len; k++) {
+                    if (Math.abs(arr[i] - arr[j]) <= a
+                            && Math.abs(arr[j] - arr[k]) <= b
+                            && Math.abs(arr[i] - arr[k]) <= c) {
+                        count++;
+                    }
+                }
+            }
+        }
+
+        return count;
+    }
+
+    @Test
+    public void getWinner() {
+        int[] arr = {1, 25, 35, 42, 68, 70};
+        int k = 1;
+        logResult(getWinner(arr, k));
+    }
+
+    /**
+     * 5476. 找出数组游戏的赢家
+     *
+     * <p>给你一个由 不同 整数组成的整数数组 arr 和一个整数 k 。
+     *
+     * <p>每回合游戏都在数组的前两个元素（即 arr[0] 和 arr[1] ）之间进行。比较 arr[0] 与 arr[1] 的大小，较大的整数将会取得这一回合的胜利并保留在位置 0
+     * ，较小的整数移至数组的末尾。当一个整数赢得 k 个连续回合时，游戏结束，该整数就是比赛的 赢家 。
+     *
+     * <p>返回赢得比赛的整数。
+     *
+     * <p>题目数据 保证 游戏存在赢家。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：arr = [2,1,3,5,4,6,7], k = 2 输出：5 解释：一起看一下本场游戏每回合的情况：
+     *
+     * <p>因此将进行 4 回合比赛，其中 5 是赢家，因为它连胜 2 回合。 示例 2：
+     *
+     * <p>输入：arr = [3,2,1], k = 10 输出：3 解释：3 将会在前 10 个回合中连续获胜。 示例 3：
+     *
+     * <p>输入：arr = [1,9,8,2,3,7,6,4,5], k = 7 输出：9 示例 4：
+     *
+     * <p>输入：arr = [1,11,22,33,44,55,66,77,88,99], k = 1000000000 输出：99
+     *
+     * <p>提示：
+     *
+     * <p>2 <= arr.length <= 10^5 1 <= arr[i] <= 10^6 arr 所含的整数 各不相同 。 1 <= k <= 10^9
+     *
+     * @param arr
+     * @param k
+     * @return
+     */
+    public int getWinner(int[] arr, int k) {
+        int max = 0;
+        Queue<Integer> queue = new LinkedList<>();
+        for (int num : arr) {
+            queue.offer(num);
+            max = Math.max(num, max);
+        }
+        if (k >= arr.length) {
+            return max;
+        }
+        int win = queue.poll();
+        int count = 0;
+        while (true) {
+            int num = queue.poll();
+            if (num > win) {
+                count = 1;
+
+                int tmp = win;
+                win = num;
+                num = tmp;
+
+            } else {
+                count++;
+            }
+            if (count == k) {
+                break;
+            }
+            queue.offer(num);
+        }
+
+        return win;
+    }
+
+    @Test
+    public void minSwaps() {
+        int[][] grid = {{0, 0, 0}, {1, 1, 0}, {1, 0, 0}};
+
+        logResult(minSwaps(grid));
+    }
+    /**
+     * 5477. 排布二进制网格的最少交换次数
+     *
+     * <p>给你一个 n x n 的二进制网格 grid，每一次操作中，你可以选择网格的 相邻两行 进行交换。
+     *
+     * <p>一个符合要求的网格需要满足主对角线以上的格子全部都是 0 。
+     *
+     * <p>请你返回使网格满足要求的最少操作次数，如果无法使网格符合要求，请你返回 -1 。
+     *
+     * <p>主对角线指的是从 (1, 1) 到 (n, n) 的这些格子。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：grid = [[0,0,1],[1,1,0],[1,0,0]] 输出：3 示例 2：
+     *
+     * <p>输入：grid = [[0,1,1,0],[0,1,1,0],[0,1,1,0],[0,1,1,0]] 输出：-1 解释：所有行都是一样的，交换相邻行无法使网格符合要求。 示例
+     * 3：
+     *
+     * <p>输入：grid = [[1,0,0],[1,1,0],[1,1,1]] 输出：0
+     *
+     * <p>提示：
+     *
+     * <p>n == grid.length n == grid[i].length 1 <= n <= 200 grid[i][j] 要么是 0 要么是 1 。
+     *
+     * @param grid
+     * @return
+     */
+    public int minSwaps(int[][] grid) {
+        int len = grid.length;
+        int[] rowZeroCount = new int[len];
+        for (int i = 0; i < len; i++) {
+            int count = 0;
+            for (int j = len - 1; j > 0; j--) {
+                if (grid[i][j] == 1) {
+                    break;
+                }
+                count++;
+            }
+            rowZeroCount[i] = count;
+        }
+        int count = 0;
+        log.debug("count:{}", rowZeroCount);
+
+        for (int i = 0; i < len - 1; i++) {
+            if (rowZeroCount[i] >= len - i - 1) {
+                continue; // 满足条件，该行直接跳过
+            } else { // 不满足条件
+                int j = i; // 用新参数遍历找满足条件的后缀0
+                for (; j < len; j++) {
+                    if (rowZeroCount[j] >= len - i - 1) break;
+                }
+                if (j == len) {
+                    return -1; // 找不到，直接返回-1
+                }
+                for (; j > i; j--) { // 找到了最先满足条件的后缀0个数
+
+                    // 每一行交换上去
+                    int tmp = rowZeroCount[j];
+                    rowZeroCount[j] = rowZeroCount[j - 1];
+                    rowZeroCount[j - 1] = tmp;
+                    count++; // 记录交换次数
+                }
+            }
+        }
+        log.debug("count:{}", rowZeroCount);
+
+        return count;
+    }
 }
