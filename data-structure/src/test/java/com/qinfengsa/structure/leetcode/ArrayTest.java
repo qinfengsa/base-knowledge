@@ -14201,4 +14201,211 @@ public class ArrayTest {
 
         return count;
     }
+
+    /**
+     * 1072. 按列翻转得到最大值等行数
+     *
+     * <p>给定由若干 0 和 1 组成的矩阵 matrix，从中选出任意数量的列并翻转其上的 每个 单元格。翻转后，单元格的值从 0 变成 1，或者从 1 变为 0 。
+     *
+     * <p>返回经过一些翻转后，行上所有值都相等的最大行数。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：[[0,1],[1,1]] 输出：1 解释：不进行翻转，有 1 行所有值都相等。 示例 2：
+     *
+     * <p>输入：[[0,1],[1,0]] 输出：2 解释：翻转第一列的值之后，这两行都由相等的值组成。 示例 3：
+     *
+     * <p>输入：[[0,0,0],[0,0,1],[1,1,0]] 输出：2 解释：翻转前两列的值之后，后两行由相等的值组成。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= matrix.length <= 300 1 <= matrix[i].length <= 300 所有 matrix[i].length 都相等
+     * matrix[i][j] 为 0 或 1
+     *
+     * @param matrix
+     * @return
+     */
+    public int maxEqualRowsAfterFlips(int[][] matrix) {
+        int max = 0;
+        Map<String, Integer> map = new HashMap<>();
+        // 按照数字出现的连续次数定义特征，比如 11100110 -> 3221，这样的好处是，00011001 同样也是 3221
+        for (int[] nums : matrix) {
+            int count = 1;
+            StringBuilder sb = new StringBuilder();
+            for (int i = 1; i < nums.length; i++) {
+                if (nums[i] == nums[i - 1]) {
+                    count++;
+                } else {
+                    sb.append(count);
+                    count = 1;
+                }
+            }
+            sb.append(count);
+            int n = map.getOrDefault(sb.toString(), 0);
+            map.put(sb.toString(), n + 1);
+            max = Math.max(max, n + 1);
+        }
+
+        return max;
+    }
+
+    @Test
+    public void addNegabinary() {
+        int[] arr1 = {1, 1, 1, 1, 1}, arr2 = {1, 0, 1};
+        int[] nums = addNegabinary(arr1, arr2);
+        log.debug("nums:{}", nums);
+    }
+
+    /**
+     * 1073. 负二进制数相加
+     *
+     * <p>给出基数为 -2 的两个数 arr1 和 arr2，返回两数相加的结果。
+     *
+     * <p>数字以 数组形式 给出：数组由若干 0 和 1 组成，按最高有效位到最低有效位的顺序排列。例如，arr = [1,1,0,1] 表示数字 (-2)^3 + (-2)^2 +
+     * (-2)^0 = -3。数组形式 的数字也同样不含前导零：以 arr 为例，这意味着要么 arr == [0]，要么 arr[0] == 1。
+     *
+     * <p>返回相同表示形式的 arr1 和 arr2 相加的结果。两数的表示形式为：不含前导零、由若干 0 和 1 组成的数组。
+     *
+     * <p>示例：
+     *
+     * <p>输入：arr1 = [1,1,1,1,1], arr2 = [1,0,1] 输出：[1,0,0,0,0] 解释：arr1 表示 11，arr2 表示 5，输出表示 16 。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= arr1.length <= 1000 1 <= arr2.length <= 1000 arr1 和 arr2 都不含前导零 arr1[i] 为 0 或 1
+     * arr2[i] 为 0 或 1 通过次数1,418提交次数4,517
+     *
+     * @param arr1
+     * @param arr2
+     * @return
+     */
+    public int[] addNegabinary(int[] arr1, int[] arr2) {
+        if (arr1[0] == 0) return arr2;
+        if (arr2[0] == 0) return arr1;
+        int len1 = arr1.length, len2 = arr2.length;
+        int len = Math.max(len1, len2) + 2;
+        int[] nums = new int[len];
+        // 奇数位 -1
+        // 当前项累加超过1时，进位项为-1。如偶数位的两个1结合后进位为1，但由于前一项时奇数项为负值，所以进位-1去减小奇数项的当前值；奇数为类比。
+        // 当前项累加低于0时，进位项为1。这种情况是当前两个数为0且之前的进位是-1，因此要做的事情是当前位-1 + 2 = 1， 然后再下一时刻的进制位置为1.
+        int index = 0;
+
+        int m = len1 - 1, n = len2 - 1;
+        int carry = 0;
+        while (m >= 0 || n >= 0) {
+            int p = m >= 0 ? arr1[m--] : 0;
+            int q = n >= 0 ? arr2[n--] : 0;
+            int sum = p + q + carry;
+            switch (sum) {
+                case -1:
+                    nums[len - 1 - index] = 1;
+                    carry = 1;
+                    break;
+                case 0:
+                    nums[len - 1 - index] = 0;
+                    carry = 0;
+                    break;
+                case 1:
+                    nums[len - 1 - index] = 1;
+                    carry = 0;
+                    break;
+                case 2:
+                    nums[len - 1 - index] = 0;
+                    carry = -1;
+                    break;
+                case 3:
+                    nums[len - 1 - index] = 1;
+                    carry = -1;
+                    break;
+            }
+            index++;
+        }
+        // 最后还差时
+        if (carry == -1) {
+            nums[len - 1 - index++] = 1;
+            nums[len - 1 - index] = 1;
+        }
+        index = 0;
+        while (index < len && nums[index] == 0) {
+            index++;
+        }
+        if (index == len) {
+            return new int[] {0};
+        }
+        int[] result = new int[len - index];
+        if (len - index >= 0) System.arraycopy(nums, index, result, 0, len - index);
+
+        return result;
+    }
+
+    @Test
+    public void shortestPathBinaryMatrix() {
+        int[][] grid = {{0, 0, 0}, {1, 1, 0}, {1, 1, 0}};
+        logResult(shortestPathBinaryMatrix(grid));
+    }
+
+    /**
+     * 1091. 二进制矩阵中的最短路径
+     *
+     * <p>在一个 N × N 的方形网格中，每个单元格有两种状态：空（0）或者阻塞（1）。
+     *
+     * <p>一条从左上角到右下角、长度为 k 的畅通路径，由满足下述条件的单元格 C_1, C_2, ..., C_k 组成：
+     *
+     * <p>相邻单元格 C_i 和 C_{i+1} 在八个方向之一上连通（此时，C_i 和 C_{i+1} 不同且共享边或角） C_1 位于 (0, 0)（即，值为 grid[0][0]）
+     * C_k 位于 (N-1, N-1)（即，值为 grid[N-1][N-1]） 如果 C_i 位于 (r, c)，则 grid[r][c] 为空（即，grid[r][c] == 0）
+     * 返回这条从左上角到右下角的最短畅通路径的长度。如果不存在这样的路径，返回 -1 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：[[0,1],[1,0]]
+     *
+     * <p>输出：2
+     *
+     * <p>示例 2：
+     *
+     * <p>输入：[[0,0,0],[1,1,0],[1,1,0]]
+     *
+     * <p>输出：4
+     *
+     * <p>提示：
+     *
+     * <p>1 <= grid.length == grid[0].length <= 100 grid[i][j] 为 0 或 1
+     *
+     * @param grid
+     * @return
+     */
+    public int shortestPathBinaryMatrix(int[][] grid) {
+        int n = grid.length;
+        int[] dirRow = {-1, 1, 0, 0, -1, -1, 1, 1};
+        int[] dirCol = {0, 0, -1, 1, -1, 1, -1, 1};
+        if (grid[0][0] == 1 || grid[n - 1][n - 1] == 1) {
+            return -1;
+        }
+        if (n == 1 && grid[0][0] == 0) {
+            return 1;
+        }
+        Queue<int[]> queue = new LinkedList<>();
+        queue.offer(new int[] {0, 0});
+        int path = 1;
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            path++;
+            for (int i = 0; i < size; i++) {
+                int[] nums = queue.poll();
+                int row = nums[0], col = nums[1];
+                for (int j = 0; j < 8; j++) {
+                    int rowIndex = row + dirRow[j];
+                    int colIndex = col + dirCol[j];
+                    if (inArea(rowIndex, colIndex, n, n) && grid[rowIndex][colIndex] == 0) {
+                        if (rowIndex == n - 1 && colIndex == n - 1) {
+                            return path;
+                        }
+                        grid[rowIndex][colIndex] = path;
+                        queue.offer(new int[] {rowIndex, colIndex});
+                    }
+                }
+            }
+        }
+        return -1;
+    }
 }
