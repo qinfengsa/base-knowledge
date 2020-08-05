@@ -7162,4 +7162,70 @@ public class StringTest {
             return false;
         }
     }
+
+    @Test
+    public void smallestSubsequence() {
+        String text = "cdadabcc";
+        logResult(smallestSubsequence(text));
+    }
+
+    /**
+     * 1081. 不同字符的最小子序列
+     *
+     * <p>返回字符串 text 中按字典序排列最小的子序列，该子序列包含 text 中所有不同字符一次。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入："cdadabcc" 输出："adbc" 示例 2：
+     *
+     * <p>输入："abcd" 输出："abcd" 示例 3：
+     *
+     * <p>输入："ecbacba" 输出："eacb" 示例 4：
+     *
+     * <p>输入："leetcode" 输出："letcod"
+     *
+     * <p>提示：
+     *
+     * <p>1 <= text.length <= 1000 text 由小写英文字母组成
+     *
+     * <p>注意：本题目与 316 https://leetcode-cn.com/problems/remove-duplicate-letters/ 相同
+     *
+     * @param text
+     * @return
+     */
+    public String smallestSubsequence(String text) {
+        // 方法一：题目要求最终返回的字符串必须包含所有出现过的字母，同时得让字符串的字典序最小。因此，对于最终返回的字符串，
+        //  最左侧的字符是在能保证其他字符至少能出现一次情况下的最小字符。
+        //
+        // 方法二：在遍历字符串的过程中，如果字符 i 大于字符i+1，在字符 i 不是最后一次出现的情况下，删除字符 i。
+        StringBuilder sb = new StringBuilder();
+        Deque<Character> stack = new LinkedList<>();
+        Map<Character, Integer> lastIndex = new HashMap<>();
+        for (int i = 0; i < text.length(); i++) {
+            char c = text.charAt(i);
+            lastIndex.put(c, i);
+        }
+        boolean[] visited = new boolean[26];
+        for (int i = 0; i < text.length(); i++) {
+            char c = text.charAt(i);
+            if (visited[c - 'a']) {
+                continue;
+            }
+            while (!stack.isEmpty()
+                    && c < stack.peekLast()
+                    && lastIndex.get(stack.peekLast()) > i) {
+                visited[stack.removeLast() - 'a'] = false;
+            }
+            visited[c - 'a'] = true;
+            stack.addLast(c);
+        }
+        for (char c : stack) {
+            sb.append(c);
+        }
+        /*int size = stack.size();
+        for (int i = 0; i < size; i++) {
+            sb.append(stack.pop());
+        }*/
+        return sb.toString();
+    }
 }
