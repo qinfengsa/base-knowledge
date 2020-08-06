@@ -7228,4 +7228,114 @@ public class StringTest {
         }*/
         return sb.toString();
     }
+
+    @Test
+    public void palindromePairs() {
+        String[] words = {"abcd", "dcba", "lls", "s", "sssll"};
+        logResult(palindromePairs(words));
+    }
+
+    /**
+     * 336. 回文对 给定一组唯一的单词，
+     *
+     * <p>找出所有不同 的索引对(i, j)，使得列表中的两个单词， words[i] + words[j] ，可拼接成回文串。
+     *
+     * <p>示例 1:
+     *
+     * <p>输入: ["abcd","dcba","lls","s","sssll"] 输出: [[0,1],[1,0],[3,2],[2,4]] 解释: 可拼接成的回文串为
+     * ["dcbaabcd","abcddcba","slls","llssssll"] 示例 2:
+     *
+     * <p>输入: ["bat","tab","cat"] 输出: [[0,1],[1,0]] 解释: 可拼接成的回文串为 ["battab","tabbat"]
+     *
+     * @param words
+     * @return
+     */
+    public List<List<Integer>> palindromePairs(String[] words) {
+        List<List<Integer>> result = new ArrayList<>();
+
+        Map<String, Integer> indexMap = new HashMap<>();
+        for (int i = 0; i < words.length; i++) {
+            String word = new StringBuilder(words[i]).reverse().toString();
+            indexMap.put(word, i);
+        }
+
+        for (int i = 0; i < words.length; i++) {
+            String word = words[i];
+            int len = word.length();
+            if (len == 0) {
+                continue;
+            }
+            for (int j = 0; j <= len; j++) {
+                if (checkPalindrome(word, j, len - 1)) {
+                    int index = indexMap.getOrDefault(word.substring(0, j), -1);
+                    if (index != -1 && index != i) {
+                        result.add(Arrays.asList(i, index));
+                    }
+                }
+                if (j != 0 && checkPalindrome(word, 0, j - 1)) {
+                    int index = indexMap.getOrDefault(word.substring(j, len), -1);
+                    if (index != -1 && index != i) {
+                        result.add(Arrays.asList(index, i));
+                    }
+                }
+            }
+        }
+
+        /*for (int i = 0; i < words.length; i++) {
+            String word = words[i];
+            if (word.length() == 0) {
+                for (int j = 0; j < words.length; j++) {
+                    if (i == j) {
+                        continue;
+                    }
+                    if (checkPalindrome(words[j])) {
+                        result.add(Arrays.asList(i, j));
+                        result.add(Arrays.asList(j, i));
+                    }
+                }
+                continue;
+            }
+            char c1 = word.charAt(0), c2 = word.charAt(word.length() - 1);
+
+            String suffix = "-" + c1;
+            String prefix = c2 + "-";
+            if (map.containsKey(suffix)) {
+                List<Integer> list = map.get(suffix);
+                for (int j : list) {
+                    if (i != j && checkPalindrome(word + words[j])) {
+                        result.add(Arrays.asList(i, j));
+                    }
+                }
+            }
+
+            if (map.containsKey(prefix)) {
+                List<Integer> list = map.get(prefix);
+                for (int j : list) {
+                    if (i != j && checkPalindrome(words[j] + word)) {
+                        result.add(Arrays.asList(j, i));
+                    }
+                }
+            }
+
+            List<Integer> list1 = map.computeIfAbsent(c1 + "-", k -> new ArrayList<>());
+            List<Integer> list2 = map.computeIfAbsent("-" + c2, k -> new ArrayList<>());
+            list1.add(i);
+            list2.add(i);
+        }*/
+
+        return result;
+    }
+
+    private boolean checkPalindrome(String s) {
+        char[] chars = s.toCharArray();
+        int left = 0, right = chars.length - 1;
+        while (left < right) {
+            if (chars[left] != chars[right]) {
+                return false;
+            }
+            left++;
+            right--;
+        }
+        return true;
+    }
 }
