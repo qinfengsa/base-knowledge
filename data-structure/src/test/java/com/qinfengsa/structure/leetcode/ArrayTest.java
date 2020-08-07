@@ -14480,4 +14480,172 @@ public class ArrayTest {
         }
         return new double[] {min, max, avg, mid, node};
     }
+
+    @Test
+    public void largestValsFromLabels() {
+        int[] values = {9, 8, 8, 7, 6}, labels = {0, 0, 0, 1, 1};
+        int num_wanted = 3, use_limit = 2;
+        logResult(largestValsFromLabels(values, labels, num_wanted, use_limit));
+    }
+
+    /**
+     * 1090. 受标签影响的最大值
+     *
+     * <p>我们有一个项的集合，其中第 i 项的值为 values[i]，标签为 labels[i]。
+     *
+     * <p>我们从这些项中选出一个子集 S，这样一来：
+     *
+     * <p>|S| <= num_wanted 对于任意的标签 L，子集 S 中标签为 L 的项的数目总满足 <= use_limit。 返回子集 S 的最大可能的 和。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：values = [5,4,3,2,1], labels = [1,1,2,2,3], num_wanted = 3, use_limit = 1 输出：9
+     * 解释：选出的子集是第一项，第三项和第五项。 示例 2：
+     *
+     * <p>输入：values = [5,4,3,2,1], labels = [1,3,3,3,2], num_wanted = 3, use_limit = 2 输出：12
+     * 解释：选出的子集是第一项，第二项和第三项。 示例 3：
+     *
+     * <p>输入：values = [9,8,8,7,6], labels = [0,0,0,1,1], num_wanted = 3, use_limit = 1 输出：16
+     * 解释：选出的子集是第一项和第四项。 示例 4：
+     *
+     * <p>输入：values = [9,8,8,7,6], labels = [0,0,0,1,1], num_wanted = 3, use_limit = 2 输出：24
+     * 解释：选出的子集是第一项，第二项和第四项。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= values.length == labels.length <= 20000 0 <= values[i], labels[i] <= 20000 1 <=
+     * num_wanted, use_limit <= values.length
+     *
+     * @param values
+     * @param labels
+     * @param num_wanted
+     * @param use_limit
+     * @return
+     */
+    public int largestValsFromLabels(int[] values, int[] labels, int num_wanted, int use_limit) {
+        // 第一点要求 |S| <= num_wanted 是说选择的总数不能超过 num_wanted
+        // 第二点要求是说同一个标签下的项，选择的数量不能超过 use_limit
+
+        // 使用二位数组记录 values 和lebels
+        int len = values.length;
+        int[][] pairs = new int[len][2];
+        for (int i = 0; i < len; i++) {
+            pairs[i][0] = values[i];
+            pairs[i][1] = labels[i];
+        }
+        Arrays.sort(pairs, (a, b) -> b[0] - a[0]);
+        int num = 0;
+        logResult(pairs);
+        Map<Integer, Integer> counts = new HashMap<>();
+        int result = 0;
+        // 贪心
+        for (int i = 0; i < len; i++) {
+            if (num == num_wanted) {
+                break;
+            }
+            int label = pairs[i][1];
+            int count = counts.getOrDefault(label, 0);
+            if (count == use_limit) {
+                continue;
+            }
+            result += pairs[i][0];
+            counts.put(label, count + 1);
+            num++;
+        }
+
+        return result;
+    }
+
+    /**
+     * 1094. 拼车
+     *
+     * <p>假设你是一位顺风车司机，车上最初有 capacity 个空座位可以用来载客。由于道路的限制，车 只能 向一个方向行驶（也就是说，不允许掉头或改变方向，你可以将其想象为一个向量）。
+     *
+     * <p>这儿有一份乘客行程计划表 trips[][]，其中 trips[i] = [num_passengers, start_location, end_location] 包含了第 i
+     * 组乘客的行程信息：
+     *
+     * <p>必须接送的乘客数量； 乘客的上车地点； 以及乘客的下车地点。 这些给出的地点位置是从你的 初始 出发位置向前行驶到这些地点所需的距离（它们一定在你的行驶方向上）。
+     *
+     * <p>请你根据给出的行程计划表和车子的座位数，来判断你的车是否可以顺利完成接送所有乘客的任务（当且仅当你可以在所有给定的行程中接送所有乘客时，返回 true，否则请返回 false）。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：trips = [[2,1,5],[3,3,7]], capacity = 4 输出：false 示例 2：
+     *
+     * <p>输入：trips = [[2,1,5],[3,3,7]], capacity = 5 输出：true 示例 3：
+     *
+     * <p>输入：trips = [[2,1,5],[3,5,7]], capacity = 3 输出：true 示例 4：
+     *
+     * <p>输入：trips = [[3,2,7],[3,7,9],[8,3,9]], capacity = 11 输出：true
+     *
+     * <p>提示：
+     *
+     * <p>你可以假设乘客会自觉遵守 “先下后上” 的良好素质 trips.length <= 1000 trips[i].length == 3 1 <= trips[i][0] <=
+     * 100 0 <= trips[i][1] < trips[i][2] <= 1000 1 <= capacity <= 100000
+     *
+     * @param trips
+     * @param capacity
+     * @return
+     */
+    public boolean carPooling(int[][] trips, int capacity) {
+        int[] allCap = new int[1001];
+        // Arrays.sort(trips, (a, b) -> a[1] == b[1] ? a[2] - b[2] : a[1] - b[1]);
+        for (int[] trip : trips) {
+            allCap[trip[1]] += trip[0];
+            allCap[trip[2]] -= trip[0];
+        }
+        int num = 0;
+        for (int cap : allCap) {
+            num += cap;
+            // 超过最大容量
+            if (num > capacity) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Test
+    public void corpFlightBookings() {
+        int[][] bookings = {{1, 2, 10}, {2, 3, 20}, {2, 5, 25}};
+        int n = 5;
+        logResult(corpFlightBookings(bookings, n));
+    }
+    /**
+     * 1109. 航班预订统计
+     *
+     * <p>这里有 n 个航班，它们分别从 1 到 n 进行编号。
+     *
+     * <p>我们这儿有一份航班预订表，表中第 i 条预订记录 bookings[i] = [i, j, k] 意味着我们在从 i 到 j 的每个航班上预订了 k 个座位。
+     *
+     * <p>请你返回一个长度为 n 的数组 answer，按航班编号顺序返回每个航班上预订的座位数。
+     *
+     * <p>示例：
+     *
+     * <p>输入：bookings = [[1,2,10],[2,3,20],[2,5,25]], n = 5 输出：[10,55,45,25,25]
+     *
+     * <p>提示：
+     *
+     * <p>1 <= bookings.length <= 20000 1 <= bookings[i][0] <= bookings[i][1] <= n <= 20000 1 <=
+     * bookings[i][2] <= 10000
+     *
+     * @param bookings
+     * @param n
+     * @return
+     */
+    public int[] corpFlightBookings(int[][] bookings, int n) {
+        int[] result = new int[n];
+        for (int[] booking : bookings) {
+            result[booking[0] - 1] += booking[2];
+            if (booking[1] < n) {
+                result[booking[1]] -= booking[2];
+            }
+        }
+        log.debug("result:{}", result);
+        for (int i = 1; i < n; i++) {
+            result[i] += result[i - 1];
+        }
+
+        return result;
+    }
 }
