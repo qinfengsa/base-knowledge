@@ -7338,4 +7338,123 @@ public class StringTest {
         }
         return true;
     }
+
+    @Test
+    public void canConvertString() {
+        String s = "aab", t = "bbb";
+        int k = 27;
+        logResult(canConvertString(s, t, k));
+    }
+
+    /**
+     * 5469. K 次操作转变字符串
+     *
+     * <p>给你两个字符串 s 和 t ，你的目标是在 k 次操作以内把字符串 s 转变成 t 。
+     *
+     * <p>在第 i 次操作时（1 <= i <= k），你可以选择进行如下操作：
+     *
+     * <p>选择字符串 s 中满足 1 <= j <= s.length 且之前未被选过的任意下标 j （下标从 1 开始），并将此位置的字符切换 i 次。 不进行任何操作。 切换 1
+     * 次字符的意思是用字母表中该字母的下一个字母替换它（字母表环状接起来，所以 'z' 切换后会变成 'a'）。
+     *
+     * <p>请记住任意一个下标 j 最多只能被操作 1 次。
+     *
+     * <p>如果在不超过 k 次操作内可以把字符串 s 转变成 t ，那么请你返回 true ，否则请你返回 false 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：s = "input", t = "ouput", k = 9 输出：true 解释：第 6 次操作时，我们将 'i' 切换 6 次得到 'o' 。第 7 次操作时，我们将
+     * 'n' 切换 7 次得到 'u' 。 示例 2：
+     *
+     * <p>输入：s = "abc", t = "bcd", k = 10 输出：false 解释：我们需要将每个字符切换 1 次才能得到 t 。我们可以在第 1 次操作时将 'a' 切换成
+     * 'b' ，但另外 2 个字母在剩余操作中无法再转变为 t 中对应字母。 示例 3：
+     *
+     * <p>输入：s = "aab", t = "bbb", k = 27 输出：true 解释：第 1 次操作时，我们将第一个 'a' 切换 1 次得到 'b' 。在第 27
+     * 次操作时，我们将第二个字母 'a' 切换 27 次得到 'b' 。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= s.length, t.length <= 10^5 0 <= k <= 10^9 s 和 t 只包含小写英文字母。
+     *
+     * @param s
+     * @param t
+     * @param k
+     * @return
+     */
+    public boolean canConvertString(String s, String t, int k) {
+        if (s.length() != t.length()) {
+            return false;
+        }
+        int[] counts = new int[26];
+        int len = s.length();
+        for (int i = 0; i < len; i++) {
+            char c1 = s.charAt(i), c2 = t.charAt(i);
+            if (c1 == c2) {
+                continue;
+            }
+            int count = c1 < c2 ? c2 - c1 : 26 - c1 + c2;
+            if (count > k) {
+                return false;
+            }
+            int idx = count;
+            /*while (idx <= k && counts[idx]) {
+                idx += 26;
+            }
+            if (idx > k || counts[idx]) {
+                return false;
+            }*/
+            counts[idx]++;
+        }
+
+        for (int i = 1; i < 26; i++) {
+            int count = counts[i];
+            if (i + 26 * (count - 1) > k) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * 5470. 平衡括号字符串的最少插入次数 给你一个括号字符串 s ，它只包含字符 '(' 和 ')' 。一个括号字符串被称为平衡的当它满足：
+     *
+     * <p>任何左括号 '(' 必须对应两个连续的右括号 '))' 。 左括号 '(' 必须在对应的连续两个右括号 '))' 之前。
+     *
+     * <p>比方说 "())"， "())(())))" 和 "(())())))" 都是平衡的， ")()"， "()))" 和 "(()))" 都是不平衡的。
+     *
+     * <p>你可以在任意位置插入字符 '(' 和 ')' 使字符串平衡。
+     *
+     * <p>请你返回让 s 平衡的最少插入次数。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：s = "(()))" 输出：1 解释：第二个左括号有与之匹配的两个右括号，但是第一个左括号只有一个右括号。
+     *
+     * <p>我们需要在字符串结尾额外增加一个 ')' 使字符串变成平衡字符串 "(())))" 。 示例 2：
+     *
+     * <p>输入：s = "())" 输出：0 解释：字符串已经平衡了。 示例 3：
+     *
+     * <p>输入：s = "))())(" 输出：3 解释：添加 '(' 去匹配最开头的 '))' ，然后添加 '))' 去匹配最后一个 '(' 。 示例 4：
+     *
+     * <p>输入：s = "((((((" 输出：12 解释：添加 12 个 ')' 得到平衡字符串。 示例 5：
+     *
+     * <p>输入：s = ")))))))" 输出：5 解释：在字符串开头添加 4 个 '(' 并在结尾添加 1 个 ')' ，
+     *
+     * <p>字符串变成平衡字符串 "(((())))))))" 。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= s.length <= 10^5 s 只包含 '(' 和 ')' 。
+     *
+     * @param s
+     * @return
+     */
+    public int minInsertions(String s) {
+        int leftCount = 0, rightCount = 0;
+        int result = 0;
+        /* for (char c :) {
+
+        }*/
+
+        return result;
+    }
 }
