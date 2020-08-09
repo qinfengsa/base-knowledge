@@ -7457,4 +7457,137 @@ public class StringTest {
 
         return result;
     }
+
+    @Test
+    public void makeGood() {
+        String s = "leEeetcode";
+        logResult(makeGood(s));
+    }
+
+    /**
+     * 5483. 整理字符串
+     *
+     * <p>给你一个由大小写英文字母组成的字符串 s 。
+     *
+     * <p>一个整理好的字符串中，两个相邻字符 s[i] 和 s[i + 1] 不会同时满足下述条件：
+     *
+     * <p>0 <= i <= s.length - 2 s[i] 是小写字符，但 s[i + 1] 是对应的大写字符；反之亦然 。
+     * 请你将字符串整理好，每次你都可以从字符串中选出满足上述条件的 两个相邻 字符并删除，直到字符串整理好为止。
+     *
+     * <p>请返回整理好的 字符串 。题目保证在给出的约束条件下，测试样例对应的答案是唯一的。
+     *
+     * <p>注意：空字符串也属于整理好的字符串，尽管其中没有任何字符。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：s = "leEeetcode" 输出："leetcode" 解释：无论你第一次选的是 i = 1 还是 i = 2，都会使 "leEeetcode" 缩减为
+     * "leetcode" 。 示例 2：
+     *
+     * <p>输入：s = "abBAcC" 输出："" 解释：存在多种不同情况，但所有的情况都会导致相同的结果。例如： "abBAcC" --> "aAcC" --> "cC" --> ""
+     * "abBAcC" --> "abBA" --> "aA" --> "" 示例 3：
+     *
+     * <p>输入：s = "s" 输出："s"
+     *
+     * <p>提示：
+     *
+     * <p>1 <= s.length <= 100 s 只包含小写和大写英文字母
+     *
+     * @param s
+     * @return
+     */
+    public String makeGood(String s) {
+        StringBuilder sb = new StringBuilder();
+        char[] chars = s.toCharArray();
+        Deque<Character> stack = new LinkedList<>();
+        logResult('A' - 'a');
+        for (int i = 0; i < s.length(); i++) {
+            char c = chars[i];
+            if (stack.isEmpty()) {
+                stack.push(c);
+            } else {
+                int num = c - stack.peek();
+                if (num == 32 || num == -32) {
+                    stack.pop();
+                } else {
+                    stack.push(c);
+                }
+            }
+        }
+        for (char c : stack) {
+            sb.append(c);
+        }
+        sb.reverse();
+        /* char last = chars[0];
+        for (int i = 1; i < s.length(); i++) {
+
+            char c = chars[i];
+            if ('a' <= last && last <= 'z' && 'A' <= c && c <= 'Z') {
+                continue;
+            }
+            if ('A' <= last && last <= 'Z' && 'a' <= chars[i + 1] && chars[i + 1] <= 'z') {
+                continue;
+            }
+            sb.append(chars[i]);
+            if (i == s.length() - 1) {
+                sb.append(c);
+            }
+        }*/
+        return sb.toString();
+    }
+
+    @Test
+    public void findKthBit() {
+        int n = 3, k = 5;
+        logResult(findKthBit(n, k));
+    }
+    /**
+     * 5484. 找出第 N 个二进制字符串中的第 K 位
+     *
+     * <p>给你两个正整数 n 和 k，二进制字符串 Sn 的形成规则如下：
+     *
+     * <p>S1 = "0" 当 i > 1 时，Si = Si-1 + "1" + reverse(invert(Si-1)) 其中 + 表示串联操作，reverse(x) 返回反转 x
+     * 后得到的字符串，而 invert(x) 则会翻转 x 中的每一位（0 变为 1，而 1 变为 0）
+     *
+     * <p>例如，符合上述描述的序列的前 4 个字符串依次是：
+     *
+     * <p>S1 = "0" S2 = "011" S3 = "0111001" S4 = "011100110110001" 请你返回 Sn 的 第 k 位字符 ，题目数据保证 k 一定在
+     * Sn 长度范围以内。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：n = 3, k = 1 输出："0" 解释：S3 为 "0111001"，其第 1 位为 "0" 。 示例 2：
+     *
+     * <p>输入：n = 4, k = 11 输出："1" 解释：S4 为 "011100110110001"，其第 11 位为 "1" 。 示例 3：
+     *
+     * <p>输入：n = 1, k = 1 输出："0" 示例 4：
+     *
+     * <p>输入：n = 2, k = 3 输出："1"
+     *
+     * <p>提示：
+     *
+     * <p>1 <= n <= 20 1 <= k <= 2n - 1
+     *
+     * @param n
+     * @param k
+     * @return
+     */
+    public char findKthBit(int n, int k) {
+        if (n == 1) {
+            return '0';
+        }
+        // 1 3 7 15
+        // len(n) = 2^n - 1 => 1>>n - 1
+        int mid = 1 << (n - 1);
+        if (k == mid) {
+            return '1';
+        }
+        if (k < mid) {
+            return findKthBit(n - 1, k);
+        } else {
+            char c = findKthBit(n - 1, 2 * mid - k);
+            log.debug("n:{} k :{}", n - 1, 2 * mid - k);
+            log.debug("c:{}", c);
+            return c == '0' ? '1' : '0';
+        }
+    }
 }

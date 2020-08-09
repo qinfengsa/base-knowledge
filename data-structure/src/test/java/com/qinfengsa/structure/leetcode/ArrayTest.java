@@ -14695,4 +14695,74 @@ public class ArrayTest {
 
         return 1000 + k;
     }
+
+    @Test
+    public void maxNonOverlapping() {
+        int[] nums = {0, 0, 0};
+        int target = 0;
+        logResult(maxNonOverlapping(nums, target));
+    }
+
+    /**
+     * 5471. 和为目标值的最大数目不重叠非空子数组数目
+     *
+     * <p>给你一个数组 nums 和一个整数 target 。
+     *
+     * <p>请你返回 非空不重叠 子数组的最大数目，且每个子数组中数字和都为 target 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：nums = [1,1,1,1,1], target = 2 输出：2 解释：总共有 2 个不重叠子数组（加粗数字表示） [1,1,1,1,1] ，它们的和为目标值 2 。
+     * 示例 2：
+     *
+     * <p>输入：nums = [-1,3,5,1,4,2,-9], target = 6 输出：2 解释：总共有 3 个子数组和为 6 。 ([5,1], [4,2],
+     * [3,5,1,4,2,-9]) 但只有前 2 个是不重叠的。 示例 3：
+     *
+     * <p>输入：nums = [-2,6,6,3,5,4,1,2,8], target = 10 输出：3 示例 4：
+     *
+     * <p>输入：nums = [0,0,0], target = 0 输出：3
+     *
+     * <p>提示：
+     *
+     * <p>1 <= nums.length <= 10^5 -10^4 <= nums[i] <= 10^4 0 <= target <= 10^6
+     *
+     * @param nums
+     * @param target
+     * @return
+     */
+    public int maxNonOverlapping(int[] nums, int target) {
+        int len = nums.length;
+        int[] sums = nums.clone();
+        Map<Integer, Integer> indexMap = new HashMap<>();
+        indexMap.put(0, -1);
+        List<int[]> list = new ArrayList<>();
+        for (int i = 0; i < len; i++) {
+            if (i > 0) {
+                sums[i] += sums[i - 1];
+            }
+
+            int num = sums[i] - target;
+            if (indexMap.containsKey(num)) {
+                int index = indexMap.get(num);
+                list.add(new int[] {index + 1, i});
+            }
+            indexMap.put(sums[i], i);
+        }
+        for (int[] arr : list) {
+            log.debug("arr:{}", arr);
+        }
+        int lastIndex = 0;
+        int result = 0;
+        for (int i = 1; i < list.size(); i++) {
+            int[] last = list.get(lastIndex);
+            int[] current = list.get(i);
+            if (current[0] > last[1]) {
+                lastIndex = i;
+                continue;
+            }
+            result++;
+        }
+
+        return list.size() - result;
+    }
 }
