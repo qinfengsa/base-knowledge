@@ -4053,6 +4053,9 @@ public class TreeTest {
     }
 
     private int getHeight(TreeNode root) {
+        if (Objects.isNull(root)) {
+            return 0;
+        }
         if (Objects.isNull(root.left) && Objects.isNull(root.right)) {
             return 1;
         }
@@ -4473,5 +4476,109 @@ public class TreeTest {
         int tmp = x.val;
         x.val = y.val;
         y.val = tmp;
+    }
+
+    /**
+     * 1110. 删点成林
+     *
+     * <p>给出二叉树的根节点 root，树上每个节点都有一个不同的值。
+     *
+     * <p>如果节点值在 to_delete 中出现，我们就把该节点从树上删去，最后得到一个森林（一些不相交的树构成的集合）。
+     *
+     * <p>返回森林中的每棵树。你可以按任意顺序组织答案。
+     *
+     * <p>示例：
+     *
+     * <p>输入：root = [1,2,3,4,5,6,7], to_delete = [3,5] 输出：[[1,2,null,4],[6],[7]]
+     *
+     * <p>提示：
+     *
+     * <p>树中的节点数最大为 1000。 每个节点都有一个介于 1 到 1000 之间的值，且各不相同。 to_delete.length <= 1000 to_delete 包含一些从 1
+     * 到 1000、各不相同的值。
+     *
+     * @param root
+     * @param to_delete
+     * @return
+     */
+    public List<TreeNode> delNodes(TreeNode root, int[] to_delete) {
+        Set<Integer> deleteSet = new HashSet<>();
+        for (int d : to_delete) {
+            deleteSet.add(d);
+        }
+
+        List<TreeNode> result = new ArrayList<>();
+        delNode(root, result, deleteSet, false);
+        return result;
+    }
+
+    /**
+     * @param root
+     * @param result
+     * @param deleteSet
+     * @param parentExist
+     * @return
+     */
+    private boolean delNode(
+            TreeNode root, List<TreeNode> result, Set<Integer> deleteSet, boolean parentExist) {
+
+        if (Objects.isNull(root)) {
+            return false;
+        }
+        boolean del = deleteSet.contains(root.val);
+        if (delNode(root.left, result, deleteSet, !del)) {
+            root.left = null;
+        }
+        if (delNode(root.right, result, deleteSet, !del)) {
+            root.right = null;
+        }
+        if (!del && !parentExist) {
+            result.add(root);
+        }
+
+        return del;
+    }
+
+    /**
+     * 1123. 最深叶节点的最近公共祖先
+     *
+     * <p>给你一个有根节点的二叉树，找到它最深的叶节点的最近公共祖先。
+     *
+     * <p>回想一下：
+     *
+     * <p>叶节点 是二叉树中没有子节点的节点 树的根节点的 深度 为 0，如果某一节点的深度为 d，那它的子节点的深度就是 d+1 如果我们假定 A 是一组节点 S 的 最近公共祖先，S
+     * 中的每个节点都在以 A 为根节点的子树中，且 A 的深度达到此条件下可能的最大值。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：root = [1,2,3] 输出：[1,2,3] 解释： 最深的叶子是值为 2 和 3 的节点。 这些叶子的最近共同祖先是值为 1 的节点。 返回的答案为序列化的
+     * TreeNode 对象（不是数组）"[1,2,3]" 。 示例 2：
+     *
+     * <p>输入：root = [1,2,3,4] 输出：[4] 示例 3：
+     *
+     * <p>输入：root = [1,2,3,4,5] 输出：[2,4,5]
+     *
+     * <p>提示：
+     *
+     * <p>给你的树中将有 1 到 1000 个节点。 树中每个节点的值都在 1 到 1000 之间。
+     *
+     * @param root
+     * @return
+     */
+    public TreeNode lcaDeepestLeaves(TreeNode root) {
+        // 如果当前节点是最深叶子节点的最近公共祖先，那么它的左右子树的高度一定是相等的，
+        // 否则高度低的那个子树的叶子节点深度一定比另一个子树的叶子节点的深度小，因此不满足条件。
+        if (Objects.isNull(root)) {
+            return null;
+        }
+        int leftHeight = getHeight(root.left);
+        int rightHeight = getHeight(root.right);
+
+        if (leftHeight == rightHeight) {
+            return root;
+        } else if (leftHeight > rightHeight) {
+            return lcaDeepestLeaves(root.left);
+        } else {
+            return lcaDeepestLeaves(root.right);
+        }
     }
 }
