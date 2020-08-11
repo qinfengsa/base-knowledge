@@ -7415,7 +7415,9 @@ public class StringTest {
     }
 
     /**
-     * 5470. 平衡括号字符串的最少插入次数 给你一个括号字符串 s ，它只包含字符 '(' 和 ')' 。一个括号字符串被称为平衡的当它满足：
+     * 1541. 平衡括号字符串的最少插入次数
+     *
+     * <p>给你一个括号字符串 s ，它只包含字符 '(' 和 ')' 。一个括号字符串被称为平衡的当它满足：
      *
      * <p>任何左括号 '(' 必须对应两个连续的右括号 '))' 。 左括号 '(' 必须在对应的连续两个右括号 '))' 之前。
      *
@@ -7449,11 +7451,30 @@ public class StringTest {
      * @return
      */
     public int minInsertions(String s) {
-        int leftCount = 0, rightCount = 0;
+        int leftCount = 0, len = s.length();
         int result = 0;
         /* for (char c :) {
 
         }*/
+        char[] chars = s.toCharArray();
+        for (int i = 0; i < len; i++) {
+            if (chars[i] == '(') {
+                leftCount++; // 左括号次数
+            } else if (chars[i] == ')') {
+                if (i + 1 < len && chars[i + 1] == ')') {
+                    i++; // 找第二个左括号
+                } else {
+                    result++; // 缺少第二个右括号就添加一个
+                }
+                if (leftCount > 0) {
+                    leftCount--;
+                } // 两个右括号匹配一个左括号
+                else {
+                    result++; // 缺少左括号就添加一个
+                }
+            }
+        }
+        result += leftCount * 2; // 多出的左括号都匹配两个右括号
 
         return result;
     }
