@@ -7611,4 +7611,77 @@ public class StringTest {
             return c == '0' ? '1' : '0';
         }
     }
+
+    @Test
+    public void alphabetBoardPath() {
+        String target = "leet";
+        logResult(alphabetBoardPath(target));
+    }
+
+    /**
+     * 1138. 字母板上的路径
+     *
+     * <p>我们从一块字母板上的位置 (0, 0) 出发，该坐标对应的字符为 board[0][0]。
+     *
+     * <p>在本题里，字母板为board = ["abcde", "fghij", "klmno", "pqrst", "uvwxy", "z"]，如下所示。
+     *
+     * <p>我们可以按下面的指令规则行动：
+     *
+     * <p>如果方格存在，'U' 意味着将我们的位置上移一行； 如果方格存在，'D' 意味着将我们的位置下移一行； 如果方格存在，'L' 意味着将我们的位置左移一列； 如果方格存在，'R'
+     * 意味着将我们的位置右移一列； '!' 会把在我们当前位置 (r, c) 的字符 board[r][c] 添加到答案中。 （注意，字母板上只存在有字母的位置。）
+     *
+     * <p>返回指令序列，用最小的行动次数让答案和目标 target 相同。你可以返回任何达成目标的路径。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：target = "leet" 输出："DDR!UURRR!!DDD!" 示例 2：
+     *
+     * <p>输入：target = "code" 输出："RR!DDRR!UUL!R!"
+     *
+     * <p>提示：
+     *
+     * <p>1 <= target.length <= 100 target 仅含有小写英文字母。
+     *
+     * @param target
+     * @return
+     */
+    public String alphabetBoardPath(String target) {
+        StringBuilder sb = new StringBuilder();
+        Map<Character, int[]> map = new HashMap<>();
+        int row = 0, col = 0;
+        for (int i = 0; i < 26; i++) {
+            char c = (char) ('a' + i);
+            map.put(c, new int[] {row, col});
+            col++;
+            if (col == 5) {
+                col = 0;
+                row++;
+            }
+        }
+        int[] start = new int[] {0, 0};
+        for (int i = 0; i < target.length(); i++) {
+            char c = target.charAt(i);
+            int[] end = map.get(c);
+            sb.append(getPath(start, end));
+            start = end;
+        }
+
+        return sb.toString();
+    }
+
+    private String getPath(int[] start, int[] end) {
+        StringBuilder sb = new StringBuilder();
+        int y = end[0] - start[0], x = end[1] - start[1];
+        char c2 = y > 0 ? 'D' : 'U';
+        for (int i = 0; i < Math.abs(y); i++) {
+            sb.append(c2);
+        }
+        char c1 = x > 0 ? 'R' : 'L';
+        for (int i = 0; i < Math.abs(x); i++) {
+            sb.append(c1);
+        }
+
+        sb.append('!');
+        return sb.toString();
+    }
 }

@@ -14820,4 +14820,163 @@ public class ArrayTest {
         }
         return max;
     }
+
+    /**
+     * 1129. 颜色交替的最短路径
+     *
+     * <p>在一个有向图中，节点分别标记为 0, 1, ..., n-1。这个图中的每条边不是红色就是蓝色，且存在自环或平行边。
+     *
+     * <p>red_edges 中的每一个 [i, j] 对表示从节点 i 到节点 j 的红色有向边。类似地，blue_edges 中的每一个 [i, j] 对表示从节点 i 到节点 j
+     * 的蓝色有向边。
+     *
+     * <p>返回长度为 n 的数组 answer，其中 answer[X] 是从节点 0 到节点 X 的红色边和蓝色边交替出现的最短路径的长度。如果不存在这样的路径，那么 answer[x]
+     * = -1。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：n = 3, red_edges = [[0,1],[1,2]], blue_edges = [] 输出：[0,1,-1] 示例 2：
+     *
+     * <p>输入：n = 3, red_edges = [[0,1]], blue_edges = [[2,1]] 输出：[0,1,-1] 示例 3：
+     *
+     * <p>输入：n = 3, red_edges = [[1,0]], blue_edges = [[2,1]] 输出：[0,-1,-1] 示例 4：
+     *
+     * <p>输入：n = 3, red_edges = [[0,1]], blue_edges = [[1,2]] 输出：[0,1,2] 示例 5：
+     *
+     * <p>输入：n = 3, red_edges = [[0,1],[0,2]], blue_edges = [[1,0]] 输出：[0,1,1]
+     *
+     * <p>提示：
+     *
+     * <p>1 <= n <= 100 red_edges.length <= 400 blue_edges.length <= 400 red_edges[i].length ==
+     * blue_edges[i].length == 2 0 <= red_edges[i][j], blue_edges[i][j] < n
+     *
+     * @param n
+     * @param red_edges
+     * @param blue_edges
+     * @return
+     */
+    public int[] shortestAlternatingPaths(int n, int[][] red_edges, int[][] blue_edges) {
+        int[] result = new int[n];
+        // 红 0 蓝 1
+        int[][] red = new int[n][2];
+        int[][] blue = new int[n][2];
+        for (int i = 1; i < n; i++) {
+            red[i][0] = i;
+            red[i][1] = 0x0fffffff; // 初始化红边权值
+        }
+        red[0][0] = 0;
+        red[0][1] = 0;
+        for (int i = 1; i < n; i++) {
+            blue[i][0] = i;
+            blue[i][1] = 0x0fffffff;
+        }
+        blue[0][0] = 0;
+        blue[0][1] = 0;
+        dfsAlternatingPaths(red, blue, 0, 0, red_edges, blue_edges);
+        dfsAlternatingPaths(red, blue, 1, 0, red_edges, blue_edges);
+        for (int i = 0; i < n; i++) {
+            result[i] = Math.min(red[i][1], blue[i][1]);
+            if (result[i] == 0x0fffffff) { // 没有改变说明不存在
+                result[i] = -1;
+            }
+        }
+        return result;
+    }
+
+    public void dfsAlternatingPaths(
+            int[][] red, int[][] blue, int color, int node, int[][] red_edges, int[][] blue_edges) {
+        if (color == 0) {
+            for (int[] blue_to : blue_edges) { // 以node为from to 为终 的边
+                if (node == blue_to[0]
+                        && red[node][1] + 1 < blue[blue_to[1]][1]) // 0到from点加1是否小于0到to的距离
+                {
+                    blue[blue_to[1]][1] = red[node][1] + 1;
+                    dfsAlternatingPaths(red, blue, 1 - color, blue_to[1], red_edges, blue_edges);
+                }
+            }
+        } else {
+            for (int[] red_to : red_edges) { // 以node为from to 为终 的边
+                if (node == red_to[0]
+                        && blue[node][1] + 1 < red[red_to[1]][1]) // 0到from点加1是否小于0到to的距离
+                {
+                    red[red_to[1]][1] = blue[node][1] + 1;
+                    dfsAlternatingPaths(red, blue, 1 - color, red_to[1], red_edges, blue_edges);
+                }
+            }
+        }
+    }
+
+    /**
+     * 1131. 绝对值表达式的最大值
+     *
+     * <p>给你两个长度相等的整数数组，返回下面表达式的最大值：
+     *
+     * <p>|arr1[i] - arr1[j]| + |arr2[i] - arr2[j]| + |i - j|
+     *
+     * <p>其中下标 i，j 满足 0 <= i, j < arr1.length。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：arr1 = [1,2,3,4], arr2 = [-1,4,5,6] 输出：13 示例 2：
+     *
+     * <p>输入：arr1 = [1,-2,-5,0,10], arr2 = [0,-2,-1,-7,-4] 输出：20
+     *
+     * <p>提示：
+     *
+     * <p>2 <= arr1.length == arr2.length <= 40000 -10^6 <= arr1[i], arr2[i] <= 10^6
+     *
+     * @param arr1
+     * @param arr2
+     * @return
+     */
+    public int maxAbsValExpr(int[] arr1, int[] arr2) {
+        int len = arr1.length;
+        // |arr1[i] - arr1[j]| + |arr2[i] - arr2[j]| + |i - j|
+        //
+        // =  (arr1[i] + arr2[i] + i) - (arr1[j] + arr2[j] + j)
+        // =  (arr1[i] + arr2[i] - i) - (arr1[j] + arr2[j] - j)
+        // =  (arr1[i] - arr2[i] + i) - (arr1[j] - arr2[j] + j)
+        // =  (arr1[i] - arr2[i] - i) - (arr1[j] - arr2[j] - j)
+        // = -(arr1[i] + arr2[i] + i) + (arr1[j] + arr2[j] + j)
+        // = -(arr1[i] + arr2[i] - i) + (arr1[j] + arr2[j] - j)
+        // = -(arr1[i] - arr2[i] + i) + (arr1[j] - arr2[j] + j)
+        // = -(arr1[i] - arr2[i] - i) + (arr1[j] - arr2[j] - j)
+        // 因为存在四组两两等价的展开，所以可以优化为四个表达式：
+        // A = arr1[i] + arr2[i] + i
+        // B = arr1[i] + arr2[i] - i
+        // C = arr1[i] - arr2[i] + i
+        // D = arr1[i] - arr2[i] - i
+        //
+        // max( |arr1[i] - arr1[j]| + |arr2[i] - arr2[j]| + |i - j|)
+        // = max(max(A) - min(A),
+        //      max(B) - min(B),
+        //      max(C) - min(C),
+        //      max(D) - min(D))
+        int[] max = new int[4];
+        Arrays.fill(max, Integer.MIN_VALUE);
+        int[] min = new int[4];
+        Arrays.fill(min, Integer.MAX_VALUE);
+        for (int i = 0; i < len; i++) {
+            int a = arr1[i] + arr2[i] + i,
+                    b = arr1[i] + arr2[i] - i,
+                    c = arr1[i] - arr2[i] + i,
+                    d = arr1[i] - arr2[i] - i;
+            max[0] = Math.max(max[0], a);
+            min[0] = Math.min(min[0], a);
+
+            max[1] = Math.max(max[1], b);
+            min[1] = Math.min(min[1], b);
+
+            max[2] = Math.max(max[2], c);
+            min[2] = Math.min(min[2], c);
+
+            max[3] = Math.max(max[3], d);
+            min[3] = Math.min(min[3], d);
+        }
+        int result = 0;
+        for (int i = 0; i < 4; i++) {
+            result = Math.max(result, max[i] - min[i]);
+        }
+
+        return result;
+    }
 }
