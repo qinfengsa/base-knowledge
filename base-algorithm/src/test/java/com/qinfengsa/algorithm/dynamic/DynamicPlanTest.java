@@ -4586,4 +4586,157 @@ public class DynamicPlanTest {
 
         return dp[len];
     }
+
+    @Test
+    public void largest1BorderedSquare() {
+        int[][] grid = {
+            {0, 1, 1, 1}, {1, 1, 1, 1}, {1, 0, 0, 1}, {1, 1, 1, 1}, {1, 0, 1, 1}, {1, 1, 0, 1}
+        };
+        logResult(largest1BorderedSquare(grid));
+    }
+
+    /**
+     * 1139. 最大的以 1 为边界的正方形
+     *
+     * <p>给你一个由若干 0 和 1 组成的二维网格 grid，请你找出边界全部由 1 组成的最大 正方形 子网格，并返回该子网格中的元素数量。如果不存在，则返回 0。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：grid = [[1,1,1],[1,0,1],[1,1,1]] 输出：9 示例 2：
+     *
+     * <p>输入：grid = [[1,1,0,0]] 输出：1
+     *
+     * <p>提示：
+     *
+     * <p>1 <= grid.length <= 100 1 <= grid[0].length <= 100 grid[i][j] 为 0 或 1
+     *
+     * @param grid
+     * @return
+     */
+    public int largest1BorderedSquare(int[][] grid) {
+        int rows = grid.length;
+        int cols = grid[0].length;
+        int[][][] dp = new int[rows][cols][2];
+
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (grid[i][j] == 0) {
+                    continue;
+                }
+                dp[i][j][0] = (i > 0 ? dp[i - 1][j][0] : 0) + 1;
+                dp[i][j][1] = (j > 0 ? dp[i][j - 1][1] : 0) + 1;
+            }
+        }
+        logResult(dp);
+        int maxSide = 0;
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                int side = Math.min(dp[i][j][0], dp[i][j][1]);
+                for (int k = side; k >= 1; k--) {
+                    if (dp[i][j - k + 1][0] >= k && dp[i - k + 1][j][1] >= k) {
+                        maxSide = Math.max(maxSide, k);
+                        break; // 更短的就没必要考虑了
+                    }
+                }
+            }
+        }
+        return maxSide * maxSide;
+    }
+
+    /**
+     * 1140. 石子游戏 II
+     *
+     * <p>亚历克斯和李继续他们的石子游戏。许多堆石子 排成一行，每堆都有正整数颗石子 piles[i]。游戏以谁手中的石子最多来决出胜负。
+     *
+     * <p>亚历克斯和李轮流进行，亚历克斯先开始。最初，M = 1。
+     *
+     * <p>在每个玩家的回合中，该玩家可以拿走剩下的 前 X 堆的所有石子，其中 1 <= X <= 2M。然后，令 M = max(M, X)。
+     *
+     * <p>游戏一直持续到所有石子都被拿走。
+     *
+     * <p>假设亚历克斯和李都发挥出最佳水平，返回亚历克斯可以得到的最大数量的石头。
+     *
+     * <p>示例：
+     *
+     * <p>输入：piles = [2,7,9,4,4] 输出：10 解释： 如果亚历克斯在开始时拿走一堆石子，李拿走两堆，接着亚历克斯也拿走两堆。在这种情况下，亚历克斯可以拿到 2 + 4
+     * + 4 = 10 颗石子。 如果亚历克斯在开始时拿走两堆石子，那么李就可以拿走剩下全部三堆石子。在这种情况下，亚历克斯可以拿到 2 + 7 = 9 颗石子。 所以我们返回更大的 10。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= piles.length <= 100 1 <= piles[i] <= 10 ^ 4
+     *
+     * @param piles
+     * @return
+     */
+    public int stoneGameII(int[] piles) {
+        int len = piles.length;
+        int[][] dp = new int[len][len + 1];
+
+        int sum = 0;
+
+        // dp[i, M] 表示，当从第 i 堆石子开始拿，允许拿 M <= x <= 2 * M 时，在剩余石子中所能拿到的最大值
+        for (int i = len - 1; i >= 0; i--) {
+            sum += piles[i];
+            for (int M = 0; M <= len; M++) {
+                if (i + 2 * M >= len) {
+                    dp[i][M] = sum;
+                } else {
+                    for (int j = 1; j <= 2 * M; j++) {
+                        dp[i][M] = Math.max(dp[i][M], sum - dp[i + j][Math.max(M, j)]);
+                    }
+                }
+            }
+        }
+
+        return dp[0][1];
+    }
+
+    @Test
+    public void longestCommonSubsequence() {
+        String text1 = "abc", text2 = "def";
+        logResult(longestCommonSubsequence(text1, text2));
+    }
+
+    /**
+     * 1143. 最长公共子序列
+     *
+     * <p>给定两个字符串 text1 和 text2，返回这两个字符串的最长公共子序列的长度。
+     *
+     * <p>一个字符串的 子序列 是指这样一个新的字符串：它是由原字符串在不改变字符的相对顺序的情况下删除某些字符（也可以不删除任何字符）后组成的新字符串。 例如，"ace" 是
+     * "abcde" 的子序列，但 "aec" 不是 "abcde" 的子序列。两个字符串的「公共子序列」是这两个字符串所共同拥有的子序列。
+     *
+     * <p>若这两个字符串没有公共子序列，则返回 0。
+     *
+     * <p>示例 1:
+     *
+     * <p>输入：text1 = "abcde", text2 = "ace" 输出：3 解释：最长公共子序列是 "ace"，它的长度为 3。 示例 2:
+     *
+     * <p>输入：text1 = "abc", text2 = "abc" 输出：3 解释：最长公共子序列是 "abc"，它的长度为 3。 示例 3:
+     *
+     * <p>输入：text1 = "abc", text2 = "def" 输出：0 解释：两个字符串没有公共子序列，返回 0。
+     *
+     * <p>提示:
+     *
+     * <p>1 <= text1.length <= 1000 1 <= text2.length <= 1000 输入的字符串只含有小写英文字符。
+     *
+     * @param text1
+     * @param text2
+     * @return
+     */
+    public int longestCommonSubsequence(String text1, String text2) {
+        int len1 = text1.length(), len2 = text2.length();
+        int[][] dp = new int[len1 + 1][len2 + 1];
+        for (int i = 0; i < len1; i++) {
+            for (int j = 0; j < len2; j++) {
+                char c1 = text1.charAt(i), c2 = text2.charAt(j);
+                if (c1 == c2) {
+                    dp[i + 1][j + 1] = dp[i][j] + 1;
+                } else {
+                    dp[i + 1][j + 1] = Math.max(dp[i + 1][j], dp[i][j + 1]);
+                }
+            }
+        }
+
+        return dp[len1][len2];
+    }
 }
