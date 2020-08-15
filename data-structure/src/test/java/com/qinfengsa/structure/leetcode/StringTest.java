@@ -7684,4 +7684,63 @@ public class StringTest {
         sb.append('!');
         return sb.toString();
     }
+
+    /**
+     * 1156. 单字符重复子串的最大长度
+     *
+     * <p>如果字符串中的所有字符都相同，那么这个字符串是单字符重复的字符串。
+     *
+     * <p>给你一个字符串 text，你只能交换其中两个字符一次或者什么都不做，然后得到一些单字符重复的子串。返回其中最长的子串的长度。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：text = "ababa" 输出：3 示例 2：
+     *
+     * <p>输入：text = "aaabaaa" 输出：6 示例 3：
+     *
+     * <p>输入：text = "aaabbaaa" 输出：4 示例 4：
+     *
+     * <p>输入：text = "aaaaa" 输出：5 示例 5：
+     *
+     * <p>输入：text = "abcdef" 输出：1
+     *
+     * <p>提示：
+     *
+     * <p>1 <= text.length <= 20000 text 仅由小写英文字母组成。
+     *
+     * @param text
+     * @return
+     */
+    public int maxRepOpt1(String text) {
+        int len = text.length();
+        int[] letters = new int[26];
+        // 统计26个小写字母各自出现的次数
+        for (char c : text.toCharArray()) {
+            letters[c - 'a']++;
+        }
+        char last = text.charAt(0);
+        int count = 1, result = 1;
+        for (int i = 1; i < len; ++i) {
+            char c = text.charAt(i);
+            if (last != c) {
+                int tempIdx = i;
+                while (tempIdx + 1 < len && last == text.charAt(tempIdx + 1)) {
+                    count++;
+                    tempIdx++;
+                }
+                if (letters[last - 'a'] > count) {
+                    count++;
+                }
+                result = Math.max(result, count);
+                count = 1;
+                last = text.charAt(i);
+            } else {
+                count++;
+            }
+        }
+        if (count > 1 && letters[last - 'a'] > count) {
+            count++;
+        }
+        return Math.max(result, count);
+    }
 }
