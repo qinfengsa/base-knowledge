@@ -15044,4 +15044,94 @@ public class ArrayTest {
 
         return min;
     }
+
+    /**
+     * 5185. 存在连续三个奇数的数组
+     *
+     * <p>给你一个整数数组 arr，请你判断数组中是否存在连续三个元素都是奇数的情况：如果存在，请返回 true ；否则，返回 false 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：arr = [2,6,4,1] 输出：false 解释：不存在连续三个元素都是奇数的情况。 示例 2：
+     *
+     * <p>输入：arr = [1,2,34,3,4,5,7,23,12] 输出：true 解释：存在连续三个元素都是奇数的情况，即 [5,7,23] 。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= arr.length <= 1000 1 <= arr[i] <= 1000
+     *
+     * @param arr
+     * @return
+     */
+    public boolean threeConsecutiveOdds(int[] arr) {
+        int len = arr.length;
+        if (len < 3) {
+            return false;
+        }
+        int i = 2;
+        while (i < len) {
+            boolean b1 = (arr[i - 2] & 1) == 1;
+            boolean b2 = (arr[i - 1] & 1) == 1;
+            boolean b3 = (arr[i] & 1) == 1;
+            if (b1 && b2 && b3) {
+                return true;
+            }
+            if (!b3) {
+                i += 3;
+            } else if (!b2) {
+                i += 2;
+            } else {
+                i += 1;
+            }
+        }
+
+        return false;
+    }
+
+    @Test
+    public void minOperations() {
+        int n = 6;
+        logResult(minOperations(n));
+    }
+
+    /**
+     * 5488. 使数组中所有元素相等的最小操作数
+     *
+     * <p>存在一个长度为 n 的数组 arr ，其中 arr[i] = (2 * i) + 1 （ 0 <= i < n ）。
+     *
+     * <p>一次操作中，你可以选出两个下标，记作 x 和 y （ 0 <= x, y < n ）并使 arr[x] 减去 1 、arr[y] 加上 1 （即 arr[x] -=1 且
+     * arr[y] += 1 ）。最终的目标是使数组中的所有元素都 相等 。题目测试用例将会 保证 ：在执行若干步操作后，数组中的所有元素最终可以全部相等。
+     *
+     * <p>给你一个整数 n，即数组的长度。请你返回使数组 arr 中所有元素相等所需的 最小操作数 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：n = 3 输出：2 解释：arr = [1, 3, 5] 第一次操作选出 x = 2 和 y = 0，使数组变为 [2, 3, 4] 第二次操作继续选出 x = 2 和 y
+     * = 0，数组将会变成 [3, 3, 3] 示例 2：
+     *
+     * <p>输入：n = 6 输出：9
+     *
+     * <p>提示：
+     *
+     * <p>1 <= n <= 10^4
+     *
+     * @param n
+     * @return
+     */
+    public int minOperations(int n) {
+        int helf = n >> 1; /*
+        int sum = n * helf;
+
+        int num = helf * helf;
+
+
+        // 1 3 5 7 9 11
+        int result = 0;
+
+        for (int i = 0; i < n >> 1; i++) {
+            result += (n - 2 * i - 1);
+        }
+        */
+        return (n - helf) * helf;
+    }
 }
