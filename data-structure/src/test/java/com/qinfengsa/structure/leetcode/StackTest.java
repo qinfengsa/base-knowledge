@@ -954,4 +954,68 @@ public class StackTest {
         }
         return result;
     }
+
+    @Test
+    public void reverseParentheses() {
+        String s = "(u(love)i)";
+        logResult(reverseParentheses(s));
+    }
+
+    /**
+     * 1190. 反转每对括号间的子串
+     *
+     * <p>给出一个字符串 s（仅含有小写英文字母和括号）。
+     *
+     * <p>请你按照从括号内到外的顺序，逐层反转每对匹配括号中的字符串，并返回最终的结果。
+     *
+     * <p>注意，您的结果中 不应 包含任何括号。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：s = "(abcd)" 输出："dcba" 示例 2：
+     *
+     * <p>输入：s = "(u(love)i)" 输出："iloveu" 示例 3：
+     *
+     * <p>输入：s = "(ed(et(oc))el)" 输出："leetcode" 示例 4：
+     *
+     * <p>输入：s = "a(bcdefghijkl(mno)p)q" 输出："apmnolkjihgfedcbq"
+     *
+     * <p>提示：
+     *
+     * <p>0 <= s.length <= 2000 s 中只有小写英文字母和括号 我们确保所有括号都是成对出现的
+     *
+     * @param s
+     * @return
+     */
+    public String reverseParentheses(String s) {
+        StringBuilder sb = new StringBuilder();
+        Deque<Integer> stack = new LinkedList<>();
+
+        char[] chs = s.toCharArray();
+
+        for (int i = 0; i < chs.length; i++) {
+            if (chs[i] == '(') {
+                stack.push(i);
+            } else if (chs[i] == ')') {
+                reverse(chs, stack.pop() + 1, i - 1);
+            }
+        }
+        for (char ch : chs) {
+            if (ch != '(' && ch != ')') {
+                sb.append(ch);
+            }
+        }
+
+        return sb.toString();
+    }
+
+    private void reverse(char[] chs, int start, int end) {
+        while (start < end) {
+            char temp = chs[end];
+            chs[end] = chs[start];
+            chs[start] = temp;
+            start++;
+            end--;
+        }
+    }
 }

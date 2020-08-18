@@ -4865,4 +4865,93 @@ public class DynamicPlanTest {
 
         return result;
     }
+
+    @Test
+    public void kConcatenationMaxSum() {
+        int[] arr = {-1, -2};
+        int k = 7;
+        logResult(kConcatenationMaxSum(arr, k));
+    }
+    /**
+     * 1191. K 次串联后最大子数组之和
+     *
+     * <p>给你一个整数数组 arr 和一个整数 k。
+     *
+     * <p>首先，我们要对该数组进行修改，即把原数组 arr 重复 k 次。
+     *
+     * <p>举个例子，如果 arr = [1, 2] 且 k = 3，那么修改后的数组就是 [1, 2, 1, 2, 1, 2]。
+     *
+     * <p>然后，请你返回修改后的数组中的最大的子数组之和。
+     *
+     * <p>注意，子数组长度可以是 0，在这种情况下它的总和也是 0。
+     *
+     * <p>由于 结果可能会很大，所以需要 模（mod） 10^9 + 7 后再返回。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：arr = [1,2], k = 3 输出：9 示例 2：
+     *
+     * <p>输入：arr = [1,-2,1], k = 5 输出：2 示例 3：
+     *
+     * <p>输入：arr = [-1,-2], k = 7 输出：0
+     *
+     * <p>提示：
+     *
+     * <p>1 <= arr.length <= 10^5 1 <= k <= 10^5 -10^4 <= arr[i] <= 10^4
+     *
+     * @param arr
+     * @param k
+     * @return
+     */
+    public int kConcatenationMaxSum(int[] arr, int k) {
+        int MOD = 1000000007;
+        // 解题分两种情况：
+        //
+        // k = 1: max = 最大子串
+        // k > 1:
+        // 如果数组和>0：max = 最大后子串 + (k - 2)*数组和 + 最大前子串
+        // 如果数组和<=0：max = 最大后子串 + 最大前子串
+        // 最后max与最大子串做对比，取最大值
+
+        if (Objects.isNull(arr) || arr.length == 0) {
+            return 0;
+        }
+        int len = arr.length;
+        if (len == 1) {
+            if (arr[0] > 0) {
+                return arr[0] * k;
+            } else {
+                return 0;
+            }
+        }
+
+        int prefix = arr[0], suffix = arr[len - 1], sum = arr[0];
+        int maxprefix = prefix, maxsuffix = suffix;
+        for (int i = 1; i < len; i++) {
+            prefix += arr[i];
+            maxprefix = Math.max(maxprefix, prefix);
+            sum += arr[i];
+            suffix += arr[len - i - 1];
+            maxsuffix = Math.max(maxsuffix, suffix);
+        }
+        int sum2 = 0, maxn = 0;
+        for (int i = 0; i < len; i++) {
+            if (sum2 <= 0) {
+                sum2 = arr[i];
+            } else {
+                sum2 += arr[i];
+            }
+            maxn = Math.max(maxn, sum2);
+        }
+
+        if (k == 1) {
+            return maxn;
+        }
+
+        int result = maxsuffix + maxprefix;
+        while (sum > 0 && --k >= 2) {
+            result = (result + sum) % MOD;
+        }
+        return Math.max(result, maxn);
+    }
 }
