@@ -2351,6 +2351,22 @@ public class MathTest {
         return n1 * n2 / getGcd(n1, n2);
     }
 
+    public static long getLcm(long n1, long n2) {
+        return n1 * n2 / getGcd(n1, n2);
+    }
+
+    // 最大公约数
+    public static long getGcd(long a, long b) {
+        long max, min;
+        max = Math.max(a, b);
+        min = Math.min(a, b);
+
+        if (max % min != 0) {
+            return getGcd(min, max % min);
+        }
+        return min;
+    }
+
     @Test
     public void convertToBase7() {
         int num = -10;
@@ -6098,5 +6114,73 @@ public class MathTest {
                 return true;
             }
         }
+    }
+
+    @Test
+    public void nthUglyNumber2() {
+        int n = 1000000000, a = 2, b = 217983653, c = 336916467;
+        logResult(nthUglyNumber(n, a, b, c));
+    }
+    /**
+     * 1201. 丑数 III
+     *
+     * <p>请你帮忙设计一个程序，用来找出第 n 个丑数。
+     *
+     * <p>丑数是可以被 a 或 b 或 c 整除的 正整数。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：n = 3, a = 2, b = 3, c = 5 输出：4 解释：丑数序列为 2, 3, 4, 5, 6, 8, 9, 10... 其中第 3 个是 4。 示例 2：
+     *
+     * <p>输入：n = 4, a = 2, b = 3, c = 4 输出：6 解释：丑数序列为 2, 3, 4, 6, 8, 9, 10, 12... 其中第 4 个是 6。 示例 3：
+     *
+     * <p>输入：n = 5, a = 2, b = 11, c = 13 输出：10 解释：丑数序列为 2, 4, 6, 8, 10, 11, 12, 13... 其中第 5 个是 10。
+     * 示例 4：
+     *
+     * <p>输入：n = 1000000000, a = 2, b = 217983653, c = 336916467 输出：1999999984
+     *
+     * <p>提示：
+     *
+     * <p>1 <= n, a, b, c <= 10^9 1 <= a * b * c <= 10^18 本题结果在 [1, 2 * 10^9] 的范围内
+     *
+     * @param n
+     * @param a
+     * @param b
+     * @param c
+     * @return
+     */
+    public int nthUglyNumber(int n, int a, int b, int c) {
+        int min = Math.min(a, Math.min(b, c));
+        int right = min * n;
+        int left = min;
+
+        long ab = getLcm(a, (long) b);
+        long ac = getLcm(a, (long) c);
+        long bc = getLcm(b, (long) c);
+        long abc = getLcm(ab, c);
+        while (left < right) {
+            int mid = left + ((right - left) >> 1);
+            long idx1 = mid / a;
+            long idx2 = mid / b;
+            long idx3 = mid / c;
+            long idx12 = mid / ab;
+            long idx13 = mid / ac;
+            long idx23 = mid / bc;
+            long idx123 = mid / abc;
+            long num = idx1 + idx2 + idx3 - idx12 - idx13 - idx23 + idx123;
+            if (num == n) {
+                if (mid % a == 0 || mid % b == 0 || mid % c == 0) {
+                    return mid;
+                } else {
+                    return mid - Math.min(Math.min(mid % a, mid % b), mid % c);
+                }
+            } else if (num > n) {
+                right = mid - 1;
+            } else {
+                left = mid + 1;
+            }
+        }
+
+        return left;
     }
 }
