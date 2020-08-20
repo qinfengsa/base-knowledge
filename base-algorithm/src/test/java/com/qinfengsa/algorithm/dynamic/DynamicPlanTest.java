@@ -3947,6 +3947,7 @@ public class DynamicPlanTest {
         logResult(countSubstrings(s));
     }
 
+    int countSubstringsResult = 0;
     /**
      * 647. 回文子串
      *
@@ -3969,8 +3970,15 @@ public class DynamicPlanTest {
         // dp[i][j] 表示 位置 i ~ j 是否回文子串
         // dp[i][j] = dp[i - 1][j - 1]
         int len = s.length();
-        boolean[][] dp = new boolean[len][len];
         int result = 0;
+
+        for (int i = 0; i < len; i++) {
+            countSubstrings(s, i, i);
+            countSubstrings(s, i, i + 1);
+        }
+
+        /*boolean[][] dp = new boolean[len][len];
+
         for (int i = 0; i < len; i++) {
             dp[i][i] = true;
             result++;
@@ -3984,9 +3992,17 @@ public class DynamicPlanTest {
                     }
                 }
             }
-        }
+        }*/
 
-        return result;
+        return countSubstringsResult;
+    }
+
+    private void countSubstrings(String s, int left, int right) {
+        while (left >= 0 && right < s.length() && s.charAt(left) == s.charAt(right)) {
+            countSubstringsResult++;
+            left--;
+            right++;
+        }
     }
 
     /**
@@ -4953,5 +4969,47 @@ public class DynamicPlanTest {
             result = (result + sum) % MOD;
         }
         return Math.max(result, maxn);
+    }
+
+    @Test
+    public void longestSubsequence() {
+        int[] arr = {3, 0, -3, 4, -4, 7, 6};
+        int difference = 3;
+
+        // [3,0,-3,4,-4,7,6]
+        // 3
+        logResult(longestSubsequence(arr, difference));
+    }
+    /**
+     * 1218. 最长定差子序列
+     *
+     * <p>给你一个整数数组 arr 和一个整数 difference，请你找出 arr 中所有相邻元素之间的差等于给定 difference 的等差子序列，并返回其中最长的等差子序列的长度。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：arr = [1,2,3,4], difference = 1 输出：4 解释：最长的等差子序列是 [1,2,3,4]。 示例 2：
+     *
+     * <p>输入：arr = [1,3,5,7], difference = 1 输出：1 解释：最长的等差子序列是任意单个元素。 示例 3：
+     *
+     * <p>输入：arr = [1,5,7,8,5,3,4,2,1], difference = -2 输出：4 解释：最长的等差子序列是 [7,5,3,1]。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= arr.length <= 10^5 -10^4 <= arr[i], difference <= 10^4
+     *
+     * @param arr
+     * @param difference
+     * @return
+     */
+    public int longestSubsequence(int[] arr, int difference) {
+        Map<Integer, Integer> map = new HashMap<>();
+        int max = 0;
+        for (int num : arr) {
+            int count = map.getOrDefault(num - difference, 0) + 1;
+            map.put(num, count);
+            max = Math.max(count, max);
+        }
+
+        return max;
     }
 }
