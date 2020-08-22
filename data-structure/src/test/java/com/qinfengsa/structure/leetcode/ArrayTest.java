@@ -15472,4 +15472,62 @@ public class ArrayTest {
         grid[i][j] = num;
         return max;
     }
+
+    @Test
+    public void minOperations2() {
+        int[] nums = {1000000000};
+        logResult(minOperations(nums));
+    }
+
+    /**
+     * 5481. 得到目标数组的最少函数调用次数
+     *
+     * <p>给你一个与 nums 大小相同且初始值全为 0 的数组 arr ，请你调用以上函数得到整数数组 nums 。
+     *
+     * <p>请你返回将 arr 变成 nums 的最少函数调用次数。
+     *
+     * <p>答案保证在 32 位有符号整数以内。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：nums = [1,5] 输出：5 解释：给第二个数加 1 ：[0, 0] 变成 [0, 1] （1 次操作）。 将所有数字乘以 2 ：[0, 1] -> [0, 2] ->
+     * [0, 4] （2 次操作）。 给两个数字都加 1 ：[0, 4] -> [1, 4] -> [1, 5] （2 次操作）。 总操作次数为：1 + 2 + 2 = 5 。 示例 2：
+     *
+     * <p>输入：nums = [2,2] 输出：3 解释：给两个数字都加 1 ：[0, 0] -> [0, 1] -> [1, 1] （2 次操作）。 将所有数字乘以 2 ： [1, 1]
+     * -> [2, 2] （1 次操作）。 总操作次数为： 2 + 1 = 3 。 示例 3：
+     *
+     * <p>输入：nums = [4,2,5] 输出：6 解释：（初始）[0,0,0] -> [1,0,0] -> [1,0,1] -> [2,0,2] -> [2,1,2] ->
+     * [4,2,4] -> [4,2,5] （nums 数组）。 示例 4：
+     *
+     * <p>输入：nums = [3,2,2,4] 输出：7 示例 5：
+     *
+     * <p>输入：nums = [2,4,8,16] 输出：8
+     *
+     * <p>提示：
+     *
+     * <p>1 <= nums.length <= 10^5 0 <= nums[i] <= 10^9
+     *
+     * @param nums
+     * @return
+     */
+    public int minOperations(int[] nums) {
+        int result = 0;
+        int maxOp = 0;
+        for (int num : nums) {
+            int op = 0;
+            while (num > 0) {
+                if ((num & 1) == 1) {
+                    result++;
+                }
+                num >>= 1;
+                op++;
+            }
+            maxOp = Math.max(maxOp, op - 1);
+        }
+        log.debug("maxOp:{}", maxOp);
+        log.debug("result:{}", result);
+        result += maxOp;
+
+        return result;
+    }
 }

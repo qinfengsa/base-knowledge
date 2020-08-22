@@ -7848,4 +7848,49 @@ public class StringTest {
 
         return result;
     }
+
+    @Test
+    public void thousandSeparator() {
+        int n = 123456789;
+        logResult(thousandSeparator(n));
+    }
+
+    /**
+     * 5479. 千位分隔数
+     *
+     * <p>给你一个整数 n，请你每隔三位添加点（即 "." 符号）作为千位分隔符，并将结果以字符串格式返回。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：n = 987 输出："987" 示例 2：
+     *
+     * <p>输入：n = 1234 输出："1.234" 示例 3：
+     *
+     * <p>输入：n = 123456789 输出："123.456.789" 示例 4：
+     *
+     * <p>输入：n = 0 输出："0"
+     *
+     * <p>提示：
+     *
+     * <p>0 <= n < 2^31
+     *
+     * @param n
+     * @return
+     */
+    public String thousandSeparator(int n) {
+        if (n == 0) {
+            return "0";
+        }
+        StringBuilder sb = new StringBuilder();
+        int idx = 0;
+        while (n > 0) {
+            sb.append(n % 10);
+            n /= 10;
+            idx++;
+            if (idx % 3 == 0 && n > 0) {
+                sb.append(".");
+            }
+        }
+        return sb.reverse().toString();
+    }
 }
