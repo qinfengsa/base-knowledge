@@ -15530,4 +15530,251 @@ public class ArrayTest {
 
         return result;
     }
+
+    @Test
+    public void mostVisited() {
+        int n = 4;
+        int[] rounds = {1, 3, 1, 2};
+        logResult(mostVisited(n, rounds));
+    }
+    /**
+     * 5495. 圆形赛道上经过次数最多的扇区
+     *
+     * <p>给你一个整数 n 和一个整数数组 rounds 。有一条圆形赛道由 n 个扇区组成，扇区编号从 1 到 n 。现将在这条赛道上举办一场马拉松比赛，该马拉松全程由 m
+     * 个阶段组成。其中，第 i 个阶段将会从扇区 rounds[i - 1] 开始，到扇区 rounds[i] 结束。举例来说，第 1 阶段从 rounds[0] 开始，到 rounds[1]
+     * 结束。
+     *
+     * <p>请你以数组形式返回经过次数最多的那几个扇区，按扇区编号 升序 排列。
+     *
+     * <p>注意，赛道按扇区编号升序逆时针形成一个圆（请参见第一个示例）。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：n = 4, rounds = [1,3,1,2] 输出：[1,2] 解释：本场马拉松比赛从扇区 1 开始。经过各个扇区的次序如下所示： 1 --> 2 --> 3（阶段 1
+     * 结束）--> 4 --> 1（阶段 2 结束）--> 2（阶段 3 结束，即本场马拉松结束） 其中，扇区 1 和 2 都经过了两次，它们是经过次数最多的两个扇区。扇区 3 和 4
+     * 都只经过了一次。 示例 2：
+     *
+     * <p>输入：n = 2, rounds = [2,1,2,1,2,1,2,1,2] 输出：[2] 示例 3：
+     *
+     * <p>输入：n = 7, rounds = [1,3,5,7] 输出：[1,2,3,4,5,6,7]
+     *
+     * <p>提示：
+     *
+     * <p>2 <= n <= 100 1 <= m <= 100 rounds.length == m + 1 1 <= rounds[i] <= n rounds[i] !=
+     * rounds[i + 1] ，其中 0 <= i < m
+     *
+     * @param n
+     * @param rounds
+     * @return
+     */
+    public List<Integer> mostVisited(int n, int[] rounds) {
+        List<Integer> result = new ArrayList<>();
+        int[] counts = new int[n + 1];
+        int start = rounds[0];
+        counts[start]++;
+        for (int i = 1; i < rounds.length; i++) {
+            int end = rounds[i];
+            if (end < start) {
+                for (int j = start + 1; j <= n; j++) {
+                    counts[j]++;
+                }
+                for (int j = 1; j <= end; j++) {
+                    counts[j]++;
+                }
+            } else {
+
+                for (int j = start + 1; j <= end; j++) {
+                    counts[j]++;
+                }
+            }
+            start = end;
+        }
+        log.debug("counts:{}", counts);
+        int max = 0;
+        for (int i = 1; i <= n; i++) {
+            if (counts[i] > max) {
+                max = counts[i];
+                result = new ArrayList<>();
+                result.add(i);
+            } else if (counts[i] == max) {
+                result.add(i);
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * 5496. 你可以获得的最大硬币数目
+     *
+     * <p>有 3n 堆数目不一的硬币，你和你的朋友们打算按以下方式分硬币：
+     *
+     * <p>每一轮中，你将会选出 任意 3 堆硬币（不一定连续）。 Alice 将会取走硬币数量最多的那一堆。 你将会取走硬币数量第二多的那一堆。 Bob 将会取走最后一堆。
+     * 重复这个过程，直到没有更多硬币。 给你一个整数数组 piles ，其中 piles[i] 是第 i 堆中硬币的数目。
+     *
+     * <p>返回你可以获得的最大硬币数目。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：piles = [2,4,1,2,7,8] 输出：9 解释：选出 (2, 7, 8) ，Alice 取走 8 枚硬币的那堆，你取走 7 枚硬币的那堆，Bob 取走最后一堆。
+     * 选出 (1, 2, 4) , Alice 取走 4 枚硬币的那堆，你取走 2 枚硬币的那堆，Bob 取走最后一堆。 你可以获得的最大硬币数目：7 + 2 = 9.
+     * 考虑另外一种情况，如果选出的是 (1, 2, 8) 和 (2, 4, 7) ，你就只能得到 2 + 4 = 6 枚硬币，这不是最优解。 示例 2：
+     *
+     * <p>输入：piles = [2,4,5] 输出：4 示例 3：
+     *
+     * <p>输入：piles = [9,8,7,6,5,1,2,3,4] 输出：18
+     *
+     * <p>提示：
+     *
+     * <p>3 <= piles.length <= 10^5 piles.length % 3 == 0 1 <= piles[i] <= 10^4
+     *
+     * @param piles
+     * @return
+     */
+    public int maxCoins(int[] piles) {
+
+        Arrays.sort(piles);
+        int len = piles.length / 3;
+        int index = piles.length - 2;
+        int result = 0;
+        for (int i = 0; i < len; i++) {
+            result += piles[index];
+            index -= 2;
+        }
+        return result;
+    }
+
+    @Test
+    public void findLatestStep() {
+        int[] arr = {3, 1, 5, 4, 2};
+        int m = 2;
+        logResult(findLatestStep(arr, m));
+    }
+
+    /**
+     * 5497. 查找大小为 M
+     *
+     * <p>给你一个数组 arr ，该数组表示一个从 1 到 n 的数字排列。有一个长度为 n 的二进制字符串，该字符串上的所有位最初都设置为 0 。
+     *
+     * <p>在从 1 到 n 的每个步骤 i 中（假设二进制字符串和 arr 都是从 1 开始索引的情况下），二进制字符串上位于位置 arr[i] 的位将会设为 1 。
+     *
+     * <p>给你一个整数 m ，请你找出二进制字符串上存在长度为 m 的一组 1 的最后步骤。一组 1 是一个连续的、由 1 组成的子串，且左右两边不再有可以延伸的 1 。
+     *
+     * <p>返回存在长度 恰好 为 m 的 一组 1 的最后步骤。如果不存在这样的步骤，请返回 -1 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：arr = [3,5,1,2,4], m = 1 输出：4 解释： 步骤 1："00100"，由 1 构成的组：["1"] 步骤 2："00101"，由 1
+     * 构成的组：["1", "1"] 步骤 3："10101"，由 1 构成的组：["1", "1", "1"] 步骤 4："11101"，由 1 构成的组：["111", "1"] 步骤
+     * 5："11111"，由 1 构成的组：["11111"] 存在长度为 1 的一组 1 的最后步骤是步骤 4 。 示例 2：
+     *
+     * <p>输入：arr = [3,1,5,4,2], m = 2 输出：-1 解释： 步骤 1："00100"，由 1 构成的组：["1"] 步骤 2："10100"，由 1
+     * 构成的组：["1", "1"] 步骤 3："10101"，由 1 构成的组：["1", "1", "1"] 步骤 4："10111"，由 1 构成的组：["1", "111"] 步骤
+     * 5："11111"，由 1 构成的组：["11111"] 不管是哪一步骤都无法形成长度为 2 的一组 1 。 示例 3：
+     *
+     * <p>输入：arr = [1], m = 1 输出：1 示例 4：
+     *
+     * <p>输入：arr = [2,1], m = 2 输出：2
+     *
+     * <p>提示：
+     *
+     * <p>n == arr.length 1 <= n <= 10^5 1 <= arr[i] <= n arr 中的所有整数 互不相同 1 <= m <= arr.length
+     *
+     * @param arr
+     * @param m
+     * @return
+     */
+    public int findLatestStep(int[] arr, int m) {
+        int n = arr.length;
+        int result = -1;
+        int[] nums = new int[n + 1];
+
+        for (int i = 0; i < n; i++) {
+            int idx = arr[i];
+            nums[idx] += idx > 1 ? nums[idx - 1] : 0;
+            nums[idx] += idx < n ? nums[idx + 1] : 0;
+            nums[idx]++;
+            int num = nums[idx];
+            if (num == m) {
+                result = i + 1;
+            }
+            while (idx > 1 && nums[idx - 1] > 0) {
+                if (nums[idx - 1] == m && result < i) {
+                    result = i;
+                }
+                nums[idx - 1] = num;
+                idx--;
+            }
+            idx = arr[i];
+            while (idx < n && nums[idx + 1] > 0) {
+                if (nums[idx + 1] == m && result < i) {
+                    result = i;
+                }
+                nums[idx + 1] = num;
+                idx++;
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * 1552. 两球之间的磁力
+     *
+     * <p>在代号为 C-137 的地球上，Rick 发现如果他将两个球放在他新发明的篮子里，它们之间会形成特殊形式的磁力。Rick 有 n 个空的篮子，第 i 个篮子的位置在
+     * position[i] ，Morty 想把 m 个球放到这些篮子里，使得任意两球间 最小磁力 最大。
+     *
+     * <p>已知两个球如果分别位于 x 和 y ，那么它们之间的磁力为 |x - y| 。
+     *
+     * <p>给你一个整数数组 position 和一个整数 m ，请你返回最大化的最小磁力。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：position = [1,2,3,4,7], m = 3 输出：3 解释：将 3 个球分别放入位于 1，4 和 7 的三个篮子，两球间的磁力分别为 [3, 3,
+     * 6]。最小磁力为 3 。我们没办法让最小磁力大于 3 。 示例 2：
+     *
+     * <p>输入：position = [5,4,3,2,1,1000000000], m = 2 输出：999999999 解释：我们使用位于 1 和 1000000000
+     * 的篮子时最小磁力最大。
+     *
+     * <p>提示：
+     *
+     * <p>n == position.length 2 <= n <= 10^5 1 <= position[i] <= 10^9 所有 position 中的整数 互不相同 。 2 <=
+     * m <= position.length
+     *
+     * @param position
+     * @param m
+     * @return
+     */
+    public int maxDistance(int[] position, int m) {
+        Arrays.sort(position);
+        int high = (position[position.length - 1] - position[0]) / (m - 1);
+        int low = 1;
+        int result = 1;
+        while (low <= high) {
+            int mid = (low + high) >> 1;
+            if (checkDistance(position, mid, m)) {
+                low = mid + 1;
+                result = mid;
+            } else {
+                high = mid - 1;
+            }
+        }
+
+        return result;
+    }
+
+    boolean checkDistance(int[] position, int distance, int m) {
+        int count = 1;
+        int i = 0;
+        for (int j = 1; j < position.length; j++) {
+            if (position[j] - position[i] >= distance) {
+                i = j;
+                count++;
+                if (count >= m) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }
