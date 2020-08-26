@@ -2573,4 +2573,132 @@ public class BackTest {
             visited[i] = false;
         }
     }
+
+    @Test
+    public void maxLength() {
+        List<String> arr = Arrays.asList("un", "iq", "ue");
+        logResult(maxLength(arr));
+    }
+
+    int maxLengthResult = 0;
+
+    /**
+     * 1239. 串联字符串的最大长度
+     *
+     * <p>给定一个字符串数组 arr，字符串 s 是将 arr 某一子序列字符串连接所得的字符串，如果 s 中的每一个字符都只出现过一次，那么它就是一个可行解。
+     *
+     * <p>请返回所有可行解 s 中最长长度。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：arr = ["un","iq","ue"] 输出：4 解释：所有可能的串联组合是 "","un","iq","ue","uniq" 和 "ique"，最大长度为 4。 示例
+     * 2：
+     *
+     * <p>输入：arr = ["cha","r","act","ers"] 输出：6 解释：可能的解答有 "chaers" 和 "acters"。 示例 3：
+     *
+     * <p>输入：arr = ["abcdefghijklmnopqrstuvwxyz"] 输出：26
+     *
+     * <p>提示：
+     *
+     * <p>1 <= arr.length <= 16 1 <= arr[i].length <= 26 arr[i] 中只含有小写英文字母
+     *
+     * @param arr
+     * @return
+     */
+    public int maxLength(List<String> arr) {
+
+        List<Integer> list = new ArrayList<>();
+        for (String str : arr) {
+            int num = 0;
+            for (char c : str.toCharArray()) {
+                int n = 1 << (c - 'a');
+                if ((n & num) > 0) {
+                    num = 0;
+                    break;
+                }
+                num |= n;
+            }
+            if (num > 0) {
+                list.add(num);
+            }
+        }
+
+        maxLength(list, 0, 0);
+        return maxLengthResult;
+    }
+
+    private void maxLength(List<Integer> list, int num, int index) {
+        if (index == list.size()) {
+            return;
+        }
+        int cur = list.get(index);
+        int newNum = num ^ cur;
+        if (newNum != (num + cur)) {
+            maxLength(list, num, index + 1);
+            return;
+        }
+        maxLengthResult = Math.max(maxLengthResult, Integer.bitCount(newNum));
+        // 选择index
+        maxLength(list, newNum, index + 1);
+        // 不选择index
+        maxLength(list, num, index + 1);
+    }
+
+    @Test
+    public void circularPermutation() {
+        int n = 3, start = 2;
+        logResult(circularPermutation(n, start));
+    }
+
+    /**
+     * 1238. 循环码排列
+     *
+     * <p>给你两个整数 n 和 start。你的任务是返回任意 (0,1,2,,...,2^n-1) 的排列 p，并且满足：
+     *
+     * <p>p[0] = start p[i] 和 p[i+1] 的二进制表示形式只有一位不同 p[0] 和 p[2^n -1] 的二进制表示形式也只有一位不同
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：n = 2, start = 3 输出：[3,2,0,1] 解释：这个排列的二进制表示是 (11,10,00,01) 所有的相邻元素都有一位是不同的，另一个有效的排列是
+     * [3,1,0,2] 示例 2：
+     *
+     * <p>输出：n = 3, start = 2 输出：[2,6,7,5,4,0,1,3] 解释：这个排列的二进制表示是 (010,110,111,101,100,000,001,011)
+     *
+     * <p>提示：
+     *
+     * <p>1 <= n <= 16 0 <= start < 2^n
+     *
+     * @param n
+     * @param start
+     * @return
+     */
+    public List<Integer> circularPermutation(int n, int start) {
+        // 先生成格雷码, 然后选择数组
+
+        int startIndex = 0;
+        List<Integer> list = new ArrayList<>();
+        list.add(0);
+        int head = 1;
+        // 全排列
+        for (int i = 0; i < n; i++) {
+            for (int j = list.size() - 1; j >= 0; j--) {
+                int num = head | list.get(j);
+                if (num == start) {
+                    startIndex = list.size();
+                }
+                list.add(num);
+            }
+            head <<= 1;
+        }
+
+        List<Integer> result = new ArrayList<>();
+        for (int i = startIndex; i < list.size(); i++) {
+            result.add(list.get(i));
+        }
+        for (int i = 0; i < startIndex; i++) {
+            result.add(list.get(i));
+        }
+
+        return result;
+    }
 }
