@@ -5,6 +5,7 @@ import static com.qinfengsa.algorithm.util.LogUtils.logResult;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -5125,5 +5126,109 @@ public class DynamicPlanTest {
             }
         }
         return sum;
+    }
+
+    /**
+     * 1049. 最后一块石头的重量 II
+     *
+     * <p>有一堆石头，每块石头的重量都是正整数。
+     *
+     * <p>每一回合，从中选出任意两块石头，然后将它们一起粉碎。假设石头的重量分别为 x 和 y，且 x <= y。那么粉碎的可能结果如下：
+     *
+     * <p>如果 x == y，那么两块石头都会被完全粉碎； 如果 x != y，那么重量为 x 的石头将会完全粉碎，而重量为 y 的石头新重量为 y-x。
+     * 最后，最多只会剩下一块石头。返回此石头最小的可能重量。如果没有石头剩下，就返回 0。
+     *
+     * <p>示例：
+     *
+     * <p>输入：[2,7,4,1,8,1] 输出：1 解释： 组合 2 和 4，得到 2，所以数组转化为 [2,7,1,8,1]， 组合 7 和 8，得到 1，所以数组转化为
+     * [2,1,1,1]， 组合 2 和 1，得到 1，所以数组转化为 [1,1,1]， 组合 1 和 1，得到 0，所以数组转化为 [1]，这就是最优值。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= stones.length <= 30 1 <= stones[i] <= 1000
+     *
+     * @param stones
+     * @return
+     */
+    public int lastStoneWeightII(int[] stones) {
+        // 将这些数字分成两拨,使得他们的和的差最小
+        int sum = 0, len = stones.length;
+        for (int stone : stones) {
+            sum += stone;
+        }
+        int helf = sum >> 1;
+        int[] dp = new int[helf + 1];
+        for (int stone : stones) {
+            for (int j = helf; j >= stone; j--) {
+                dp[j] = Math.max(dp[j], dp[j - stone] + stone);
+            }
+        }
+        return sum - 2 * dp[helf];
+    }
+
+    /**
+     * 1048. 最长字符串链
+     *
+     * <p>给出一个单词列表，其中每个单词都由小写英文字母组成。
+     *
+     * <p>如果我们可以在 word1 的任何地方添加一个字母使其变成 word2，那么我们认为 word1 是 word2 的前身。例如，"abc" 是 "abac" 的前身。
+     *
+     * <p>词链是单词 [word_1, word_2, ..., word_k] 组成的序列，k >= 1，其中 word_1 是 word_2 的前身，word_2 是 word_3
+     * 的前身，依此类推。
+     *
+     * <p>从给定单词列表 words 中选择单词组成词链，返回词链的最长可能长度。
+     *
+     * <p>示例：
+     *
+     * <p>输入：["a","b","ba","bca","bda","bdca"] 输出：4 解释：最长单词链之一为 "a","ba","bda","bdca"。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= words.length <= 1000 1 <= words[i].length <= 16 words[i] 仅由小写英文字母组成。
+     *
+     * @param words
+     * @return
+     */
+    public int longestStrChain(String[] words) {
+        Arrays.sort(words, Comparator.comparingInt(String::length));
+        int[] dp = new int[words.length];
+        int[] lenIndex = new int[17];
+        Arrays.fill(lenIndex, -1);
+        for (int i = 0; i < words.length; i++) {
+            int len = words[i].length();
+            lenIndex[len] = i;
+        }
+
+        int max = 0;
+        for (int i = 0; i < words.length; i++) {
+            String word = words[i];
+            int len = word.length() - 1;
+            int index = lenIndex[len];
+            while (index >= 0 && words[index].length() == len) {
+                if (contains(word, words[index])) {
+                    dp[i] = Math.max(dp[i], dp[index] + 1);
+                }
+                index--;
+            }
+            max = Math.max(dp[i], max);
+        }
+
+        return max + 1;
+    }
+
+    private boolean contains(String word, String str) {
+        if (word.length() != str.length() + 1) {
+            return false;
+        }
+        int i = 0, j = 0;
+        while (i < word.length() && j < str.length()) {
+            if (word.charAt(i) == str.charAt(j)) {
+                i++;
+                j++;
+            } else {
+                i++;
+            }
+        }
+        return j == str.length();
     }
 }
