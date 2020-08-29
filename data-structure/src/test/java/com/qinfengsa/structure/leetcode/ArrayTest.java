@@ -15868,4 +15868,121 @@ public class ArrayTest {
 
         return up && down && left && right;
     }
+
+    @Test
+    public void maxSatisfied() {
+        int[] customers = {1, 0, 1, 2, 1, 1, 7, 5}, grumpy = {0, 1, 0, 1, 0, 1, 0, 1};
+        int X = 3;
+        logResult(maxSatisfied(customers, grumpy, X));
+    }
+    /**
+     * 1052. 爱生气的书店老板
+     *
+     * <p>今天，书店老板有一家店打算试营业 customers.length 分钟。每分钟都有一些顾客（customers[i]）会进入书店，所有这些顾客都会在那一分钟结束后离开。
+     *
+     * <p>在某些时候，书店老板会生气。 如果书店老板在第 i 分钟生气，那么 grumpy[i] = 1，否则 grumpy[i] = 0。
+     * 当书店老板生气时，那一分钟的顾客就会不满意，不生气则他们是满意的。
+     *
+     * <p>书店老板知道一个秘密技巧，能抑制自己的情绪，可以让自己连续 X 分钟不生气，但却只能使用一次。
+     *
+     * <p>请你返回这一天营业下来，最多有多少客户能够感到满意的数量。
+     *
+     * <p>示例：
+     *
+     * <p>输入：customers = [1,0,1,2,1,1,7,5], grumpy = [0,1,0,1,0,1,0,1], X = 3 输出：16 解释： 书店老板在最后 3
+     * 分钟保持冷静。 感到满意的最大客户数量 = 1 + 1 + 1 + 1 + 7 + 5 = 16.
+     *
+     * <p>提示：
+     *
+     * <p>1 <= X <= customers.length == grumpy.length <= 20000 0 <= customers[i] <= 1000 0 <=
+     * grumpy[i] <= 1
+     *
+     * @param customers
+     * @param grumpy
+     * @param X
+     * @return
+     */
+    public int maxSatisfied(int[] customers, int[] grumpy, int X) {
+        int max = 0;
+        int len = customers.length, sum = 0;
+        for (int i = 0; i < len; i++) {
+            if (grumpy[i] == 0) {
+                sum += customers[i];
+                customers[i] = 0;
+            }
+        }
+        int cost = 0;
+        int i = 0;
+        while (i < len) {
+            cost += customers[i];
+            if (i >= X - 1) {
+                if (cost > max) {
+                    max = cost;
+                }
+                cost -= customers[i - X + 1]; // 窗口长度为X,窗口在向前滑动一位之前,需要将窗口中的最左边的一位数减掉
+            }
+            i++;
+        }
+
+        return sum + max;
+    }
+
+    @Test
+    public void rearrangeBarcodes() {
+        int[] barcodes = {2, 2, 1, 3};
+        int[] result = rearrangeBarcodes(barcodes);
+        log.debug("result:{}", result);
+    }
+
+    /**
+     * 1054. 距离相等的条形码
+     *
+     * <p>在一个仓库里，有一排条形码，其中第 i 个条形码为 barcodes[i]。
+     *
+     * <p>请你重新排列这些条形码，使其中两个相邻的条形码 不能 相等。 你可以返回任何满足该要求的答案，此题保证存在答案。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：[1,1,1,2,2,2] 输出：[2,1,2,1,2,1] 示例 2：
+     *
+     * <p>输入：[1,1,1,1,2,2,3,3] 输出：[1,3,1,3,2,1,2,1]
+     *
+     * <p>提示：
+     *
+     * <p>1 <= barcodes.length <= 10000 1 <= barcodes[i] <= 10000
+     *
+     * @param barcodes
+     * @return
+     */
+    public int[] rearrangeBarcodes(int[] barcodes) {
+        Map<Integer, Integer> countMap = new HashMap<>();
+        for (int barcode : barcodes) {
+            int count = countMap.getOrDefault(barcode, 0);
+            countMap.put(barcode, count + 1);
+        }
+        int len = barcodes.length;
+        List<Integer> list = new ArrayList<>(countMap.keySet());
+        // 按数量排序
+        list.sort((a, b) -> countMap.get(b) - countMap.get(a));
+
+        int index = 0;
+        // 间隔排列
+        int[] result = new int[len];
+        int i = 0;
+        while (i < len && index < list.size()) {
+            int num = list.get(index);
+            result[i] = num;
+            int count = countMap.get(num);
+            countMap.put(num, count - 1);
+            if (count - 1 == 0) {
+                index++;
+            }
+            i += 2;
+            if (i >= len) {
+                i = 1;
+            }
+        }
+
+        return result;
+    }
 }
