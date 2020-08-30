@@ -1190,4 +1190,62 @@ public class GreedyTest {
         }
         return result;
     }
+
+    /**
+     * 1053. 交换一次的先前排列
+     *
+     * <p>给你一个正整数的数组 A（其中的元素不一定完全不同），请你返回可在 一次交换（交换两数字 A[i] 和 A[j] 的位置）后得到的、按字典序排列小于 A 的最大可能排列。
+     *
+     * <p>如果无法这么操作，就请返回原数组。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：[3,2,1] 输出：[3,1,2] 解释： 交换 2 和 1
+     *
+     * <p>示例 2：
+     *
+     * <p>输入：[1,1,5] 输出：[1,1,5] 解释： 这已经是最小排列
+     *
+     * <p>示例 3：
+     *
+     * <p>输入：[1,9,4,6,7] 输出：[1,7,4,6,9] 解释： 交换 9 和 7
+     *
+     * <p>示例 4：
+     *
+     * <p>输入：[3,1,1,3] 输出：[1,3,1,3] 解释： 交换 1 和 3
+     *
+     * <p>提示：
+     *
+     * <p>1 <= A.length <= 10000 1 <= A[i] <= 10000
+     *
+     * @param A
+     * @return
+     */
+    public int[] prevPermOpt1(int[] A) {
+        int len = A.length;
+        int curMax = -1;
+        int index = -1;
+        // 找到第一个递增序列
+        boolean hasResult = false;
+        for (int i = len - 2; i >= 0; i--) {
+            if (A[i + 1] < A[i]) { // 此处逆序，需要移动A[i]
+                for (int j = i + 1; j < len; j++) { // 寻找与 A[i] 交换的位置
+                    if (A[i] > A[j]) { // 必须满足 A[i] > A[j]，否则不能满足交换后的字典序小于原始字典序
+                        hasResult = true;
+                        if (A[j] > curMax) {
+                            curMax = A[j];
+                            index = j;
+                        }
+                    }
+                }
+                if (hasResult) {
+                    int tmp = A[i];
+                    A[i] = A[index];
+                    A[index] = tmp;
+                    return A;
+                }
+            }
+        }
+        return A;
+    }
 }
