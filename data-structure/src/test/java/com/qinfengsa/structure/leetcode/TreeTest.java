@@ -4802,4 +4802,112 @@ public class TreeTest {
         }
         return maxDepth;
     }
+
+    /**
+     * 1302. 层数最深叶子节点的和
+     *
+     * <p>给你一棵二叉树，请你返回层数最深的叶子节点的和。
+     *
+     * <p>示例：
+     *
+     * <p>输入：root = [1,2,3,4,5,null,6,7,null,null,null,null,8] 输出：15
+     *
+     * <p>提示：
+     *
+     * <p>树中节点数目在 1 到 10^4 之间。 每个节点的值在 1 到 100 之间。
+     *
+     * @param root
+     * @return
+     */
+    public int deepestLeavesSum(TreeNode root) {
+        if (Objects.isNull(root)) {
+            return 0;
+        }
+        int result = 0;
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.offer(root);
+
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            result = 0;
+            for (int i = 0; i < size; i++) {
+                TreeNode node = queue.poll();
+                result += node.val;
+                if (!Objects.isNull(node.left)) {
+                    queue.offer(node.left);
+                }
+                if (!Objects.isNull(node.right)) {
+                    queue.offer(node.right);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * 1305. 两棵二叉搜索树中的所有元素
+     *
+     * <p>给你 root1 和 root2 这两棵二叉搜索树。
+     *
+     * <p>请你返回一个列表，其中包含 两棵树 中的所有整数并按 升序 排序。.
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：root1 = [2,1,4], root2 = [1,0,3] 输出：[0,1,1,2,3,4] 示例 2：
+     *
+     * <p>输入：root1 = [0,-10,10], root2 = [5,1,7,0,2] 输出：[-10,0,0,1,2,5,7,10] 示例 3：
+     *
+     * <p>输入：root1 = [], root2 = [5,1,7,0,2] 输出：[0,1,2,5,7] 示例 4：
+     *
+     * <p>输入：root1 = [0,-10,10], root2 = [] 输出：[-10,0,10] 示例 5：
+     *
+     * <p>输入：root1 = [1,null,8], root2 = [8,1] 输出：[1,1,8,8]
+     *
+     * <p>提示：
+     *
+     * <p>每棵树最多有 5000 个节点。 每个节点的值在 [-10^5, 10^5] 之间。
+     *
+     * @param root1
+     * @param root2
+     * @return
+     */
+    public List<Integer> getAllElements(TreeNode root1, TreeNode root2) {
+        List<Integer> list1 = new ArrayList<>(), list2 = new ArrayList<>();
+        // 中序遍历
+        inOrder(root1, list1);
+        inOrder(root2, list2);
+        int size1 = list1.size(), size2 = list2.size();
+        List<Integer> result = new ArrayList<>();
+        int i = 0, j = 0;
+        // 归并排序
+        while (i < size1 || j < size2) {
+            if (i == size1) {
+                result.add(list2.get(j++));
+                continue;
+            }
+            if (j == size2) {
+                result.add(list1.get(i++));
+                continue;
+            }
+            if (list1.get(i) <= list2.get(j)) {
+                result.add(list1.get(i++));
+            } else {
+                result.add(list2.get(j++));
+            }
+        }
+
+        return result;
+    }
+
+    private void inOrder(TreeNode root, List<Integer> list) {
+
+        if (Objects.isNull(root)) {
+            return;
+        }
+        inOrder(root.left, list);
+        list.add(root.val);
+
+        inOrder(root.right, list);
+    }
 }
