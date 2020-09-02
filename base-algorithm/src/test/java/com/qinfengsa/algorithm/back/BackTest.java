@@ -4,6 +4,7 @@ import static com.qinfengsa.algorithm.util.LogUtils.logResult;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -2700,5 +2701,70 @@ public class BackTest {
         }
 
         return result;
+    }
+
+    /**
+     * 1291. 顺次数
+     *
+     * <p>我们定义「顺次数」为：每一位上的数字都比前一位上的数字大 1 的整数。
+     *
+     * <p>请你返回由 [low, high] 范围内所有顺次数组成的 有序 列表（从小到大排序）。
+     *
+     * <p>示例 1：
+     *
+     * <p>输出：low = 100, high = 300 输出：[123,234] 示例 2：
+     *
+     * <p>输出：low = 1000, high = 13000 输出：[1234,2345,3456,4567,5678,6789,12345]
+     *
+     * <p>提示：
+     *
+     * <p>10 <= low <= high <= 10^9
+     *
+     * @param low
+     * @param high
+     * @return
+     */
+    public List<Integer> sequentialDigits(int low, int high) {
+        /*int[] nums = {
+            12, 23, 34, 45, 56, 67, 78, 89, 123, 234, 345, 456, 567, 678, 789, 1234, 2345, 3456,
+            4567, 5678, 6789, 12345, 23456, 34567, 45678, 56789, 123456, 234567, 345678, 456789,
+            1234567, 2345678, 3456789, 12345678, 23456789, 123456789
+        };
+        int start = 0, end = nums.length - 1;
+        List<Integer> result = new ArrayList<>();
+        while (start < nums.length && nums[start] < low) {
+            start++;
+        }
+
+        while (end >= 0 && nums[end] > high) {
+            end--;
+        }
+        for (int i = start; i <= end; i++) {
+            result.add(nums[i]);
+        }*/
+        List<Integer> result = new ArrayList<>();
+
+        for (int i = 1; i < 9; i++) {
+            int num = i;
+            for (int j = i + 1; j <= 9; j++) {
+                num = num * 10 + j;
+                if (num >= low && num <= high) {
+                    result.add(num);
+                }
+            }
+        }
+        Collections.sort(result);
+        return result;
+        /*while(a < t.size() && t[a] < low)
+            a++;
+        while(b >=0 && t[b] > high)
+            b--;
+        if(a <= b)
+            return vector<int>(t.begin() + a, t.begin() + b + 1);
+        else
+        return vector<int>();*/
+        /*List<Integer> result = new ArrayList<>();
+
+        return result;*/
     }
 }

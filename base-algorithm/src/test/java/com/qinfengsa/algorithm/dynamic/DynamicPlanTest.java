@@ -3279,6 +3279,12 @@ public class DynamicPlanTest {
         return dp[strs.length][m][n];
     }
 
+    @Test
+    public void predictTheWinner() {
+        int[] nums = {1, 5, 2, 4, 6};
+        logResult(PredictTheWinner(nums));
+    }
+
     /**
      * 486. 预测赢家
      *
@@ -3302,6 +3308,8 @@ public class DynamicPlanTest {
      * @return
      */
     public boolean PredictTheWinner(int[] nums) {
+        // [1,5,2,4,6]
+
         // 使用动态规划来解决这个问题。用 dp(i, j) 表示当剩下的数为 nums[i .. j]
         // 时，当前操作的选手（注意，不一定是先手）与另一位选手最多的分数差。当前操作的选手可以选择 nums[i] 并留下 nums[i+1 .. j]，或选择 nums[j] 并留下
         // nums[i .. j-1]，因此状态转移方程为：
@@ -3310,16 +3318,22 @@ public class DynamicPlanTest {
         // dp(i, j) = max(nums[i] - dp(i+1, j), nums[j] - dp(i, j-1))
         // dp(i, i) = nums[i]
         //
-        int[][] dp = new int[nums.length + 1][nums.length];
-        for (int i = nums.length; i >= 0; i--) {
-            for (int j = i + 1; j < nums.length; j++) {
+
+        int len = nums.length;
+        int[][] dp = new int[len][len];
+        for (int i = 0; i < len; i++) {
+            dp[i][i] = nums[i];
+        }
+        for (int i = len - 2; i >= 0; i--) {
+            for (int j = i + 1; j < len; j++) {
                 int a = nums[i] - dp[i + 1][j];
                 int b = nums[j] - dp[i][j - 1];
                 dp[i][j] = Math.max(a, b);
             }
         }
+        logResult(dp);
 
-        return dp[0][nums.length - 1] >= 0;
+        return dp[0][len - 1] >= 0;
     }
 
     /**
