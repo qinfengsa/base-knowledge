@@ -16175,4 +16175,139 @@ public class ArrayTest {
 
         return right;
     }
+
+    @Test
+    public void maxSideLength() {
+        int[][] mat = {{18, 70}, {61, 1}, {25, 85}, {14, 40}, {11, 96}, {97, 96}, {63, 45}};
+        int threshold = 40184;
+        logResult(maxSideLength(mat, threshold));
+    }
+
+    /**
+     * 1292. 元素和小于等于阈值的正方形的最大边长
+     *
+     * <p>给你一个大小为 m x n 的矩阵 mat 和一个整数阈值 threshold。
+     *
+     * <p>请你返回元素总和小于或等于阈值的正方形区域的最大边长；如果没有这样的正方形区域，则返回 0 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：mat = [[1,1,3,2,4,3,2],[1,1,3,2,4,3,2],[1,1,3,2,4,3,2]], threshold = 4 输出：2 解释：总和小于 4
+     * 的正方形的最大边长为 2，如图所示。 示例 2：
+     *
+     * <p>输入：mat = [[2,2,2,2,2],[2,2,2,2,2],[2,2,2,2,2],[2,2,2,2,2],[2,2,2,2,2]], threshold = 1 输出：0
+     * 示例 3：
+     *
+     * <p>输入：mat = [[1,1,1,1],[1,0,0,0],[1,0,0,0],[1,0,0,0]], threshold = 6 输出：3 示例 4：
+     *
+     * <p>输入：mat = [[18,70],[61,1],[25,85],[14,40],[11,96],[97,96],[63,45]], threshold = 40184 输出：2
+     *
+     * <p>提示：
+     *
+     * <p>1 <= m, n <= 300 m == mat.length n == mat[i].length 0 <= mat[i][j] <= 10000 0 <= threshold
+     * <= 10^5
+     *
+     * @param mat
+     * @param threshold
+     * @return
+     */
+    public int maxSideLength(int[][] mat, int threshold) {
+
+        m = mat.length;
+        n = mat[0].length;
+        sum = new int[m + 1][n + 1];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                sum[i + 1][j + 1] = mat[i][j] + sum[i + 1][j] + sum[i][j + 1] - sum[i][j];
+            }
+        }
+        int result = 0;
+        int low = 0, high = Math.min(m, n);
+        if (canMakeSide(high, threshold)) {
+            return high;
+        }
+        while (low < high) {
+            int mid = (low + high) >> 1;
+            if (canMakeSide(mid, threshold)) {
+                result = mid;
+                low = mid + 1;
+            } else {
+                high = mid;
+            }
+        }
+
+        return result;
+    }
+
+    private int m, n;
+    private int[][] sum;
+
+    private boolean canMakeSide(int side, int threshold) {
+
+        for (int i = side; i <= m; i++) {
+            for (int j = side; j <= n; j++) {
+                if (sum[i][j] - sum[i][j - side] - sum[i - side][j] + sum[i - side][j - side]
+                        <= threshold) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * 1296. 划分数组为连续数字的集合
+     *
+     * <p>给你一个整数数组 nums 和一个正整数 k，请你判断是否可以把这个数组划分成一些由 k 个连续数字组成的集合。 如果可以，请返回 True；否则，返回 False。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：nums = [1,2,3,3,4,4,5,6], k = 4 输出：true 解释：数组可以分成 [1,2,3,4] 和 [3,4,5,6]。 示例 2：
+     *
+     * <p>输入：nums = [3,2,1,2,3,4,3,4,5,9,10,11], k = 3 输出：true 解释：数组可以分成 [1,2,3] , [2,3,4] , [3,4,5]
+     * 和 [9,10,11]。 示例 3：
+     *
+     * <p>输入：nums = [3,3,2,2,1,1], k = 3 输出：true 示例 4：
+     *
+     * <p>输入：nums = [1,2,3,4], k = 3 输出：false 解释：数组不能分成几个大小为 3 的子数组。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= nums.length <= 10^5 1 <= nums[i] <= 10^9 1 <= k <= nums.length
+     *
+     * @param nums
+     * @param k
+     * @return
+     */
+    public boolean isPossibleDivide(int[] nums, int k) {
+        Map<Integer, Integer> map = new HashMap<>();
+        int len = nums.length;
+        if (len % k != 0) {
+            return false;
+        }
+        Arrays.sort(nums);
+        for (int num : nums) {
+            int count = map.getOrDefault(num, 0);
+            map.put(num, count + 1);
+        }
+
+        for (int num : nums) {
+            int count = map.getOrDefault(num, 0);
+            if (count == 0) {
+                continue;
+            }
+            map.put(num, count - 1);
+            for (int i = 1; i < k; i++) {
+                int next = num + i;
+                count = map.getOrDefault(next, 0);
+                if (count == 0) {
+                    return false;
+                }
+                map.put(next, count - 1);
+            }
+        }
+
+        return true;
+    }
 }

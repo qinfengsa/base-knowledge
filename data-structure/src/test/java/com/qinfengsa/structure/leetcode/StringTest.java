@@ -8026,4 +8026,70 @@ public class StringTest {
 
         return sb.toString();*/
     }
+
+    @Test
+    public void maxFreq() {
+        String s = "aababcaab";
+        int maxLetters = 2, minSize = 3, maxSize = 4;
+        logResult(maxFreq(s, maxLetters, minSize, maxSize));
+    }
+
+    /**
+     * 1297. 子串的最大出现次数
+     *
+     * <p>给你一个字符串 s ，请你返回满足以下条件且出现次数最大的 任意 子串的出现次数：
+     *
+     * <p>子串中不同字母的数目必须小于等于 maxLetters 。 子串的长度必须大于等于 minSize 且小于等于 maxSize 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：s = "aababcaab", maxLetters = 2, minSize = 3, maxSize = 4 输出：2 解释：子串 "aab" 在原字符串中出现了 2
+     * 次。 它满足所有的要求：2 个不同的字母，长度为 3 （在 minSize 和 maxSize 范围内）。 示例 2：
+     *
+     * <p>输入：s = "aaaa", maxLetters = 1, minSize = 3, maxSize = 3 输出：2 解释：子串 "aaa" 在原字符串中出现了 2
+     * 次，且它们有重叠部分。 示例 3：
+     *
+     * <p>输入：s = "aabcabcab", maxLetters = 2, minSize = 2, maxSize = 3 输出：3 示例 4：
+     *
+     * <p>输入：s = "abcde", maxLetters = 2, minSize = 3, maxSize = 3 输出：0
+     *
+     * <p>提示：
+     *
+     * <p>1 <= s.length <= 10^5 1 <= maxLetters <= 26 1 <= minSize <= maxSize <= min(26, s.length) s
+     * 只包含小写英文字母。
+     *
+     * @param s
+     * @param maxLetters
+     * @param minSize
+     * @param maxSize
+     * @return
+     */
+    public int maxFreq(String s, int maxLetters, int minSize, int maxSize) {
+        int len = s.length();
+        int[] nums = new int[len];
+        for (int i = 0; i < len; i++) {
+            char c = s.charAt(i);
+            nums[i] = 1 << (c - 'a');
+        }
+        Map<String, Integer> map = new HashMap<>();
+        for (int i = 0; i <= len - minSize; i++) {
+
+            String tmp = s.substring(i, i + minSize);
+            int count = map.getOrDefault(tmp, 0);
+            if (count > 0) {
+                map.put(tmp, count + 1);
+                continue;
+            }
+            int num = 0;
+            for (int j = i; j < i + minSize; j++) {
+                num |= nums[j];
+            }
+            if (Integer.bitCount(num) <= maxLetters) {
+                map.put(tmp, count + 1);
+            }
+        }
+        int result = map.values().stream().max(Integer::compareTo).orElse(0);
+
+        return result;
+    }
 }
