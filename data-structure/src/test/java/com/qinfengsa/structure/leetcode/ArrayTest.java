@@ -20,6 +20,7 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 
@@ -16309,5 +16310,233 @@ public class ArrayTest {
         }
 
         return true;
+    }
+
+    @Test
+    public void canReach() {
+        int[] arr = {4, 2, 3, 0, 3, 1, 2};
+        int start = 5;
+        logResult(canReach(arr, start));
+    }
+    /**
+     * 1306. 跳跃游戏 III
+     *
+     * <p>这里有一个非负整数数组 arr，你最开始位于该数组的起始下标 start 处。当你位于下标 i 处时，你可以跳到 i + arr[i] 或者 i - arr[i]。
+     *
+     * <p>请你判断自己是否能够跳到对应元素值为 0 的 任一 下标处。
+     *
+     * <p>注意，不管是什么情况下，你都无法跳到数组之外。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：arr = [4,2,3,0,3,1,2], start = 5 输出：true 解释： 到达值为 0 的下标 3 有以下可能方案： 下标 5 -> 下标 4 -> 下标 1
+     * -> 下标 3 下标 5 -> 下标 6 -> 下标 4 -> 下标 1 -> 下标 3 示例 2：
+     *
+     * <p>输入：arr = [4,2,3,0,3,1,2], start = 0 输出：true 解释： 到达值为 0 的下标 3 有以下可能方案： 下标 0 -> 下标 4 -> 下标 1
+     * -> 下标 3 示例 3：
+     *
+     * <p>输入：arr = [3,0,2,1,2], start = 2 输出：false 解释：无法到达值为 0 的下标 1 处。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= arr.length <= 5 * 10^4 0 <= arr[i] < arr.length 0 <= start < arr.length
+     *
+     * @param arr
+     * @param start
+     * @return
+     */
+    public boolean canReach(int[] arr, int start) {
+        Queue<Integer> queue = new LinkedList<>();
+        int len = arr.length;
+        boolean[] visited = new boolean[len];
+
+        queue.offer(start);
+        if (arr[start] == 0) {
+            return true;
+        }
+        // 广度优先遍历
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                int curIndex = queue.poll();
+                if (visited[curIndex]) {
+                    continue;
+                }
+                visited[curIndex] = true;
+                if (arr[curIndex] == 0) {
+                    return true;
+                }
+                int left = curIndex - arr[curIndex], right = curIndex + arr[curIndex];
+                if (left >= 0) {
+                    queue.offer(left);
+                }
+                if (right < len) {
+                    queue.offer(right);
+                }
+            }
+        }
+
+        return false;
+    }
+
+    @Test
+    public void xorQueries() {
+        int[] arr = {1, 3, 4, 8};
+        int[][] queries = {{0, 1}, {1, 2}, {0, 3}, {3, 3}};
+        int[] result = xorQueries(arr, queries);
+        log.debug("result:{}", result);
+    }
+
+    /**
+     * 1310. 子数组异或查询
+     *
+     * <p>有一个正整数数组 arr，现给你一个对应的查询数组 queries，其中 queries[i] = [Li, Ri]。
+     *
+     * <p>对于每个查询 i，请你计算从 Li 到 Ri 的 XOR 值（即 arr[Li] xor arr[Li+1] xor ... xor arr[Ri]）作为本次查询的结果。
+     *
+     * <p>并返回一个包含给定查询 queries 所有结果的数组。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：arr = [1,3,4,8], queries = [[0,1],[1,2],[0,3],[3,3]] 输出：[2,7,14,8] 解释： 数组中元素的二进制表示形式是：
+     * 1 = 0001 3 = 0011 4 = 0100 8 = 1000 查询的 XOR 值为： [0,1] = 1 xor 3 = 2 [1,2] = 3 xor 4 = 7 [0,3]
+     * = 1 xor 3 xor 4 xor 8 = 14 [3,3] = 8 示例 2：
+     *
+     * <p>输入：arr = [4,8,2,10], queries = [[2,3],[1,3],[0,0],[0,3]] 输出：[8,0,4,4]
+     *
+     * <p>提示：
+     *
+     * <p>1 <= arr.length <= 3 * 10^4 1 <= arr[i] <= 10^9 1 <= queries.length <= 3 * 10^4
+     * queries[i].length == 2 0 <= queries[i][0] <= queries[i][1] < arr.length
+     *
+     * @param arr
+     * @param queries
+     * @return
+     */
+    public int[] xorQueries(int[] arr, int[][] queries) {
+        int[] result = new int[queries.length];
+        int len = arr.length;
+        int[] nums = new int[len + 1];
+        int num = 0;
+        for (int i = 1; i <= len; i++) {
+            num ^= arr[i - 1];
+            nums[i] ^= num;
+        }
+        for (int i = 0; i < queries.length; i++) {
+            int left = queries[i][0], right = queries[i][1];
+            result[i] = nums[left] ^ nums[right + 1];
+        }
+
+        return result;
+    }
+
+    @Test
+    public void watchedVideosByFriends() {
+        List<List<String>> watchedVideos = new ArrayList<>();
+        /*watchedVideos.add(Arrays.asList("A", "B"));
+        watchedVideos.add(Arrays.asList("C"));
+        watchedVideos.add(Arrays.asList("B", "C"));
+        watchedVideos.add(Arrays.asList("D"));
+        int[][] friends = {{1, 2}, {0, 3}, {0, 3}, {1, 2}};
+        int id = 0, level = 2;*/
+
+        watchedVideos.add(Arrays.asList("bjwtssmu"));
+        watchedVideos.add(Arrays.asList("aygr", "mqls"));
+        watchedVideos.add(Arrays.asList("vrtxa", "zxqzeqy", "nbpl", "qnpl"));
+        watchedVideos.add(Arrays.asList("r", "otazhu", "rsf"));
+        watchedVideos.add(Arrays.asList("bvcca", "ayyihidz", "ljc", "fiq", "viu"));
+        int[][] friends = {{3, 2, 1, 4}, {0, 4}, {4, 0}, {0, 4}, {2, 3, 1, 0}};
+        int id = 3, level = 1;
+        logResult(watchedVideosByFriends(watchedVideos, friends, id, level));
+    }
+
+    /**
+     * 1311. 获取你好友已观看的视频
+     *
+     * <p>有 n 个人，每个人都有一个 0 到 n-1 的唯一 id 。
+     *
+     * <p>给你数组 watchedVideos 和 friends ，其中 watchedVideos[i] 和 friends[i] 分别表示 id = i
+     * 的人观看过的视频列表和他的好友列表。
+     *
+     * <p>Level 1 的视频包含所有你好友观看过的视频，level 2 的视频包含所有你好友的好友观看过的视频，以此类推。一般的，Level 为 k 的视频包含所有从你出发，最短距离为
+     * k 的好友观看过的视频。
+     *
+     * <p>给定你的 id 和一个 level 值，请你找出所有指定 level 的视频，并将它们按观看频率升序返回。如果有频率相同的视频，请将它们按字母顺序从小到大排列。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：watchedVideos = [["A","B"],["C"],["B","C"],["D"]], friends = [[1,2],[0,3],[0,3],[1,2]],
+     * id = 0, level = 1 输出：["B","C"] 解释： 你的 id 为 0（绿色），你的朋友包括（黄色）： id 为 1 -> watchedVideos = ["C"]
+     * id 为 2 -> watchedVideos = ["B","C"] 你朋友观看过视频的频率为： B -> 1 C -> 2 示例 2：
+     *
+     * <p>输入：watchedVideos = [["A","B"],["C"],["B","C"],["D"]], friends = [[1,2],[0,3],[0,3],[1,2]],
+     * id = 0, level = 2 输出：["D"] 解释： 你的 id 为 0（绿色），你朋友的朋友只有一个人，他的 id 为 3（黄色）。
+     *
+     * <p>提示：
+     *
+     * <p>n == watchedVideos.length == friends.length 2 <= n <= 100 1 <= watchedVideos[i].length <=
+     * 100 1 <= watchedVideos[i][j].length <= 8 0 <= friends[i].length < n 0 <= friends[i][j] < n 0
+     * <= id < n 1 <= level < n 如果 friends[i] 包含 j ，那么 friends[j] 包含 i
+     *
+     * @param watchedVideos
+     * @param friends
+     * @param id
+     * @param level
+     * @return
+     */
+    public List<String> watchedVideosByFriends(
+            List<List<String>> watchedVideos, int[][] friends, int id, int level) {
+        int len = friends.length;
+        boolean[] visited = new boolean[len];
+        Set<String> set = new HashSet<>();
+        Queue<Integer> queue = new LinkedList<>();
+        queue.offer(id);
+
+        // 并将它们按观看频率升序返回 如果有频率相同的视频，请将它们按字母顺序从小到大排列
+        Map<String, Integer> videoMap = new HashMap<>();
+
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            if (level < 0) {
+                break;
+            }
+            for (int i = 0; i < size; i++) {
+                int curId = queue.poll();
+                if (visited[curId]) {
+                    continue;
+                }
+                visited[curId] = true;
+                if (level == 0) {
+                    List<String> list = watchedVideos.get(curId);
+                    set.addAll(list);
+                    for (String video : list) {
+                        int count = videoMap.getOrDefault(video, 0);
+                        videoMap.put(video, count + 1);
+                    }
+                    continue;
+                }
+                int[] friendList = friends[curId];
+                for (int friend : friendList) {
+                    if (visited[friend]) {
+                        continue;
+                    }
+                    queue.offer(friend);
+                }
+            }
+            level--;
+        }
+        List<String> list =
+                new ArrayList<>(set)
+                        .stream()
+                                .sorted(
+                                        (a, b) -> {
+                                            int count1 = videoMap.get(a), count2 = videoMap.get(b);
+                                            return count1 == count2
+                                                    ? a.compareTo(b)
+                                                    : count1 - count2;
+                                        })
+                                .collect(Collectors.toList());
+
+        return list;
     }
 }
