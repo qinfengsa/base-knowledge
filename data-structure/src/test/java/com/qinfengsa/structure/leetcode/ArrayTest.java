@@ -16539,4 +16539,109 @@ public class ArrayTest {
 
         return list;
     }
+
+    /**
+     * 5491. 矩阵对角线元素的和
+     *
+     * <p>给你一个正方形矩阵 mat，请你返回矩阵对角线元素的和。
+     *
+     * <p>请你返回在矩阵主对角线上的元素和副对角线上且不在主对角线上元素的和。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：mat = [[1,2,3], [4,5,6], [7,8,9]] 输出：25 解释：对角线的和为：1 + 5 + 9 + 3 + 7 = 25 请注意，元素
+     * mat[1][1] = 5 只会被计算一次。 示例 2：
+     *
+     * <p>输入：mat = [[1,1,1,1], [1,1,1,1], [1,1,1,1], [1,1,1,1]] 输出：8 示例 3：
+     *
+     * <p>输入：mat = [[5]] 输出：5
+     *
+     * <p>提示：
+     *
+     * <p>n == mat.length == mat[i].length 1 <= n <= 100 1 <= mat[i][j] <= 100
+     *
+     * @param mat
+     * @return
+     */
+    public int diagonalSum(int[][] mat) {
+        int len = mat.length;
+        int sum = 0;
+        for (int i = 0; i < len; i++) {
+            sum += mat[i][i];
+            if (i != len - 1 - i) {
+                sum += mat[i][len - 1 - i];
+            }
+        }
+
+        return sum;
+    }
+
+    @Test
+    public void findLengthOfShortestSubarray() {
+        int[] arr = {1, 2, 3, 3, 10, 4, 2, 3, 5};
+        logResult(findLengthOfShortestSubarray(arr));
+    }
+
+    /**
+     * 5493. 删除最短的子数组使剩余数组有序
+     *
+     * <p>给你一个整数数组 arr ，请你删除一个子数组（可以为空），使得 arr 中剩下的元素是 非递减 的。
+     *
+     * <p>一个子数组指的是原数组中连续的一个子序列。
+     *
+     * <p>请你返回满足题目要求的最短子数组的长度。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：arr = [1,2,3,10,4,2,3,5] 输出：3 解释：我们需要删除的最短子数组是 [10,4,2] ，长度为 3 。剩余元素形成非递减数组 [1,2,3,3,5]
+     * 。 另一个正确的解为删除子数组 [3,10,4] 。 示例 2：
+     *
+     * <p>输入：arr = [5,4,3,2,1] 输出：4 解释：由于数组是严格递减的，我们只能保留一个元素。所以我们需要删除长度为 4 的子数组，要么删除 [5,4,3,2]，要么删除
+     * [4,3,2,1]。 示例 3：
+     *
+     * <p>输入：arr = [1,2,3] 输出：0 解释：数组已经是非递减的了，我们不需要删除任何元素。 示例 4：
+     *
+     * <p>输入：arr = [1] 输出：0
+     *
+     * <p>提示：
+     *
+     * <p>1 <= arr.length <= 10^5 0 <= arr[i] <= 10^9
+     *
+     * @param arr
+     * @return
+     */
+    public int findLengthOfShortestSubarray(int[] arr) {
+        int result = 0;
+        int len = arr.length;
+        if (len == 1) {
+            return 0;
+        }
+        // 从前往后找单调递增,从后往前找单调递减
+        int left = 0, right = len - 1;
+        while (left + 1 < len && arr[left] <= arr[left + 1]) {
+            left++;
+        }
+        while (right > 0 && arr[right - 1] <= arr[right]) {
+            right--;
+        }
+        log.debug("left :{}, right :{}", left, right);
+        result = Math.min(len - left - 1, right);
+
+        int newleft = 0, newright = len - 1;
+        while (newleft < right && arr[newleft] <= arr[right]) {
+            if (arr[newleft] <= arr[newleft + 1] && arr[newleft] <= arr[right]) {
+                newleft++;
+            }
+        }
+        log.debug("left :{}, right :{}", newleft, right);
+        result = Math.min(right - newleft, result);
+        while (left < newright && arr[left] <= arr[newright]) {
+            if (arr[newright - 1] <= arr[newright] && arr[left] <= arr[newright]) {
+                newright--;
+            }
+        }
+        log.debug("left :{}, right :{}", left, newright);
+        result = Math.min(newright - left, result);
+        return result;
+    }
 }

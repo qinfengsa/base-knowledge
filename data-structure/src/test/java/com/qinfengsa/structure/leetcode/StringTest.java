@@ -6622,7 +6622,7 @@ public class StringTest {
         int result = 0;
         // 动态规划
         int[] dp = new int[s.length() + 1];
-        int MOD = 1_000_000_007;
+
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
             if (c == '1') {
@@ -6635,6 +6635,7 @@ public class StringTest {
         return result;
     }
 
+    int MOD = 1_000_000_007;
     /**
      * 1433. 检查一个字符串是否可以打破另一个字符串
      *
@@ -8090,6 +8091,93 @@ public class StringTest {
         }
         int result = map.values().stream().max(Integer::compareTo).orElse(0);
 
+        return result;
+    }
+
+    @Test
+    public void numWays() {
+        String s = "111111";
+        logResult(numWays(s));
+    }
+
+    /**
+     * 5492. 分割字符串的方案数
+     *
+     * <p>给你一个二进制串 s （一个只包含 0 和 1 的字符串），我们可以将 s 分割成 3 个 非空 字符串 s1, s2, s3 （s1 + s2 + s3 = s）。
+     *
+     * <p>请你返回分割 s 的方案数，满足 s1，s2 和 s3 中字符 '1' 的数目相同。
+     *
+     * <p>由于答案可能很大，请将它对 10^9 + 7 取余后返回。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：s = "10101" 输出：4 解释：总共有 4 种方法将 s 分割成含有 '1' 数目相同的三个子字符串。 "1|010|1" "1|01|01" "10|10|1"
+     * "10|1|01" 示例 2：
+     *
+     * <p>输入：s = "1001" 输出：0 示例 3：
+     *
+     * <p>输入：s = "0000" 输出：3 解释：总共有 3 种分割 s 的方法。 "0|0|00" "0|00|0" "00|0|0" 示例 4：
+     *
+     * <p>输入：s = "100100010100110" 输出：12
+     *
+     * <p>提示：
+     *
+     * <p>s[i] == '0' 或者 s[i] == '1' 3 <= s.length <= 10^5
+     *
+     * @param s
+     * @return
+     */
+    public int numWays(String s) {
+        int count = 0;
+        for (char c : s.toCharArray()) {
+            if (c == '1') {
+                count++;
+            }
+        }
+        if (count % 3 != 0) {
+            return 0;
+        }
+        int result = 0;
+        int len = s.length();
+        long leftCount = 0, rightCount = 0;
+        if (count == 0) {
+            leftCount = (len - 1) % MOD;
+            rightCount = (len - 2) % MOD;
+
+            result = (int) (leftCount * rightCount % MOD) / 2;
+            return result % MOD;
+        }
+        int count3 = count / 3;
+
+        int num = 0;
+        for (int i = 0; i < len - 2; i++) {
+            char c = s.charAt(i);
+            if (c == '1') {
+                num++;
+            }
+            if (num == count3) {
+                leftCount++;
+                leftCount %= MOD;
+            }
+            if (num > count3) {
+                break;
+            }
+        }
+        num = 0;
+        for (int i = len - 1; i > 1; i--) {
+            char c = s.charAt(i);
+            if (c == '1') {
+                num++;
+            }
+            if (num == count3) {
+                rightCount++;
+                rightCount %= MOD;
+            }
+            if (num > count3) {
+                break;
+            }
+        }
+        result = (int) (leftCount * rightCount % MOD);
         return result;
     }
 }
