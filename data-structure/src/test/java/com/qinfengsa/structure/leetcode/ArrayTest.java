@@ -16578,7 +16578,7 @@ public class ArrayTest {
 
     @Test
     public void findLengthOfShortestSubarray() {
-        int[] arr = {1, 2, 3, 3, 10, 4, 2, 3, 5};
+        int[] arr = {1, 2, 3, 3, 5, 10, 4, 2, 3, 5};
         logResult(findLengthOfShortestSubarray(arr));
     }
 
@@ -16626,8 +16626,23 @@ public class ArrayTest {
         }
         log.debug("left :{}, right :{}", left, right);
         result = Math.min(len - left - 1, right);
+        if (left >= right) {
+            return result;
+        }
 
-        int newleft = 0, newright = len - 1;
+        // 得到两个有序数组 [0, left] [right ,len - 1];
+
+        // 枚举 [0 , left] 的num, 然后使用二分在 [right, len - 1] 找到第一个 >= num 的 idx
+        for (int i = 0; i <= left; i++) {
+            if (arr[i] > arr[len - 1]) {
+                continue;
+            }
+            int index = getSubarrayIndex(arr, right, len - 1, arr[i]);
+            log.debug("i :{} idx:{}", i, index);
+            result = Math.min(result, index - i - 1);
+        }
+
+        /*int newleft = 0, newright = len - 1;
         while (newleft < right && arr[newleft] <= arr[right]) {
             if (arr[newleft] <= arr[newleft + 1] && arr[newleft] <= arr[right]) {
                 newleft++;
@@ -16641,7 +16656,144 @@ public class ArrayTest {
             }
         }
         log.debug("left :{}, right :{}", left, newright);
-        result = Math.min(newright - left, result);
+        result = Math.min(newright - left, result);*/
         return result;
+    }
+
+    private int getSubarrayIndex(int[] arr, int start, int end, int target) {
+        int left = start, right = end;
+        while (left < right) {
+            int mid = (left + right) >> 1;
+            if (target <= arr[mid]) {
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+        return right;
+    }
+
+    @Test
+    public void matrixBlockSum() {
+        int[][] mat = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+        int k = 2;
+        int[][] result = matrixBlockSum(mat, k);
+        logResult(result);
+    }
+    /**
+     * 1314. 矩阵区域和
+     *
+     * <p>给你一个 m * n 的矩阵 mat 和一个整数 K ，请你返回一个矩阵 answer ，其中每个 answer[i][j] 是所有满足下述条件的元素 mat[r][c] 的和：
+     *
+     * <p>i - K <= r <= i + K, j - K <= c <= j + K (r, c) 在矩阵内。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：mat = [[1,2,3],[4,5,6],[7,8,9]], K = 1 输出：[[12,21,16],[27,45,33],[24,39,28]] 示例 2：
+     *
+     * <p>输入：mat = [[1,2,3],[4,5,6],[7,8,9]], K = 2 输出：[[45,45,45],[45,45,45],[45,45,45]]
+     *
+     * <p>提示：
+     *
+     * <p>m == mat.length n == mat[i].length 1 <= m, n, K <= 100 1 <= mat[i][j] <= 100
+     *
+     * @param mat
+     * @param K
+     * @return
+     */
+    public int[][] matrixBlockSum(int[][] mat, int K) {
+        int m = mat.length, n = mat[0].length;
+
+        int[][] sum = new int[m + 1][n + 1];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                sum[i + 1][j + 1] = mat[i][j] + sum[i + 1][j] + sum[i][j + 1] - sum[i][j];
+            }
+        }
+        logResult(sum);
+        int[][] result = new int[m][n];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                int x1 = Math.max(0, i - K), x2 = Math.min(m, i + K + 1);
+                int y1 = Math.max(0, j - K), y2 = Math.min(n, j + K + 1);
+                result[i][j] = sum[x2][y2] - sum[x2][y1] - sum[x1][y2] + sum[x1][y1];
+            }
+        }
+        return result;
+    }
+
+    @Test
+    public void numTriplets() {
+        int[] nums1 = {43024, 99908}, nums2 = {1864};
+        logResult(numTriplets(nums1, nums2));
+    }
+
+    /**
+     * 5508. 数的平方等于两数乘积的方法数
+     *
+     * <p>给你两个整数数组 nums1 和 nums2 ，请你返回根据以下规则形成的三元组的数目（类型 1 和类型 2 ）：
+     *
+     * <p>类型 1：三元组 (i, j, k) ，如果 nums1[i]2 == nums2[j] * nums2[k] 其中 0 <= i < nums1.length 且 0 <= j
+     * < k < nums2.length 类型 2：三元组 (i, j, k) ，如果 nums2[i]2 == nums1[j] * nums1[k] 其中 0 <= i <
+     * nums2.length 且 0 <= j < k < nums1.length
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：nums1 = [7,4], nums2 = [5,2,8,9] 输出：1 解释：类型 1：(1,1,2), nums1[1]^2 = nums2[1] * nums2[2]
+     * (4^2 = 2 * 8) 示例 2：
+     *
+     * <p>输入：nums1 = [1,1], nums2 = [1,1,1] 输出：9 解释：所有三元组都符合题目要求，因为 1^2 = 1 * 1 类型 1：(0,0,1),
+     * (0,0,2), (0,1,2), (1,0,1), (1,0,2), (1,1,2), nums1[i]^2 = nums2[j] * nums2[k] 类型 2：(0,0,1),
+     * (1,0,1), (2,0,1), nums2[i]^2 = nums1[j] * nums1[k] 示例 3：
+     *
+     * <p>输入：nums1 = [7,7,8,3], nums2 = [1,2,9,7] 输出：2 解释：有两个符合题目要求的三元组 类型 1：(3,0,2), nums1[3]^2 =
+     * nums2[0] * nums2[2] 类型 2：(3,0,1), nums2[3]^2 = nums1[0] * nums1[1] 示例 4：
+     *
+     * <p>输入：nums1 = [4,7,9,11,23], nums2 = [3,5,1024,12,18] 输出：0 解释：不存在符合题目要求的三元组
+     *
+     * <p>提示：
+     *
+     * <p>1 <= nums1.length, nums2.length <= 1000 1 <= nums1[i], nums2[i] <= 10^5
+     *
+     * @param nums1
+     * @param nums2
+     * @return
+     */
+    public int numTriplets(int[] nums1, int[] nums2) {
+        int result = 0;
+        Map<Long, Integer> map1 = new HashMap<>();
+        Map<Long, Integer> map2 = new HashMap<>();
+        for (int i = 0; i < nums1.length; i++) {
+            for (int j = i + 1; j < nums1.length; j++) {
+                long num = (long) nums1[i] * (long) nums1[j];
+                int count = map1.getOrDefault(num, 0);
+                map1.put(num, count + 1);
+            }
+        }
+        for (int i = 0; i < nums2.length; i++) {
+            for (int j = i + 1; j < nums2.length; j++) {
+                long num = (long) nums2[i] * (long) nums2[j];
+                int count = map2.getOrDefault(num, 0);
+                map2.put(num, count + 1);
+            }
+        }
+        for (int i = 0; i < nums1.length; i++) {
+            long num = (long) nums1[i] * (long) nums1[i];
+            int count = map2.getOrDefault(num, 0);
+            result += count;
+        }
+        for (int i = 0; i < nums2.length; i++) {
+            long num = (long) nums2[i] * (long) nums2[i];
+            int count = map1.getOrDefault(num, 0);
+            result += count;
+        }
+
+        return result;
+    }
+
+    private int getNumTriplets(int[] nums1, int[] nums2) {
+        int count = 0;
+
+        return count;
     }
 }
