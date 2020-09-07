@@ -7,12 +7,14 @@ import com.qinfengsa.structure.hash.MyHashMap;
 import com.qinfengsa.structure.hash.MyHashSet;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -3229,5 +3231,104 @@ public class MyHashTest {
         }
 
         return result;
+    }
+
+    @Test
+    public void topKFrequent3() {
+        int[] nums = {1, 1, 1, 2, 2, 3};
+        int k = 2;
+        log.debug("result:{}", topKFrequent3(nums, k));
+    }
+    /**
+     * 347. 前 K 个高频元素
+     *
+     * <p>给定一个非空的整数数组，返回其中出现频率前 k 高的元素。
+     *
+     * <p>示例 1:
+     *
+     * <p>输入: nums = [1,1,1,2,2,3], k = 2 输出: [1,2] 示例 2:
+     *
+     * <p>输入: nums = [1], k = 1 输出: [1]
+     *
+     * <p>提示：
+     *
+     * <p>你可以假设给定的 k 总是合理的，且 1 ≤ k ≤ 数组中不相同的元素的个数。 你的算法的时间复杂度必须优于 O(n log n) , n 是数组的大小。
+     * 题目数据保证答案唯一，换句话说，数组中前 k 个高频元素的集合是唯一的。 你可以按任意顺序返回答案。
+     *
+     * @param nums
+     * @param k
+     * @return
+     */
+    public int[] topKFrequent3(int[] nums, int k) {
+        int[] topK = new int[k];
+
+        Map<Integer, Integer> map = new HashMap<>(16);
+
+        for (int num : nums) {
+            int count = map.getOrDefault(num, 0);
+            map.put(num, count + 1);
+        }
+        PriorityQueue<Map.Entry<Integer, Integer>> heap =
+                new PriorityQueue<>(Comparator.comparingInt(Map.Entry::getValue));
+
+        for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
+            if (heap.size() == k) {
+                Map.Entry<Integer, Integer> top = heap.peek();
+                if (top.getValue() < entry.getValue()) {
+                    heap.poll();
+                    heap.offer(entry);
+                }
+
+            } else {
+                heap.offer(entry);
+            }
+        }
+        for (int i = 0; i < k; i++) {
+            topK[i] = heap.poll().getKey();
+        }
+        /*List<Integer> list = new ArrayList<>(map.keySet());
+
+        list.sort((a, b) -> map.get(b) - map.get(a));
+
+        for (int i = 0; i < k; i++) {
+            topK[i] = list.get(i);
+        }*/
+
+        /*int index = 0;
+        for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
+            Integer key = entry.getKey();
+            if (topK[0] == -1) {
+                topK[0] = key;
+                continue;
+            }
+            int count = map.get(key);
+            index = 0;
+            // 排序
+            while (index < k && topK[index] != -1) {
+                if (count > map.get(topK[index])) {
+                    break;
+                }
+                index++;
+            }
+            if (index == k) {
+                continue;
+            }
+            int tmp = topK[index];
+            for (int i = index; i < k - 1; i++) {
+                if (tmp == -1) {
+                    break;
+                }
+                int a = topK[i + 1];
+                topK[i + 1] = tmp;
+                tmp = a;
+            }
+            topK[index] = key;
+        }*/
+        /*List<Integer> result = new ArrayList<>();
+        for (int top : topK) {
+            result.add(top);
+        }*/
+
+        return topK;
     }
 }
