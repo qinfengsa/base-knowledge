@@ -8300,4 +8300,52 @@ public class StringTest {
 
         return result;
     }
+
+    /**
+     * 1328. 破坏回文串
+     *
+     * <p>给你一个回文字符串 palindrome ，请你将其中 一个 字符用任意小写英文字母替换，使得结果字符串的字典序最小，且 不是 回文串。
+     *
+     * <p>请你返回结果字符串。如果无法做到，则返回一个空串。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：palindrome = "abccba" 输出："aaccba" 示例 2：
+     *
+     * <p>输入：palindrome = "a" 输出：""
+     *
+     * <p>提示：
+     *
+     * <p>1 <= palindrome.length <= 1000 palindrome 只包含小写英文字母。
+     *
+     * @param palindrome
+     * @return
+     */
+    public String breakPalindrome(String palindrome) {
+        int len = palindrome.length();
+        if (len == 1) {
+            return "";
+        }
+        char[] chars = palindrome.toCharArray();
+
+        int idx = 0;
+        while (idx < len && chars[idx] == 'a') {
+            idx++;
+        }
+        // idx == len 说明全是 a 把 最后一位改为b
+        if (idx == len) {
+            chars[len - 1] = 'b';
+            return new String(chars);
+        }
+        // idx 是 奇数个元素中间的元素
+        if ((len & 1) == 1 && idx == len >> 1) {
+            // 前半部分 和 后半部分为 a 中间为 其他
+            chars[len - 1] = 'b';
+            return new String(chars);
+        }
+
+        //  第一个不为 a 的 元素
+        chars[idx] = 'a';
+        return new String(chars);
+    }
 }
