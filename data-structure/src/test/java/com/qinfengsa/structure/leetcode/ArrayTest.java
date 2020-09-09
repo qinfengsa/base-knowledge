@@ -16791,9 +16791,141 @@ public class ArrayTest {
         return result;
     }
 
-    private int getNumTriplets(int[] nums1, int[] nums2) {
-        int count = 0;
+    @Test
+    public void diagonalSort() {
+        int[][] mat = {{3, 3, 1, 1}, {2, 2, 1, 2}, {1, 1, 1, 2}};
+        logResult(diagonalSort(mat));
+    }
 
-        return count;
+    /**
+     * 1329. 将矩阵按对角线排序
+     *
+     * <p>给你一个 m * n 的整数矩阵 mat ，请你将同一条对角线上的元素（从左上到右下）按升序排序后，返回排好序的矩阵。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：mat = [[3,3,1,1],[2,2,1,2],[1,1,1,2]] 输出：[[1,1,1,1],[1,2,2,2],[1,2,3,3]]
+     *
+     * <p>提示：
+     *
+     * <p>m == mat.length n == mat[i].length 1 <= m, n <= 100 1 <= mat[i][j] <= 100
+     *
+     * @param mat
+     * @return
+     */
+    public int[][] diagonalSort(int[][] mat) {
+        int m = mat.length, n = mat[0].length;
+
+        for (int row = 0; row < m - 1; row++) {
+            int col = 0, len = Math.min(m - row, n - col);
+            // 冒泡排序
+            for (int i = 0; i < len; i++) {
+                // 从第一位开始遍历，每一位和后面作比较，把最大的数移动到最后
+                for (int j = 0; j < len - 1 - i; j++) {
+
+                    if (mat[row + j][col + j] > mat[row + j + 1][col + j + 1]) {
+                        int tmp = mat[row + j][col + j];
+                        mat[row + j][col + j] = mat[row + j + 1][col + j + 1];
+                        mat[row + j + 1][col + j + 1] = tmp;
+                    }
+                }
+            }
+        }
+        for (int col = 1; col < n - 1; col++) {
+            int row = 0, len = Math.min(m - row, n - col);
+            // 冒泡排序
+            for (int i = 0; i < len; i++) {
+                // 从第一位开始遍历，每一位和后面作比较，把最大的数移动到最后
+                for (int j = 0; j < len - 1 - i; j++) {
+
+                    if (mat[row + j][col + j] > mat[row + j + 1][col + j + 1]) {
+                        int tmp = mat[row + j][col + j];
+                        mat[row + j][col + j] = mat[row + j + 1][col + j + 1];
+                        mat[row + j + 1][col + j + 1] = tmp;
+                    }
+                }
+            }
+        }
+        return mat;
+    }
+
+    /**
+     * 1333. 餐厅过滤器
+     *
+     * <p>给你一个餐馆信息数组 restaurants，其中 restaurants[i] = [idi, ratingi, veganFriendlyi, pricei,
+     * distancei]。你必须使用以下三个过滤器来过滤这些餐馆信息。
+     *
+     * <p>其中素食者友好过滤器 veganFriendly 的值可以为 true 或者 false，如果为 true 就意味着你应该只包括 veganFriendlyi 为 true
+     * 的餐馆，为 false 则意味着可以包括任何餐馆。此外，我们还有最大价格 maxPrice 和最大距离 maxDistance 两个过滤器，它们分别考虑餐厅的价格因素和距离因素的最大值。
+     *
+     * <p>过滤后返回餐馆的 id，按照 rating 从高到低排序。如果 rating 相同，那么按 id 从高到低排序。简单起见， veganFriendlyi 和
+     * veganFriendly 为 true 时取值为 1，为 false 时，取值为 0 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：restaurants = [[1,4,1,40,10],[2,8,0,50,5],[3,8,1,30,4],[4,10,0,10,3],[5,1,1,15,1]],
+     * veganFriendly = 1, maxPrice = 50, maxDistance = 10 输出：[3,1,5] 解释： 这些餐馆为： 餐馆 1 [id=1,
+     * rating=4, veganFriendly=1, price=40, distance=10] 餐馆 2 [id=2, rating=8, veganFriendly=0,
+     * price=50, distance=5] 餐馆 3 [id=3, rating=8, veganFriendly=1, price=30, distance=4] 餐馆 4
+     * [id=4, rating=10, veganFriendly=0, price=10, distance=3] 餐馆 5 [id=5, rating=1,
+     * veganFriendly=1, price=15, distance=1] 在按照 veganFriendly = 1, maxPrice = 50 和 maxDistance =
+     * 10 进行过滤后，我们得到了餐馆 3, 餐馆 1 和 餐馆 5（按评分从高到低排序）。 示例 2：
+     *
+     * <p>输入：restaurants = [[1,4,1,40,10],[2,8,0,50,5],[3,8,1,30,4],[4,10,0,10,3],[5,1,1,15,1]],
+     * veganFriendly = 0, maxPrice = 50, maxDistance = 10 输出：[4,3,2,1,5] 解释：餐馆与示例 1 相同，但在
+     * veganFriendly = 0 的过滤条件下，应该考虑所有餐馆。 示例 3：
+     *
+     * <p>输入：restaurants = [[1,4,1,40,10],[2,8,0,50,5],[3,8,1,30,4],[4,10,0,10,3],[5,1,1,15,1]],
+     * veganFriendly = 0, maxPrice = 30, maxDistance = 3 输出：[4,5]
+     *
+     * <p>提示：
+     *
+     * <p>1 <= restaurants.length <= 10^4 restaurants[i].length == 5 1 <= idi, ratingi, pricei,
+     * distancei <= 10^5 1 <= maxPrice, maxDistance <= 10^5 veganFriendlyi 和 veganFriendly 的值为 0 或 1
+     * 。 所有 idi 各不相同。
+     *
+     * @param restaurants
+     * @param veganFriendly
+     * @param maxPrice
+     * @param maxDistance
+     * @return
+     */
+    public List<Integer> filterRestaurants(
+            int[][] restaurants, int veganFriendly, int maxPrice, int maxDistance) {
+        List<Integer> result = new ArrayList<>();
+        List<Restaurant> list = new ArrayList<>();
+        for (int[] restaurant : restaurants) {
+            if (restaurant[3] > maxPrice) {
+                continue;
+            }
+            if (restaurant[4] > maxDistance) {
+                continue;
+            }
+            if (veganFriendly == 1 && restaurant[2] == 0) {
+                continue;
+            }
+            list.add(new Restaurant(restaurant[0], restaurant[1]));
+        }
+        Collections.sort(list);
+        for (Restaurant restaurant : list) {
+            result.add(restaurant.id);
+        }
+
+        return result;
+    }
+
+    class Restaurant implements Comparable<Restaurant> {
+        int id;
+        int rating;
+
+        Restaurant(int id, int rating) {
+            this.id = id;
+            this.rating = rating;
+        }
+        // 按照 rating 从高到低排序。如果 rating 相同，那么按 id 从高到低排序
+        @Override
+        public int compareTo(Restaurant that) {
+            return this.rating == that.rating ? that.id - this.id : that.rating - this.rating;
+        }
     }
 }
