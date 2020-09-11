@@ -6287,4 +6287,54 @@ public class MathTest {
         }
         return count;
     }
+
+    /**
+     * 1344. 时钟指针的夹角
+     *
+     * <p>给你两个数 hour 和 minutes 。请你返回在时钟上，由给定时间的时针和分针组成的较小角的角度（60 单位制）。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：hour = 12, minutes = 30 输出：165 示例 2：
+     *
+     * <p>输入：hour = 3, minutes = 30 输出；75 示例 3：
+     *
+     * <p>输入：hour = 3, minutes = 15 输出：7.5 示例 4：
+     *
+     * <p>输入：hour = 4, minutes = 50 输出：155 示例 5：
+     *
+     * <p>输入：hour = 12, minutes = 0 输出：0
+     *
+     * <p>提示：
+     *
+     * <p>1 <= hour <= 12 0 <= minutes <= 59 与标准答案误差在 10^-5 以内的结果都被视为正确结果。
+     *
+     * @param hour
+     * @param minutes
+     * @return
+     */
+    public double angleClock(int hour, int minutes) {
+        double result = 0.0;
+
+        double hourAngle = 0.0;
+        if (hour == 12) {
+            hour = 0;
+        }
+        // 时针角度
+        hourAngle += hour * 30.0;
+        // 分针角度
+        double minuteAngle = minutes * 6;
+
+        // 时针角度 的额外角度
+        hourAngle += (double) minutes / 2.0;
+        if (minuteAngle > hourAngle) {
+            result = minuteAngle - hourAngle;
+        } else {
+            result = hourAngle - minuteAngle;
+        }
+        if (result > 180.0) {
+            result = 360.0 - result;
+        }
+        return result;
+    }
 }
