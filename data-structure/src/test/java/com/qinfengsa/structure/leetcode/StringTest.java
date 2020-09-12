@@ -8405,4 +8405,54 @@ public class StringTest {
 
         return result;
     }
+
+    /**
+     * 1358. 包含所有三种字符的子字符串数目
+     *
+     * <p>给你一个字符串 s ，它只包含三种字符 a, b 和 c 。
+     *
+     * <p>请你返回 a，b 和 c 都 至少 出现过一次的子字符串数目。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：s = "abcabc" 输出：10 解释：包含 a，b 和 c 各至少一次的子字符串为 "abc", "abca", "abcab", "abcabc", "bca",
+     * "bcab", "bcabc", "cab", "cabc" 和 "abc" (相同字符串算多次)。 示例 2：
+     *
+     * <p>输入：s = "aaacb" 输出：3 解释：包含 a，b 和 c 各至少一次的子字符串为 "aaacb", "aacb" 和 "acb" 。 示例 3：
+     *
+     * <p>输入：s = "abc" 输出：1
+     *
+     * <p>提示：
+     *
+     * <p>3 <= s.length <= 5 x 10^4 s 只包含字符 a，b 和 c 。
+     *
+     * @param s
+     * @return
+     */
+    public int numberOfSubstrings(String s) {
+        int[] letters = new int[3];
+        int count = 0;
+        int right = -1;
+        int len = s.length();
+        for (int i = 0; i < s.length(); i++) {
+            while (right + 1 < len && (letters[0] == 0 || letters[1] == 0 || letters[2] == 0)) {
+                char c = s.charAt(++right);
+                letters[c - 'a']++;
+            }
+            if (letters[0] == 0 || letters[1] == 0 || letters[2] == 0) {
+                break;
+            }
+            count += len - right;
+            char c = s.charAt(i);
+            letters[c - 'a']--;
+        }
+
+        return count;
+    }
+
+    @Test
+    public void numberOfSubstrings() {
+        String s = "abc";
+        logResult(numberOfSubstrings(s));
+    }
 }
