@@ -17033,4 +17033,238 @@ public class ArrayTest {
         }
         return result;
     }
+
+    /**
+     * 5511. 二进制矩阵中的特殊位置
+     *
+     * <p>给你一个大小为 rows x cols 的矩阵 mat，其中 mat[i][j] 是 0 或 1，请返回 矩阵 mat 中特殊位置的数目 。
+     *
+     * <p>特殊位置 定义：如果 mat[i][j] == 1 并且第 i 行和第 j 列中的所有其他元素均为 0（行和列的下标均 从 0 开始 ），则位置 (i, j) 被称为特殊位置。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：mat = [[1,0,0], [0,0,1], [1,0,0]] 输出：1 解释：(1,2) 是一个特殊位置，因为 mat[1][2] == 1
+     * 且所处的行和列上所有其他元素都是 0 示例 2：
+     *
+     * <p>输入：mat = [[1,0,0], [0,1,0], [0,0,1]] 输出：3 解释：(0,0), (1,1) 和 (2,2) 都是特殊位置 示例 3：
+     *
+     * <p>输入：mat = [[0,0,0,1], [1,0,0,0], [0,1,1,0], [0,0,0,0]] 输出：2 示例 4：
+     *
+     * <p>输入：mat = [[0,0,0,0,0], [1,0,0,0,0], [0,1,0,0,0], [0,0,1,0,0], [0,0,0,1,1]] 输出：3
+     *
+     * <p>提示：
+     *
+     * <p>rows == mat.length cols == mat[i].length 1 <= rows, cols <= 100 mat[i][j] 是 0 或 1
+     *
+     * @param mat
+     * @return
+     */
+    public int numSpecial(int[][] mat) {
+        int rows = mat.length, cols = mat[0].length;
+        int result = 0;
+
+        int[] rowNum = new int[rows];
+        int[] colNum = new int[cols];
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (mat[i][j] == 1) {
+                    rowNum[i]++;
+                    colNum[j]++;
+                }
+            }
+        }
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (mat[i][j] == 1 && rowNum[i] == 1 && colNum[j] == 1) {
+                    result++;
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * 5512. 统计不开心的朋友
+     *
+     * <p>给你一份 n 位朋友的亲近程度列表，其中 n 总是 偶数 。
+     *
+     * <p>对每位朋友 i，preferences[i] 包含一份 按亲近程度从高到低排列 的朋友列表。换句话说，排在列表前面的朋友与 i
+     * 的亲近程度比排在列表后面的朋友更高。每个列表中的朋友均以 0 到 n-1 之间的整数表示。
+     *
+     * <p>所有的朋友被分成几对，配对情况以列表 pairs 给出，其中 pairs[i] = [xi, yi] 表示 xi 与 yi 配对，且 yi 与 xi 配对。
+     *
+     * <p>但是，这样的配对情况可能会是其中部分朋友感到不开心。在 x 与 y 配对且 u 与 v 配对的情况下，如果同时满足下述两个条件，x 就会不开心：
+     *
+     * <p>x 与 u 的亲近程度胜过 x 与 y，且 u 与 x 的亲近程度胜过 u 与 v 返回 不开心的朋友的数目 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：n = 4, preferences = [[1, 2, 3], [3, 2, 0], [3, 1, 0], [1, 2, 0]], pairs = [[0, 1], [2,
+     * 3]] 输出：2 解释： 朋友 1 不开心，因为： - 1 与 0 配对，但 1 与 3 的亲近程度比 1 与 0 高，且 - 3 与 1 的亲近程度比 3 与 2 高。 朋友 3
+     * 不开心，因为： - 3 与 2 配对，但 3 与 1 的亲近程度比 3 与 2 高，且 - 1 与 3 的亲近程度比 1 与 0 高。 朋友 0 和 2 都是开心的。 示例 2：
+     *
+     * <p>输入：n = 2, preferences = [[1], [0]], pairs = [[1, 0]] 输出：0 解释：朋友 0 和 1 都开心。 示例 3：
+     *
+     * <p>输入：n = 4, preferences = [[1, 3, 2], [2, 3, 0], [1, 3, 0], [0, 2, 1]], pairs = [[1, 3], [0,
+     * 2]] 输出：4
+     *
+     * <p>提示：
+     *
+     * <p>2 <= n <= 500 n 是偶数 preferences.length == n preferences[i].length == n - 1 0 <=
+     * preferences[i][j] <= n - 1 preferences[i] 不包含 i preferences[i] 中的所有值都是独一无二的 pairs.length ==
+     * n/2 pairs[i].length == 2 xi != yi 0 <= xi, yi <= n - 1 每位朋友都 恰好 被包含在一对中
+     *
+     * @param n
+     * @param preferences
+     * @param pairs
+     * @return
+     */
+    public int unhappyFriends(int n, int[][] preferences, int[][] pairs) {
+
+        Map<Integer, Integer> map = new HashMap<>();
+        int result = 0;
+        for (int[] pair : pairs) {
+            map.put(pair[0], pair[1]);
+        }
+
+        for (int i = 0; i < n; i++) {
+            // i配对的人
+            int friend = getFriend(i, map);
+            // i配对到的是最好的人 直接快乐
+            if (friend == preferences[i][0]) {
+                continue;
+            }
+
+            // 查找friend在i这里的亲密度排行
+            int x = -1;
+            for (int j = 1; j < preferences[i].length; j++) {
+                if (preferences[i][j] == friend) {
+                    x = j;
+                    break;
+                }
+            }
+
+            // 再查找比friend亲密度高
+            for (int z = 0; z < x; z++) {
+                // i的第一位朋友
+                int friend1 = preferences[i][z];
+                // 与i的第一位朋友配对的人
+                int friend2 = getFriend(friend1, map);
+
+                // 判断 这位朋友与i的亲密度是否 比 这位朋友配对到的人亲密度高
+                int a = -1, b = -1;
+                for (int i1 = 0; i1 < preferences[friend1].length; i1++) {
+                    if (a != -1 && b != -1) {
+                        break;
+                    }
+                    if (preferences[friend1][i1] == i) {
+                        a = i1;
+                    }
+                    if (preferences[friend1][i1] == friend2) {
+                        b = i1;
+                    }
+                }
+
+                // 是的话就不开心，并跳出循环，否则开心
+                if (a < b) {
+                    result++;
+                    break;
+                }
+            }
+        }
+        return result;
+    }
+
+    public int getFriend(int i, Map<Integer, Integer> map) {
+        int friend = -1;
+        if (map.containsKey(i)) {
+            friend = map.get(i);
+        } else {
+            for (Integer key : map.keySet()) {
+                if (map.get(key) == i) {
+                    friend = key;
+                }
+            }
+        }
+        return friend;
+    }
+
+    /**
+     * 5513. 连接所有点的最小费用
+     *
+     * <p>给你一个points 数组，表示 2D 平面上的一些点，其中 points[i] = [xi, yi] 。
+     *
+     * <p>连接点 [xi, yi] 和点 [xj, yj] 的费用为它们之间的 曼哈顿距离 ：|xi - xj| + |yi - yj| ，其中 |val| 表示 val 的绝对值。
+     *
+     * <p>请你返回将所有点连接的最小总费用。只有任意两点之间 有且仅有 一条简单路径时，才认为所有点都已连接。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：points = [[0,0],[2,2],[3,10],[5,2],[7,0]] 输出：20 解释：
+     *
+     * <p>我们可以按照上图所示连接所有点得到最小总费用，总费用为 20 。 注意到任意两个点之间只有唯一一条路径互相到达。 示例 2：
+     *
+     * <p>输入：points = [[3,12],[-2,5],[-4,1]] 输出：18 示例 3：
+     *
+     * <p>输入：points = [[0,0],[1,1],[1,0],[-1,1]] 输出：4 示例 4：
+     *
+     * <p>输入：points = [[-1000000,-1000000],[1000000,1000000]] 输出：4000000 示例 5：
+     *
+     * <p>输入：points = [[0,0]] 输出：0
+     *
+     * <p>提示：
+     *
+     * <p>1 <= points.length <= 1000 -106 <= xi, yi <= 106 所有点 (xi, yi) 两两不同。
+     *
+     * @param points
+     * @return
+     */
+    public int minCostConnectPoints(int[][] points) {
+        List<List<Integer>> lists = new ArrayList<List<Integer>>(); // 用列表储存所有的边，以及两个点的集合
+        for (int i = 0; i < points.length; i++) {
+            for (int j = i + 1; j < points.length; j++) {
+                List<Integer> list = new ArrayList<Integer>();
+                list.add(
+                        Math.abs(points[j][0] - points[i][0])
+                                + Math.abs(points[j][1] - points[i][1])); // 存放边的长度
+                list.add(i); // 存放第一个点
+                list.add(j); // 存放第二个点
+                lists.add(list);
+            }
+        }
+        // 按照边的大小进行排序
+        lists.sort(
+                (a, b) -> {
+                    if (a.get(0).equals(b.get(0))) {
+                        return a.get(1) - b.get(1);
+                    }
+                    return a.get(0) - b.get(0);
+                });
+        int res = 0;
+        int[] target = new int[points.length + 1]; // 标记每个点的终点
+        Arrays.fill(target, -1);
+        for (List<Integer> list : lists) {
+            int x = list.get(1); // 获取该边的起点(终点)
+            int y = list.get(2); // 获取该边的终点
+            if (target[x] == -1 && target[y] == -1) { // 直接添加该条边
+                res += list.get(0);
+                target[x] = y; // 更新终点
+            } else {
+                if (getEnd(target, x) != getEnd(target, y)) { // 判断是否构成回路
+                    target[getEnd(target, x)] = getEnd(target, y);
+                    res += list.get(0);
+                }
+            }
+        }
+
+        return res;
+    }
+
+    public int getEnd(int[] target, int i) { // 返回该点的终点
+        while (target[i] != -1) {
+            i = target[i];
+        }
+        return i;
+    }
 }
