@@ -1935,4 +1935,199 @@ public class GraphTest {
 
         return result;
     }
+
+    @Test
+    public void findRedundantDirectedConnection() {
+        int[][] edges = {{1, 2}, {2, 3}, {3, 1}};
+        logResult(findRedundantDirectedConnection(edges));
+    }
+
+    /**
+     * 685. 冗余连接 II
+     *
+     * <p>在本问题中，有根树指满足以下条件的有向图。该树只有一个根节点，所有其他节点都是该根节点的后继。每一个节点只有一个父节点，除了根节点没有父节点。
+     *
+     * <p>输入一个有向图，该图由一个有着N个节点 (节点值不重复1, 2, ..., N) 的树及一条附加的边构成。附加的边的两个顶点包含在1到N中间，这条附加的边不属于树中已存在的边。
+     *
+     * <p>结果图是一个以边组成的二维数组。 每一个边 的元素是一对 [u, v]，用以表示有向图中连接顶点 u 和顶点 v 的边，其中 u 是 v 的一个父节点。
+     *
+     * <p>返回一条能删除的边，使得剩下的图是有N个节点的有根树。若有多个答案，返回最后出现在给定二维数组的答案。
+     *
+     * <p>示例 1:
+     *
+     * <p>输入: [[1,2], [1,3], [2,3]] 输出: [2,3] 解释: 给定的有向图如下: 1 / \ v v 2-->3 示例 2:
+     *
+     * <p>输入: [[1,2], [2,3], [3,4], [4,1], [1,5]] 输出: [4,1] 解释: 给定的有向图如下: 5 <- 1 -> 2 ^ | | v 4 <- 3
+     * 注意:
+     *
+     * <p>二维数组大小的在3到1000范围内。 二维数组中的每个整数在1到N之间，其中 N 是二维数组的大小。
+     *
+     * @param edges
+     * @return
+     */
+    public int[] findRedundantDirectedConnection(int[][] edges) {
+
+        // 使用并查集
+
+        /*
+        for (int[] edge : edges) {
+            int root1 = findRoot3(union, edge[0]);
+            int root2 = findRoot3(union, edge[1]);
+            if (root1 == root2) {
+                result = edge;
+            } else {
+
+            }
+        }*/
+        int n = edges.length;
+        int[] result = null;
+        int[] union = new int[n + 1];
+        for (int i = 1; i < n; i++) {
+            union[i] = i;
+        }
+        // 1.都是度为1， 则找出构成环的最后一条边
+        // 2.有度为2的两条边(A->B, C->B)，则删除的边一定是在其中
+        // 先不将C->B加入并查集中，若不能构成环，则C->B是需要删除的点边，反之，则A->B是删除的边(去掉C->B还能构成环，则C->B一定不是要删除的边)
+
+        int repeatRoot = -1;
+        int[] inDegree = new int[n + 1];
+        for (int[] edge : edges) {
+            inDegree[edge[1]]++;
+            if (inDegree[edge[1]] == 2) {
+                repeatRoot = edge[1];
+            }
+        }
+        if (repeatRoot == -1) {
+            for (int[] edge : edges) {
+
+                int root1 = findRoot3(union, edge[0]);
+                int root2 = findRoot3(union, edge[1]);
+                if (root1 != root2) {
+                    union[root1] = root2;
+                } else {
+                    result = edge;
+                }
+            }
+        } else {
+            List<int[]> list = new ArrayList<>();
+            for (int[] edge : edges) {
+                if (edge[1] == repeatRoot) {
+                    list.add(edge);
+                    continue;
+                }
+                int root1 = findRoot3(union, edge[0]);
+                int root2 = findRoot3(union, edge[1]);
+                union[root1] = root2;
+            }
+            for (int[] edge : list) {
+                int root1 = findRoot3(union, edge[0]);
+                int root2 = findRoot3(union, edge[1]);
+                if (root1 == root2) {
+                    result = edge;
+                    break;
+                } else {
+                    union[root1] = root2;
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * 1361. 验证二叉树
+     *
+     * <p>二叉树上有 n 个节点，按从 0 到 n - 1 编号，其中节点 i 的两个子节点分别是 leftChild[i] 和 rightChild[i]。
+     *
+     * <p>只有 所有 节点能够形成且 只 形成 一颗 有效的二叉树时，返回 true；否则返回 false。
+     *
+     * <p>如果节点 i 没有左子节点，那么 leftChild[i] 就等于 -1。右子节点也符合该规则。
+     *
+     * <p>注意：节点没有值，本问题中仅仅使用节点编号。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：n = 4, leftChild = [1,-1,3,-1], rightChild = [2,-1,-1,-1] 输出：true 示例 2：
+     *
+     * <p>输入：n = 4, leftChild = [1,-1,3,-1], rightChild = [2,3,-1,-1] 输出：false 示例 3：
+     *
+     * <p>输入：n = 2, leftChild = [1,0], rightChild = [-1,-1] 输出：false 示例 4：
+     *
+     * <p>输入：n = 6, leftChild = [1,-1,-1,4,-1,-1], rightChild = [2,-1,-1,5,-1,-1] 输出：false
+     *
+     * <p>提示：
+     *
+     * <p>1 <= n <= 10^4 leftChild.length == rightChild.length == n -1 <= leftChild[i],
+     * rightChild[i] <= n - 1
+     *
+     * @param n
+     * @param leftChild
+     * @param rightChild
+     * @return
+     */
+    public boolean validateBinaryTreeNodes(int n, int[] leftChild, int[] rightChild) {
+        int[] inDegree = new int[n];
+        for (int i = 0; i < leftChild.length; i++) {
+            int leftNum = leftChild[i], rightNum = rightChild[i];
+            if (leftNum != -1) {
+                inDegree[leftNum]++;
+                if (inDegree[leftNum] > 1) {
+                    return false;
+                }
+            }
+            if (rightNum != -1) {
+                inDegree[rightNum]++;
+                if (inDegree[rightNum] > 1) {
+                    return false;
+                }
+            }
+        }
+        for (int num : leftChild) {
+            if (num == -1) {
+                continue;
+            }
+            inDegree[num]++;
+            if (inDegree[num] > 1) {
+                return false;
+            }
+        }
+        for (int num : rightChild) {
+            if (num == -1) {
+                continue;
+            }
+            inDegree[num]++;
+            if (inDegree[num] > 1) {
+                return false;
+            }
+        }
+        int zeroCount = 0;
+        int root = -1;
+        for (int num : inDegree) {
+            if (num == 0) {
+                zeroCount++;
+                root = num;
+            }
+        }
+        if (zeroCount != 1) {
+            return false;
+        }
+        Queue<Integer> queue = new LinkedList<>();
+        // 广度优先遍历 然后 查看重复
+        queue.offer(root);
+        boolean[] visited = new boolean[n];
+        while (!queue.isEmpty()) {
+            Integer node = queue.poll();
+            if (visited[node]) {
+                return false;
+            }
+            visited[node] = true;
+            if (leftChild[node] != -1) {
+                queue.offer(leftChild[node]);
+            }
+            if (rightChild[node] != -1) {
+                queue.offer(rightChild[node]);
+            }
+        }
+        return true;
+    }
 }
