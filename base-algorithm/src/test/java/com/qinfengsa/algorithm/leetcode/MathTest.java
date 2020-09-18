@@ -6373,4 +6373,45 @@ public class MathTest {
         }*/
         return (int) Math.pow(2.0, s.length());
     }
+
+    /**
+     * 1362. 最接近的因数
+     *
+     * <p>给你一个整数 num，请你找出同时满足下面全部要求的两个整数：
+     *
+     * <p>两数乘积等于 num + 1 或 num + 2 以绝对差进行度量，两数大小最接近 你可以按任意顺序返回这两个整数。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：num = 8 输出：[3,3] 解释：对于 num + 1 = 9，最接近的两个因数是 3 & 3；对于 num + 2 = 10, 最接近的两个因数是 2 &
+     * 5，因此返回 3 & 3 。 示例 2：
+     *
+     * <p>输入：num = 123 输出：[5,25] 示例 3：
+     *
+     * <p>输入：num = 999 输出：[40,25]
+     *
+     * <p>提示：
+     *
+     * <p>1 <= num <= 10^9
+     *
+     * @param num
+     * @return
+     */
+    public int[] closestDivisors(int num) {
+
+        int[] result1 = getMinDivisors(num + 1);
+        int min1 = result1[1] - result1[0];
+        int[] result2 = getMinDivisors(num + 2);
+        int min2 = result2[1] - result2[0];
+
+        return min1 < min2 ? result1 : result2;
+    }
+
+    private int[] getMinDivisors(int num) {
+        int a = (int) Math.sqrt(num);
+        while (num % a != 0) {
+            a--;
+        }
+        return new int[] {a, num / a};
+    }
 }
