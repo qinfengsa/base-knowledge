@@ -17348,4 +17348,179 @@ public class ArrayTest {
 
         return left;
     }
+
+    /**
+     * 5503. 所有奇数长度子数组的和
+     *
+     * <p>给你一个正整数数组 arr ，请你计算所有可能的奇数长度子数组的和。
+     *
+     * <p>子数组 定义为原数组中的一个连续子序列。
+     *
+     * <p>请你返回 arr 中 所有奇数长度子数组的和 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：arr = [1,4,2,5,3] 输出：58 解释：所有奇数长度子数组和它们的和为： [1] = 1 [4] = 4 [2] = 2 [5] = 5 [3] = 3
+     * [1,4,2] = 7 [4,2,5] = 11 [2,5,3] = 10 [1,4,2,5,3] = 15 我们将所有值求和得到 1 + 4 + 2 + 5 + 3 + 7 + 11
+     * + 10 + 15 = 58 示例 2：
+     *
+     * <p>输入：arr = [1,2] 输出：3 解释：总共只有 2 个长度为奇数的子数组，[1] 和 [2]。它们的和为 3 。 示例 3：
+     *
+     * <p>输入：arr = [10,11,12] 输出：66
+     *
+     * <p>提示：
+     *
+     * <p>1 <= arr.length <= 100 1 <= arr[i] <= 1000
+     *
+     * @param arr
+     * @return
+     */
+    public int sumOddLengthSubarrays(int[] arr) {
+        int len = arr.length;
+        int[] sums = new int[len + 1];
+        int num = 0;
+        for (int i = 0; i < len; i++) {
+            num += arr[i];
+            sums[i + 1] = num;
+        }
+        int result = 0;
+        for (int i = 1; i <= len; i++) {
+            int index = i - 1;
+            while (index >= 0) {
+                result += sums[i] - sums[index];
+                index -= 2;
+            }
+        }
+        return result;
+    }
+
+    @Test
+    public void maxSumRangeQuery() {
+        int[] nums = {4, 5, 1};
+        int[][] requests = {{0, 1}, {0, 2}, {1, 2}};
+        logResult(maxSumRangeQuery(nums, requests));
+    }
+
+    /**
+     * 5505. 所有排列中的最大和
+     *
+     * <p>有一个整数数组 nums ，和一个查询数组 requests ，其中 requests[i] = [starti, endi] 。第 i 个查询求 nums[starti] +
+     * nums[starti + 1] + ... + nums[endi - 1] + nums[endi] 的结果 ，starti 和 endi 数组索引都是 从 0 开始 的。
+     *
+     * <p>你可以任意排列 nums 中的数字，请你返回所有查询结果之和的最大值。
+     *
+     * <p>由于答案可能会很大，请你将它对 109 + 7 取余 后返回。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：nums = [1,2,3,4,5], requests = [[1,3],[0,1]] 输出：19 解释：一个可行的 nums 排列为
+     * [2,1,3,4,5]，并有如下结果： requests[0] -> nums[1] + nums[2] + nums[3] = 1 + 3 + 4 = 8 requests[1] ->
+     * nums[0] + nums[1] = 2 + 1 = 3 总和为：8 + 3 = 11。 一个总和更大的排列为 [3,5,4,2,1]，并有如下结果： requests[0] ->
+     * nums[1] + nums[2] + nums[3] = 5 + 4 + 2 = 11 requests[1] -> nums[0] + nums[1] = 3 + 5 = 8
+     * 总和为： 11 + 8 = 19，这个方案是所有排列中查询之和最大的结果。 示例 2：
+     *
+     * <p>输入：nums = [1,2,3,4,5,6], requests = [[0,1]] 输出：11 解释：一个总和最大的排列为 [6,5,4,3,2,1] ，查询和为 [11]。
+     * 示例 3：
+     *
+     * <p>输入：nums = [1,2,3,4,5,10], requests = [[0,2],[1,3],[1,1]] 输出：47 解释：一个和最大的排列为 [4,10,5,3,2,1]
+     * ，查询结果分别为 [19,18,10]。
+     *
+     * <p>提示：
+     *
+     * <p>n == nums.length 1 <= n <= 105 0 <= nums[i] <= 105 1 <= requests.length <= 105
+     * requests[i].length == 2 0 <= starti <= endi < n
+     *
+     * @param nums
+     * @param requests
+     * @return
+     */
+    public int maxSumRangeQuery(int[] nums, int[][] requests) {
+        int n = nums.length;
+        int[] counts = new int[n + 1];
+        for (int[] request : requests) {
+            counts[request[0]]++;
+            counts[request[1] + 1]--;
+        }
+        log.debug("counts:{}", counts);
+        for (int i = 1; i <= n; i++) {
+            counts[i] += counts[i - 1];
+        }
+        log.debug("counts:{}", counts);
+        Arrays.sort(nums);
+        Arrays.sort(counts);
+        int result = 0;
+        for (int i = 0; i < n; i++) {
+            result += counts[i + 1] * nums[i];
+            result %= MOD;
+        }
+
+        return result;
+    }
+
+    @Test
+    public void minSubarray() {
+        int[] nums = {3, 1, 4, 2};
+        int p = 6;
+        logResult(minSubarray(nums, p));
+    }
+
+    /**
+     * 5504. 使数组和能被 P 整除
+     *
+     * <p>给你一个正整数数组 nums，请你移除 最短 子数组（可以为 空），使得剩余元素的 和 能被 p 整除。 不允许 将整个数组都移除。
+     *
+     * <p>请你返回你需要移除的最短子数组，如果无法满足题目要求，返回 -1 。
+     *
+     * <p>子数组 定义为原数组中连续的一组元素。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：nums = [3,1,4,2], p = 6 输出：1 解释：nums 中元素和为 10，不能被 p 整除。我们可以移除子数组 [4] ，剩余元素的和为 6 。 示例 2：
+     *
+     * <p>输入：nums = [6,3,5,2], p = 9 输出：2 解释：我们无法移除任何一个元素使得和被 9 整除，最优方案是移除子数组 [5,2] ，剩余元素为 [6,3]，和为
+     * 9 。 示例 3：
+     *
+     * <p>输入：nums = [1,2,3], p = 3 输出：0 解释：和恰好为 6 ，已经能被 3 整除了。所以我们不需要移除任何元素。 示例 4：
+     *
+     * <p>输入：nums = [1,2,3], p = 7 输出：-1 解释：没有任何方案使得移除子数组后剩余元素的和被 7 整除。 示例 5：
+     *
+     * <p>输入：nums = [1000000000,1000000000,1000000000], p = 3 输出：0
+     *
+     * <p>提示：
+     *
+     * <p>1 <= nums.length <= 105 1 <= nums[i] <= 109 1 <= p <= 109
+     *
+     * @param nums
+     * @param p
+     * @return
+     */
+    public int minSubarray(int[] nums, int p) {
+        int sum = 0, len = nums.length;
+
+        Map<Integer, Integer> leftMap = new HashMap<>();
+
+        int min = len;
+        for (int i = 0; i < len; i++) {
+            sum += nums[i];
+            leftMap.put(sum % p, i);
+        }
+        if (sum % p == 0) {
+            return 0;
+        }
+        min = len - leftMap.getOrDefault(0, 0);
+        sum = 0;
+        for (int i = len - 1; i >= 0; i--) {
+            sum += nums[i];
+            int right = sum % p;
+            int left = (p - right) % p;
+            if (right == 0) {
+                min = Math.min(i, min);
+            }
+            int leftIndex = leftMap.getOrDefault(left, -1);
+            if (leftIndex != -1 && i > leftIndex) {
+                min = Math.min(min, i - leftIndex);
+            }
+        }
+        return min;
+    }
 }
