@@ -17459,8 +17459,8 @@ public class ArrayTest {
 
     @Test
     public void minSubarray() {
-        int[] nums = {3, 1, 4, 2};
-        int p = 6;
+        int[] nums = {1000000000, 1000000000, 1000000000};
+        int p = 3;
         logResult(minSubarray(nums, p));
     }
 
@@ -17497,17 +17497,34 @@ public class ArrayTest {
     public int minSubarray(int[] nums, int p) {
         int sum = 0, len = nums.length;
 
-        Map<Integer, Integer> leftMap = new HashMap<>();
-
-        int min = len;
+        Map<Integer, Integer> indexMap = new HashMap<>();
+        int[] rems = new int[len];
         for (int i = 0; i < len; i++) {
-            sum += nums[i];
-            leftMap.put(sum % p, i);
+            rems[i] = nums[i] % p;
         }
-        if (sum % p == 0) {
+        int min = len;
+        for (int i = 1; i < len; i++) {
+            rems[i] += rems[i - 1];
+            rems[i] %= p;
+        }
+        int remainder = rems[len - 1] % p;
+
+        if (remainder == 0) {
             return 0;
         }
-        min = len - leftMap.getOrDefault(0, 0);
+        indexMap.put(0, -1);
+        // 查找余数为 rem 的最小子串
+
+        for (int i = 0; i < len; i++) {
+            int currRem = rems[i];
+            int tmpRem = (currRem - remainder + p) % p;
+            if (tmpRem >= 0 && indexMap.containsKey(tmpRem)) {
+                min = Math.min(min, i - indexMap.get(tmpRem));
+            }
+            indexMap.put(currRem, i);
+        }
+
+        /*min = len - leftMap.getOrDefault(0, 0);
         sum = 0;
         for (int i = len - 1; i >= 0; i--) {
             sum += nums[i];
@@ -17520,7 +17537,7 @@ public class ArrayTest {
             if (leftIndex != -1 && i > leftIndex) {
                 min = Math.min(min, i - leftIndex);
             }
-        }
-        return min;
+        }*/
+        return min == len ? -1 : min;
     }
 }

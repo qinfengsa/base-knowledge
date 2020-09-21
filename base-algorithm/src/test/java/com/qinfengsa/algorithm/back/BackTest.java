@@ -2767,4 +2767,65 @@ public class BackTest {
 
         return result;*/
     }
+
+    int maxUniqueSplitResult = 0;
+
+    @Test
+    public void maxUniqueSplit() {
+        String s = "aa";
+        logResult(maxUniqueSplit(s));
+    }
+
+    /**
+     * 5520. 拆分字符串使唯一子字符串的数目最大
+     *
+     * <p>给你一个字符串 s ，请你拆分该字符串，并返回拆分后唯一子字符串的最大数目。
+     *
+     * <p>字符串 s 拆分后可以得到若干 非空子字符串 ，这些子字符串连接后应当能够还原为原字符串。但是拆分出来的每个子字符串都必须是 唯一的 。
+     *
+     * <p>注意：子字符串 是字符串中的一个连续字符序列。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：s = "ababccc" 输出：5 解释：一种最大拆分方法为 ['a', 'b', 'ab', 'c', 'cc'] 。像 ['a', 'b', 'a', 'b',
+     * 'c', 'cc'] 这样拆分不满足题目要求，因为其中的 'a' 和 'b' 都出现了不止一次。 示例 2：
+     *
+     * <p>输入：s = "aba" 输出：2 解释：一种最大拆分方法为 ['a', 'ba'] 。 示例 3：
+     *
+     * <p>输入：s = "aa" 输出：1 解释：无法进一步拆分字符串。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= s.length <= 16
+     *
+     * <p>s 仅包含小写英文字母
+     *
+     * @param s
+     * @return
+     */
+    public int maxUniqueSplit(String s) {
+        backUniqueSplit(s, 0, new HashSet<>());
+        return maxUniqueSplitResult;
+    }
+
+    private void backUniqueSplit(String s, int start, Set<String> set) {
+        // 最大子数组数量
+        if (set.size() + s.length() - start <= maxUniqueSplitResult) {
+            return;
+        }
+
+        if (start == s.length()) {
+            maxUniqueSplitResult = Math.max(maxUniqueSplitResult, set.size());
+            return;
+        }
+        for (int i = start; i < s.length(); i++) {
+            String str = s.substring(start, i + 1);
+            if (set.contains(str)) {
+                continue;
+            }
+            set.add(str);
+            backUniqueSplit(s, i + 1, set);
+            set.remove(str);
+        }
+    }
 }

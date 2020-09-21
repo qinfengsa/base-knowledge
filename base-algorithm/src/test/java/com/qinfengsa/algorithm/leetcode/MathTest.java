@@ -6414,4 +6414,118 @@ public class MathTest {
         }
         return new int[] {a, num / a};
     }
+
+    /**
+     * LCP 22. 黑白方格画
+     *
+     * <p>小扣注意到秋日市集上有一个创作黑白方格画的摊位。摊主给每个顾客提供一个固定在墙上的白色画板，画板不能转动。画板上有 n * n
+     * 的网格。绘画规则为，小扣可以选择任意多行以及任意多列的格子涂成黑色，所选行数、列数均可为 0。
+     *
+     * <p>小扣希望最终的成品上需要有 k 个黑色格子，请返回小扣共有多少种涂色方案。
+     *
+     * <p>注意：两个方案中任意一个相同位置的格子颜色不同，就视为不同的方案。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：n = 2, k = 2
+     *
+     * <p>输出：4
+     *
+     * <p>解释：一共有四种不同的方案： 第一种方案：涂第一列； 第二种方案：涂第二列； 第三种方案：涂第一行； 第四种方案：涂第二行。
+     *
+     * <p>示例 2：
+     *
+     * <p>输入：n = 2, k = 1
+     *
+     * <p>输出：0
+     *
+     * <p>解释：不可行，因为第一次涂色至少会涂两个黑格。
+     *
+     * <p>示例 3：
+     *
+     * <p>输入：n = 2, k = 4
+     *
+     * <p>输出：1
+     *
+     * <p>解释：共有 2*2=4 个格子，仅有一种涂色方案。
+     *
+     * <p>限制：
+     *
+     * <p>1 <= n <= 6 0 <= k <= n * n
+     *
+     * @param n
+     * @param k
+     * @return
+     */
+    public int paintingPlan(int n, int k) {
+        // 先确定行数和列数
+        int result = 0;
+        if (n * n == k) {
+            return 1;
+        }
+        for (int i = 0; i <= n; i++) {
+            for (int j = 0; j <= n; j++) {
+                if (i * n + j * n - i * j == k) {
+                    result += getCombinatorialNum(n, i) * getCombinatorialNum(n, j);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    private Map<Integer, Integer> factorialMap = new HashMap<>();
+
+    /**
+     * 计算阶乘
+     *
+     * @param num
+     * @return
+     */
+    private int getFactorialNum(int num) {
+        if (factorialMap.containsKey(num)) {
+            return factorialMap.get(num);
+        }
+        if (num == 1) {
+            factorialMap.put(num, 1);
+            return 1;
+        }
+        return factorialMap.putIfAbsent(num, num * getFactorialNum(num - 1));
+    }
+
+    /**
+     * 计算组合数
+     *
+     * @param m
+     * @param n
+     * @return
+     */
+    private int getCombinatorialNum(int m, int n) {
+        if (n > m - n) {
+            n = m - n;
+        }
+        int temp = 1;
+        for (int i = m; i > n; i--) {
+            temp = temp * i;
+        }
+        for (int j = m - n; j > 0; j--) {
+            temp = temp / j;
+        }
+        return temp;
+    }
+
+    private int getCombinatorialNum2(int m, int n) {
+        if (n > m - n) {
+            n = m - n;
+        }
+        double s1 = 0.0;
+        double s2 = 0.0;
+        for (int j = m - n + 1; j <= m; j++) {
+            s1 += Math.log(j);
+        }
+        for (int j = 1; j <= n; j++) {
+            s2 += Math.log(j);
+        }
+        return (int) Math.exp(s1 - s2);
+    }
 }
