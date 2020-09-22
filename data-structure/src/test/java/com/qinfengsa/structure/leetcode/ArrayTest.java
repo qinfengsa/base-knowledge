@@ -17540,4 +17540,121 @@ public class ArrayTest {
         }*/
         return min == len ? -1 : min;
     }
+
+    /**
+     * LCP 23. 魔术排列
+     *
+     * <p>秋日市集上，魔术师邀请小扣与他互动。魔术师的道具为分别写有数字 1~N 的 N 张卡牌，然后请小扣思考一个 N 张卡牌的排列 target。
+     *
+     * <p>魔术师的目标是找到一个数字 k（k >= 1），使得初始排列顺序为 1~N 的卡牌经过特殊的洗牌方式最终变成小扣所想的排列 target，特殊的洗牌方式为：
+     *
+     * <p>第一步，魔术师将当前位于 偶数位置 的卡牌（下标自 1 开始），保持 当前排列顺序 放在位于 奇数位置 的卡牌之前。例如：将当前排列 [1,2,3,4,5] 位于偶数位置的
+     * [2,4] 置于奇数位置的 [1,3,5] 前，排列变为 [2,4,1,3,5]； 第二步，若当前卡牌数量小于等于 k，则魔术师按排列顺序取走全部卡牌；若当前卡牌数量大于 k，则取走前
+     * k 张卡牌，剩余卡牌继续重复这两个步骤，直至所有卡牌全部被取走； 卡牌按照魔术师取走顺序构成的新排列为「魔术取数排列」，请返回是否存在这个数字 k 使得「魔术取数排列」恰好就是
+     * target，从而让小扣感到大吃一惊。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：target = [2,4,3,1,5]
+     *
+     * <p>输出：true
+     *
+     * <p>解释：排列 target 长度为 5，初始排列为：1,2,3,4,5。我们选择 k = 2： 第一次：将当前排列 [1,2,3,4,5] 位于偶数位置的 [2,4] 置于奇数位置的
+     * [1,3,5] 前，排列变为 [2,4,1,3,5]。取走前 2 张卡牌 2,4，剩余 [1,3,5]； 第二次：将当前排列 [1,3,5] 位于偶数位置的 [3] 置于奇数位置的
+     * [1,5] 前，排列变为 [3,1,5]。取走前 2 张 3,1，剩余 [5]； 第三次：当前排列为 [5]，全部取出。 最后，数字按照取出顺序构成的「魔术取数排列」2,4,3,1,5
+     * 恰好为 target。
+     *
+     * <p>示例 2：
+     *
+     * <p>输入：target = [5,4,3,2,1]
+     *
+     * <p>输出：false
+     *
+     * <p>解释：无法找到一个数字 k 可以使「魔术取数排列」恰好为 target。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= target.length = N <= 5000 题目保证 target 是 1~N 的一个排列。
+     *
+     * @param target
+     * @return
+     */
+    public boolean isMagic(int[] target) {
+        int n = target.length;
+        int[] nums = new int[n];
+        for (int i = 0; i < n; i++) {
+            nums[i] = i + 1;
+        }
+        magicSort(nums, 0);
+        int maxk = getSameCount(nums, target, 0);
+        if (maxk == 0) {
+            return false;
+        }
+        for (int k = maxk; k >= 1; k--) {
+            if (checkMagic(nums, target, k)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * 检查 k 是否满足条件
+     *
+     * @param nums
+     * @param target
+     * @param k
+     * @return
+     */
+    private boolean checkMagic(int[] nums, int[] target, int k) {
+        int start = k;
+        while (start < nums.length) {
+            magicSort(nums, start);
+            if (getSameCount(nums, target, start) < k) {
+                break;
+            }
+            start += k;
+        }
+
+        return getSameCount(nums, target, 0) == nums.length;
+    }
+
+    /**
+     * 魔法排序
+     *
+     * @param nums
+     * @param start
+     */
+    private void magicSort(int[] nums, int start) {
+        Queue<Integer> queue = new LinkedList<>();
+        for (int i = start + 1; i < nums.length; i += 2) {
+            queue.offer(nums[i]);
+        }
+        for (int i = start; i < nums.length; i += 2) {
+            queue.offer(nums[i]);
+        }
+        for (int i = start; i < nums.length; i++) {
+            nums[i] = queue.poll();
+        }
+    }
+
+    /**
+     * 获取相同的前缀长度
+     *
+     * @param nums
+     * @param target
+     * @param start
+     * @return
+     */
+    private int getSameCount(int[] nums, int[] target, int start) {
+        int count = 0;
+        for (int i = start; i < nums.length; i++) {
+            if (nums[i] != target[i]) {
+                break;
+            }
+            count++;
+        }
+        return count;
+    }
 }
