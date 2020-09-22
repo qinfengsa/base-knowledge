@@ -6528,4 +6528,131 @@ public class MathTest {
         }
         return (int) Math.exp(s1 - s2);
     }
+
+    /**
+     * 1390. 四因数
+     *
+     * <p>给你一个整数数组 nums，请你返回该数组中恰有四个因数的这些整数的各因数之和。
+     *
+     * <p>如果数组中不存在满足题意的整数，则返回 0 。
+     *
+     * <p>示例：
+     *
+     * <p>输入：nums = [21,4,7] 输出：32 解释： 21 有 4 个因数：1, 3, 7, 21 4 有 3 个因数：1, 2, 4 7 有 2 个因数：1, 7 答案仅为
+     * 21 的所有因数的和。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= nums.length <= 10^4 1 <= nums[i] <= 10^5
+     *
+     * @param nums
+     * @return
+     */
+    public int sumFourDivisors(int[] nums) {
+        int result = 0;
+        for (int num : nums) {
+
+            result += getFourDivisorsSum(num);
+        }
+
+        return result;
+    }
+
+    private int getFourDivisorsSum(int num) {
+        if (num == 1) {
+            return 1;
+        }
+        Set<Integer> set = new HashSet<>();
+        for (int i = 1; i * i <= num; i++) {
+            if (num % i != 0) {
+                continue;
+            }
+            int t = num / i;
+            set.add(i);
+            if (i != t) {
+                set.add(t);
+            }
+            if (set.size() > 4) {
+                return 0;
+            }
+        }
+        if (set.size() != 4) {
+            return 0;
+        }
+        int result = 0;
+        for (int n : set) {
+            result += n;
+        }
+        return result;
+    }
+
+    /**
+     * 1387. 将整数按权重排序
+     *
+     * <p>我们将整数 x 的 权重 定义为按照下述规则将 x 变成 1 所需要的步数：
+     *
+     * <p>如果 x 是偶数，那么 x = x / 2 如果 x 是奇数，那么 x = 3 * x + 1 比方说，x=3 的权重为 7 。因为 3 需要 7 步变成 1 （3 --> 10
+     * --> 5 --> 16 --> 8 --> 4 --> 2 --> 1）。
+     *
+     * <p>给你三个整数 lo， hi 和 k 。你的任务是将区间 [lo, hi] 之间的整数按照它们的权重 升序排序 ，如果大于等于 2 个整数有 相同 的权重，那么按照数字自身的数值
+     * 升序排序 。
+     *
+     * <p>请你返回区间 [lo, hi] 之间的整数按权重排序后的第 k 个数。
+     *
+     * <p>注意，题目保证对于任意整数 x （lo <= x <= hi） ，它变成 1 所需要的步数是一个 32 位有符号整数。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：lo = 12, hi = 15, k = 2 输出：13 解释：12 的权重为 9（12 --> 6 --> 3 --> 10 --> 5 --> 16 --> 8 -->
+     * 4 --> 2 --> 1） 13 的权重为 9 14 的权重为 17 15 的权重为 17 区间内的数按权重排序以后的结果为 [12,13,14,15] 。对于 k = 2
+     * ，答案是第二个整数也就是 13 。 注意，12 和 13 有相同的权重，所以我们按照它们本身升序排序。14 和 15 同理。 示例 2：
+     *
+     * <p>输入：lo = 1, hi = 1, k = 1 输出：1 示例 3：
+     *
+     * <p>输入：lo = 7, hi = 11, k = 4 输出：7 解释：区间内整数 [7, 8, 9, 10, 11] 对应的权重为 [16, 3, 19, 6, 14] 。
+     * 按权重排序后得到的结果为 [8, 10, 11, 7, 9] 。 排序后数组中第 4 个数字为 7 。 示例 4：
+     *
+     * <p>输入：lo = 10, hi = 20, k = 5 输出：13 示例 5：
+     *
+     * <p>输入：lo = 1, hi = 1000, k = 777 输出：570
+     *
+     * <p>提示：
+     *
+     * <p>1 <= lo <= hi <= 1000 1 <= k <= hi - lo + 1
+     *
+     * @param lo
+     * @param hi
+     * @param k
+     * @return
+     */
+    public int getKth(int lo, int hi, int k) {
+        Map<Integer, Integer> map = new HashMap<>();
+        map.put(1, 0);
+        List<Integer> list = new ArrayList<>();
+        for (int i = lo; i <= hi; i++) {
+            list.add(i);
+            map.put(i, getWeight(i, map));
+        }
+        list.sort(
+                (a, b) -> {
+                    int weight1 = map.get(a), weight2 = map.get(b);
+
+                    return weight1 == weight2 ? a - b : weight1 - weight2;
+                });
+        return list.get(k - 1);
+    }
+
+    private int getWeight(int num, Map<Integer, Integer> map) {
+        if (map.containsKey(num)) {
+            return map.get(num);
+        }
+        int weight;
+        if ((num & 1) == 1) {
+            weight = getWeight(3 * num + 1, map);
+        } else {
+            weight = getWeight(num >> 1, map);
+        }
+        map.put(num, weight + 1);
+        return weight + 1;
+    }
 }
