@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Queue;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
@@ -1396,5 +1397,77 @@ public class GreedyTest {
             max = Math.max(max, cost[i]);
         }
         return sum - max;
+    }
+
+    @Test
+    public void maxEvents() {
+
+        int[][] events = {{1, 2}, {1, 2}, {3, 3}, {1, 5}, {1, 5}};
+        logResult(maxEvents(events));
+    }
+
+    /**
+     * 1353. 最多可以参加的会议数目
+     *
+     * <p>给你一个数组 events，其中 events[i] = [startDayi, endDayi] ，表示会议 i 开始于 startDayi ，结束于 endDayi 。
+     *
+     * <p>你可以在满足 startDayi <= d <= endDayi 中的任意一天 d 参加会议 i 。注意，一天只能参加一个会议。
+     *
+     * <p>请你返回你可以参加的 最大 会议数目。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：events = [[1,2],[2,3],[3,4]] 输出：3 解释：你可以参加所有的三个会议。 安排会议的一种方案如上图。 第 1 天参加第一个会议。 第 2
+     * 天参加第二个会议。 第 3 天参加第三个会议。 示例 2：
+     *
+     * <p>输入：events= [[1,2],[2,3],[3,4],[1,2]] 输出：4 示例 3：
+     *
+     * <p>输入：events = [[1,4],[4,4],[2,2],[3,4],[1,1]] 输出：4 示例 4：
+     *
+     * <p>输入：events = [[1,100000]] 输出：1 示例 5：
+     *
+     * <p>输入：events = [[1,1],[1,2],[1,3],[1,4],[1,5],[1,6],[1,7]] 输出：7
+     *
+     * <p>提示：
+     *
+     * <p>1 <= events.length <= 10^5 events[i].length == 2 1 <= events[i][0] <= events[i][1] <= 10^5
+     *
+     * @param events
+     * @return
+     */
+    public int maxEvents(int[][] events) {
+        Arrays.sort(events, (a, b) -> a[0] == b[0] ? a[1] - b[1] : a[0] - b[0]);
+
+        int result = 0;
+        /*for (int[] event : events) {
+            for (int i = event[0]; i <= event[1]; i++) {
+                if (!visited[i]) {
+                    visited[i] = true;
+                    result++;
+                    break;
+                }
+            }
+        }*/
+        PriorityQueue<Integer> heap = new PriorityQueue<>();
+        int idx = 0, day = 1;
+        while (idx < events.length || !heap.isEmpty()) {
+            // 将day天开始能参加的所有会议入堆；
+            while (idx < events.length && events[idx][0] == day) {
+                heap.offer(events[idx++][1]);
+            }
+            // 将已经结束的会议删除；（即：没机会参加到的；）；
+            while (!heap.isEmpty() && heap.peek() < day) {
+                heap.poll();
+            }
+            // 此时的堆顶元素就是我们今天（即day天）要参加的那一个会议；
+            // 一天只能参加一场会议将结束时间最早的安排了;
+            if (!heap.isEmpty()) {
+                result++;
+                heap.poll(); // 决定参加这个会议后，记得弹出pq候选队列；
+            }
+            day++;
+        }
+
+        return result;
     }
 }

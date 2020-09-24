@@ -17711,4 +17711,136 @@ public class ArrayTest {
 
         return result;
     }
+
+    /**
+     * 1366. 通过投票对团队排名
+     *
+     * <p>现在有一个特殊的排名系统，依据参赛团队在投票人心中的次序进行排名，每个投票者都需要按从高到低的顺序对参与排名的所有团队进行排位。
+     *
+     * <p>排名规则如下：
+     *
+     * <p>参赛团队的排名次序依照其所获「排位第一」的票的多少决定。如果存在多个团队并列的情况，将继续考虑其「排位第二」的票的数量。以此类推，直到不再存在并列的情况。
+     * 如果在考虑完所有投票情况后仍然出现并列现象，则根据团队字母的字母顺序进行排名。 给你一个字符串数组 votes 代表全体投票者给出的排位情况，请你根据上述排名规则对所有参赛团队进行排名。
+     *
+     * <p>请你返回能表示按排名系统 排序后 的所有团队排名的字符串。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：votes = ["ABC","ACB","ABC","ACB","ACB"] 输出："ACB" 解释：A 队获得五票「排位第一」，没有其他队获得「排位第一」，所以 A
+     * 队排名第一。 B 队获得两票「排位第二」，三票「排位第三」。 C 队获得三票「排位第二」，两票「排位第三」。 由于 C 队「排位第二」的票数较多，所以 C 队排第二，B 队排第三。 示例
+     * 2：
+     *
+     * <p>输入：votes = ["WXYZ","XYZW"] 输出："XWYZ" 解释：X 队在并列僵局打破后成为排名第一的团队。X 队和 W 队的「排位第一」票数一样，但是 X
+     * 队有一票「排位第二」，而 W 没有获得「排位第二」。 示例 3：
+     *
+     * <p>输入：votes = ["ZMNAGUEDSJYLBOPHRQICWFXTVK"] 输出："ZMNAGUEDSJYLBOPHRQICWFXTVK"
+     * 解释：只有一个投票者，所以排名完全按照他的意愿。 示例 4：
+     *
+     * <p>输入：votes = ["BCA","CAB","CBA","ABC","ACB","BAC"] 输出："ABC" 解释： A
+     * 队获得两票「排位第一」，两票「排位第二」，两票「排位第三」。 B 队获得两票「排位第一」，两票「排位第二」，两票「排位第三」。 C
+     * 队获得两票「排位第一」，两票「排位第二」，两票「排位第三」。 完全并列，所以我们需要按照字母升序排名。 示例 5：
+     *
+     * <p>输入：votes = ["M","M","M","M"] 输出："M" 解释：只有 M 队参赛，所以它排名第一。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= votes.length <= 1000 1 <= votes[i].length <= 26 votes[i].length == votes[j].length
+     * for 0 <= i, j < votes.length votes[i][j] 是英文 大写 字母 votes[i] 中的所有字母都是唯一的 votes[0] 中出现的所有字母 同样也
+     * 出现在 votes[j] 中，其中 1 <= j < votes.length
+     *
+     * @param votes
+     * @return
+     */
+    public String rankTeams(String[] votes) {
+        StringBuilder sb = new StringBuilder();
+        int[][] ranks = new int[26][27];
+        for (int i = 0; i < 26; i++) {
+            ranks[i][26] = i;
+        }
+        for (String vote : votes) {
+            for (int i = 0; i < vote.length(); i++) {
+                char c = vote.charAt(i);
+                ranks[c - 'A'][i]++;
+            }
+        }
+        Arrays.sort(
+                ranks,
+                (rank1, rank2) -> {
+                    for (int i = 0; i < 26; i++) {
+                        if (rank1[i] != rank2[i]) {
+                            return rank2[i] - rank1[i];
+                        }
+                    }
+                    return rank1[26] - rank2[26];
+                });
+        int len = votes[0].length();
+        for (int i = 0; i < len; i++) {
+            sb.append((char) ('A' + ranks[i][26]));
+        }
+        /* Map<Character, int[]> rankMap = new HashMap<>();
+        for (String vote : votes) {
+            for (int i = 0; i < vote.length(); i++) {
+                char c = vote.charAt(i);
+                int[] rank = rankMap.computeIfAbsent(c, k -> new int[26]);
+                rank[i]++;
+            }
+        }
+        List<Map.Entry<Character, int[]>> list = new ArrayList<>(rankMap.entrySet());
+        list.sort(
+                (entry1, entry2) -> {
+                    int[] rank1 = entry1.getValue(), rank2 = entry2.getValue();
+                    for (int i = 0; i < 26; i++) {
+                        if (rank1[i] != rank2[i]) {
+                            return rank2[i] - rank1[i];
+                        }
+                    }
+                    return entry1.getKey() - entry2.getKey();
+                });
+        list.forEach(entry -> sb.append(entry.getKey()));*/
+        return sb.toString();
+    }
+
+    /**
+     * 1375. 灯泡开关 III
+     *
+     * <p>房间中有 n 枚灯泡，编号从 1 到 n，自左向右排成一排。最初，所有的灯都是关着的。
+     *
+     * <p>在 k 时刻（ k 的取值范围是 0 到 n - 1），我们打开 light[k] 这个灯。
+     *
+     * <p>灯的颜色要想 变成蓝色 就必须同时满足下面两个条件：
+     *
+     * <p>灯处于打开状态。 排在它之前（左侧）的所有灯也都处于打开状态。 请返回能够让 所有开着的 灯都 变成蓝色 的时刻 数目 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：light = [2,1,3,5,4] 输出：3 解释：所有开着的灯都变蓝的时刻分别是 1，2 和 4 。 示例 2：
+     *
+     * <p>输入：light = [3,2,4,1,5] 输出：2 解释：所有开着的灯都变蓝的时刻分别是 3 和 4（index-0）。 示例 3：
+     *
+     * <p>输入：light = [4,1,2,3] 输出：1 解释：所有开着的灯都变蓝的时刻是 3（index-0）。 第 4 个灯在时刻 3 变蓝。 示例 4：
+     *
+     * <p>输入：light = [2,1,4,3,6,5] 输出：3 示例 5：
+     *
+     * <p>输入：light = [1,2,3,4,5,6] 输出：6
+     *
+     * <p>提示：
+     *
+     * <p>n == light.length 1 <= n <= 5 * 10^4 light 是 [1, 2, ..., n] 的一个排列。
+     *
+     * @param light
+     * @return
+     */
+    public int numTimesAllBlue(int[] light) {
+        int result = 0;
+        int maxIndex = 0;
+        // 遍历数组，记录当前最大亮起来的灯，如果最大亮起来的灯等于遍历过的灯的数量 那么说明前面灯都亮了
+        for (int i = 0; i < light.length; i++) {
+            maxIndex = Math.max(maxIndex, light[i]);
+            if (maxIndex == i + 1) {
+                result++;
+            }
+        }
+
+        return result;
+    }
 }
