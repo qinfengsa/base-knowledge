@@ -5327,4 +5327,55 @@ public class TreeTest {
         result = getTargetCopy(original.right, cloned.right, target);
         return result;
     }
+
+    /**
+     * 1382. 将二叉搜索树变平衡
+     *
+     * <p>给你一棵二叉搜索树，请你返回一棵 平衡后 的二叉搜索树，新生成的树应该与原来的树有着相同的节点值。
+     *
+     * <p>如果一棵二叉搜索树中，每个节点的两棵子树高度差不超过 1 ，我们就称这棵二叉搜索树是 平衡的 。
+     *
+     * <p>如果有多种构造方法，请你返回任意一种。
+     *
+     * <p>示例：
+     *
+     * <p>输入：root = [1,null,2,null,3,null,4,null,null] 输出：[2,1,3,null,null,null,4]
+     * 解释：这不是唯一的正确答案，[3,1,4,null,2,null,null] 也是一个可行的构造方案。
+     *
+     * <p>提示：
+     *
+     * <p>树节点的数目在 1 到 10^4 之间。 树节点的值互不相同，且在 1 到 10^5 之间。
+     *
+     * @param root
+     * @return
+     */
+    public TreeNode balanceBST(TreeNode root) {
+        // 利用二叉搜索树的性质，中序遍历输出，然后以中间为root，递归构造树，效率更高，算是本题的最优解
+        List<TreeNode> list = new ArrayList<>();
+        inOrder2(root, list);
+
+        // 二分 构造树
+        return balanceBST(list, 0, list.size());
+    }
+
+    private TreeNode balanceBST(List<TreeNode> list, int start, int end) {
+        if (start > end) {
+            return null;
+        }
+        int mid = (start + end) >> 1;
+        TreeNode root = list.get(mid);
+        root.left = balanceBST(list, start, mid - 1);
+        root.right = balanceBST(list, mid + 1, end);
+        return root;
+    }
+
+    private void inOrder2(TreeNode root, List<TreeNode> list) {
+
+        if (Objects.isNull(root)) {
+            return;
+        }
+        inOrder2(root.left, list);
+        list.add(root);
+        inOrder2(root.right, list);
+    }
 }

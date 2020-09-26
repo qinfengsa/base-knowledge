@@ -7533,8 +7533,8 @@ public class ArrayTest {
 
     static int M, N;
 
-    static int[] DIR_ROW = {-1, 1, 0, 0};
-    static int[] DIR_COL = {0, 0, -1, 1};
+    static int[] DIR_ROW = {1, 0, -1, 0};
+    static int[] DIR_COL = {0, 1, 0, -1};
 
     private void movingCount(int rowIndex, int colIndex, int k, Set<String> set) {
         if (getNum(rowIndex) + getNum(colIndex) <= k) {
@@ -17922,5 +17922,153 @@ public class ArrayTest {
         int result = informTime[managerId] + numOfMinutesDfs(managerId, visitTime);
         visitTime[id] = result;
         return result;
+    }
+
+    @Test
+    public void maxNumberOfFamilies() {
+
+        int n = 3;
+        int[][] reservedSeats = {{1, 2}, {1, 3}, {1, 8}, {2, 6}, {3, 1}, {3, 10}};
+        logResult(maxNumberOfFamilies(n, reservedSeats));
+    }
+
+    /**
+     * 1386. 安排电影院座位
+     *
+     * <p>如上图所示，电影院的观影厅中有 n 行座位，行编号从 1 到 n ，且每一行内总共有 10 个座位，列编号从 1 到 10 。
+     *
+     * <p>给你数组 reservedSeats ，包含所有已经被预约了的座位。比如说，researvedSeats[i]=[3,8] ，它表示第 3 行第 8 个座位被预约了。
+     *
+     * <p>请你返回 最多能安排多少个 4 人家庭 。4 人家庭要占据 同一行内连续 的 4 个座位。隔着过道的座位（比方说 [3,3] 和 [3,4]）不是连续的座位，但是如果你可以将 4
+     * 人家庭拆成过道两边各坐 2 人，这样子是允许的。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：n = 3, reservedSeats = [[1,2],[1,3],[1,8],[2,6],[3,1],[3,10]] 输出：4
+     * 解释：上图所示是最优的安排方案，总共可以安排 4 个家庭。蓝色的叉表示被预约的座位，橙色的连续座位表示一个 4 人家庭。 示例 2：
+     *
+     * <p>输入：n = 2, reservedSeats = [[2,1],[1,8],[2,6]] 输出：2 示例 3：
+     *
+     * <p>输入：n = 4, reservedSeats = [[4,3],[1,4],[4,6],[1,7]] 输出：4
+     *
+     * <p>提示：
+     *
+     * <p>1 <= n <= 10^9 1 <= reservedSeats.length <= min(10*n, 10^4) reservedSeats[i].length == 2 1
+     * <= reservedSeats[i][0] <= n 1 <= reservedSeats[i][1] <= 10 所有 reservedSeats[i] 都是互不相同的。
+     *
+     * @param n
+     * @param reservedSeats
+     * @return
+     */
+    public int maxNumberOfFamilies(int n, int[][] reservedSeats) {
+        // 利用位运算
+        int left = 0b11110000;
+        int middle = 0b11000011;
+        int right = 0b00001111;
+        // 使用map 存储 , 数组会导致内存溢出
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int[] seat : reservedSeats) {
+            if (seat[1] == 1 || seat[1] == 10) {
+                continue;
+            }
+
+            int num = map.getOrDefault(seat[0], 0);
+            num |= 1 << (seat[1] - 2);
+            map.put(seat[0], num);
+        }
+        // 为 0 的 位置 可以座2家
+        int result = (n - map.size()) * 2;
+        for (int num : map.values()) {
+            if (((num | left) == left) || ((num | middle) == middle) || ((num | right) == right)) {
+                result++;
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * 1391. 检查网格中是否存在有效路径
+     *
+     * <p>给你一个 m x n 的网格 grid。网格里的每个单元都代表一条街道。grid[i][j] 的街道可以是：
+     *
+     * <p>1 表示连接左单元格和右单元格的街道。 2 表示连接上单元格和下单元格的街道。 3 表示连接左单元格和下单元格的街道。 4 表示连接右单元格和下单元格的街道。 5
+     * 表示连接左单元格和上单元格的街道。 6 表示连接右单元格和上单元格的街道。
+     *
+     * <p>你最开始从左上角的单元格 (0,0) 开始出发，网格中的「有效路径」是指从左上方的单元格 (0,0) 开始、一直到右下方的 (m-1,n-1) 结束的路径。该路径必须只沿着街道走。
+     *
+     * <p>注意：你 不能 变更街道。
+     *
+     * <p>如果网格中存在有效的路径，则返回 true，否则返回 false 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：grid = [[2,4,3],[6,5,2]] 输出：true 解释：如图所示，你可以从 (0, 0) 开始，访问网格中的所有单元格并到达 (m - 1, n - 1) 。
+     * 示例 2：
+     *
+     * <p>输入：grid = [[1,2,1],[1,2,1]] 输出：false 解释：如图所示，单元格 (0, 0) 上的街道没有与任何其他单元格上的街道相连，你只会停在 (0, 0)
+     * 处。 示例 3：
+     *
+     * <p>输入：grid = [[1,1,2]] 输出：false 解释：你会停在 (0, 1)，而且无法到达 (0, 2) 。 示例 4：
+     *
+     * <p>输入：grid = [[1,1,1,1,1,1,3]] 输出：true 示例 5：
+     *
+     * <p>输入：grid = [[2],[2],[2],[2],[2],[2],[6]] 输出：true
+     *
+     * <p>提示：
+     *
+     * <p>m == grid.length n == grid[i].length 1 <= m, n <= 300 1 <= grid[i][j] <= 6
+     *
+     * @param grid
+     * @return
+     */
+    public boolean hasValidPath(int[][] grid) {
+        M = grid.length;
+        N = grid[0].length;
+        hasValidPathVisited = new boolean[M][N];
+        this.grid = grid;
+        int start = grid[0][0];
+        for (int i = 0; i < 4; i++) {
+            if (pipe[start][i] == -1) {
+                continue;
+            }
+            if (hasValidPathDfs(0, 0, pipe[start][i])) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    // 该坐标是否走过
+    boolean[][] hasValidPathVisited;
+    int[][] pipe =
+            new int[][] {
+                {-1, -1, -1, -1},
+                {-1, 1, -1, 3},
+                {0, -1, 2, -1},
+                {-1, 0, 3, -1},
+                {-1, -1, 1, 0},
+                {3, 2, -1, -1},
+                {1, -1, -1, 2}
+            };
+    int[][] grid;
+
+    private boolean hasValidPathDfs(int row, int col, int flag) {
+
+        if (row == M - 1 && col == N - 1) {
+            return true;
+        }
+        hasValidPathVisited[row][col] = true;
+        int nextRow = row + DIR_ROW[flag], nextCol = col + DIR_COL[flag];
+        if (!inArea(nextRow, nextCol, M, N) || hasValidPathVisited[nextRow][nextCol]) {
+            return false;
+        }
+        int next = grid[nextRow][nextCol];
+        if (pipe[next][flag] != -1) {
+            return hasValidPathDfs(nextRow, nextCol, pipe[next][flag]);
+        }
+
+        return false;
     }
 }
