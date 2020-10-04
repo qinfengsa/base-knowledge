@@ -5422,4 +5422,70 @@ public class TreeTest {
         }
         return root.val == 1 || left || right;
     }
+
+    /**
+     * 5532. 奇偶树
+     *
+     * <p>如果一棵二叉树满足下述几个条件，则可以称为 奇偶树 ：
+     *
+     * <p>二叉树根节点所在层下标为 0 ，根的子节点所在层下标为 1 ，根的孙节点所在层下标为 2 ，依此类推。 偶数下标 层上的所有节点的值都是 奇 整数，从左到右按顺序 严格递增
+     * 奇数下标 层上的所有节点的值都是 偶 整数，从左到右按顺序 严格递减 给你二叉树的根节点，如果二叉树为 奇偶树 ，则返回 true ，否则返回 false 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：root = [1,10,4,3,null,7,9,12,8,6,null,null,2] 输出：true 解释：每一层的节点值分别是： 0 层：[1] 1 层：[10,4]
+     * 2 层：[3,7,9] 3 层：[12,8,6,2] 由于 0 层和 2 层上的节点值都是奇数且严格递增，而 1 层和 3 层上的节点值都是偶数且严格递减，因此这是一棵奇偶树。 示例
+     * 2：
+     *
+     * <p>输入：root = [5,4,2,3,3,7] 输出：false 解释：每一层的节点值分别是： 0 层：[5] 1 层：[4,2] 2 层：[3,3,7] 2
+     * 层上的节点值不满足严格递增的条件，所以这不是一棵奇偶树。 示例 3：
+     *
+     * <p>输入：root = [5,9,1,3,5,7] 输出：false 解释：1 层上的节点值应为偶数。 示例 4：
+     *
+     * <p>输入：root = [1] 输出：true 示例 5：
+     *
+     * <p>输入：root = [11,8,6,1,3,9,11,30,20,18,16,12,10,4,2,17] 输出：true
+     *
+     * <p>提示：
+     *
+     * <p>树中节点数在范围 [1, 105] 内 1 <= Node.val <= 106
+     *
+     * @param root
+     * @return
+     */
+    public boolean isEvenOddTree(TreeNode root) {
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.offer(root);
+        // flag true  奇数 严格递增  ; false 偶数 严格递减
+        boolean flag = true;
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            int lastVal = -1;
+            for (int i = 0; i < size; i++) {
+                TreeNode node = queue.poll();
+                if (flag) {
+                    // 偶数 或者 非单调递增
+                    if ((node.val & 1) == 0 || (i > 0 && node.val <= lastVal)) {
+                        return false;
+                    }
+                } else {
+                    // 奇数 或者 非单调递减
+                    if ((node.val & 1) == 1 || (i > 0 && node.val >= lastVal)) {
+                        return false;
+                    }
+                }
+                lastVal = node.val;
+                if (Objects.nonNull(node.left)) {
+                    queue.offer(node.left);
+                }
+                if (Objects.nonNull(node.right)) {
+                    queue.offer(node.right);
+                }
+            }
+
+            flag = !flag;
+        }
+
+        return true;
+    }
 }
