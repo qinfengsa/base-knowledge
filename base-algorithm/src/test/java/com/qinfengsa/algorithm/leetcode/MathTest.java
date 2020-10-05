@@ -6696,4 +6696,49 @@ public class MathTest {
         // 曼哈顿距离 dist(A, B) = abs(A.x - B.x) + abs(A.y - B.y)
         return Math.abs(start[0] - target[0]) + Math.abs(start[1] - target[1]);
     }
+
+    @Test
+    public void smallestRepunitDivByK() {
+        int k = 5;
+        logResult(smallestRepunitDivByK(k));
+    }
+
+    /**
+     * 1015. 可被 K 整除的最小整数
+     *
+     * <p>给定正整数 K，你需要找出可以被 K 整除的、仅包含数字 1 的最小正整数 N。
+     *
+     * <p>返回 N 的长度。如果不存在这样的 N，就返回 -1。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：1 输出：1 解释：最小的答案是 N = 1，其长度为 1。 示例 2：
+     *
+     * <p>输入：2 输出：-1 解释：不存在可被 2 整除的正整数 N 。 示例 3：
+     *
+     * <p>输入：3 输出：3 解释：最小的答案是 N = 111，其长度为 3。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= K <= 10^5
+     *
+     * @param K
+     * @return
+     */
+    public int smallestRepunitDivByK(int K) {
+        if ((K & 1) == 0) {
+            return -1;
+        }
+        if (K % 5 == 0) {
+            return -1;
+        }
+        int count = 1, num = 1;
+
+        while (num % K != 0) {
+            num %= K;
+            num = num * 10 + 1;
+            count++;
+        }
+        return count;
+    }
 }
