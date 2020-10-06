@@ -18547,4 +18547,67 @@ public class ArrayTest {
         }
         return max + same;
     }
+
+    @Test
+    public void numsSameConsecDiff() {
+        int n = 3, k = 7;
+        int[] result = numsSameConsecDiff(n, k);
+        log.debug("result:{}", result);
+    }
+    /**
+     * 967. 连续差相同的数字
+     *
+     * <p>返回所有长度为 N 且满足其每两个连续位上的数字之间的差的绝对值为 K 的非负整数。
+     *
+     * <p>请注意，除了数字 0 本身之外，答案中的每个数字都不能有前导零。例如，01 因为有一个前导零，所以是无效的；但 0 是有效的。
+     *
+     * <p>你可以按任何顺序返回答案。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：N = 3, K = 7 输出：[181,292,707,818,929] 解释：注意，070 不是一个有效的数字，因为它有前导零。 示例 2：
+     *
+     * <p>输入：N = 2, K = 1 输出：[10,12,21,23,32,34,43,45,54,56,65,67,76,78,87,89,98]
+     *
+     * <p>提示：
+     *
+     * <p>1 <= N <= 9 0 <= K <= 9
+     *
+     * @param n
+     * @param k
+     * @return
+     */
+    public int[] numsSameConsecDiff(int n, int k) {
+        Set<Integer> set = new HashSet<>();
+        for (int i = 1; i <= 9; i++) {
+            set.add(i);
+        }
+
+        for (int i = 1; i < n; i++) {
+            Set<Integer> set2 = new HashSet<>();
+            for (int num : set) {
+                int d = num % 10;
+                if (d - k >= 0) {
+                    set2.add(num * 10 + (d - k));
+                }
+                if (d + k <= 9) {
+                    set2.add(num * 10 + (d + k));
+                }
+            }
+
+            set = set2;
+        }
+
+        if (n == 1) {
+            set.add(0);
+        }
+
+        int[] result = new int[set.size()];
+
+        int index = 0;
+        for (int num : set) {
+            result[index++] = num;
+        }
+        return result;
+    }
 }
