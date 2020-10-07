@@ -2130,4 +2130,77 @@ public class GraphTest {
         }
         return true;
     }
+
+    /**
+     * 802. 找到最终的安全状态
+     *
+     * <p>在有向图中, 我们从某个节点和每个转向处开始, 沿着图的有向边走。 如果我们到达的节点是终点 (即它没有连出的有向边), 我们停止。
+     *
+     * <p>现在, 如果我们最后能走到终点，那么我们的起始节点是最终安全的。 更具体地说, 存在一个自然数 K, 无论选择从哪里开始行走, 我们走了不到 K 步后必能停止在一个终点。
+     *
+     * <p>哪些节点最终是安全的？ 结果返回一个有序的数组。
+     *
+     * <p>该有向图有 N 个节点，标签为 0, 1, ..., N-1, 其中 N 是 graph 的节点数. 图以以下的形式给出: graph[i] 是节点 j 的一个列表，满足 (i,
+     * j) 是图的一条有向边。
+     *
+     * <p>示例： 输入：graph = [[1,2],[2,3],[5],[0],[5],[],[]] 输出：[2,4,5,6] 这里是上图的示意图。
+     *
+     * <p>Illustration of graph
+     *
+     * <p>提示：
+     *
+     * <p>graph 节点数不超过 10000. 图的边数不会超过 32000. 每个 graph[i] 被排序为不同的整数列表， 在区间 [0, graph.length - 1]
+     * 中选取。
+     *
+     * @param graph
+     * @return
+     */
+    public List<Integer> eventualSafeNodes(int[][] graph) {
+        // 深度优先搜索
+        // 我们同样可以使用深度优先搜索的方法判断图中的每个节点是否能走到环中。对于每个节点，我们有三种染色的方法：
+        // 白色表示该节点还没有被访问过；灰色表示该节点在栈中（这一轮搜索中被访问过）或者在环中；黑色表示该节点的所有相连的节点都被访问过，且该节点不在环中。
+        //
+        // 当我们第一次访问一个节点时，我们把它从白色变成灰色，并继续搜索与它相连的节点。
+        // 如果在搜索过程中我们遇到一个灰色的节点，那么说明找到了一个环，此时退出搜索，所有的灰色节点保持不变（即从任意一个灰色节点开始，都能走到环中），
+        // 如果搜索过程中，我们没有遇到灰色的节点，那么在回溯到当前节点时，我们把它从灰色变成黑色，即表示它是一个安全的节点。
+        int N = graph.length;
+        int[] colors = new int[N];
+        List<Integer> result = new ArrayList<>();
+
+        for (int i = 0; i < N; i++) {
+            if (eventualSafeNodesDfs(i, colors, graph)) {
+                result.add(i);
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * 深度优先遍历
+     *
+     * @param node
+     * @param colors WHITE 0, GRAY 1, BLACK 2;
+     * @param graph
+     * @return
+     */
+    private boolean eventualSafeNodesDfs(int node, int[] colors, int[][] graph) {
+        if (colors[node] != 0) {
+            return colors[node] == 2;
+        }
+        colors[node] = 1;
+
+        for (int next : graph[node]) {
+            if (colors[next] == 2) {
+                continue;
+            }
+            if (colors[next] == 1 || !eventualSafeNodesDfs(next, colors, graph)) {
+                return false;
+            }
+        }
+
+        colors[node] = 2;
+
+        return true;
+    }
 }
