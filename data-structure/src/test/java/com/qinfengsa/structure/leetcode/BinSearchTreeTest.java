@@ -517,11 +517,7 @@ public class BinSearchTreeTest {
     public boolean isBalanced(TreeNode root) {
 
         Integer height = getHeight(root);
-        if (Objects.isNull(height)) {
-            return false;
-        }
-
-        return true;
+        return !Objects.isNull(height);
     }
 
     private Integer getHeight(TreeNode root) {

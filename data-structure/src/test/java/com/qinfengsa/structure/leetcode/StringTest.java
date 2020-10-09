@@ -8823,4 +8823,145 @@ public class StringTest {
         }
         return sb.toString();
     }
+
+    @Test
+    public void expressiveWords() {
+        String S = "abcd";
+        String[] words = {"abc", "hi", "helo"};
+        logResult(expressiveWords(S, words));
+    }
+
+    /**
+     * 809. 情感丰富的文字
+     *
+     * <p>有时候人们会用重复写一些字母来表示额外的感受，比如 "hello" -> "heeellooo", "hi" ->
+     * "hiii"。我们将相邻字母都相同的一串字符定义为相同字母组，例如："h", "eee", "ll", "ooo"。
+     *
+     * <p>对于一个给定的字符串 S ，如果另一个单词能够通过将一些字母组扩张从而使其和 S 相同，我们将这个单词定义为可扩张的（stretchy）。扩张操作定义如下：选择一个字母组（包含字母
+     * c ），然后往其中添加相同的字母 c 使其长度达到 3 或以上。
+     *
+     * <p>例如，以 "hello" 为例，我们可以对字母组 "o" 扩张得到 "hellooo"，但是无法以同样的方法得到 "helloo" 因为字母组 "oo" 长度小于
+     * 3。此外，我们可以进行另一种扩张 "ll" -> "lllll" 以获得 "helllllooo"。如果 S = "helllllooo"，那么查询词 "hello"
+     * 是可扩张的，因为可以对它执行这两种扩张操作使得 query = "hello" -> "hellooo" -> "helllllooo" = S。
+     *
+     * <p>输入一组查询单词，输出其中可扩张的单词数量。
+     *
+     * <p>示例：
+     *
+     * <p>输入： S = "heeellooo" words = ["hello", "hi", "helo"] 输出：1 解释： 我们能通过扩张 "hello" 的 "e" 和 "o"
+     * 来得到 "heeellooo"。 我们不能通过扩张 "helo" 来得到 "heeellooo" 因为 "ll" 的长度小于 3 。
+     *
+     * <p>说明：
+     *
+     * <p>0 <= len(S) <= 100。 0 <= len(words) <= 100。 0 <= len(words[i]) <= 100。 S 和所有在 words
+     * 中的单词都只由小写字母组成。
+     *
+     * @param S
+     * @param words
+     * @return
+     */
+    public int expressiveWords(String S, String[] words) {
+
+        int count = 0;
+
+        for (String word : words) {
+            if (canExpressiveWord(S, word)) {
+                count++;
+            }
+        }
+
+        return count;
+    }
+
+    private boolean canExpressiveWord(String s, String word) {
+        int i = 0, j = 0;
+        while (i < s.length() && j < word.length()) {
+            char c1 = s.charAt(i), c2 = word.charAt(j);
+            if (c1 != c2) {
+                return false;
+            }
+            int start1 = i++;
+            int start2 = j++;
+            while (i < s.length() && s.charAt(i) == c1) {
+                i++;
+            }
+            while (j < word.length() && word.charAt(j) == c2) {
+                j++;
+            }
+            if (i - start1 == j - start2) {
+                continue;
+            }
+            if (j - start2 > i - start1 || i - start1 < 3) {
+                return false;
+            }
+        }
+        return i == s.length() && j == word.length();
+    }
+
+    @Test
+    public void ambiguousCoordinates() {
+        String S = "(123)";
+        logResult(ambiguousCoordinates(S));
+    }
+
+    /**
+     * 816. 模糊坐标
+     *
+     * <p>我们有一些二维坐标，如 "(1, 3)" 或 "(2, 0.5)"，然后我们移除所有逗号，小数点和空格，得到一个字符串S。返回所有可能的原始字符串到一个列表中。
+     *
+     * <p>原始的坐标表示法不会存在多余的零，所以不会出现类似于"00", "0.0", "0.00", "1.0", "001",
+     * "00.01"或一些其他更小的数来表示坐标。此外，一个小数点前至少存在一个数，所以也不会出现“.1”形式的数字。
+     *
+     * <p>最后返回的列表可以是任意顺序的。而且注意返回的两个数字中间（逗号之后）都有一个空格。
+     *
+     * <p>示例 1: 输入: "(123)" 输出: ["(1, 23)", "(12, 3)", "(1.2, 3)", "(1, 2.3)"] 示例 2: 输入: "(00011)"
+     * 输出: ["(0.001, 1)", "(0, 0.011)"] 解释: 0.0, 00, 0001 或 00.01 是不被允许的。 示例 3: 输入: "(0123)" 输出:
+     * ["(0, 123)", "(0, 12.3)", "(0, 1.23)", "(0.1, 23)", "(0.1, 2.3)", "(0.12, 3)"] 示例 4: 输入:
+     * "(100)" 输出: [(10, 0)] 解释: 1.0 是不被允许的。
+     *
+     * <p>提示:
+     *
+     * <p>4 <= S.length <= 12. S[0] = "(", S[S.length - 1] = ")", 且字符串 S 中的其他元素都是数字。
+     *
+     * @param S
+     * @return
+     */
+    public List<String> ambiguousCoordinates(String S) {
+        List<String> result = new ArrayList<>();
+        int len = S.length();
+
+        for (int i = 2; i < len - 1; i++) {
+            for (String left : getCoordinates(S.substring(1, i))) {
+                for (String right : getCoordinates(S.substring(i, len - 1))) {
+                    result.add("(" + left + ", " + right + ")");
+                }
+            }
+        }
+
+        return result;
+    }
+
+    private List<String> getCoordinates(String s) {
+        List<String> list = new ArrayList<>();
+        if (s.length() == 1) {
+            list.add(s);
+            return list;
+        }
+        if (s.startsWith("0")) {
+            if (!s.endsWith("0")) {
+                list.add("0." + s.substring(1));
+            }
+            return list;
+        }
+        if (s.endsWith("0")) {
+            list.add(s);
+            return list;
+        }
+        list.add(s);
+        for (int i = 1; i < s.length(); i++) {
+            list.add(s.substring(0, i) + "." + s.substring(i));
+        }
+
+        return list;
+    }
 }
