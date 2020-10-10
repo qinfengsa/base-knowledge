@@ -18610,4 +18610,107 @@ public class ArrayTest {
         }
         return result;
     }
+
+    /**
+     * 826. 安排工作以达到最大收益
+     *
+     * <p>有一些工作：difficulty[i] 表示第 i 个工作的难度，profit[i] 表示第 i 个工作的收益。
+     *
+     * <p>现在我们有一些工人。worker[i] 是第 i 个工人的能力，即该工人只能完成难度小于等于 worker[i] 的工作。
+     *
+     * <p>每一个工人都最多只能安排一个工作，但是一个工作可以完成多次。
+     *
+     * <p>举个例子，如果 3 个工人都尝试完成一份报酬为 1 的同样工作，那么总收益为 $3。如果一个工人不能完成任何工作，他的收益为 $0 。
+     *
+     * <p>我们能得到的最大收益是多少？
+     *
+     * <p>示例：
+     *
+     * <p>输入: difficulty = [2,4,6,8,10], profit = [10,20,30,40,50], worker = [4,5,6,7] 输出: 100 解释:
+     * 工人被分配的工作难度是 [4,4,6,6] ，分别获得 [20,20,30,30] 的收益。
+     *
+     * <p>提示:
+     *
+     * <p>1 <= difficulty.length = profit.length <= 10000 1 <= worker.length <= 10000 difficulty[i],
+     * profit[i], worker[i] 的范围是 [1, 10^5]
+     *
+     * @param difficulty
+     * @param profit
+     * @param worker
+     * @return
+     */
+    public int maxProfitAssignment(int[] difficulty, int[] profit, int[] worker) {
+        int len = difficulty.length;
+        List<int[]> list = new ArrayList<>();
+        for (int i = 0; i < len; i++) {
+            list.add(new int[] {difficulty[i], profit[i]});
+        }
+        list.sort((a, b) -> a[0] == b[0] ? a[1] - b[1] : a[0] - b[0]);
+
+        Arrays.sort(worker);
+        int index = 0, max = 0, result = 0;
+        for (int skill : worker) {
+            while (index < len && skill >= list.get(index)[0]) {
+                max = Math.max(max, list.get(index)[1]);
+                index++;
+            }
+            result += max;
+        }
+        return result;
+    }
+
+    /**
+     * 825. 适龄的朋友
+     *
+     * <p>人们会互相发送好友请求，现在给定一个包含有他们年龄的数组，ages[i] 表示第 i 个人的年龄。
+     *
+     * <p>当满足以下任一条件时，A 不能给 B（A、B不为同一人）发送好友请求：
+     *
+     * <p>age[B] <= 0.5 * age[A] + 7 age[B] > age[A] age[B] > 100 && age[A] < 100 否则，A 可以给 B 发送好友请求。
+     *
+     * <p>注意如果 A 向 B 发出了请求，不等于 B 也一定会向 A 发出请求。而且，人们不会给自己发送好友请求。
+     *
+     * <p>求总共会发出多少份好友请求?
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：[16,16] 输出：2 解释：二人可以互发好友申请。 示例 2：
+     *
+     * <p>输入：[16,17,18] 输出：2 解释：好友请求可产生于 17 -> 16, 18 -> 17. 示例 3：
+     *
+     * <p>输入：[20,30,100,110,120] 输出：3 解释：好友请求可产生于 110 -> 100, 120 -> 110, 120 -> 100.
+     *
+     * <p>提示：
+     *
+     * <p>1 <= ages.length <= 20000. 1 <= ages[i] <= 120.
+     *
+     * @param ages
+     * @return
+     */
+    public int numFriendRequests(int[] ages) {
+        int[] counts = new int[121];
+        for (int age : ages) {
+            counts[age]++;
+        }
+        int result = 0;
+        for (int i = 15; i <= 120; i++) {
+            if (counts[i] == 0) {
+                continue;
+            }
+            int left = (i >> 1) + 7 + 1;
+            int friend = 0;
+            for (int j = left; j <= i; j++) {
+                if (counts[j] == 0) {
+                    continue;
+                }
+                friend += counts[j];
+                if (j == i) {
+                    friend--;
+                }
+            }
+            result += friend * counts[i];
+        }
+
+        return result;
+    }
 }
