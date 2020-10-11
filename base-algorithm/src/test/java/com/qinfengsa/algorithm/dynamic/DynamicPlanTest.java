@@ -2375,17 +2375,21 @@ public class DynamicPlanTest {
      * @return
      */
     public boolean canPartition(int[] nums) {
+        if (nums.length <= 1) {
+            return false;
+        }
         int sum = 0;
         for (int num : nums) {
             sum += num;
         }
+
         if ((sum & 1) == 1) {
             return false;
         }
         int target = sum >> 1;
 
         boolean[][] dp = new boolean[nums.length][target + 1];
-
+        Arrays.sort(nums);
         dp[0][0] = true;
         dp[0][nums[0]] = true;
         for (int i = 1; i < nums.length; i++) {
