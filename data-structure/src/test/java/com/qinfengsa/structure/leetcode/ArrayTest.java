@@ -18713,4 +18713,133 @@ public class ArrayTest {
 
         return result;
     }
+
+    /**
+     * 835. 图像重叠
+     *
+     * <p>给出两个图像 A 和 B ，A 和 B 为大小相同的二维正方形矩阵。（并且为二进制矩阵，只包含0和1）。
+     *
+     * <p>我们转换其中一个图像，向左，右，上，或下滑动任何数量的单位，并把它放在另一个图像的上面。之后，该转换的重叠是指两个图像都具有 1 的位置的数目。
+     *
+     * <p>（请注意，转换不包括向任何方向旋转。）
+     *
+     * <p>最大可能的重叠是什么？
+     *
+     * <p>示例 1:
+     *
+     * <p>输入：A = [[1,1,0], [0,1,0], [0,1,0]] B = [[0,0,0], [0,1,1], [0,0,1]] 输出：3 解释: 将 A
+     * 向右移动一个单位，然后向下移动一个单位。 注意:
+     *
+     * <p>1 <= A.length = A[0].length = B.length = B[0].length <= 30 0 <= A[i][j], B[i][j] <= 1
+     *
+     * @param img1
+     * @param img2
+     * @return
+     */
+    public int largestOverlap(int[][] img1, int[][] img2) {
+        int N = img1.length;
+        // 偏移量矩阵
+        int[][] count = new int[2 * N + 1][2 * N + 1];
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                if (img1[i][j] == 0) {
+                    continue;
+                }
+                for (int ii = 0; ii < N; ii++) {
+                    for (int jj = 0; jj < N; jj++) {
+                        if (img2[ii][jj] == 0) {
+                            continue;
+                        }
+                        count[i - ii + N][j - jj + N]++;
+                    }
+                }
+            }
+        }
+        int result = 0;
+        for (int[] row : count) {
+            for (int v : row) {
+                result = Math.max(v, result);
+            }
+        }
+
+        return result;
+    }
+
+    @Test
+    public void pushDominoes() {
+        String dominoes = ".L.R...LR..L..";
+        logResult(pushDominoes(dominoes));
+    }
+
+    /**
+     * 838. 推多米诺
+     *
+     * <p>一行中有 N 张多米诺骨牌，我们将每张多米诺骨牌垂直竖立。
+     *
+     * <p>在开始时，我们同时把一些多米诺骨牌向左或向右推。
+     *
+     * <p>每过一秒，倒向左边的多米诺骨牌会推动其左侧相邻的多米诺骨牌。
+     *
+     * <p>同样地，倒向右边的多米诺骨牌也会推动竖立在其右侧的相邻多米诺骨牌。
+     *
+     * <p>如果同时有多米诺骨牌落在一张垂直竖立的多米诺骨牌的两边，由于受力平衡， 该骨牌仍然保持不变。
+     *
+     * <p>就这个问题而言，我们会认为正在下降的多米诺骨牌不会对其它正在下降或已经下降的多米诺骨牌施加额外的力。
+     *
+     * <p>给定表示初始状态的字符串 "S" 。如果第 i 张多米诺骨牌被推向左边，则 S[i] = 'L'；如果第 i 张多米诺骨牌被推向右边，则 S[i] = 'R'；如果第 i
+     * 张多米诺骨牌没有被推动，则 S[i] = '.'。
+     *
+     * <p>返回表示最终状态的字符串。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：".L.R...LR..L.." 输出："LL.RR.LLRRLL.." 示例 2：
+     *
+     * <p>输入："RR.L" 输出："RR.L" 说明：第一张多米诺骨牌没有给第二张施加额外的力。 提示：
+     *
+     * <p>0 <= N <= 10^5 表示多米诺骨牌状态的字符串只含有 'L'，'R'; 以及 '.';
+     *
+     * @param dominoes
+     * @return
+     */
+    public String pushDominoes(String dominoes) {
+        int len = dominoes.length();
+        char[] chars = dominoes.toCharArray();
+        int[] nums = new int[len];
+        for (int i = 0; i < len; i++) {
+
+            if (chars[i] == 'R') {
+                int num = 10000;
+                nums[i] += num--;
+                while (i + 1 < len && chars[i + 1] == '.') {
+                    nums[i + 1] += num--;
+                    i++;
+                }
+            }
+        }
+
+        for (int i = len - 1; i >= 0; i--) {
+            if (chars[i] == 'L') {
+                int num = -10000;
+                nums[i] += num++;
+                while (i - 1 >= 0 && chars[i - 1] == '.') {
+                    nums[i - 1] += num++;
+                    i--;
+                }
+            }
+        }
+        log.debug("nums : {}", nums);
+        char[] result = new char[len];
+        for (int i = 0; i < len; i++) {
+            if (nums[i] < 0) {
+                result[i] = 'L';
+            } else if (nums[i] > 0) {
+                result[i] = 'R';
+            } else {
+                result[i] = '.';
+            }
+        }
+
+        return new String(result);
+    }
 }
