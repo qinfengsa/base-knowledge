@@ -18842,4 +18842,130 @@ public class ArrayTest {
 
         return new String(result);
     }
+
+    /**
+     * 846. 一手顺子
+     *
+     * <p>爱丽丝有一手（hand）由整数数组给定的牌。
+     *
+     * <p>现在她想把牌重新排列成组，使得每个组的大小都是 W，且由 W 张连续的牌组成。
+     *
+     * <p>如果她可以完成分组就返回 true，否则返回 false。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：hand = [1,2,3,6,2,3,4,7,8], W = 3 输出：true 解释：爱丽丝的手牌可以被重新排列为 [1,2,3]，[2,3,4]，[6,7,8]。 示例
+     * 2：
+     *
+     * <p>输入：hand = [1,2,3,4,5], W = 4 输出：false 解释：爱丽丝的手牌无法被重新排列成几个大小为 4 的组。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= hand.length <= 10000 0 <= hand[i] <= 10^9 1 <= W <= hand.length
+     *
+     * <p>注意：此题目与 1294
+     * 重复：https://leetcode-cn.com/problems/divide-array-in-sets-of-k-consecutive-numbers/
+     *
+     * @param hand
+     * @param W
+     * @return
+     */
+    public boolean isNStraightHand(int[] hand, int W) {
+        int len = hand.length;
+        if (len % W != 0) {
+            return false;
+        }
+        Map<Integer, Integer> map = new HashMap<>();
+        Arrays.sort(hand);
+        for (int num : hand) {
+            int count = map.getOrDefault(num, 0);
+            map.put(num, count + 1);
+        }
+        for (int num : hand) {
+            int count = map.getOrDefault(num, 0);
+            if (count == 0) {
+                continue;
+            }
+            map.put(num, count - 1);
+            for (int i = 1; i < W; i++) {
+                count = map.getOrDefault(num + i, 0);
+                if (count == 0) {
+                    return false;
+                }
+                map.put(num + i, count - 1);
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * 851. 喧闹和富有
+     *
+     * <p>在一组 N 个人（编号为 0, 1, 2, ..., N-1）中，每个人都有不同数目的钱，以及不同程度的安静（quietness）。
+     *
+     * <p>为了方便起见，我们将编号为 x 的人简称为 "person x "。
+     *
+     * <p>如果能够肯定 person x 比 person y 更有钱的话，我们会说 richer[i] = [x, y] 。注意 richer 可能只是有效观察的一个子集。
+     *
+     * <p>另外，如果 person x 的安静程度为 q ，我们会说 quiet[x] = q 。
+     *
+     * <p>现在，返回答案 answer ，其中 answer[x] = y 的前提是，在所有拥有的钱不少于 person x 的人中，person y 是最安静的人（也就是安静值
+     * quiet[y] 最小的人）。
+     *
+     * <p>示例：
+     *
+     * <p>输入：richer = [[1,0],[2,1],[3,1],[3,7],[4,3],[5,3],[6,3]], quiet = [3,2,5,4,6,1,7,0]
+     * 输出：[5,5,2,5,4,5,6,7] 解释： answer[0] = 5， person 5 比 person 3 有更多的钱，person 3 比 person 1
+     * 有更多的钱，person 1 比 person 0 有更多的钱。 唯一较为安静（有较低的安静值 quiet[x]）的人是 person 7， 但是目前还不清楚他是否比 person 0
+     * 更有钱。
+     *
+     * <p>answer[7] = 7， 在所有拥有的钱肯定不少于 person 7 的人中(这可能包括 person 3，4，5，6 以及 7)， 最安静(有较低安静值
+     * quiet[x])的人是 person 7。
+     *
+     * <p>其他的答案也可以用类似的推理来解释。 提示：
+     *
+     * <p>1 <= quiet.length = N <= 500 0 <= quiet[i] < N，所有 quiet[i] 都不相同。 0 <= richer.length <= N *
+     * (N-1) / 2 0 <= richer[i][j] < N richer[i][0] != richer[i][1] richer[i] 都是不同的。 对 richer
+     * 的观察在逻辑上是一致的。
+     *
+     * @param richer
+     * @param quiet
+     * @return
+     */
+    public int[] loudAndRich(int[][] richer, int[] quiet) {
+        int len = quiet.length;
+        int[] result = new int[len];
+        Arrays.fill(result, -1);
+        richList = new ArrayList<>();
+        for (int i = 0; i < len; i++) {
+            richList.add(new ArrayList<>());
+        }
+        quietList = quiet;
+        for (int[] num : richer) {
+            richList.get(num[1]).add(num[0]);
+        }
+        for (int i = 0; i < len; i++) {
+            loudAndRichDfs(i, result);
+        }
+
+        return result;
+    }
+
+    List<List<Integer>> richList;
+    int[] quietList;
+
+    private int loudAndRichDfs(int node, int[] result) {
+        if (result[node] == -1) {
+            result[node] = node;
+            for (int child : richList.get(node)) {
+                int minQuiet = loudAndRichDfs(child, result);
+                if (quietList[minQuiet] < quietList[result[node]]) {
+                    result[node] = minQuiet;
+                }
+            }
+        }
+
+        return result[node];
+    }
 }
