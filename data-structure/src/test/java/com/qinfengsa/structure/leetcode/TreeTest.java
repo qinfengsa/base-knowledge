@@ -5652,4 +5652,135 @@ public class TreeTest {
         preVal = root.val;
         inOrder(root.right);
     }
+
+    /**
+     * 863. 二叉树中所有距离为 K 的结点
+     *
+     * <p>给定一个二叉树（具有根结点 root）， 一个目标结点 target ，和一个整数值 K 。
+     *
+     * <p>返回到目标结点 target 距离为 K 的所有结点的值的列表。 答案可以以任何顺序返回。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：root = [3,5,1,6,2,0,8,null,null,7,4], target = 5, K = 2 输出：[7,4,1] 解释： 所求结点为与目标结点（值为
+     * 5）距离为 2 的结点， 值分别为 7，4，以及 1
+     *
+     * <p>注意，输入的 "root" 和 "target" 实际上是树上的结点。 上面的输入仅仅是对这些对象进行了序列化描述。
+     *
+     * <p>提示：
+     *
+     * <p>给定的树是非空的。 树上的每个结点都具有唯一的值 0 <= node.val <= 500 。 目标结点 target 是树上的结点。 0 <= K <= 1000.
+     *
+     * @param root
+     * @param target
+     * @param K
+     * @return
+     */
+    public List<Integer> distanceK(TreeNode root, TreeNode target, int K) {
+        List<Integer> result = new ArrayList<>();
+        visited = new HashSet<>();
+        // 先用广度优先遍历 统计
+        distanceKDfs(target, K, result);
+
+        Map<TreeNode, TreeNode> treeMap = new HashMap<>();
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.offer(root);
+        out:
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                TreeNode node = queue.poll();
+                if (node == target) {
+                    break out;
+                }
+                if (Objects.nonNull(node.left)) {
+                    queue.offer(node.left);
+                    treeMap.put(node.left, node);
+                }
+                if (Objects.nonNull(node.right)) {
+                    queue.offer(node.right);
+                    treeMap.put(node.right, node);
+                }
+            }
+        }
+        TreeNode parent = treeMap.get(target);
+        while (Objects.nonNull(parent)) {
+            distanceKDfs(parent, --K, result);
+            parent = treeMap.get(parent);
+        }
+
+        return result;
+    }
+
+    Set<Integer> visited;
+
+    private void distanceKDfs(TreeNode root, int k, List<Integer> list) {
+        if (Objects.isNull(root)) {
+            return;
+        }
+        if (visited.contains(root.val)) {
+            return;
+        }
+        visited.add(root.val);
+        if (k == 0) {
+            list.add(root.val);
+            return;
+        }
+        distanceKDfs(root.left, k - 1, list);
+        distanceKDfs(root.right, k - 1, list);
+    }
+
+    /**
+     * 865. 具有所有最深结点的最小子树
+     *
+     * <p>给定一个根为 root 的二叉树，每个结点的深度是它到根的最短距离。
+     *
+     * <p>如果一个结点在整个树的任意结点之间具有最大的深度，则该结点是最深的。
+     *
+     * <p>一个结点的子树是该结点加上它的所有后代的集合。
+     *
+     * <p>返回能满足“以该结点为根的子树中包含所有最深的结点”这一条件的具有最大深度的结点。
+     *
+     * <p>示例：
+     *
+     * <p>输入：[3,5,1,6,2,0,8,null,null,7,4] 输出：[2,7,4] 解释：
+     *
+     * <p>我们返回值为 2 的结点，在图中用黄色标记。 在图中用蓝色标记的是树的最深的结点。 输入 "[3, 5, 1, 6, 2, 0, 8, null, null, 7, 4]"
+     * 是对给定的树的序列化表述。 输出 "[2, 7, 4]" 是对根结点的值为 2 的子树的序列化表述。 输入和输出都具有 TreeNode 类型。
+     *
+     * <p>提示：
+     *
+     * <p>树中结点的数量介于 1 和 500 之间。 每个结点的值都是独一无二的。
+     *
+     * @param root
+     * @return
+     */
+    public TreeNode subtreeWithAllDeepest(TreeNode root) {
+
+        if (Objects.isNull(root)) {
+            return null;
+        }
+        int leftDepth = getDepthDeepest(root.left), rightDepth = getDepthDeepest(root.right);
+        if (leftDepth > rightDepth) {
+            return subtreeWithAllDeepest(root.left);
+        } else if (rightDepth > leftDepth) {
+            return subtreeWithAllDeepest(root.right);
+        }
+
+        return root;
+    }
+
+    Map<TreeNode, Integer> depthMap = new HashMap<>();
+
+    private int getDepthDeepest(TreeNode node) {
+        if (Objects.isNull(node)) {
+            return 0;
+        }
+        if (depthMap.containsKey(node)) {
+            return depthMap.get(node);
+        }
+        int leftDepth = getDepthDeepest(node.left), rightDepth = getDepthDeepest(node.right);
+        depthMap.put(node, Math.max(leftDepth, rightDepth) + 1);
+        return depthMap.get(node);
+    }
 }
