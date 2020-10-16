@@ -154,7 +154,7 @@ public class MathTest {
         if ((num & 1) == 0) {
             return false;
         }
-        for (int i = 3; i < num; i++) {
+        for (int i = 3; i * i <= num; i++) {
 
             if (num % i == 0) {
                 return false;
@@ -6772,5 +6772,124 @@ public class MathTest {
 
         if (p == 1 && q == 1) return 1;
         return p == 1 ? 0 : 2;
+    }
+
+    /**
+     * 869. 重新排序得到 2 的幂
+     *
+     * <p>给定正整数 N ，我们按任何顺序（包括原始顺序）将数字重新排序，注意其前导数字不能为零。
+     *
+     * <p>如果我们可以通过上述方式得到 2 的幂，返回 true；否则，返回 false。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：1 输出：true 示例 2：
+     *
+     * <p>输入：10 输出：false 示例 3：
+     *
+     * <p>输入：16 输出：true 示例 4：
+     *
+     * <p>输入：24 输出：false 示例 5：
+     *
+     * <p>输入：46 输出：true
+     *
+     * <p>提示：
+     *
+     * <p>1 <= N <= 10^9
+     *
+     * @param N
+     * @return
+     */
+    public boolean reorderedPowerOf2(int N) {
+        if (isPowerOfTwo(N)) {
+            return true;
+        }
+        String[][] nums = {
+            {"1", "2", "4", "8"},
+            {"16", "32", "64"},
+            {"128", "256", "512"},
+            {"1024", "2048", "4096", "8192"},
+            {"16384", "32768", "65536"},
+            {"131072", "262144", "524288"},
+            {"1048576", "2097152", "4194304", "8388608"},
+            {"16777216", "33554432", "67108864"},
+            {"134217728", "268435456", "536870912"}
+        };
+        String num = String.valueOf(N);
+        String[] list = nums[num.length() - 1];
+        for (String str : list) {
+            if (compareNum(str, num)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean compareNum(String num1, String num2) {
+        int[] nums = new int[10];
+        for (int i = 0; i < num1.length(); i++) {
+            char c1 = num1.charAt(i), c2 = num2.charAt(i);
+            nums[c1 - '0']++;
+            nums[c2 - '0']--;
+        }
+
+        for (int i = 0; i < 10; i++) {
+            if (nums[i] != 0) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * 866. 回文素数
+     *
+     * <p>求出大于或等于 N 的最小回文素数。
+     *
+     * <p>回顾一下，如果一个数大于 1，且其因数只有 1 和它自身，那么这个数是素数。
+     *
+     * <p>例如，2，3，5，7，11 以及 13 是素数。
+     *
+     * <p>回顾一下，如果一个数从左往右读与从右往左读是一样的，那么这个数是回文数。
+     *
+     * <p>例如，12321 是回文数。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：6 输出：7 示例 2：
+     *
+     * <p>输入：8 输出：11 示例 3：
+     *
+     * <p>输入：13 输出：101
+     *
+     * <p>提示：
+     *
+     * <p>1 <= N <= 10^8 答案肯定存在，且小于 2 * 10^8。
+     *
+     * @param N
+     * @return
+     */
+    public int primePalindrome(int N) {
+        while (true) {
+            if (N == reverse(N) && isPrime(N)) {
+                return N;
+            }
+            N++;
+            if (10_000_000 < N && N < 100_000_000) {
+                N = 100_000_000;
+            }
+        }
+    }
+
+    private int reverse(int num) {
+        int result = 0;
+        while (num > 0) {
+            result = result * 10 + num % 10;
+            num /= 10;
+        }
+
+        return result;
     }
 }

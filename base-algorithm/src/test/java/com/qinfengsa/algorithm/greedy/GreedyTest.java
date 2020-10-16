@@ -4,6 +4,7 @@ import static com.qinfengsa.algorithm.util.LogUtils.logResult;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -1729,5 +1730,48 @@ public class GreedyTest {
         }
 
         return num;
+    }
+
+    /**
+     * 870. 优势洗牌
+     *
+     * <p>给定两个大小相等的数组 A 和 B，A 相对于 B 的优势可以用满足 A[i] > B[i] 的索引 i 的数目来描述。
+     *
+     * <p>返回 A 的任意排列，使其相对于 B 的优势最大化。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：A = [2,7,11,15], B = [1,10,4,11] 输出：[2,11,7,15] 示例 2：
+     *
+     * <p>输入：A = [12,24,8,32], B = [13,25,32,11] 输出：[24,32,8,12]
+     *
+     * <p>提示：
+     *
+     * <p>1 <= A.length = B.length <= 10000 0 <= A[i] <= 10^9 0 <= B[i] <= 10^9
+     *
+     * @param A
+     * @param B
+     * @return
+     */
+    public int[] advantageCount(int[] A, int[] B) {
+        int len = A.length;
+        int[] result = new int[len];
+        Arrays.sort(A);
+        int[][] arrs = new int[len][2];
+        for (int i = 0; i < len; i++) {
+            arrs[i][0] = B[i];
+            arrs[i][1] = i;
+        }
+        Arrays.sort(arrs, Comparator.comparingInt(a -> a[0]));
+        int left = 0, right = len - 1;
+        for (int i = 0; i < len; i++) {
+            if (A[i] <= arrs[left][0]) {
+                result[arrs[right--][1]] = A[i]; // 要放到原数组对应的位置上
+            } else {
+                result[arrs[left++][1]] = A[i]; // 要放到原数组对应的位置上
+            }
+        }
+
+        return result;
     }
 }
