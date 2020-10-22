@@ -9183,4 +9183,148 @@ public class StringTest {
 
         return new String(chars);
     }
+
+    @Test
+    public void findLexSmallestString() {
+        String s = "192804";
+        int a = 8, b = 5;
+        logResult(findLexSmallestString(s, a, b));
+    }
+
+    /**
+     * 1625. 执行操作后字典序最小的字符串
+     *
+     * <p>给你一个字符串 s 以及两个整数 a 和 b 。其中，字符串 s 的长度为偶数，且仅由数字 0 到 9 组成。
+     *
+     * <p>你可以在 s 上按任意顺序多次执行下面两个操作之一：
+     *
+     * <p>累加：将 a 加到 s 中所有下标为奇数的元素上（下标从 0 开始）。数字一旦超过 9 就会变成 0，如此循环往复。例如，s = "3456" 且 a = 5，则执行此操作后 s
+     * 变成 "3951"。 轮转：将 s 向右轮转 b 位。例如，s = "3456" 且 b = 1，则执行此操作后 s 变成 "6345"。 请你返回在 s
+     * 上执行上述操作任意次后可以得到的 字典序最小 的字符串。
+     *
+     * <p>如果两个字符串长度相同，那么字符串 a 字典序比字符串 b 小可以这样定义：在 a 和 b 出现不同的第一个位置上，字符串 a 中的字符出现在字母表中的时间早于 b
+     * 中的对应字符。例如，"0158” 字典序比 "0190" 小，因为不同的第一个位置是在第三个字符，显然 '5' 出现在 '9' 之前。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：s = "5525", a = 9, b = 2 输出："2050" 解释：执行操作如下： 初态："5525" 轮转："2555" 累加："2454" 累加："2353"
+     * 轮转："5323" 累加："5222" 累加："5121" 轮转："2151" 累加："2050" 无法获得字典序小于 "2050" 的字符串。 示例 2：
+     *
+     * <p>输入：s = "74", a = 5, b = 1 输出："24" 解释：执行操作如下： 初态："74" 轮转："47" 累加："42" 轮转："24"​​​​​​​​​​​​
+     * 无法获得字典序小于 "24" 的字符串。 示例 3：
+     *
+     * <p>输入：s = "0011", a = 4, b = 2 输出："0011" 解释：无法获得字典序小于 "0011" 的字符串。 示例 4：
+     *
+     * <p>输入：s = "43987654", a = 7, b = 3 输出："00553311"
+     *
+     * <p>提示：
+     *
+     * <p>2 <= s.length <= 100 s.length 是偶数 s 仅由数字 0 到 9 组成 1 <= a <= 9 1 <= b <= s.length - 1
+     *
+     * @param s
+     * @param a
+     * @param b
+     * @return
+     */
+    public String findLexSmallestString(String s, int a, int b) {
+        char[] chars = s.toCharArray();
+        int len = chars.length;
+        // 获取 len 和 b 的 最大公约数
+        int step = getGcd(len, b);
+
+        List<Integer> indexs = new ArrayList<>();
+        List<Integer> counts = new ArrayList<>();
+        int minStart = 10;
+        // 按 step 判断每一位 最小值
+        boolean oddNum = (step & 1) == 1;
+        for (int i = 0; i < len; i += step) {
+            int num = chars[i] - '0';
+            int low = num, lowCount = 0;
+            if (oddNum) {
+                // step 是奇数, 需要考虑 + a 得到的最小值
+                for (int j = 1; j < 10; j++) {
+                    num += a;
+                    num %= 10;
+                    if (num < low) {
+                        low = num;
+                        lowCount = j;
+                    }
+                }
+            }
+
+            if (low < minStart) {
+                minStart = low;
+                indexs = new ArrayList<>();
+                counts = new ArrayList<>();
+                indexs.add(i);
+                counts.add(lowCount);
+            } else if (low == minStart) {
+                indexs.add(i);
+                counts.add(lowCount);
+            }
+        }
+
+        return getLexSmallestString(s, a, indexs, counts);
+    }
+
+    private String getLexSmallestString(
+            String s, int a, List<Integer> indexs, List<Integer> counts) {
+        String str = s + s;
+        int len = s.length(), size = indexs.size();
+        int index = indexs.get(0), count = counts.get(0);
+        String result = addLex(str.substring(index, index + len), a, count);
+
+        for (int i = 1; i < size; i++) {
+            index = indexs.get(i);
+            count = counts.get(i);
+            String s1 = addLex(str.substring(index, index + len), a, count);
+            if (s1.compareTo(result) < 0) {
+                result = s1;
+            }
+        }
+
+        return result;
+    }
+
+    private String addLex(String s, int a, int count) {
+        int len = s.length();
+        char[] chars = s.toCharArray();
+        if (count > 0) {
+            // 偶数位加count个 a
+            for (int i = 0; i < len; i += 2) {
+                int num = (chars[i] - '0' + count * a) % 10;
+                chars[i] = (char) ('0' + num);
+            }
+        }
+        // 第二位最小
+        int num = chars[1] - '0';
+        int low = num, lowCount = 0;
+        // step 是奇数, 需要考虑 + a 得到的最小值
+        for (int j = 1; j < 10; j++) {
+            num += a;
+            num %= 10;
+            if (num < low) {
+                low = num;
+                lowCount = j;
+            }
+        }
+        // 奇数位加 lowCount 个 a
+        for (int i = 1; i < len; i += 2) {
+            num = (chars[i] - '0' + lowCount * a) % 10;
+            chars[i] = (char) ('0' + num);
+        }
+        return new String(chars);
+    }
+
+    // 最大公约数
+    public static int getGcd(int a, int b) {
+        int max, min;
+        max = Math.max(a, b);
+        min = Math.min(a, b);
+
+        if (max % min != 0) {
+            return getGcd(min, max % min);
+        }
+        return min;
+    }
 }
