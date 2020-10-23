@@ -2,6 +2,7 @@ package com.qinfengsa.algorithm.greedy;
 
 import static com.qinfengsa.algorithm.util.LogUtils.logResult;
 
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -1773,5 +1774,100 @@ public class GreedyTest {
         }
 
         return result;
+    }
+
+    /**
+     * 1620. 网络信号最好的坐标
+     *
+     * <p>给你一个数组 towers 和一个整数 radius ，数组中包含一些网络信号塔，其中 towers[i] = [xi, yi, qi] 表示第 i 个网络信号塔的坐标是 (xi,
+     * yi) 且信号强度参数为 qi 。所有坐标都是在 X-Y 坐标系内的 整数 坐标。两个坐标之间的距离用 欧几里得距离 计算。
+     *
+     * <p>整数 radius 表示一个塔 能到达 的 最远距离 。如果一个坐标跟塔的距离在 radius 以内，那么该塔的信号可以到达该坐标。在这个范围以外信号会很微弱，所以 radius
+     * 以外的距离该塔是 不能到达的 。
+     *
+     * <p>如果第 i 个塔能到达 (x, y) ，那么该塔在此处的信号为 ⌊qi / (1 + d)⌋ ，其中 d 是塔跟此坐标的距离。一个坐标的 网络信号 是所有 能到达
+     * 该坐标的塔的信号强度之和。
+     *
+     * <p>请你返回 网络信号 最大的整数坐标点。如果有多个坐标网络信号一样大，请你返回字典序最小的一个坐标。
+     *
+     * <p>注意：
+     *
+     * <p>坐标 (x1, y1) 字典序比另一个坐标 (x2, y2) 小：要么 x1 < x2 ，要么 x1 == x2 且 y1 < y2 。 ⌊val⌋ 表示小于等于 val
+     * 的最大整数（向下取整函数）。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：towers = [[1,2,5],[2,1,7],[3,1,9]], radius = 2 输出：[2,1] 解释： 坐标 (2, 1) 信号强度之和为 13 - 塔
+     * (2, 1) 强度参数为 7 ，在该点强度为 ⌊7 / (1 + sqrt(0)⌋ = ⌊7⌋ = 7 - 塔 (1, 2) 强度参数为 5 ，在该点强度为 ⌊5 / (1 +
+     * sqrt(2)⌋ = ⌊2.07⌋ = 2 - 塔 (3, 1) 强度参数为 9 ，在该点强度为 ⌊9 / (1 + sqrt(1)⌋ = ⌊4.5⌋ = 4
+     * 没有别的坐标有更大的信号强度。 示例 2：
+     *
+     * <p>输入：towers = [[23,11,21]], radius = 9 输出：[23,11] 示例 3：
+     *
+     * <p>输入：towers = [[1,2,13],[2,1,7],[0,1,9]], radius = 2 输出：[1,2] 示例 4：
+     *
+     * <p>输入：towers = [[2,1,9],[0,1,9]], radius = 2 输出：[0,1] 解释：坐标 (0, 1) 和坐标 (2, 1) 都是强度最大的位置，但是
+     * (0, 1) 字典序更小。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= towers.length <= 50 towers[i].length == 3 0 <= xi, yi, qi <= 50 1 <= radius <= 50
+     *
+     * @param towers
+     * @param radius
+     * @return
+     */
+    public int[] bestCoordinate(int[][] towers, int radius) {
+        int maxX = 0, maxY = 0;
+        for (int[] tower : towers) {
+            maxX = Math.max(maxX, tower[0]);
+            maxY = Math.max(maxY, tower[1]);
+        }
+
+        Map<Point, Integer> signalMap = new HashMap<>();
+        // 对每个半径内能到的点求signal值并累加到sig数组
+        for (int[] tower : towers) {
+            for (int x = -radius; x <= radius; x++) {
+                for (int y = -radius; y <= radius; y++) {
+                    double distance = distance(x, y);
+                    if (distance > radius) {
+                        continue;
+                    }
+                    int a = tower[0] + x, b = tower[1] + y;
+                    if (a < 0 || b < 0) {
+                        continue;
+                    }
+                    Point point = new Point(a, b);
+                    int sig = signalMap.getOrDefault(point, 0);
+                    signalMap.put(point, sig + signal(tower[2], distance));
+                }
+            }
+        }
+        List<Point> list = new ArrayList<>(signalMap.keySet());
+        list.sort(
+                (a, b) -> {
+                    int val1 = signalMap.get(a), val2 = signalMap.get(b);
+                    if (val1 == val2) {
+                        return a.x == b.x ? a.y - b.y : a.x - b.x;
+                    }
+                    return val2 - val1;
+                });
+        Point first = list.get(0);
+        int[] result = new int[2];
+        if (signalMap.get(first) == 0) {
+            return result;
+        }
+        result[0] = first.x;
+        result[1] = first.y;
+
+        return result;
+    }
+
+    private double distance(int x, int y) {
+        return Math.sqrt(x * x + y * y);
+    }
+
+    private int signal(int q, double distance) {
+        return (int) (q / (1 + distance));
     }
 }

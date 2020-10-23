@@ -5799,4 +5799,60 @@ public class DynamicPlanTest {
 
         return max;
     }
+
+    /**
+     * 1621. 大小为 K 的不重叠线段的数目
+     *
+     * <p>给你一维空间的 n 个点，其中第 i 个点（编号从 0 到 n-1）位于 x = i 处，请你找到 恰好 k 个不重叠 线段且每个线段至少覆盖两个点的方案数。线段的两个端点必须都是
+     * 整数坐标 。这 k 个线段不需要全部覆盖全部 n 个点，且它们的端点 可以 重合。
+     *
+     * <p>请你返回 k 个不重叠线段的方案数。由于答案可能很大，请将结果对 109 + 7 取余 后返回。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：n = 4, k = 2 输出：5 解释： 如图所示，两个线段分别用红色和蓝色标出。 上图展示了 5 种不同的方案
+     * {(0,2),(2,3)}，{(0,1),(1,3)}，{(0,1),(2,3)}，{(1,2),(2,3)}，{(0,1),(1,2)} 。 示例 2：
+     *
+     * <p>输入：n = 3, k = 1 输出：3 解释：总共有 3 种不同的方案 {(0,1)}, {(0,2)}, {(1,2)} 。 示例 3：
+     *
+     * <p>输入：n = 30, k = 7 输出：796297179 解释：画 7 条线段的总方案数为 3796297200 种。将这个数对 109 + 7 取余得到 796297179 。
+     * 示例 4：
+     *
+     * <p>输入：n = 5, k = 3 输出：7 示例 5：
+     *
+     * <p>输入：n = 3, k = 2 输出：1
+     *
+     * <p>提示：
+     *
+     * <p>2 <= n <= 1000 1 <= k <= n-1
+     *
+     * @param n
+     * @param k
+     * @return
+     */
+    public int numberOfSets(int n, int k) {
+        // 在 [0, n+k-1)[0,n+k−1) 共 n+k-1n+k−1 个数中选择 2k个
+        int result = 0;
+        int a = 1, b = 1;
+        for (int i = 1; i <= k; i++) {
+            a = (int) ((long) a * (n + i - 1) * (n - i) % MOD);
+            b = (int) ((long) b * (2 * i - 1) * (2 * i) % MOD);
+            int bo = quickPower(b, MOD - 2);
+            result = (int) ((long) a * bo % MOD);
+        }
+        return result;
+    }
+
+    private int quickPower(int a, int y) {
+        int result = 1;
+        int x = a;
+        while (y > 0) {
+            if ((y & 1) == 1) {
+                result = (int) (((long) result * x) % MOD);
+            }
+            x = (int) (((long) x * x) % MOD);
+            y >>= 1;
+        }
+        return result % MOD;
+    }
 }

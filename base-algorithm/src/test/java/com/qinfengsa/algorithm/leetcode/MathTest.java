@@ -6892,4 +6892,81 @@ public class MathTest {
 
         return result;
     }
+
+    /**
+     * 1041. 困于环中的机器人
+     *
+     * <p>在无限的平面上，机器人最初位于 (0, 0) 处，面朝北方。机器人可以接受下列三条指令之一：
+     *
+     * <p>"G"：直走 1 个单位 "L"：左转 90 度 "R"：右转 90 度 机器人按顺序执行指令 instructions，并一直重复它们。
+     *
+     * <p>只有在平面中存在环使得机器人永远无法离开时，返回 true。否则，返回 false。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入："GGLLGG" 输出：true 解释： 机器人从 (0,0) 移动到 (0,2)，转 180 度，然后回到 (0,0)。 重复这些指令，机器人将保持在以原点为中心，2
+     * 为半径的环中进行移动。 示例 2：
+     *
+     * <p>输入："GG" 输出：false 解释： 机器人无限向北移动。 示例 3：
+     *
+     * <p>输入："GL" 输出：true 解释： 机器人按 (0, 0) -> (0, 1) -> (-1, 1) -> (-1, 0) -> (0, 0) -> ... 进行移动。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= instructions.length <= 100 instructions[i] 在 {'G', 'L', 'R'} 中
+     *
+     * @param instructions
+     * @return
+     */
+    public boolean isRobotBounded(String instructions) {
+        int x = 0, y = 0;
+        // 0 上 1 左 2 下 3 右
+        int flag = 0;
+        for (char c : instructions.toCharArray()) {
+            switch (c) {
+                case 'L':
+                    {
+                        flag++;
+                        flag %= 4;
+                    }
+                    ;
+                    break;
+                case 'R':
+                    {
+                        flag += 3;
+                        flag %= 4;
+                    }
+                    ;
+                    break;
+                case 'G':
+                    {
+                        switch (flag) {
+                            case 0:
+                                y++;
+                                break;
+                            case 1:
+                                x--;
+                                break;
+                            case 2:
+                                y--;
+                                break;
+                            case 3:
+                                x++;
+                                break;
+                        }
+                    }
+                    ;
+                    break;
+            }
+        }
+
+        if (x == 0 && y == 0) {
+            return true;
+        }
+        if (flag != 0) {
+            return true;
+        }
+
+        return false;
+    }
 }
