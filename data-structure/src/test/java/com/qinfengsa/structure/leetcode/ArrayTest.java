@@ -19076,4 +19076,135 @@ public class ArrayTest {
         }
         return sum / count;
     }
+
+    @Test
+    public void maxSumTwoNoOverlap() {
+        int[] A = {2, 1, 5, 6, 0, 9, 5, 0, 3, 8};
+        int l = 4, m = 3;
+        logResult(maxSumTwoNoOverlap(A, l, m));
+    }
+
+    /**
+     * 1031. 两个非重叠子数组的最大和
+     *
+     * <p>给出非负整数数组 A ，返回两个非重叠（连续）子数组中元素的最大和，子数组的长度分别为 L 和 M。（这里需要澄清的是，长为 L 的子数组可以出现在长为 M 的子数组之前或之后。）
+     *
+     * <p>从形式上看，返回最大的 V，而 V = (A[i] + A[i+1] + ... + A[i+L-1]) + (A[j] + A[j+1] + ... + A[j+M-1])
+     * 并满足下列条件之一：
+     *
+     * <p>0 <= i < i + L - 1 < j < j + M - 1 < A.length, 或 0 <= j < j + M - 1 < i < i + L - 1 <
+     * A.length.
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：A = [0,6,5,2,2,5,1,9,4], L = 1, M = 2 输出：20 解释：子数组的一种选择中，[9] 长度为 1，[6,5] 长度为 2。 示例 2：
+     *
+     * <p>输入：A = [3,8,1,3,2,1,8,9,0], L = 3, M = 2 输出：29 解释：子数组的一种选择中，[3,8,1] 长度为 3，[8,9] 长度为 2。 示例
+     * 3：
+     *
+     * <p>输入：A = [2,1,5,6,0,9,5,0,3,8], L = 4, M = 3 输出：31 解释：子数组的一种选择中，[5,6,0,9] 长度为 4，[0,3,8] 长度为
+     * 3。
+     *
+     * <p>提示：
+     *
+     * <p>L >= 1 M >= 1 L + M <= A.length <= 1000 0 <= A[i] <= 1000
+     *
+     * @param A
+     * @param L
+     * @param M
+     * @return
+     */
+    public int maxSumTwoNoOverlap(int[] A, int L, int M) {
+        // 前缀和
+        int len = A.length;
+        for (int i = 1; i < len; i++) {
+            A[i] += A[i - 1];
+        }
+        // 滑动窗口 同时求两个数组的最大值
+        int result = 0;
+        int lMax = A[L - 1];
+        result = Math.max(result, lMax + A[M + L - 1] - A[L - 1]);
+        for (int i = L; i < len - M; i++) {
+            lMax = Math.max(lMax, A[i] - A[i - L]);
+            result = Math.max(result, lMax + A[i + M] - A[i]);
+        }
+
+        int mMax = A[M - 1];
+        result = Math.max(result, mMax + A[M + L - 1] - A[M - 1]);
+        for (int i = M; i < len - L; i++) {
+            mMax = Math.max(mMax, A[i] - A[i - M]);
+            result = Math.max(result, mMax + A[i + L] - A[i]);
+        }
+
+        return result;
+    }
+
+    /**
+     * 1034. 边框着色
+     *
+     * <p>给出一个二维整数网格 grid，网格中的每个值表示该位置处的网格块的颜色。
+     *
+     * <p>只有当两个网格块的颜色相同，而且在四个方向中任意一个方向上相邻时，它们属于同一连通分量。
+     *
+     * <p>连通分量的边界是指连通分量中的所有与不在分量中的正方形相邻（四个方向上）的所有正方形，或者在网格的边界上（第一行/列或最后一行/列）的所有正方形。
+     *
+     * <p>给出位于 (r0, c0) 的网格块和颜色 color，使用指定颜色 color 为所给网格块的连通分量的边界进行着色，并返回最终的网格 grid 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：grid = [[1,1],[1,2]], r0 = 0, c0 = 0, color = 3 输出：[[3, 3], [3, 2]] 示例 2：
+     *
+     * <p>输入：grid = [[1,2,2],[2,3,2]], r0 = 0, c0 = 1, color = 3 输出：[[1, 3, 3], [2, 3, 3]] 示例 3：
+     *
+     * <p>输入：grid = [[1,1,1],[1,1,1],[1,1,1]], r0 = 1, c0 = 1, color = 2 输出：[[2, 2, 2], [2, 1, 2],
+     * [2, 2, 2]]
+     *
+     * <p>提示：
+     *
+     * <p>1 <= grid.length <= 50 1 <= grid[0].length <= 50 1 <= grid[i][j] <= 1000 0 <= r0 <
+     * grid.length 0 <= c0 < grid[0].length 1 <= color <= 1000
+     *
+     * @param grid
+     * @param r0
+     * @param c0
+     * @param color
+     * @return
+     */
+    public int[][] colorBorder(int[][] grid, int r0, int c0, int color) {
+        oldColor = grid[r0][c0];
+        newColor = color;
+        M = grid.length;
+        N = grid[0].length;
+        boolean[][] visited = new boolean[M][N];
+        visited[r0][c0] = true;
+        dfsColorBorder(grid, r0, c0, visited);
+        return grid;
+    }
+
+    private int oldColor, newColor;
+
+    private void dfsColorBorder(int[][] grid, int row, int col, boolean[][] visited) {
+        if (!inArea(row, col, M, N)) {
+            return;
+        }
+
+        for (int i = 0; i < 4; i++) {
+            int rowNum = row + DIR_ROW[i];
+            int colNum = col + DIR_COL[i];
+            if (inArea(rowNum, colNum, M, N)) {
+                if (visited[rowNum][colNum]) {
+                    continue;
+                }
+                if (grid[rowNum][colNum] != oldColor) {
+                    grid[row][col] = newColor;
+                } else {
+                    visited[rowNum][colNum] = true;
+                    dfsColorBorder(grid, rowNum, colNum, visited);
+                }
+
+            } else {
+                grid[row][col] = newColor;
+            }
+        }
+    }
 }
