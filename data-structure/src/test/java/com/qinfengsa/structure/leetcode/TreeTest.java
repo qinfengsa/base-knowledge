@@ -2833,7 +2833,7 @@ public class TreeTest {
         return treeSum;
     }
 
-    static int treeSum = 0;
+    int treeSum = 0;
 
     private void sumNumbers(TreeNode node, int num) {
         if (Objects.isNull(node)) {
@@ -5782,5 +5782,90 @@ public class TreeTest {
         int leftDepth = getDepthDeepest(node.left), rightDepth = getDepthDeepest(node.right);
         depthMap.put(node, Math.max(leftDepth, rightDepth) + 1);
         return depthMap.get(node);
+    }
+
+    /**
+     * 1038. 把二叉搜索树转换为累加树
+     *
+     * <p>给出二叉 搜索 树的根节点，该树的节点值各不相同，请你将其转换为累加树（Greater Sum Tree），使每个节点 node 的新值等于原树中大于或等于 node.val
+     * 的值之和。
+     *
+     * <p>提醒一下，二叉搜索树满足下列约束条件：
+     *
+     * <p>节点的左子树仅包含键 小于 节点键的节点。 节点的右子树仅包含键 大于 节点键的节点。 左右子树也必须是二叉搜索树。 注意：该题目与 538:
+     * https://leetcode-cn.com/problems/convert-bst-to-greater-tree/ 相同
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：[4,1,6,0,2,5,7,null,null,null,3,null,null,null,8]
+     * 输出：[30,36,21,36,35,26,15,null,null,null,33,null,null,null,8] 示例 2：
+     *
+     * <p>输入：root = [0,null,1] 输出：[1,null,1] 示例 3：
+     *
+     * <p>输入：root = [1,0,2] 输出：[3,3,2] 示例 4：
+     *
+     * <p>输入：root = [3,2,4,1] 输出：[7,9,4,10]
+     *
+     * <p>提示：
+     *
+     * <p>树中的节点数介于 1 和 100 之间。 每个节点的值介于 0 和 100 之间。 树中的所有值 互不相同 。 给定的树为二叉搜索树。
+     *
+     * @param root
+     * @return
+     */
+    public TreeNode bstToGst(TreeNode root) {
+        // 反向中序遍历
+        if (Objects.isNull(root)) {
+            return null;
+        }
+        bstToGst(root.right);
+        treeSum += root.val;
+        root.val = treeSum;
+        bstToGst(root.left);
+        return root;
+    }
+
+    /**
+     * 1026. 节点与其祖先之间的最大差值
+     *
+     * <p>给定二叉树的根节点 root，找出存在于不同节点 A 和 B 之间的最大值 V，其中 V = |A.val - B.val|，且 A 是 B 的祖先。
+     *
+     * <p>（如果 A 的任何子节点之一为 B，或者 A 的任何子节点是 B 的祖先，那么我们认为 A 是 B 的祖先）
+     *
+     * <p>示例：
+     *
+     * <p>输入：[8,3,10,1,6,null,14,null,null,4,7,13] 输出：7 解释： 我们有大量的节点与其祖先的差值，其中一些如下： |8 - 3| = 5 |3 -
+     * 7| = 4 |8 - 1| = 7 |10 - 13| = 3 在所有可能的差值中，最大值 7 由 |8 - 1| = 7 得出。
+     *
+     * <p>提示：
+     *
+     * <p>树中的节点数在 2 到 5000 之间。 每个节点的值介于 0 到 100000 之间。
+     *
+     * @param root
+     * @return
+     */
+    public int maxAncestorDiff(TreeNode root) {
+        if (Objects.isNull(root)) {
+            return 0;
+        }
+        maxAncestorDiffDfs(root, root.val, root.val);
+        return maxAncestorDiffResult;
+    }
+
+    private int maxAncestorDiffResult = 0;
+
+    private void maxAncestorDiffDfs(TreeNode root, int max, int min) {
+        if (Objects.isNull(root)) {
+            return;
+        }
+        max = Math.max(max, root.val);
+        min = Math.min(min, root.val);
+        // 叶子节点
+        if (Objects.isNull(root.left) && Objects.isNull(root.right)) {
+            maxAncestorDiffResult = Math.max(maxAncestorDiffResult, max - min);
+        }
+
+        maxAncestorDiffDfs(root.left, max, min);
+        maxAncestorDiffDfs(root.right, max, min);
     }
 }
