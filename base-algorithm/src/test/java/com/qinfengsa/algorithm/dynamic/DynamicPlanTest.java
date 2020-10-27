@@ -5926,4 +5926,100 @@ public class DynamicPlanTest {
 
         return min == Integer.MAX_VALUE ? -1 : min;
     }
+
+    /**
+     * 873. 最长的斐波那契子序列的长度
+     *
+     * <p>如果序列 X_1, X_2, ..., X_n 满足下列条件，就说它是 斐波那契式 的：
+     *
+     * <p>n >= 3 对于所有 i + 2 <= n，都有 X_i + X_{i+1} = X_{i+2} 给定一个严格递增的正整数数组形成序列，找到 A
+     * 中最长的斐波那契式的子序列的长度。如果一个不存在，返回 0 。
+     *
+     * <p>（回想一下，子序列是从原序列 A 中派生出来的，它从 A 中删掉任意数量的元素（也可以不删），而不改变其余元素的顺序。例如， [3, 5, 8] 是 [3, 4, 5, 6, 7,
+     * 8] 的一个子序列）
+     *
+     * <p>示例 1：
+     *
+     * <p>输入: [1,2,3,4,5,6,7,8] 输出: 5 解释: 最长的斐波那契式子序列为：[1,2,3,5,8] 。 示例 2：
+     *
+     * <p>输入: [1,3,7,11,12,14,18] 输出: 3 解释: 最长的斐波那契式子序列有： [1,11,12]，[3,11,14] 以及 [7,11,18] 。
+     *
+     * <p>提示：
+     *
+     * <p>3 <= A.length <= 1000 1 <= A[0] < A[1] < ... < A[A.length - 1] <= 10^9 （对于以 Java，C，C++，以及
+     * C# 的提交，时间限制被减少了 50%）
+     *
+     * @param A
+     * @return
+     */
+    public int lenLongestFibSubseq(int[] A) {
+        Map<Integer, Integer> indexMap = new HashMap<>();
+        int max = 0, len = A.length;
+        for (int i = 0; i < len; i++) {
+            indexMap.put(A[i], i);
+        }
+        // dp[i][j]：表示以A[i],A[j]结尾的斐波那契数列的最大长度
+        int[][] dp = new int[len][len];
+        for (int i = 0; i < len; i++) {
+            for (int j = i + 1; j < len; j++) {
+                dp[i][j] = 2;
+            }
+        }
+
+        for (int i = 0; i < len; i++) {
+            for (int j = i + 1; j < len; j++) {
+                int left = A[j] - A[i];
+                if (left >= A[i]) {
+                    continue;
+                }
+                int leftIndex = indexMap.getOrDefault(left, -1);
+                if (leftIndex != -1) {
+                    dp[i][j] = dp[leftIndex][i] + 1;
+                }
+
+                max = Math.max(max, dp[i][j]);
+            }
+        }
+
+        return max > 2 ? max : 0;
+    }
+
+    /**
+     * 877. 石子游戏
+     *
+     * <p>亚历克斯和李用几堆石子在做游戏。偶数堆石子排成一行，每堆都有正整数颗石子 piles[i] 。
+     *
+     * <p>游戏以谁手中的石子最多来决出胜负。石子的总数是奇数，所以没有平局。
+     *
+     * <p>亚历克斯和李轮流进行，亚历克斯先开始。 每回合，玩家从行的开始或结束处取走整堆石头。 这种情况一直持续到没有更多的石子堆为止，此时手中石子最多的玩家获胜。
+     *
+     * <p>假设亚历克斯和李都发挥出最佳水平，当亚历克斯赢得比赛时返回 true ，当李赢得比赛时返回 false 。
+     *
+     * <p>示例：
+     *
+     * <p>输入：[5,3,4,5] 输出：true 解释： 亚历克斯先开始，只能拿前 5 颗或后 5 颗石子 。 假设他取了前 5 颗，这一行就变成了 [3,4,5] 。 如果李拿走前 3
+     * 颗，那么剩下的是 [4,5]，亚历克斯拿走后 5 颗赢得 10 分。 如果李拿走后 5 颗，那么剩下的是 [3,4]，亚历克斯拿走后 4 颗赢得 9 分。 这表明，取前 5
+     * 颗石子对亚历克斯来说是一个胜利的举动，所以我们返回 true 。
+     *
+     * <p>提示：
+     *
+     * <p>2 <= piles.length <= 500 piles.length 是偶数。 1 <= piles[i] <= 500 sum(piles) 是奇数。
+     *
+     * @param piles
+     * @return
+     */
+    public boolean stoneGame(int[] piles) {
+        int len = piles.length;
+        int[][] dp = new int[len][len];
+        for (int i = 0; i < len; i++) {
+            dp[i][i] = piles[i];
+        }
+        for (int i = len - 2; i >= 0; i--) {
+            for (int j = i + 1; j < len; j++) {
+                dp[i][j] = Math.max(piles[i] - dp[i + 1][j], piles[j] - dp[i][j - 1]);
+            }
+        }
+
+        return dp[0][len - 1] > 0;
+    }
 }
