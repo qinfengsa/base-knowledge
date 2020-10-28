@@ -5868,4 +5868,68 @@ public class TreeTest {
         maxAncestorDiffDfs(root.left, max, min);
         maxAncestorDiffDfs(root.right, max, min);
     }
+
+    @Test
+    public void constructFromPrePost() {
+        int[] pre = {1, 2, 4, 5, 3, 6, 7}, post = {4, 5, 2, 6, 7, 3, 1};
+        TreeNode root = constructFromPrePost(pre, post);
+        logResult(root);
+    }
+
+    /**
+     * 889. 根据前序和后序遍历构造二叉树
+     *
+     * <p>返回与给定的前序和后序遍历匹配的任何二叉树。
+     *
+     * <p>pre 和 post 遍历中的值是不同的正整数。
+     *
+     * <p>示例：
+     *
+     * <p>输入：pre = [1,2,4,5,3,6,7], post = [4,5,2,6,7,3,1] 输出：[1,2,3,4,5,6,7]
+     *
+     * <p>提示：
+     *
+     * <p>1 <= pre.length == post.length <= 30 pre[] 和 post[] 都是 1, 2, ..., pre.length 的排列
+     * 每个输入保证至少有一个答案。如果有多个答案，可以返回其中一个。
+     *
+     * @param pre
+     * @param post
+     * @return
+     */
+    public TreeNode constructFromPrePost(int[] pre, int[] post) {
+        int len = pre.length;
+        if (len == 0) {
+            return null;
+        }
+        TreeNode root = new TreeNode(pre[0]);
+        if (len == 1) {
+            return root;
+        }
+        int leftVal = pre[1];
+        int index = 0;
+        for (; index < len; index++) {
+            if (post[index] == leftVal) {
+                break;
+            }
+        }
+        root.left =
+                constructFromPrePost(
+                        Arrays.copyOfRange(pre, 1, index + 2),
+                        Arrays.copyOfRange(post, 0, index + 1));
+        root.right =
+                constructFromPrePost(
+                        Arrays.copyOfRange(pre, index + 2, len),
+                        Arrays.copyOfRange(post, index + 1, len - 1));
+        return root;
+    }
+
+    /*public TreeNode constructFromPrePost(int[] pre, int[] post int postLeftIndex) {
+        if (pre.length == 0) {
+            return null;
+        }
+        TreeNode root = new TreeNode(pre[0]);
+        if (pre.length == 1) {
+            return root;
+        }
+    }*/
 }
