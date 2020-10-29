@@ -9478,4 +9478,105 @@ public class StringTest {
 
         return "";
     }
+
+    /**
+     * 890. 查找和替换模式
+     *
+     * <p>你有一个单词列表 words 和一个模式 pattern，你想知道 words 中的哪些单词与模式匹配。
+     *
+     * <p>如果存在字母的排列 p ，使得将模式中的每个字母 x 替换为 p(x) 之后，我们就得到了所需的单词，那么单词与模式是匹配的。
+     *
+     * <p>（回想一下，字母的排列是从字母到字母的双射：每个字母映射到另一个字母，没有两个字母映射到同一个字母。）
+     *
+     * <p>返回 words 中与给定模式匹配的单词列表。
+     *
+     * <p>你可以按任何顺序返回答案。
+     *
+     * <p>示例：
+     *
+     * <p>输入：words = ["abc","deq","mee","aqq","dkd","ccc"], pattern = "abb" 输出：["mee","aqq"] 解释：
+     * "mee" 与模式匹配，因为存在排列 {a -> m, b -> e, ...}。 "ccc" 与模式不匹配，因为 {a -> c, b -> c, ...} 不是排列。 因为 a 和
+     * b 映射到同一个字母。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= words.length <= 50 1 <= pattern.length = words[i].length <= 20
+     *
+     * @param words
+     * @param pattern
+     * @return
+     */
+    public List<String> findAndReplacePattern(String[] words, String pattern) {
+        List<String> result = new ArrayList<>();
+        for (String word : words) {
+            if (match(word, pattern)) {
+                result.add(word);
+            }
+        }
+        return result;
+    }
+
+    private boolean match(String word, String pattern) {
+        if (word.length() != pattern.length()) {
+            return false;
+        }
+        Map<Character, Character> map1 = new HashMap<>(), map2 = new HashMap<>();
+        for (int i = 0; i < word.length(); i++) {
+            char c1 = word.charAt(i), c2 = pattern.charAt(i);
+            if (map1.containsKey(c1) && map1.get(c1) != c2) {
+                return false;
+            }
+            if (map2.containsKey(c2) && map2.get(c2) != c1) {
+                return false;
+            }
+            map1.put(c1, c2);
+            map2.put(c2, c1);
+        }
+
+        return true;
+    }
+
+    /**
+     * 921. 使括号有效的最少添加
+     *
+     * <p>给定一个由 '(' 和 ')' 括号组成的字符串 S，我们需要添加最少的括号（ '(' 或是 ')'，可以在任何位置），以使得到的括号字符串有效。
+     *
+     * <p>从形式上讲，只有满足下面几点之一，括号字符串才是有效的：
+     *
+     * <p>它是一个空字符串，或者 它可以被写成 AB （A 与 B 连接）, 其中 A 和 B 都是有效字符串，或者 它可以被写作 (A)，其中 A 是有效字符串。
+     * 给定一个括号字符串，返回为使结果字符串有效而必须添加的最少括号数。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入："())" 输出：1 示例 2：
+     *
+     * <p>输入："(((" 输出：3 示例 3：
+     *
+     * <p>输入："()" 输出：0 示例 4：
+     *
+     * <p>输入："()))((" 输出：4
+     *
+     * <p>提示：
+     *
+     * <p>S.length <= 1000 S 只包含 '(' 和 ')' 字符。
+     *
+     * @param S
+     * @return
+     */
+    public int minAddToMakeValid(String S) {
+        int result = 0, leftCount = 0;
+        for (char c : S.toCharArray()) {
+            if (c == '(') {
+                leftCount++;
+            } else if (c == ')') {
+                if (leftCount == 0) {
+                    result++;
+                } else {
+                    leftCount--;
+                }
+            }
+        }
+        result += leftCount;
+        return result;
+    }
 }

@@ -5923,13 +5923,60 @@ public class TreeTest {
         return root;
     }
 
-    /*public TreeNode constructFromPrePost(int[] pre, int[] post int postLeftIndex) {
-        if (pre.length == 0) {
-            return null;
+    Map<Integer, List<TreeNode>> treeListMap = new HashMap<>();
+
+    /**
+     * 894. 所有可能的满二叉树
+     *
+     * <p>满二叉树是一类二叉树，其中每个结点恰好有 0 或 2 个子结点。
+     *
+     * <p>返回包含 N 个结点的所有可能满二叉树的列表。 答案的每个元素都是一个可能树的根结点。
+     *
+     * <p>答案中每个树的每个结点都必须有 node.val=0。
+     *
+     * <p>你可以按任何顺序返回树的最终列表。
+     *
+     * <p>示例：
+     *
+     * <p>输入：7
+     * 输出：[[0,0,0,null,null,0,0,null,null,0,0],[0,0,0,null,null,0,0,0,0],[0,0,0,0,0,0,0],[0,0,0,0,0,null,null,null,null,0,0],[0,0,0,0,0,null,null,0,0]]
+     * 解释：
+     *
+     * <p>提示：
+     *
+     * <p>1 <= N <= 20
+     *
+     * @param N
+     * @return
+     */
+    public List<TreeNode> allPossibleFBT(int N) {
+        if (treeListMap.containsKey(N)) {
+            return treeListMap.get(N);
         }
-        TreeNode root = new TreeNode(pre[0]);
-        if (pre.length == 1) {
-            return root;
+        List<TreeNode> result = new ArrayList<>();
+        if ((N & 1) == 0) {
+            return result;
         }
-    }*/
+
+        if (N == 1) {
+            result.add(new TreeNode(0));
+        } else {
+            // 偶数个节点不可能成为满二叉树
+            for (int i = 1; i < N; i += 2) {
+                List<TreeNode> leftList = allPossibleFBT(i);
+                List<TreeNode> rightList = allPossibleFBT(N - i - 1);
+                for (TreeNode left : leftList) {
+                    for (TreeNode right : rightList) {
+                        TreeNode root = new TreeNode(0);
+                        root.left = left;
+                        root.right = right;
+                        result.add(root);
+                    }
+                }
+            }
+        }
+
+        treeListMap.put(N, result);
+        return result;
+    }
 }
