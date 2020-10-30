@@ -19359,4 +19359,110 @@ public class ArrayTest {
 
         return false;
     }
+
+    /**
+     * 898. 子数组按位或操作
+     *
+     * <p>我们有一个非负整数数组 A。
+     *
+     * <p>对于每个（连续的）子数组 B = [A[i], A[i+1], ..., A[j]] （ i <= j），我们对 B 中的每个元素进行按位或操作，获得结果 A[i] |
+     * A[i+1] | ... | A[j]。
+     *
+     * <p>返回可能结果的数量。 （多次出现的结果在最终答案中仅计算一次。）
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：[0] 输出：1 解释： 只有一个可能的结果 0 。 示例 2：
+     *
+     * <p>输入：[1,1,2] 输出：3 解释： 可能的子数组为 [1]，[1]，[2]，[1, 1]，[1, 2]，[1, 1, 2]。 产生的结果为 1，1，2，1，3，3 。
+     * 有三个唯一值，所以答案是 3 。 示例 3：
+     *
+     * <p>输入：[1,2,4] 输出：6 解释： 可能的结果是 1，2，3，4，6，以及 7 。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= A.length <= 50000 0 <= A[i] <= 10^9
+     *
+     * @param A
+     * @return
+     */
+    public int subarrayBitwiseORs(int[] A) {
+        Set<Integer> set = new HashSet<>();
+        int len = A.length;
+        for (int i = 0; i < len; i++) {
+            set.add(A[i]);
+            for (int j = i - 1; j >= 0; j--) {
+                int tmp = A[j] | A[i];
+                if (tmp == A[j]) {
+
+                    break;
+                }
+                A[j] = tmp;
+                set.add(A[j]);
+            }
+        }
+        return set.size();
+    }
+
+    /**
+     * 904. 水果成篮
+     *
+     * <p>在一排树中，第 i 棵树产生 tree[i] 型的水果。 你可以从你选择的任何树开始，然后重复执行以下步骤：
+     *
+     * <p>把这棵树上的水果放进你的篮子里。如果你做不到，就停下来。 移动到当前树右侧的下一棵树。如果右边没有树，就停下来。 请注意，在选择一颗树后，你没有任何选择：你必须执行步骤
+     * 1，然后执行步骤 2，然后返回步骤 1，然后执行步骤 2，依此类推，直至停止。
+     *
+     * <p>你有两个篮子，每个篮子可以携带任何数量的水果，但你希望每个篮子只携带一种类型的水果。
+     *
+     * <p>用这个程序你能收集的水果树的最大总量是多少？
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：[1,2,1] 输出：3 解释：我们可以收集 [1,2,1]。 示例 2：
+     *
+     * <p>输入：[0,1,2,2] 输出：3 解释：我们可以收集 [1,2,2] 如果我们从第一棵树开始，我们将只能收集到 [0, 1]。 示例 3：
+     *
+     * <p>输入：[1,2,3,2,2] 输出：4 解释：我们可以收集 [2,3,2,2] 如果我们从第一棵树开始，我们将只能收集到 [1, 2]。 示例 4：
+     *
+     * <p>输入：[3,3,3,1,2,1,1,2,3,3,4] 输出：5 解释：我们可以收集 [1,2,1,1,2] 如果我们从第一棵树或第八棵树开始，我们将只能收集到 4 棵水果树。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= tree.length <= 40000 0 <= tree[i] < tree.length
+     *
+     * @param tree
+     * @return
+     */
+    public int totalFruit(int[] tree) {
+        int max = 0;
+        int len = tree.length;
+        if (len <= 2) {
+            return len;
+        }
+        int first = tree[0];
+        int index = 1;
+        while (index < len && tree[index] == first) {
+            index++;
+        }
+        if (index == len) {
+            return len;
+        }
+        int second = tree[index++];
+        int start = 0;
+        for (; index < tree.length; index++) {
+            // 遇到了第3种水果
+            if (tree[index] != first && tree[index] != second) {
+                max = Math.max(max, index - start);
+                first = tree[index - 1];
+                second = tree[index];
+                start = index - 1;
+                // 找到 前一种水果的开始位置
+                while (tree[start - 1] == first) {
+                    start--;
+                }
+            }
+        }
+
+        return Math.max(max, index - start);
+    }
 }
