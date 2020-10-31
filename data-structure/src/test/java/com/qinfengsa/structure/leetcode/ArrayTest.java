@@ -19465,4 +19465,88 @@ public class ArrayTest {
 
         return Math.max(max, index - start);
     }
+
+    /**
+     * 5539. 按照频率将数组升序排序
+     *
+     * <p>给你一个整数数组 nums ，请你将数组按照每个值的频率 升序 排序。如果有多个值的频率相同，请你按照数值本身将它们 降序 排序。
+     *
+     * <p>请你返回排序后的数组。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：nums = [1,1,2,2,2,3] 输出：[3,1,1,2,2,2] 解释：'3' 频率为 1，'1' 频率为 2，'2' 频率为 3 。 示例 2：
+     *
+     * <p>输入：nums = [2,3,1,3,2] 输出：[1,3,3,2,2] 解释：'2' 和 '3' 频率都为 2 ，所以它们之间按照数值本身降序排序。 示例 3：
+     *
+     * <p>输入：nums = [-1,1,-6,4,5,-6,1,4,1] 输出：[5,-1,4,4,-6,-6,1,1,1]
+     *
+     * <p>提示：
+     *
+     * <p>1 <= nums.length <= 100 -100 <= nums[i] <= 100
+     *
+     * @param nums
+     * @return
+     */
+    public int[] frequencySort(int[] nums) {
+        Map<Integer, Integer> countMap = new HashMap<>();
+        int len = nums.length;
+        for (int num : nums) {
+            int count = countMap.getOrDefault(num, 0);
+            countMap.put(num, count + 1);
+        }
+        List<Integer> list =
+                countMap.keySet().stream()
+                        .sorted(
+                                (a, b) -> {
+                                    int count1 = countMap.get(a), count2 = countMap.get(b);
+
+                                    return count1 == count2 ? b - a : count1 - count2;
+                                })
+                        .collect(Collectors.toList());
+        int[] result = new int[len];
+        int index = 0;
+        for (int num : list) {
+            int count = countMap.get(num);
+            for (int i = 0; i < count; i++) {
+                result[index++] = num;
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * 5540. 两点之间不包含任何点的最宽垂直面积
+     *
+     * <p>给你 n 个二维平面上的点 points ，其中 points[i] = [xi, yi] ，请你返回两点之间内部不包含任何点的 最宽垂直面积 的宽度。
+     *
+     * <p>垂直面积 的定义是固定宽度，而 y 轴上无限延伸的一块区域（也就是高度为无穷大）。 最宽垂直面积 为宽度最大的一个垂直面积。
+     *
+     * <p>请注意，垂直区域 边上 的点 不在 区域内。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：points = [[8,7],[9,9],[7,4],[9,7]] 输出：1 解释：红色区域和蓝色区域都是最优区域。 示例 2：
+     *
+     * <p>输入：points = [[3,1],[9,0],[1,0],[1,4],[5,3],[8,8]] 输出：3
+     *
+     * <p>提示：
+     *
+     * <p>n == points.length 2 <= n <= 105 points[i].length == 2 0 <= xi, yi <= 109
+     *
+     * @param points
+     * @return
+     */
+    public int maxWidthOfVerticalArea(int[][] points) {
+
+        Arrays.sort(points, Comparator.comparingInt(a -> a[0]));
+        int max = 0;
+        for (int i = 1; i < points.length; i++) {
+            int num = points[i][0] - points[i - 1][0];
+            max = Math.max(max, num);
+        }
+
+        return max;
+    }
 }
