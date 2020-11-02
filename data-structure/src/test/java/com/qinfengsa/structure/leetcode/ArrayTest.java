@@ -19467,6 +19467,213 @@ public class ArrayTest {
     }
 
     /**
+     * 5539. 按照频率将数组升序排序
+     *
+     * <p>给你一个整数数组 nums ，请你将数组按照每个值的频率 升序 排序。如果有多个值的频率相同，请你按照数值本身将它们 降序 排序。
+     *
+     * <p>请你返回排序后的数组。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：nums = [1,1,2,2,2,3] 输出：[3,1,1,2,2,2] 解释：'3' 频率为 1，'1' 频率为 2，'2' 频率为 3 。 示例 2：
+     *
+     * <p>输入：nums = [2,3,1,3,2] 输出：[1,3,3,2,2] 解释：'2' 和 '3' 频率都为 2 ，所以它们之间按照数值本身降序排序。 示例 3：
+     *
+     * <p>输入：nums = [-1,1,-6,4,5,-6,1,4,1] 输出：[5,-1,4,4,-6,-6,1,1,1]
+     *
+     * <p>提示：
+     *
+     * <p>1 <= nums.length <= 100 -100 <= nums[i] <= 100
+     *
+     * @param nums
+     * @return
+     */
+    public int[] frequencySort(int[] nums) {
+        Map<Integer, Integer> countMap = new HashMap<>();
+        int len = nums.length;
+        for (int num : nums) {
+            int count = countMap.getOrDefault(num, 0);
+            countMap.put(num, count + 1);
+        }
+        List<Integer> list =
+                countMap.keySet().stream()
+                        .sorted(
+                                (a, b) -> {
+                                    int count1 = countMap.get(a), count2 = countMap.get(b);
+
+                                    return count1 == count2 ? b - a : count1 - count2;
+                                })
+                        .collect(Collectors.toList());
+        int[] result = new int[len];
+        int index = 0;
+        for (int num : list) {
+            int count = countMap.get(num);
+            for (int i = 0; i < count; i++) {
+                result[index++] = num;
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * 5540. 两点之间不包含任何点的最宽垂直面积
+     *
+     * <p>给你 n 个二维平面上的点 points ，其中 points[i] = [xi, yi] ，请你返回两点之间内部不包含任何点的 最宽垂直面积 的宽度。
+     *
+     * <p>垂直面积 的定义是固定宽度，而 y 轴上无限延伸的一块区域（也就是高度为无穷大）。 最宽垂直面积 为宽度最大的一个垂直面积。
+     *
+     * <p>请注意，垂直区域 边上 的点 不在 区域内。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：points = [[8,7],[9,9],[7,4],[9,7]] 输出：1 解释：红色区域和蓝色区域都是最优区域。 示例 2：
+     *
+     * <p>输入：points = [[3,1],[9,0],[1,0],[1,4],[5,3],[8,8]] 输出：3
+     *
+     * <p>提示：
+     *
+     * <p>n == points.length 2 <= n <= 105 points[i].length == 2 0 <= xi, yi <= 109
+     *
+     * @param points
+     * @return
+     */
+    public int maxWidthOfVerticalArea(int[][] points) {
+
+        Arrays.sort(points, Comparator.comparingInt(a -> a[0]));
+        int max = 0;
+        for (int i = 1; i < points.length; i++) {
+            int num = points[i][0] - points[i - 1][0];
+            max = Math.max(max, num);
+        }
+
+        return max;
+    }
+
+    /**
+     * 5554. 能否连接形成数组
+     *
+     * <p>给你一个整数数组 arr ，数组中的每个整数 互不相同 。另有一个由整数数组构成的数组 pieces，其中的整数也 互不相同 。请你以 任意顺序 连接 pieces 中的数组以形成
+     * arr 。但是，不允许 对每个数组 pieces[i] 中的整数重新排序。
+     *
+     * <p>如果可以连接 pieces 中的数组形成 arr ，返回 true ；否则，返回 false 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：arr = [85], pieces = [[85]] 输出：true 示例 2：
+     *
+     * <p>输入：arr = [15,88], pieces = [[88],[15]] 输出：true 解释：依次连接 [15] 和 [88] 示例 3：
+     *
+     * <p>输入：arr = [49,18,16], pieces = [[16,18,49]] 输出：false 解释：即便数字相符，也不能重新排列 pieces[0] 示例 4：
+     *
+     * <p>输入：arr = [91,4,64,78], pieces = [[78],[4,64],[91]] 输出：true 解释：依次连接 [91]、[4,64] 和 [78] 示例
+     * 5：
+     *
+     * <p>输入：arr = [1,3,5,7], pieces = [[2,4,6,8]] 输出：false
+     *
+     * <p>提示：
+     *
+     * <p>1 <= pieces.length <= arr.length <= 100 sum(pieces[i].length) == arr.length 1 <=
+     * pieces[i].length <= arr.length 1 <= arr[i], pieces[i][j] <= 100 arr 中的整数 互不相同 pieces 中的整数
+     * 互不相同（也就是说，如果将 pieces 扁平化成一维数组，数组中的所有整数互不相同）
+     *
+     * @param arr
+     * @param pieces
+     * @return
+     */
+    public boolean canFormArray(int[] arr, int[][] pieces) {
+        Map<Integer, Integer> indexMap = new HashMap<>();
+        for (int i = 0; i < arr.length; i++) {
+            indexMap.put(arr[i], i);
+        }
+        int count = 0;
+        for (int[] piece : pieces) {
+            int index = indexMap.getOrDefault(piece[0], -1);
+            if (index == -1) {
+                return false;
+            }
+            for (int i = 1; i < piece.length; i++) {
+                int idx = indexMap.getOrDefault(piece[i], -1);
+                if (idx != index + i) {
+                    return false;
+                }
+            }
+            count += piece.length;
+        }
+
+        return count != arr.length;
+    }
+
+    /**
+     * 5556. 可以到达的最远建筑
+     *
+     * <p>给你一个整数数组 heights ，表示建筑物的高度。另有一些砖块 bricks 和梯子 ladders 。
+     *
+     * <p>你从建筑物 0 开始旅程，不断向后面的建筑物移动，期间可能会用到砖块或梯子。
+     *
+     * <p>当从建筑物 i 移动到建筑物 i+1（下标 从 0 开始 ）时：
+     *
+     * <p>如果当前建筑物的高度 大于或等于 下一建筑物的高度，则不需要梯子或砖块 如果当前建筑的高度 小于 下一个建筑的高度，您可以使用 一架梯子 或 (h[i+1] - h[i]) 个砖块
+     * 如果以最佳方式使用给定的梯子和砖块，返回你可以到达的最远建筑物的下标（下标 从 0 开始 ）。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：heights = [4,2,7,6,9,14,12], bricks = 5, ladders = 1 输出：4 解释：从建筑物 0 出发，你可以按此方案完成旅程： -
+     * 不使用砖块或梯子到达建筑物 1 ，因为 4 >= 2 - 使用 5 个砖块到达建筑物 2 。你必须使用砖块或梯子，因为 2 < 7 - 不使用砖块或梯子到达建筑物 3 ，因为 7 >=
+     * 6 - 使用唯一的梯子到达建筑物 4 。你必须使用砖块或梯子，因为 6 < 9 无法越过建筑物 4 ，因为没有更多砖块或梯子。 示例 2：
+     *
+     * <p>输入：heights = [4,12,2,7,3,18,20,3,19], bricks = 10, ladders = 2 输出：7 示例 3：
+     *
+     * <p>输入：heights = [14,3,19,3], bricks = 17, ladders = 0 输出：3
+     *
+     * <p>提示：
+     *
+     * <p>1 <= heights.length <= 105 1 <= heights[i] <= 106 0 <= bricks <= 109 0 <= ladders <=
+     * heights.length
+     *
+     * @param heights
+     * @param bricks
+     * @param ladders
+     * @return
+     */
+    public int furthestBuilding(int[] heights, int bricks, int ladders) {
+        int left = 0, right = heights.length - 1;
+        int result = -1;
+        while (left < right) {
+            int mid = (left + right) >> 1;
+            if (canArrive(heights, mid, bricks, ladders)) {
+                result = mid;
+                left = mid + 1;
+            } else {
+                right = mid;
+            }
+        }
+        return result;
+    }
+
+    private boolean canArrive(int[] heights, int end, int bricks, int ladders) {
+        List<Integer> list = new ArrayList<>();
+        for (int i = 1; i <= end; i++) {
+            int height = heights[i] - heights[i - 1];
+            if (height > 0) {
+                list.add(height);
+            }
+        }
+        Collections.sort(list);
+        for (int height : list) {
+            if (bricks >= height) {
+                bricks -= height;
+            } else if (ladders > 0) {
+                ladders--;
+            } else {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * 923. 三数之和的多种可能
      *
      * <p>给定一个整数数组 A，以及一个整数 target 作为目标值，返回满足 i < j < k 且 A[i] + A[j] + A[k] == target 的元组 i, j, k
