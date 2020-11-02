@@ -19465,4 +19465,69 @@ public class ArrayTest {
 
         return Math.max(max, index - start);
     }
+
+    /**
+     * 923. 三数之和的多种可能
+     *
+     * <p>给定一个整数数组 A，以及一个整数 target 作为目标值，返回满足 i < j < k 且 A[i] + A[j] + A[k] == target 的元组 i, j, k
+     * 的数量。
+     *
+     * <p>由于结果会非常大，请返回 结果除以 10^9 + 7 的余数。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：A = [1,1,2,2,3,3,4,4,5,5], target = 8 输出：20 解释： 按值枚举（A[i]，A[j]，A[k]）： (1, 2, 5) 出现 8 次；
+     * (1, 3, 4) 出现 8 次； (2, 2, 4) 出现 2 次； (2, 3, 3) 出现 2 次。 示例 2：
+     *
+     * <p>输入：A = [1,1,2,2,2,2], target = 5 输出：12 解释： A[i] = 1，A[j] = A[k] = 2 出现 12 次： 我们从 [1,1]
+     * 中选择一个 1，有 2 种情况， 从 [2,2,2,2] 中选出两个 2，有 6 种情况。
+     *
+     * <p>提示：
+     *
+     * <p>3 <= A.length <= 3000 0 <= A[i] <= 100 0 <= target <= 300
+     *
+     * @param A
+     * @param target
+     * @return
+     */
+    public int threeSumMulti(int[] A, int target) {
+        int len = A.length;
+        Arrays.sort(A);
+        int result = 0;
+        for (int i = 0; i < len - 2; i++) {
+            int num = target - A[i];
+            if (num <= 0) {
+                break;
+            }
+            int j = i + 1, k = len - 1;
+            while (j < k) {
+                int sum = A[j] + A[k];
+                if (sum > num) {
+                    k--;
+                } else if (sum < num) {
+                    j++;
+                } else if (A[j] != A[k]) {
+                    int count1 = 1, count2 = 1;
+                    while (j + 1 < k && A[j + 1] == A[j]) {
+                        j++;
+                        count1++;
+                    }
+                    while (k - 1 > j && A[k - 1] == A[k]) {
+                        k--;
+                        count2++;
+                    }
+                    result += count1 * count2;
+                    result %= MOD;
+                    j++;
+                    k--;
+                } else {
+                    int count = k - j + 1;
+                    result += (count * (count - 1)) >> 1;
+                    result %= MOD;
+                    break;
+                }
+            }
+        }
+        return result;
+    }
 }
