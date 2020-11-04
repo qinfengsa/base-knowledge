@@ -19813,4 +19813,136 @@ public class ArrayTest {
         }
         return result;
     }
+
+    /**
+     * 886. 可能的二分法
+     *
+     * <p>给定一组 N 人（编号为 1, 2, ..., N）， 我们想把每个人分进任意大小的两组。
+     *
+     * <p>每个人都可能不喜欢其他人，那么他们不应该属于同一组。
+     *
+     * <p>形式上，如果 dislikes[i] = [a, b]，表示不允许将编号为 a 和 b 的人归入同一组。
+     *
+     * <p>当可以用这种方法将所有人分进两组时，返回 true；否则返回 false。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：N = 4, dislikes = [[1,2],[1,3],[2,4]] 输出：true 解释：group1 [1,4], group2 [2,3] 示例 2：
+     *
+     * <p>输入：N = 3, dislikes = [[1,2],[1,3],[2,3]] 输出：false 示例 3：
+     *
+     * <p>输入：N = 5, dislikes = [[1,2],[2,3],[3,4],[4,5],[1,5]] 输出：false
+     *
+     * <p>提示：
+     *
+     * <p>1 <= N <= 2000 0 <= dislikes.length <= 10000 dislikes[i].length == 2 1 <= dislikes[i][j]
+     * <= N dislikes[i][0] < dislikes[i][1] 对于 dislikes[i] == dislikes[j] 不存在 i != j
+     *
+     * @param N
+     * @param dislikes
+     * @return
+     */
+    public boolean possibleBipartition(int N, int[][] dislikes) {
+        // 深度优先搜索
+        relations = new ArrayList<>();
+        for (int i = 0; i <= N; i++) {
+            relations.add(new ArrayList<>());
+        }
+
+        for (int[] d : dislikes) {
+            relations.get(d[0]).add(d[1]);
+            relations.get(d[1]).add(d[0]);
+        }
+        colors = new int[N + 1];
+        for (int i = 1; i <= N; i++) {
+            if (!possibleDfs(i)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    int[] colors;
+
+    List<List<Integer>> relations;
+
+    private static final int UNCOLOR = 0;
+    private static final int WHITE = 1;
+    private static final int BLACK = 2;
+
+    private boolean possibleDfs(int num) {
+        if (colors[num] == UNCOLOR) {
+            colors[num] = WHITE;
+        }
+        List<Integer> relation = relations.get(num);
+        int dislike = colors[num] == WHITE ? BLACK : WHITE;
+        for (int p : relation) {
+            if (colors[p] == UNCOLOR) {
+                colors[p] = dislike;
+                if (!possibleDfs(p)) {
+                    return false;
+                }
+            } else if (colors[p] != dislike) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * 973. 最接近原点的 K 个点
+     *
+     * <p>我们有一个由平面上的点组成的列表 points。需要从中找出 K 个距离原点 (0, 0) 最近的点。
+     *
+     * <p>（这里，平面上两点之间的距离是欧几里德距离。）
+     *
+     * <p>你可以按任何顺序返回答案。除了点坐标的顺序之外，答案确保是唯一的。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：points = [[1,3],[-2,2]], K = 1 输出：[[-2,2]] 解释： (1, 3) 和原点之间的距离为 sqrt(10)， (-2, 2)
+     * 和原点之间的距离为 sqrt(8)， 由于 sqrt(8) < sqrt(10)，(-2, 2) 离原点更近。 我们只需要距离原点最近的 K = 1 个点，所以答案就是
+     * [[-2,2]]。 示例 2：
+     *
+     * <p>输入：points = [[3,3],[5,-1],[-2,4]], K = 2 输出：[[3,3],[-2,4]] （答案 [[-2,4],[3,3]] 也会被接受。）
+     *
+     * <p>提示：
+     *
+     * <p>1 <= K <= points.length <= 10000 -10000 < points[i][0] < 10000 -10000 < points[i][1] <
+     * 10000
+     *
+     * @param points
+     * @param K
+     * @return
+     */
+    public int[][] kClosest(int[][] points, int K) {
+
+        // 最大堆
+        PriorityQueue<int[]> heap =
+                new PriorityQueue<>(
+                        (a, b) -> b[0] * b[0] + b[1] * b[1] - a[0] * a[0] - a[1] * a[1]);
+        for (int i = 0; i < K; i++) {
+            heap.offer(points[i]);
+        }
+        for (int i = K; i < points.length; i++) {
+            int[] max = heap.peek();
+            int[] point = points[i];
+            int maxD = max[0] * max[0] + max[1] * max[1];
+            int d = point[0] * point[0] + point[1] * point[1];
+            if (maxD > d) {
+                heap.poll();
+                heap.offer(point);
+            }
+        }
+
+        int[][] result = new int[K][];
+        int index = 0;
+        for (int[] point : heap) {
+            result[index++] = point;
+        }
+
+        return result;
+    }
 }
