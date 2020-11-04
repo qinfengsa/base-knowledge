@@ -19737,4 +19737,80 @@ public class ArrayTest {
         }
         return result;
     }
+
+    @Test
+    public void spiralMatrixIII() {
+        int R = 5, C = 6, r0 = 1, c0 = 4;
+        logResult(spiralMatrixIII(R, C, r0, c0));
+    }
+
+    /**
+     * 885. 螺旋矩阵 III
+     *
+     * <p>在 R 行 C 列的矩阵上，我们从 (r0, c0) 面朝东面开始
+     *
+     * <p>这里，网格的西北角位于第一行第一列，网格的东南角位于最后一行最后一列。
+     *
+     * <p>现在，我们以顺时针按螺旋状行走，访问此网格中的每个位置。
+     *
+     * <p>每当我们移动到网格的边界之外时，我们会继续在网格之外行走（但稍后可能会返回到网格边界）。
+     *
+     * <p>最终，我们到过网格的所有 R * C 个空间。
+     *
+     * <p>按照访问顺序返回表示网格位置的坐标列表。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：R = 1, C = 4, r0 = 0, c0 = 0 输出：[[0,0],[0,1],[0,2],[0,3]]
+     *
+     * <p>示例 2：
+     *
+     * <p>输入：R = 5, C = 6, r0 = 1, c0 = 4
+     * 输出：[[1,4],[1,5],[2,5],[2,4],[2,3],[1,3],[0,3],[0,4],[0,5],[3,5],[3,4],[3,3],[3,2],[2,2],[1,2],[0,2],[4,5],[4,4],[4,3],[4,2],[4,1],[3,1],[2,1],[1,1],[0,1],[4,0],[3,0],[2,0],[1,0],[0,0]]
+     *
+     * <p>提示：
+     *
+     * <p>1 <= R <= 100 1 <= C <= 100 0 <= r0 < R 0 <= c0 < C
+     *
+     * @param R
+     * @param C
+     * @param r0
+     * @param c0
+     * @return
+     */
+    public int[][] spiralMatrixIII(int R, int C, int r0, int c0) {
+        int size = R * C;
+        int[][] result = new int[size][2];
+
+        int[] dr = new int[] {0, 1, 0, -1};
+        int[] dc = new int[] {1, 0, -1, 0};
+
+        int index = 0;
+        result[index][0] = r0;
+        result[index][1] = c0;
+        index++;
+        if (size == 1) {
+            return result;
+        }
+        // 移动方向
+        int flag = 0;
+        // 行走长度， 1,1,2,2,3,3,4,4
+        int len = 1;
+        int r = r0, c = c0;
+        while (index < size) {
+            for (int i = 0; i < len; i++) {
+                r += dr[flag];
+                c += dc[flag];
+                if (inArea(r, c, R, C)) {
+                    result[index][0] = r;
+                    result[index][1] = c;
+                    index++;
+                }
+            }
+            len += flag % 2;
+            flag++;
+            flag %= 4;
+        }
+        return result;
+    }
 }
