@@ -19945,4 +19945,87 @@ public class ArrayTest {
 
         return result;
     }
+
+    /**
+     * 915. 分割数组
+     *
+     * <p>给定一个数组 A，将其划分为两个不相交（没有公共元素）的连续子数组 left 和 right， 使得：
+     *
+     * <p>left 中的每个元素都小于或等于 right 中的每个元素。 left 和 right 都是非空的。 left 要尽可能小。 在完成这样的分组后返回 left
+     * 的长度。可以保证存在这样的划分方法。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：[5,0,3,8,6] 输出：3 解释：left = [5,0,3]，right = [8,6] 示例 2：
+     *
+     * <p>输入：[1,1,1,0,6,12] 输出：4 解释：left = [1,1,1,0]，right = [6,12]
+     *
+     * <p>提示：
+     *
+     * <p>2 <= A.length <= 30000 0 <= A[i] <= 10^6 可以保证至少有一种方法能够按题目所描述的那样对 A 进行划分。
+     *
+     * @param A
+     * @return
+     */
+    public int partitionDisjoint(int[] A) {
+        int len = A.length;
+        int[] minNum = new int[len];
+        int min = A[len - 1];
+        for (int i = len - 1; i > 0; i--) {
+            //
+            min = Math.min(min, A[i]);
+            minNum[i] = min;
+        }
+        int max = A[0];
+        for (int i = 1; i < len; i++) {
+            if (max <= minNum[i]) {
+                return i;
+            }
+            max = Math.max(max, A[i]);
+        }
+
+        return -1;
+    }
+
+    /**
+     * 930. 和相同的二元子数组
+     *
+     * <p>在由若干 0 和 1 组成的数组 A 中，有多少个和为 S 的非空子数组。
+     *
+     * <p>示例：
+     *
+     * <p>输入：A = [1,0,1,0,1], S = 2 输出：4 解释： 如下面黑体所示，有 4 个满足题目要求的子数组： [1,0,1,0,1] [1,0,1,0,1]
+     * [1,0,1,0,1] [1,0,1,0,1]
+     *
+     * <p>提示：
+     *
+     * <p>A.length <= 30000 0 <= S <= A.length A[i] 为 0 或 1
+     *
+     * @param A
+     * @param S
+     * @return
+     */
+    public int numSubarraysWithSum(int[] A, int S) {
+
+        // 前缀和
+        int sum = 0;
+        Map<Integer, Integer> countMap = new HashMap<>();
+        countMap.put(0, 1);
+        int result = 0;
+        for (int num : A) {
+            sum += num;
+            int count = countMap.getOrDefault(sum - S, 0);
+            result += count;
+            int oldCount = countMap.getOrDefault(sum, 0);
+            countMap.put(sum, oldCount + 1);
+        }
+        return result;
+    }
+
+    @Test
+    public void numSubarraysWithSum() {
+        int[] A = {1, 0, 1, 0, 1};
+        int S = 2;
+        logResult(numSubarraysWithSum(A, S));
+    }
 }
