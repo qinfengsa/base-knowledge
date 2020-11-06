@@ -825,6 +825,15 @@ public class BinSearchTreeTest {
             }
         }
 
+        if (Objects.nonNull(lastNode)) {
+            if (count > max) {
+                list.clear();
+                list.add(lastNode.val);
+            } else if (count == max) {
+                list.add(lastNode.val);
+            }
+        }
+
         int[] result = new int[list.size()];
         for (int i = 0; i < list.size(); i++) {
             result[i] = list.get(i);

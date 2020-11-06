@@ -20028,4 +20028,62 @@ public class ArrayTest {
         int S = 2;
         logResult(numSubarraysWithSum(A, S));
     }
+
+    @Test
+    public void minFlipsMonoIncr() {
+        String s = "010110";
+        logResult(minFlipsMonoIncr(s));
+    }
+
+    /**
+     * 926. 将字符串翻转到单调递增
+     *
+     * <p>如果一个由 '0' 和 '1' 组成的字符串，是以一些 '0'（可能没有 '0'）后面跟着一些 '1'（也可能没有 '1'）的形式组成的，那么该字符串是单调递增的。
+     *
+     * <p>我们给出一个由字符 '0' 和 '1' 组成的字符串 S，我们可以将任何 '0' 翻转为 '1' 或者将 '1' 翻转为 '0'。
+     *
+     * <p>返回使 S 单调递增的最小翻转次数。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入："00110" 输出：1 解释：我们翻转最后一位得到 00111. 示例 2：
+     *
+     * <p>输入："010110" 输出：2 解释：我们翻转得到 011111，或者是 000111。 示例 3：
+     *
+     * <p>输入："00011000" 输出：2 解释：我们翻转得到 00000000。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= S.length <= 20000 S 中只包含字符 '0' 和 '1'
+     *
+     * @param S
+     * @return
+     */
+    public int minFlipsMonoIncr(String S) {
+        int len = S.length();
+        // 选择 位置i 左边 都变成0, 右边都变成 1
+        // 求最小翻转次数
+        int[] counts = new int[len + 1];
+        int count = 0;
+        for (int i = 0; i < len; i++) {
+            char c = S.charAt(i);
+            if (c == '1') {
+                count++;
+            }
+            counts[i + 1] = count;
+        }
+        if (count == 0 || count == len) {
+            return 0;
+        }
+        count = 0;
+        int min = counts[len];
+        for (int i = len - 1; i >= 0; i--) {
+            char c = S.charAt(i);
+            if (c == '0') {
+                count++;
+            }
+            min = Math.min(min, counts[i] + count);
+        }
+        return min;
+    }
 }
