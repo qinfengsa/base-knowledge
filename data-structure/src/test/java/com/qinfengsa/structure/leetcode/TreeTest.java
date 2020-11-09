@@ -6025,4 +6025,193 @@ public class TreeTest {
 
         return true;
     }
+
+    /**
+     * 987. 二叉树的垂序遍历
+     *
+     * <p>给定二叉树，按垂序遍历返回其结点值。
+     *
+     * <p>对位于 (X, Y) 的每个结点而言，其左右子结点分别位于 (X-1, Y-1) 和 (X+1, Y-1)。
+     *
+     * <p>把一条垂线从 X = -infinity 移动到 X = +infinity ，每当该垂线与结点接触时，我们按从上到下的顺序报告结点的值（ Y 坐标递减）。
+     *
+     * <p>如果两个结点位置相同，则首先报告的结点值较小。
+     *
+     * <p>按 X 坐标顺序返回非空报告的列表。每个报告都有一个结点值列表。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：[3,9,20,null,null,15,7] 输出：[[9],[3,15],[20],[7]] 解释： 在不丧失其普遍性的情况下，我们可以假设根结点位于 (0, 0)：
+     * 然后，值为 9 的结点出现在 (-1, -1)； 值为 3 和 15 的两个结点分别出现在 (0, 0) 和 (0, -2)； 值为 20 的结点出现在 (1, -1)； 值为 7
+     * 的结点出现在 (2, -2)。 示例 2：
+     *
+     * <p>输入：[1,2,3,4,5,6,7] 输出：[[4],[2],[1,5,6],[3],[7]] 解释： 根据给定的方案，值为 5 和 6 的两个结点出现在同一位置。 然而，在报告
+     * "[1,5,6]" 中，结点值 5 排在前面，因为 5 小于 6。
+     *
+     * <p>提示：
+     *
+     * <p>树的结点数介于 1 和 1000 之间。 每个结点值介于 0 和 1000 之间。
+     *
+     * @param root
+     * @return
+     */
+    public List<List<Integer>> verticalTraversal(TreeNode root) {
+        // 层次遍历 然后哈希
+        List<List<Integer>> result = new ArrayList<>();
+        if (Objects.isNull(root)) {
+            return result;
+        }
+        List<Location> locationList = new ArrayList<>();
+
+        verticalInOrder(root, 0, 0, locationList);
+        Collections.sort(locationList);
+        Integer last = null;
+        for (Location location : locationList) {
+            if (Objects.isNull(last) || last != location.x) {
+                List<Integer> list = new ArrayList<>();
+                list.add(location.val);
+                result.add(list);
+            } else {
+                List<Integer> list = result.get(result.size() - 1);
+                list.add(location.val);
+            }
+            last = location.x;
+        }
+        return result;
+    }
+
+    private void verticalInOrder(TreeNode root, int x, int y, List<Location> list) {
+        if (Objects.isNull(root)) {
+            return;
+        }
+        list.add(new Location(x, y, root.val));
+        verticalInOrder(root.left, x - 1, y + 1, list);
+        verticalInOrder(root.right, x + 1, y + 1, list);
+    }
+
+    static class Location implements Comparable<Location> {
+        int x, y, val;
+
+        Location(int x, int y, int val) {
+            this.x = x;
+            this.y = y;
+            this.val = val;
+        }
+
+        public int getVal() {
+            return val;
+        }
+
+        @Override
+        public int compareTo(Location that) {
+            if (this.x != that.x) {
+                return this.x - that.x;
+            }
+            return this.y != that.y ? this.y - that.y : this.val - that.val;
+        }
+    }
+
+    /**
+     * 988. 从叶结点开始的最小字符串
+     *
+     * <p>给定一颗根结点为 root 的二叉树，树中的每一个结点都有一个从 0 到 25 的值，分别代表字母 'a' 到 'z'：值 0 代表 'a'，值 1 代表 'b'，依此类推。
+     *
+     * <p>找出按字典序最小的字符串，该字符串从这棵树的一个叶结点开始，到根结点结束。
+     *
+     * <p>（小贴士：字符串中任何较短的前缀在字典序上都是较小的：例如，在字典序上 "ab" 比 "aba" 要小。叶结点是指没有子结点的结点。）
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：[0,1,2,3,4,3,4] 输出："dba" 示例 2：
+     *
+     * <p>输入：[25,1,3,1,3,0,2] 输出："adz" 示例 3：
+     *
+     * <p>输入：[2,2,1,null,1,0,null,0] 输出："abc"
+     *
+     * <p>提示：
+     *
+     * <p>给定树的结点数介于 1 和 8500 之间。 树中的每个结点都有一个介于 0 和 25 之间的值。
+     *
+     * @param root
+     * @return
+     */
+    public String smallestFromLeaf(TreeNode root) {
+        smallestFromLeafDfs(root, new StringBuilder());
+        return samllestResult;
+    }
+
+    private String samllestResult = "~";
+
+    private void smallestFromLeafDfs(TreeNode root, StringBuilder sb) {
+        if (Objects.isNull(root)) {
+            return;
+        }
+        sb.append((char) ('a' + root.val));
+        if (Objects.isNull(root.left) && Objects.isNull(root.right)) {
+            sb.reverse();
+            String str = sb.toString();
+            sb.reverse();
+            if (str.compareTo(samllestResult) < 0) {
+                samllestResult = str;
+            }
+        }
+        smallestFromLeafDfs(root.left, sb);
+        smallestFromLeafDfs(root.right, sb);
+        sb.deleteCharAt(sb.length() - 1);
+    }
+
+    /**
+     * 998. 最大二叉树 II
+     *
+     * <p>最大树定义：一个树，其中每个节点的值都大于其子树中的任何其他值。
+     *
+     * <p>给出最大树的根节点 root。
+     *
+     * <p>就像之前的问题那样，给定的树是从表 A（root = Construct(A)）递归地使用下述 Construct(A) 例程构造的：
+     *
+     * <p>如果 A 为空，返回 null 否则，令 A[i] 作为 A 的最大元素。创建一个值为 A[i] 的根节点 root root 的左子树将被构建为 Construct([A[0],
+     * A[1], ..., A[i-1]]) root 的右子树将被构建为 Construct([A[i+1], A[i+2], ..., A[A.length - 1]]) 返回 root
+     * 请注意，我们没有直接给定 A，只有一个根节点 root = Construct(A).
+     *
+     * <p>假设 B 是 A 的副本，并附加值 val。保证 B 中的值是不同的。
+     *
+     * <p>返回 Construct(B)。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：root = [4,1,3,null,null,2], val = 5 输出：[5,4,null,1,3,null,null,2] 解释：A = [1,4,2,3], B =
+     * [1,4,2,3,5] 示例 2：
+     *
+     * <p>输入：root = [5,2,4,null,1], val = 3 输出：[5,2,4,null,1,null,3] 解释：A = [2,1,5,4], B =
+     * [2,1,5,4,3] 示例 3：
+     *
+     * <p>输入：root = [5,2,3,null,1], val = 4 输出：[5,2,4,null,1,3] 解释：A = [2,1,5,3], B = [2,1,5,3,4]
+     *
+     * <p>提示：
+     *
+     * <p>1 <= B.length <= 100
+     *
+     * @param root
+     * @param val
+     * @return
+     */
+    public TreeNode insertIntoMaxTree(TreeNode root, int val) {
+
+        TreeNode curNode = new TreeNode(val);
+
+        TreeNode parent = null, node = root;
+
+        while (Objects.nonNull(node) && node.val >= val) {
+            parent = node;
+            node = node.right;
+        }
+        if (Objects.nonNull(parent)) {
+            parent.right = curNode;
+        }
+        curNode.left = node;
+        if (node == root) {
+            root = curNode;
+        }
+        return root;
+    }
 }
