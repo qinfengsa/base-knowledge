@@ -7,6 +7,7 @@ import com.qinfengsa.structure.hash.MyHashMap;
 import com.qinfengsa.structure.hash.MyHashSet;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -3383,5 +3384,63 @@ public class MyHashTest {
             }
         }
         return min == Integer.MAX_VALUE ? 0 : min;
+    }
+
+    /**
+     * 939. 最小面积矩形
+     *
+     * <p>给定在 xy 平面上的一组点，确定由这些点组成的矩形的最小面积，其中矩形的边平行于 x 轴和 y 轴。
+     *
+     * <p>如果没有任何矩形，就返回 0。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：[[1,1],[1,3],[3,1],[3,3],[2,2]] 输出：4 示例 2：
+     *
+     * <p>输入：[[1,1],[1,3],[3,1],[3,3],[4,1],[4,3]] 输出：2
+     *
+     * <p>提示：
+     *
+     * <p>1 <= points.length <= 500 0 <= points[i][0] <= 40000 0 <= points[i][1] <= 40000 所有的点都是不同的。
+     *
+     * @param points
+     * @return
+     */
+    public int minAreaRect(int[][] points) {
+        int min = Integer.MAX_VALUE;
+        // 枚举 x
+        Map<Integer, List<Integer>> pointMap = new HashMap<>();
+        for (int[] point : points) {
+            int x = point[0], y = point[1];
+            pointMap.computeIfAbsent(x, k -> new ArrayList<>()).add(y);
+        }
+        Map<Integer, Integer> lastX = new HashMap<>();
+        List<Integer> xList = new ArrayList<>(pointMap.keySet());
+        Collections.sort(xList);
+        for (int x : xList) {
+            List<Integer> yList = pointMap.get(x);
+            Collections.sort(yList);
+            for (int i = 0; i < yList.size(); i++) {
+                for (int j = i + 1; j < yList.size(); j++) {
+                    int key = yList.get(i) * 40001 + yList.get(j);
+                    int last = lastX.getOrDefault(key, -1);
+                    if (last >= 0) {
+                        int yLen = yList.get(j) - yList.get(i);
+                        int xLen = x - last;
+                        int area = xLen * yLen;
+                        min = Math.min(min, area);
+                    }
+                    lastX.put(key, x);
+                }
+            }
+        }
+
+        return min == Integer.MAX_VALUE ? 0 : min;
+    }
+
+    @Test
+    public void minAreaRect() {
+        int[][] points = {{1, 1}, {1, 3}, {3, 1}, {3, 3}, {2, 2}};
+        logResult(minAreaRect(points));
     }
 }
