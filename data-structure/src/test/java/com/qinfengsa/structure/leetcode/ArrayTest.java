@@ -20303,4 +20303,121 @@ public class ArrayTest {
         };
         logResult(snakesAndLadders(board));
     }
+
+    /**
+     * 1004. 最大连续1的个数 III
+     *
+     * <p>给定一个由若干 0 和 1 组成的数组 A，我们最多可以将 K 个值从 0 变成 1 。
+     *
+     * <p>返回仅包含 1 的最长（连续）子数组的长度。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：A = [1,1,1,0,0,0,1,1,1,1,0], K = 2 输出：6 解释： [1,1,1,0,0,1,1,1,1,1,1] 粗体数字从 0 翻转到
+     * 1，最长的子数组长度为 6。 示例 2：
+     *
+     * <p>输入：A = [0,0,1,1,0,0,1,1,1,0,1,1,0,0,0,1,1,1,1], K = 3 输出：10 解释：
+     * [0,0,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,1] 粗体数字从 0 翻转到 1，最长的子数组长度为 10。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= A.length <= 20000 0 <= K <= A.length A[i] 为 0 或 1
+     *
+     * @param A
+     * @param K
+     * @return
+     */
+    public int longestOnes(int[] A, int K) {
+        int count = 0, max = 0;
+        int left = 0, right = 0;
+        // 滑动窗口
+        for (; right < A.length; right++) {
+            if (A[right] == 0) {
+                count++;
+            }
+            while (count > K) {
+                if (A[left++] == 0) {
+                    count--;
+                }
+            }
+            max = Math.max(max, right + 1 - left);
+        }
+
+        return max;
+    }
+
+    /**
+     * 1011. 在 D 天内送达包裹的能力
+     *
+     * <p>传送带上的包裹必须在 D 天内从一个港口运送到另一个港口。
+     *
+     * <p>传送带上的第 i 个包裹的重量为 weights[i]。每一天，我们都会按给出重量的顺序往传送带上装载包裹。我们装载的重量不会超过船的最大运载重量。
+     *
+     * <p>返回能在 D 天内将传送带上的所有包裹送达的船的最低运载能力。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：weights = [1,2,3,4,5,6,7,8,9,10], D = 5 输出：15 解释： 船舶最低载重 15 就能够在 5 天内送达所有包裹，如下所示： 第 1
+     * 天：1, 2, 3, 4, 5 第 2 天：6, 7 第 3 天：8 第 4 天：9 第 5 天：10
+     *
+     * <p>请注意，货物必须按照给定的顺序装运，因此使用载重能力为 14 的船舶并将包装分成 (2, 3, 4, 5), (1, 6, 7), (8), (9), (10) 是不允许的。 示例
+     * 2：
+     *
+     * <p>输入：weights = [3,2,2,4,1,4], D = 3 输出：6 解释： 船舶最低载重 6 就能够在 3 天内送达所有包裹，如下所示： 第 1 天：3, 2 第 2
+     * 天：2, 4 第 3 天：1, 4 示例 3：
+     *
+     * <p>输入：weights = [1,2,3,1,1], D = 4 输出：3 解释： 第 1 天：1 第 2 天：2 第 3 天：3 第 4 天：1, 1
+     *
+     * <p>提示：
+     *
+     * <p>1 <= D <= weights.length <= 50000 1 <= weights[i] <= 500
+     *
+     * @param weights
+     * @param D
+     * @return
+     */
+    public int shipWithinDays(int[] weights, int D) {
+        int left = 0, right = 0;
+        for (int weight : weights) {
+            right += weight;
+            left = Math.max(left, weight);
+        }
+        while (left < right) {
+            int mid = (left + right) >> 1;
+            if (canShip(weights, D, mid)) {
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+
+        return right;
+    }
+
+    private boolean canShip(int[] weights, int days, int weight) {
+        int num = 0;
+        for (int w : weights) {
+            if (num + w > weight) {
+                days--;
+                if (days <= 0) {
+                    return false;
+                }
+                num = w;
+            } else {
+                num += w;
+            }
+        }
+        if (num > 0) {
+            days--;
+        }
+
+        return days >= 0;
+    }
+
+    @Test
+    public void shipWithinDays() {
+        int[] weights = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+        int D = 5;
+        logResult(shipWithinDays(weights, D));
+    }
 }
