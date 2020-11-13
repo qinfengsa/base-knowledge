@@ -20472,4 +20472,168 @@ public class ArrayTest {
                 B = {{1, 5}, {8, 12}, {15, 24}, {25, 26}};
         logResult(intervalIntersection(A, B));
     }
+
+    /**
+     * 950. 按递增顺序显示卡牌
+     *
+     * <p>牌组中的每张卡牌都对应有一个唯一的整数。你可以按你想要的顺序对这套卡片进行排序。
+     *
+     * <p>最初，这些卡牌在牌组里是正面朝下的（即，未显示状态）。
+     *
+     * <p>现在，重复执行以下步骤，直到显示所有卡牌为止：
+     *
+     * <p>从牌组顶部抽一张牌，显示它，然后将其从牌组中移出。 如果牌组中仍有牌，则将下一张处于牌组顶部的牌放在牌组的底部。 如果仍有未显示的牌，那么返回步骤 1。否则，停止行动。
+     * 返回能以递增顺序显示卡牌的牌组顺序。
+     *
+     * <p>答案中的第一张牌被认为处于牌堆顶部。
+     *
+     * <p>示例：
+     *
+     * <p>输入：[17,13,11,2,3,5,7] 输出：[2,13,3,11,5,17,7] 解释： 我们得到的牌组顺序为
+     * [17,13,11,2,3,5,7]（这个顺序不重要），然后将其重新排序。 重新排序后，牌组以 [2,13,3,11,5,17,7] 开始，其中 2 位于牌组的顶部。 我们显示
+     * 2，然后将 13 移到底部。牌组现在是 [3,11,5,17,7,13]。 我们显示 3，并将 11 移到底部。牌组现在是 [5,17,7,13,11]。 我们显示 5，然后将 17
+     * 移到底部。牌组现在是 [7,13,11,17]。 我们显示 7，并将 13 移到底部。牌组现在是 [11,17,13]。 我们显示 11，然后将 17 移到底部。牌组现在是
+     * [13,17]。 我们展示 13，然后将 17 移到底部。牌组现在是 [17]。 我们显示 17。 由于所有卡片都是按递增顺序排列显示的，所以答案是正确的。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= A.length <= 1000 1 <= A[i] <= 10^6 对于所有的 i != j，A[i] != A[j]
+     *
+     * @param deck
+     * @return
+     */
+    public int[] deckRevealedIncreasing(int[] deck) {
+        int len = deck.length;
+        Arrays.sort(deck);
+        // 逆向思维, 利用队列重组
+        Queue<Integer> queue = new LinkedList<>();
+        for (int i = len - 1; i >= 0; i--) {
+            queue.offer(deck[i]);
+            if (i == 0) {
+                break;
+            }
+            queue.offer(queue.poll());
+        }
+        for (int i = len - 1; i >= 0; i--) {
+            deck[i] = queue.poll();
+        }
+
+        return deck;
+    }
+
+    /**
+     * 962. 最大宽度坡
+     *
+     * <p>给定一个整数数组 A，坡是元组 (i, j)，其中 i < j 且 A[i] <= A[j]。这样的坡的宽度为 j - i。
+     *
+     * <p>找出 A 中的坡的最大宽度，如果不存在，返回 0 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：[6,0,8,2,1,5] 输出：4 解释： 最大宽度的坡为 (i, j) = (1, 5): A[1] = 0 且 A[5] = 5. 示例 2：
+     *
+     * <p>输入：[9,8,1,0,1,9,4,0,4,1] 输出：7 解释： 最大宽度的坡为 (i, j) = (2, 9): A[2] = 1 且 A[9] = 1.
+     *
+     * <p>提示：
+     *
+     * <p>2 <= A.length <= 50000 0 <= A[i] <= 50000
+     *
+     * @param A
+     * @return
+     */
+    public int maxWidthRamp(int[] A) {
+        int max = 0;
+        int len = A.length;
+        /*int[][] nums = new int[len][2];
+        for (int i = 0; i < len; i++) {
+            nums[i][0] = A[i];
+            nums[i][1] = i;
+        }
+        Arrays.sort(nums, (a, b) -> a[0] == b[0] ? a[1] - b[1] : a[0] - b[0]);
+        int minIndex = nums[0][1];
+        for (int i = 1; i < len; i++) {
+            if (nums[i][1] > minIndex) {
+                max = Math.max(max, nums[i][1] - minIndex);
+            } else {
+                minIndex = nums[i][1];
+            }
+        }   */
+        Deque<Integer> stack = new LinkedList<>();
+        for (int i = 0; i < len; i++) {
+            if (stack.isEmpty() || A[stack.peek()] > A[i]) {
+                stack.push(i);
+            }
+        }
+        for (int i = len - 1; i >= 1; i--) {
+            while (!stack.isEmpty() && A[stack.peek()] <= A[i]) {
+                max = Math.max(max, i - stack.pop());
+            }
+        }
+        return max;
+    }
+
+    @Test
+    public void maxWidthRamp() {
+        int[] nums = {9, 8, 1, 0, 1, 9, 4, 0, 4, 1};
+        logResult(maxWidthRamp(nums));
+    }
+
+    /**
+     * 969. 煎饼排序
+     *
+     * <p>给定数组 A，我们可以对其进行煎饼翻转：我们选择一些正整数 k <= A.length，然后反转 A 的前 k
+     * 个元素的顺序。我们要执行零次或多次煎饼翻转（按顺序一次接一次地进行）以完成对数组 A 的排序。
+     *
+     * <p>返回能使 A 排序的煎饼翻转操作所对应的 k 值序列。任何将数组排序且翻转次数在 10 * A.length 范围内的有效答案都将被判断为正确。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：[3,2,4,1] 输出：[4,2,4,3] 解释： 我们执行 4 次煎饼翻转，k 值分别为 4，2，4，和 3。 初始状态 A = [3, 2, 4, 1] 第一次翻转后
+     * (k=4): A = [1, 4, 2, 3] 第二次翻转后 (k=2): A = [4, 1, 2, 3] 第三次翻转后 (k=4): A = [3, 2, 1, 4] 第四次翻转后
+     * (k=3): A = [1, 2, 3, 4]，此时已完成排序。 示例 2：
+     *
+     * <p>输入：[1,2,3] 输出：[] 解释： 输入已经排序，因此不需要翻转任何内容。 请注意，其他可能的答案，如[3，3]，也将被接受。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= A.length <= 100 A[i] 是 [1, 2, ..., A.length] 的排列
+     *
+     * @param arr
+     * @return
+     */
+    public List<Integer> pancakeSort(int[] arr) {
+        List<Integer> list = new ArrayList<>();
+        int len = arr.length;
+
+        Integer[] indexs = new Integer[len];
+        for (int i = 0; i < len; i++) {
+            indexs[i] = i;
+        }
+        Arrays.sort(indexs, (a, b) -> arr[b] - arr[a]);
+        for (int index : indexs) {
+            for (int num : list) {
+                if (index < num) {
+                    index = num - 1 - index;
+                }
+            }
+            if (index + 1 == len) {
+                len--;
+                continue;
+            }
+            if (index > 0) {
+                list.add(index + 1);
+            }
+            if (len > 1) {
+                list.add(len--);
+            }
+        }
+
+        return list;
+    }
+
+    @Test
+    public void pancakeSort() {
+        int[] arr = {1, 2, 4, 3};
+        logResult(pancakeSort(arr));
+    }
 }
