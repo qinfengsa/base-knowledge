@@ -20636,4 +20636,253 @@ public class ArrayTest {
         int[] arr = {1, 2, 4, 3};
         logResult(pancakeSort(arr));
     }
+
+    /**
+     * 5550. 拆炸弹
+     *
+     * <p>你有一个炸弹需要拆除，时间紧迫！你的情报员会给你一个长度为 n 的 循环 数组 code 以及一个密钥 k 。
+     *
+     * <p>为了获得正确的密码，你需要替换掉每一个数字。所有数字会 同时 被替换。
+     *
+     * <p>如果 k > 0 ，将第 i 个数字用 接下来 k 个数字之和替换。 如果 k < 0 ，将第 i 个数字用 之前 k 个数字之和替换。 如果 k == 0 ，将第 i 个数字用
+     * 0 替换。 由于 code 是循环的， code[n-1] 下一个元素是 code[0] ，且 code[0] 前一个元素是 code[n-1] 。
+     *
+     * <p>给你 循环 数组 code 和整数密钥 k ，请你返回解密后的结果来拆除炸弹！
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：code = [5,7,1,4], k = 3 输出：[12,10,16,13] 解释：每个数字都被接下来 3 个数字之和替换。解密后的密码为 [7+1+4, 1+4+5,
+     * 4+5+7, 5+7+1]。注意到数组是循环连接的。 示例 2：
+     *
+     * <p>输入：code = [1,2,3,4], k = 0 输出：[0,0,0,0] 解释：当 k 为 0 时，所有数字都被 0 替换。 示例 3：
+     *
+     * <p>输入：code = [2,4,9,3], k = -2 输出：[12,5,6,13] 解释：解密后的密码为 [3+9, 2+3, 4+2, 9+4] 。注意到数组是循环连接的。如果
+     * k 是负数，那么和为 之前 的数字。
+     *
+     * <p>提示：
+     *
+     * <p>n == code.length 1 <= n <= 100 1 <= code[i] <= 100 -(n - 1) <= k <= n - 1
+     *
+     * @param code
+     * @param k
+     * @return
+     */
+    public int[] decrypt(int[] code, int k) {
+        int len = code.length;
+        int[] result = new int[len];
+        if (k == 0) {
+            return result;
+        }
+        int num = 0;
+        if (k > 0) {
+            //
+            for (int i = 0; i < k; i++) {
+                num += code[i];
+            }
+            int next = k - 1;
+            for (int i = 0; i < len; i++) {
+                num -= code[i];
+                next++;
+                next %= len;
+                num += code[next];
+                result[i] = num;
+            }
+        } else {
+            for (int i = len + k; i < len; i++) {
+                num += code[i];
+            }
+            int last = len + k;
+            for (int i = 0; i < len; i++) {
+                result[i] = num;
+                num += code[i];
+                num -= code[last];
+                last++;
+                last %= len;
+            }
+        }
+
+        return result;
+    }
+
+    @Test
+    public void decrypt() {
+        int[] code = {2, 4, 9, 3};
+        int k = -2;
+        log.debug("nums:{}", decrypt(code, k));
+    }
+
+    /**
+     * 5552. 到家的最少跳跃次数
+     *
+     * <p>有一只跳蚤的家在数轴上的位置 x 处。请你帮助它从位置 0 出发，到达它的家。
+     *
+     * <p>跳蚤跳跃的规则如下：
+     *
+     * <p>它可以 往前 跳恰好 a 个位置（即往右跳）。 它可以 往后 跳恰好 b 个位置（即往左跳）。 它不能 连续 往后跳 2 次。 它不能跳到任何 forbidden 数组中的位置。
+     * 跳蚤可以往前跳 超过 它的家的位置，但是它 不能跳到负整数 的位置。
+     *
+     * <p>给你一个整数数组 forbidden ，其中 forbidden[i] 是跳蚤不能跳到的位置，同时给你整数 a， b 和 x ，请你返回跳蚤到家的最少跳跃次数。如果没有恰好到达 x
+     * 的可行方案，请你返回 -1 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：forbidden = [14,4,18,1,15], a = 3, b = 15, x = 9 输出：3 解释：往前跳 3 次（0 -> 3 -> 6 ->
+     * 9），跳蚤就到家了。 示例 2：
+     *
+     * <p>输入：forbidden = [8,3,16,6,12,20], a = 15, b = 13, x = 11 输出：-1 示例 3：
+     *
+     * <p>输入：forbidden = [1,6,2,14,5,17,4], a = 16, b = 9, x = 7 输出：2 解释：往前跳一次（0 -> 16），然后往回跳一次（16
+     * -> 7），跳蚤就到家了。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= forbidden.length <= 1000 1 <= a, b, forbidden[i] <= 2000 0 <= x <= 2000 forbidden
+     * 中所有位置互不相同。 位置 x 不在 forbidden 中。
+     *
+     * @param forbidden
+     * @param a
+     * @param b
+     * @param x
+     * @return
+     */
+    public int minimumJumps(int[] forbidden, int a, int b, int x) {
+
+        boolean[] visited = new boolean[4004];
+        for (int f : forbidden) {
+            visited[f] = true;
+        }
+        int extra = 0;
+        if (b > a) {
+            if (b % a != 0) {
+                extra = a - b % a;
+            }
+        } else {
+            extra = a - b;
+        }
+        int result = -1;
+        if (extra == 0) {
+            if (x % a != 0) {
+                return -1;
+            }
+
+            for (int i = 0; i <= x; i += a) {
+                if (visited[i]) {
+                    return -1;
+                }
+                result++;
+            }
+        } else {
+
+            int step = 0;
+            // 广度优先遍历
+            Queue<JumpNode> queue = new LinkedList<>();
+            queue.offer(new JumpNode(0, true));
+            visited[0] = true;
+            while (!queue.isEmpty()) {
+                int size = queue.size();
+                step++;
+                for (int i = 0; i < size; i++) {
+                    JumpNode node = queue.poll();
+                    int rightNext = node.val + a;
+                    if (rightNext == x) {
+                        return step;
+                    } else if (rightNext < 4004 && !visited[rightNext]) {
+                        visited[rightNext] = true;
+                        queue.offer(new JumpNode(node.val + a, true));
+                    }
+                    int leftNext = node.val - b;
+                    if (leftNext == x) {
+                        return step;
+                    } else if (leftNext >= 0 && !visited[leftNext] && node.right) {
+                        // visited[leftNext] = true;
+                        queue.offer(new JumpNode(node.val - b, false));
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    static class JumpNode {
+        int val;
+        boolean right;
+
+        JumpNode(int val, boolean right) {
+            this.val = val;
+            this.right = right;
+        }
+    }
+
+    @Test
+    public void minimumJumps() {
+
+        int[] forbidden = {
+            162, 118, 178, 152, 167, 100, 40, 74, 199, 186, 26, 73, 200, 127, 30, 124, 193, 84, 184,
+            36, 103, 149, 153, 9, 54, 154, 133, 95, 45, 198, 79, 157, 64, 122, 59, 71, 48, 177, 82,
+            35, 14, 176, 16, 108, 111, 6, 168, 31, 134, 164, 136, 72, 98
+        };
+        int a = 29, b = 98, x = 80;
+        logResult(minimumJumps(forbidden, a, b, x));
+    }
+
+    /**
+     * 5602. 将 x 减到 0 的最小操作数
+     *
+     * <p>给你一个整数数组 nums 和一个整数 x 。每一次操作时，你应当移除数组 nums 最左边或最右边的元素，然后从 x 中减去该元素的值。请注意，需要 修改
+     * 数组以供接下来的操作使用。
+     *
+     * <p>如果可以将 x 恰好 减到 0 ，返回 最小操作数 ；否则，返回 -1 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：nums = [1,1,4,2,3], x = 5 输出：2 解释：最佳解决方案是移除后两个元素，将 x 减到 0 。 示例 2：
+     *
+     * <p>输入：nums = [5,6,7,8,9], x = 4 输出：-1 示例 3：
+     *
+     * <p>输入：nums = [3,2,20,1,1,3], x = 10 输出：5 解释：最佳解决方案是移除后三个元素和前两个元素（总共 5 次操作），将 x 减到 0 。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= nums.length <= 105 1 <= nums[i] <= 104 1 <= x <= 109
+     *
+     * @param nums
+     * @param x
+     * @return
+     */
+    public int minOperations(int[] nums, int x) {
+        int len = nums.length;
+        // 换个思路, 求  连续元素 = sum - x 即可
+        int sum = Arrays.stream(nums).sum();
+        int target = sum - x;
+        if (target < 0) {
+            return -1;
+        }
+        if (target == 0) {
+            return len;
+        }
+        Map<Integer, Integer> indexMap = new HashMap<>();
+        sum = 0;
+        indexMap.put(0, -1);
+        int max = 0;
+        for (int i = 0; i < len; i++) {
+            sum += nums[i];
+            if (sum >= target) {
+                int last = indexMap.getOrDefault(sum - target, -2);
+                if (last != -2) {
+                    max = Math.max(max, i - last);
+                }
+            }
+            indexMap.put(sum, i);
+        }
+
+        return max == 0 ? -1 : len - max;
+    }
+
+    @Test
+    public void minOperations3() {
+        int[] nums = {3, 2, 20, 1, 1, 3};
+        int x = 10;
+        logResult(minOperations(nums, x));
+    }
 }
