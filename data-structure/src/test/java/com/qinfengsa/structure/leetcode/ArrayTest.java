@@ -4314,8 +4314,8 @@ public class ArrayTest {
         return second;
     }
 
-    private boolean inArea(int row, int col, int rowNum, int colNum) {
-        return row >= 0 && row < rowNum && col >= 0 && col < colNum;
+    private boolean inArea(int row, int col, int rows, int cols) {
+        return row >= 0 && row < rows && col >= 0 && col < cols;
     }
 
     @Test
@@ -20884,5 +20884,230 @@ public class ArrayTest {
         int[] nums = {3, 2, 20, 1, 1, 3};
         int x = 10;
         logResult(minOperations(nums, x));
+    }
+
+    /**
+     * 932. 漂亮数组
+     *
+     * <p>对于某些固定的 N，如果数组 A 是整数 1, 2, ..., N 组成的排列，使得：
+     *
+     * <p>对于每个 i < j，都不存在 k 满足 i < k < j 使得 A[k] * 2 = A[i] + A[j]。
+     *
+     * <p>那么数组 A 是漂亮数组。
+     *
+     * <p>给定 N，返回任意漂亮数组 A（保证存在一个）。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：4 输出：[2,1,4,3] 示例 2：
+     *
+     * <p>输入：5 输出：[3,1,2,5,4]
+     *
+     * <p>提示：
+     *
+     * <p>1 <= N <= 1000
+     *
+     * @param N
+     * @return
+     */
+    public int[] beautifulArray(int N) {
+        // A是一个漂亮数组，如果对A中所有元素添加一个常数，那么Ａ还是一个漂亮数组。
+        // A是一个漂亮数组，如果对A中所有元素乘以一个常数，那么A还是一个漂亮数组。
+        // A是一个漂亮数组，如果删除一些A中一些元素，那么A还是一个漂亮数组。
+        // A是一个奇数构成的漂亮数组，B是一个偶数构成的漂亮数组，那么A+B也是一个漂亮数组
+        arrayMap = new HashMap<>();
+        arrayMap.put(1, new int[] {1});
+        arrayMap.put(2, new int[] {1, 2});
+        arrayMap.put(3, new int[] {1, 3, 2});
+        arrayMap.put(4, new int[] {1, 3, 2, 4});
+
+        return getBeautifulArray(N);
+    }
+
+    private int[] getBeautifulArray(int n) {
+        if (arrayMap.containsKey(n)) {
+            return arrayMap.get(n);
+        }
+        int[] nums = new int[n];
+        int idx = 0;
+        int half = (n + 1) >> 1;
+        for (int num : getBeautifulArray(half)) {
+            nums[idx++] = 2 * num - 1;
+        }
+        for (int num : getBeautifulArray(n - half)) {
+            nums[idx++] = 2 * num;
+        }
+        arrayMap.put(n, nums);
+        return nums;
+    }
+
+    Map<Integer, int[]> arrayMap;
+
+    @Test
+    public void beautifulArray() {
+        int n = 100;
+        int[] nums = beautifulArray(n);
+        log.debug("nums:{}", nums);
+    }
+
+    /**
+     * 947. 移除最多的同行或同列石头
+     *
+     * <p>我们将石头放置在二维平面中的一些整数坐标点上。每个坐标点上最多只能有一块石头。
+     *
+     * <p>每次 move 操作都会移除一块所在行或者列上有其他石头存在的石头。
+     *
+     * <p>请你设计一个算法，计算最多能执行多少次 move 操作？
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：stones = [[0,0],[0,1],[1,0],[1,2],[2,1],[2,2]] 输出：5 示例 2：
+     *
+     * <p>输入：stones = [[0,0],[0,2],[1,1],[2,0],[2,2]] 输出：3 示例 3：
+     *
+     * <p>输入：stones = [[0,0]] 输出：0
+     *
+     * <p>提示：
+     *
+     * <p>1 <= stones.length <= 1000 0 <= stones[i][j] < 10000
+     *
+     * @param stones
+     * @return
+     */
+    public int removeStones(int[][] stones) {
+        // 每次移除一块石头, 所在行或者列上有其他石头存在的石头
+        int n = stones.length;
+        // 同行或者同列的合并一起，每个组最后只能剩一个。返回（N - group数）即可
+        StoneDsu dsu = new StoneDsu(20000);
+        for (int[] stone : stones) {
+            dsu.union(stone[0], stone[1] + 10000);
+        }
+        Set<Integer> set = new HashSet<>();
+        for (int[] stone : stones) {
+            set.add(dsu.findParent(stone[0]));
+        }
+
+        return n - set.size();
+    }
+
+    static class StoneDsu {
+
+        private int[] parent;
+
+        StoneDsu(int n) {
+            this.parent = new int[n];
+            for (int i = 0; i < n; ++i) {
+                parent[i] = i;
+            }
+        }
+
+        int findParent(int num) {
+            if (num != parent[num]) {
+                parent[num] = findParent(parent[num]);
+            }
+
+            return parent[num];
+        }
+
+        void union(int x, int y) {
+            parent[findParent(x)] = findParent(y);
+        }
+    }
+
+    /**
+     * 934. 最短的桥
+     *
+     * <p>在给定的二维二进制数组 A 中，存在两座岛。（岛是由四面相连的 1 形成的一个最大组。）
+     *
+     * <p>现在，我们可以将 0 变为 1，以使两座岛连接起来，变成一座岛。
+     *
+     * <p>返回必须翻转的 0 的最小数目。（可以保证答案至少是 1。）
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：[[0,1],[1,0]] 输出：1 示例 2：
+     *
+     * <p>输入：[[0,1,0],[0,0,0],[0,0,1]] 输出：2 示例 3：
+     *
+     * <p>输入：[[1,1,1,1,1],[1,0,0,0,1],[1,0,1,0,1],[1,0,0,0,1],[1,1,1,1,1]] 输出：1
+     *
+     * <p>提示：
+     *
+     * <p>1 <= A.length = A[0].length <= 100 A[i][j] == 0 或 A[i][j] == 1
+     *
+     * @param A
+     * @return
+     */
+    public int shortestBridge(int[][] A) {
+
+        int rows = A.length, cols = A[0].length;
+        int color = 2;
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (A[i][j] == 1) {
+                    findIsland(A, i, j, color++);
+                }
+            }
+        }
+        Queue<int[]> queue = new LinkedList<>();
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (A[i][j] != 2) {
+                    continue;
+                }
+                for (int k = 0; k < 4; k++) {
+                    int rowIdx = i + DIR_ROW[k], colIdx = j + DIR_COL[k];
+                    if (inArea(rowIdx, colIdx, rows, cols) && A[rowIdx][colIdx] == 0) {
+                        queue.offer(new int[] {rowIdx, colIdx});
+                    }
+                }
+            }
+        }
+        int len = 0;
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            len++;
+            for (int i = 0; i < size; i++) {
+                int[] p = queue.poll();
+                int row = p[0], col = p[1];
+                if (A[row][col] != 0) {
+                    continue;
+                }
+                A[row][col] = 2;
+                for (int j = 0; j < 4; j++) {
+                    int rowIdx = row + DIR_ROW[j], colIdx = col + DIR_COL[j];
+                    if (inArea(rowIdx, colIdx, rows, cols)) {
+                        if (A[rowIdx][colIdx] == 0) {
+                            queue.offer(new int[] {rowIdx, colIdx});
+                        } else if (A[rowIdx][colIdx] == 3) {
+                            return len;
+                        }
+                    }
+                }
+            }
+        }
+
+        return -1;
+    }
+
+    private void findIsland(int[][] A, int row, int col, int color) {
+        if (!inArea(row, col, A.length, A[0].length)) {
+            return;
+        }
+        if (A[row][col] == 0 || A[row][col] == color) {
+            return;
+        }
+        A[row][col] = color;
+
+        for (int i = 0; i < 4; i++) {
+            int rowIdx = row + DIR_ROW[i], colIdx = col + DIR_COL[i];
+            findIsland(A, rowIdx, colIdx, color);
+        }
+    }
+
+    @Test
+    public void shortestBridge() {
+        int[][] A = {{0, 1}, {1, 0}};
+        logResult(shortestBridge(A));
     }
 }
