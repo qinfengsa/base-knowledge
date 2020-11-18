@@ -3443,4 +3443,146 @@ public class MyHashTest {
         int[][] points = {{1, 1}, {1, 3}, {3, 1}, {3, 3}, {2, 2}};
         logResult(minAreaRect(points));
     }
+
+    /**
+     * 957. N 天后的牢房
+     *
+     * <p>8 间牢房排成一排，每间牢房不是有人住就是空着。
+     *
+     * <p>每天，无论牢房是被占用或空置，都会根据以下规则进行更改：
+     *
+     * <p>如果一间牢房的两个相邻的房间都被占用或都是空的，那么该牢房就会被占用。 否则，它就会被空置。
+     * （请注意，由于监狱中的牢房排成一行，所以行中的第一个和最后一个房间无法有两个相邻的房间。）
+     *
+     * <p>我们用以下方式描述监狱的当前状态：如果第 i 间牢房被占用，则 cell[i]==1，否则 cell[i]==0。
+     *
+     * <p>根据监狱的初始状态，在 N 天后返回监狱的状况（和上述 N 种变化）。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：cells = [0,1,0,1,1,0,0,1], N = 7 输出：[0,0,1,1,0,0,0,0] 解释： 下表概述了监狱每天的状况： Day 0: [0, 1,
+     * 0, 1, 1, 0, 0, 1] Day 1: [0, 1, 1, 0, 0, 0, 0, 0] Day 2: [0, 0, 0, 0, 1, 1, 1, 0] Day 3: [0,
+     * 1, 1, 0, 0, 1, 0, 0] Day 4: [0, 0, 0, 0, 0, 1, 0, 0] Day 5: [0, 1, 1, 1, 0, 1, 0, 0] Day 6:
+     * [0, 0, 1, 0, 1, 1, 0, 0] Day 7: [0, 0, 1, 1, 0, 0, 0, 0]
+     *
+     * <p>示例 2：
+     *
+     * <p>输入：cells = [1,0,0,1,0,0,1,0], N = 1000000000 输出：[0,0,1,1,1,1,1,0]
+     *
+     * <p>提示：
+     *
+     * <p>cells.length == 8 cells[i] 的值为 0 或 1 1 <= N <= 10^9
+     *
+     * @param cells
+     * @param N
+     * @return
+     */
+    public int[] prisonAfterNDays(int[] cells, int N) {
+        Map<Integer, Integer> dayMap = new HashMap<>();
+        int num = 0;
+        for (int cell : cells) {
+            num <<= 1;
+            num |= cell;
+        }
+        while (N > 0) {
+            if (dayMap.containsKey(num)) {
+                N %= dayMap.get(num) - N;
+            }
+            dayMap.put(num, N);
+            if (N >= 1) {
+                N--;
+                num = getNext(num);
+            }
+        }
+        int[] result = new int[8];
+        for (int i = 7; i >= 0; i--) {
+            result[i] = num & 1;
+            num >>= 1;
+        }
+
+        return result;
+    }
+
+    private int getNext(int num) {
+        int left = num << 1, right = num >> 1;
+        num = ~(left ^ right);
+        num &= 0x7E;
+        return num;
+    }
+
+    /**
+     * 966. 元音拼写检查器
+     *
+     * <p>在给定单词列表 wordlist 的情况下，我们希望实现一个拼写检查器，将查询单词转换为正确的单词。
+     *
+     * <p>对于给定的查询单词 query，拼写检查器将会处理两类拼写错误：
+     *
+     * <p>大小写：如果查询匹配单词列表中的某个单词（不区分大小写），则返回的正确单词与单词列表中的大小写相同。 例如：wordlist = ["yellow"], query =
+     * "YellOw": correct = "yellow" 例如：wordlist = ["Yellow"], query = "yellow": correct = "Yellow"
+     * 例如：wordlist = ["yellow"], query = "yellow": correct = "yellow"
+     * 元音错误：如果在将查询单词中的元音（‘a’、‘e’、‘i’、‘o’、‘u’）分别替换为任何元音后，能与单词列表中的单词匹配（不区分大小写），则返回的正确单词与单词列表中的匹配项大小写相同。
+     * 例如：wordlist = ["YellOw"], query = "yollow": correct = "YellOw" 例如：wordlist = ["YellOw"],
+     * query = "yeellow": correct = "" （无匹配项） 例如：wordlist = ["YellOw"], query = "yllw": correct = ""
+     * （无匹配项） 此外，拼写检查器还按照以下优先级规则操作：
+     *
+     * <p>当查询完全匹配单词列表中的某个单词（区分大小写）时，应返回相同的单词。 当查询匹配到大小写问题的单词时，您应该返回单词列表中的第一个这样的匹配项。
+     * 当查询匹配到元音错误的单词时，您应该返回单词列表中的第一个这样的匹配项。 如果该查询在单词列表中没有匹配项，则应返回空字符串。 给出一些查询 queries，返回一个单词列表
+     * answer，其中 answer[i] 是由查询 query = queries[i] 得到的正确单词。
+     *
+     * <p>示例：
+     *
+     * <p>输入：wordlist = ["KiTe","kite","hare","Hare"], queries =
+     * ["kite","Kite","KiTe","Hare","HARE","Hear","hear","keti","keet","keto"]
+     * 输出：["kite","KiTe","KiTe","Hare","hare","","","KiTe","","KiTe"]
+     *
+     * <p>提示：
+     *
+     * <p>1 <= wordlist.length <= 5000 1 <= queries.length <= 5000 1 <= wordlist[i].length <= 7 1 <=
+     * queries[i].length <= 7 wordlist 和 queries 中的所有字符串仅由英文字母组成。
+     *
+     * @param wordlist
+     * @param queries
+     * @return
+     */
+    public String[] spellchecker(String[] wordlist, String[] queries) {
+        Set<String> set = new HashSet<>();
+        Map<String, List<String>> lowerMap = new HashMap<>();
+        Map<String, List<String>> vowelMap = new HashMap<>();
+        for (String word : wordlist) {
+            set.add(word);
+            String lowerWord = word.toLowerCase();
+            String vowelWord = getHashKey(lowerWord);
+            lowerMap.computeIfAbsent(lowerWord, k -> new ArrayList<>()).add(word);
+            vowelMap.computeIfAbsent(vowelWord, k -> new ArrayList<>()).add(word);
+        }
+        int len = queries.length;
+        String[] result = new String[len];
+        for (int i = 0; i < len; i++) {
+            String query = queries[i];
+            if (set.contains(query)) {
+                result[i] = query;
+                continue;
+            }
+            String lowerWord = query.toLowerCase();
+            String vowelWord = getHashKey(lowerWord);
+            if (lowerMap.containsKey(lowerWord)) {
+                String value = lowerMap.get(lowerWord).get(0);
+                result[i] = value;
+            } else if (vowelMap.containsKey(vowelWord)) {
+                String value = vowelMap.get(vowelWord).get(0);
+                result[i] = value;
+            } else {
+                result[i] = "";
+            }
+        }
+        return result;
+    }
+
+    private String getHashKey(String word) {
+        return word.replace('a', '*')
+                .replace('e', '*')
+                .replace('i', '*')
+                .replace('o', '*')
+                .replace('u', '*');
+    }
 }
