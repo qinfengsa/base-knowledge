@@ -1974,4 +1974,62 @@ public class GreedyTest {
 
         return max;
     }
+
+    /**
+     * 1007. 行相等的最少多米诺旋转
+     *
+     * <p>在一排多米诺骨牌中，A[i] 和 B[i] 分别代表第 i 个多米诺骨牌的上半部分和下半部分。（一个多米诺是两个从 1 到 6 的数字同列平铺形成的 ——
+     * 该平铺的每一半上都有一个数字。）
+     *
+     * <p>我们可以旋转第 i 张多米诺，使得 A[i] 和 B[i] 的值交换。
+     *
+     * <p>返回能使 A 中所有值或者 B 中所有值都相同的最小旋转次数。
+     *
+     * <p>如果无法做到，返回 -1.
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：A = [2,1,2,4,2,2], B = [5,2,6,2,3,2] 输出：2 解释： 图一表示：在我们旋转之前， A 和 B 给出的多米诺牌。
+     * 如果我们旋转第二个和第四个多米诺骨牌，我们可以使上面一行中的每个值都等于 2，如图二所示。 示例 2：
+     *
+     * <p>输入：A = [3,5,1,2,3], B = [3,6,3,3,4] 输出：-1 解释： 在这种情况下，不可能旋转多米诺牌使一行的值相等。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= A[i], B[i] <= 6 2 <= A.length == B.length <= 20000
+     *
+     * @param A
+     * @param B
+     * @return
+     */
+    public int minDominoRotations(int[] A, int[] B) {
+        int len = A.length;
+        int[] nums = new int[7];
+        for (int i = 0; i < len; i++) {
+            nums[A[i]]++;
+            nums[B[i]]++;
+        }
+        int num = -1;
+        for (int i = 1; i <= 6; i++) {
+            if (nums[i] >= len) {
+                num = i;
+                break;
+            }
+        }
+        if (num == -1) {
+            return -1;
+        }
+        int a = 0, b = 0;
+        for (int i = 0; i < len; i++) {
+            if (A[i] != num && B[i] != num) {
+                return -1;
+            } else if (A[i] != num) {
+                a++;
+            } else if (B[i] != num) {
+                b++;
+            }
+        }
+
+        return Math.min(a, b);
+    }
 }
