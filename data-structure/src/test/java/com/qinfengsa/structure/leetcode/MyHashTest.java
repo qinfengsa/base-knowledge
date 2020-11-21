@@ -5,6 +5,7 @@ import static com.qinfengsa.structure.util.LogUtils.logResult;
 import com.qinfengsa.base.Employee;
 import com.qinfengsa.structure.hash.MyHashMap;
 import com.qinfengsa.structure.hash.MyHashSet;
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -3584,5 +3585,75 @@ public class MyHashTest {
                 .replace('i', '*')
                 .replace('o', '*')
                 .replace('u', '*');
+    }
+
+    /**
+     * 963. 最小面积矩形 II
+     *
+     * <p>给定在 xy 平面上的一组点，确定由这些点组成的任何矩形的最小面积，其中矩形的边不一定平行于 x 轴和 y 轴。
+     *
+     * <p>如果没有任何矩形，就返回 0。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：[[1,2],[2,1],[1,0],[0,1]] 输出：2.00000 解释：最小面积的矩形出现在 [1,2],[2,1],[1,0],[0,1] 处，面积为 2。 示例
+     * 2：
+     *
+     * <p>输入：[[0,1],[2,1],[1,1],[1,0],[2,0]] 输出：1.00000 解释：最小面积的矩形出现在 [1,0],[1,1],[2,1],[2,0] 处，面积为
+     * 1。 示例 3：
+     *
+     * <p>输入：[[0,3],[1,2],[3,1],[1,3],[2,1]] 输出：0 解释：没法从这些点中组成任何矩形。 示例 4：
+     *
+     * <p>输入：[[3,1],[1,1],[0,1],[2,1],[3,3],[3,2],[0,2],[2,3]] 输出：2.00000 解释：最小面积的矩形出现在
+     * [2,1],[2,3],[3,3],[3,1] 处，面积为 2。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= points.length <= 50 0 <= points[i][0] <= 40000 0 <= points[i][1] <= 40000 所有的点都是不同的。
+     * 与真实值误差不超过 10^-5 的答案将视为正确结果。
+     *
+     * @param points
+     * @return
+     */
+    public double minAreaFreeRect(int[][] points) {
+
+        List<Point> list =
+                Arrays.stream(points)
+                        .map(point -> new Point(point[0], point[1]))
+                        .collect(Collectors.toList());
+        // 长度（平方差） -> 中点  —> 点列表
+        Map<Integer, Map<Point, List<Point>>> seen = new HashMap<>();
+        for (int i = 0; i < list.size(); i++) {
+            for (int j = i + 1; j < list.size(); j++) {
+                Point center =
+                        new Point(list.get(i).x + list.get(j).x, list.get(i).y + list.get(j).y);
+                int xLen = list.get(i).x - list.get(j).x, ylen = list.get(i).y - list.get(j).y;
+                int len = xLen * xLen + ylen * ylen;
+                Map<Point, List<Point>> centerMap = seen.computeIfAbsent(len, k -> new HashMap<>());
+                centerMap.computeIfAbsent(center, k -> new ArrayList<>()).add(list.get(i));
+            }
+        }
+        double min = Double.MAX_VALUE;
+        for (Map<Point, List<Point>> centerMap : seen.values()) {
+            for (Map.Entry<Point, List<Point>> entry : centerMap.entrySet()) {
+                Point center = entry.getKey();
+                List<Point> pointList = entry.getValue();
+                for (int i = 0; i < pointList.size(); i++) {
+                    for (int j = i + 1; j < pointList.size(); j++) {
+                        Point start1 = pointList.get(i), start2 = pointList.get(j);
+                        // 长
+                        double len = start1.distance(start2);
+                        // 宽
+                        Point end2 = new Point(center);
+                        end2.translate(-start2.x, -start2.y);
+                        double width = start1.distance(end2);
+                        double area = len * width;
+                        min = Math.min(min, area);
+                    }
+                }
+            }
+        }
+
+        return min < Double.MAX_VALUE ? min : 0;
     }
 }
