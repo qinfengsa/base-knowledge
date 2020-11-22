@@ -21215,4 +21215,222 @@ public class ArrayTest {
 
         return new int[] {min, max};
     }
+
+    /**
+     * 5605. 检查两个字符串数组是否相等
+     *
+     * <p>word1 和 word2 。如果两个数组表示的字符串相同，返回 true ；否则，返回 false 。
+     *
+     * <p>数组表示的字符串 是由数组中的所有元素 按顺序 连接形成的字符串。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：word1 = ["ab", "c"], word2 = ["a", "bc"] 输出：true 解释： word1 表示的字符串为 "ab" + "c" -> "abc"
+     * word2 表示的字符串为 "a" + "bc" -> "abc" 两个字符串相同，返回 true 示例 2：
+     *
+     * <p>输入：word1 = ["a", "cb"], word2 = ["ab", "c"] 输出：false 示例 3：
+     *
+     * <p>输入：word1 = ["abc", "d", "defg"], word2 = ["abcddefg"] 输出：true
+     *
+     * <p>提示：
+     *
+     * <p>1 <= word1.length, word2.length <= 103 1 <= word1[i].length, word2[i].length <= 103 1 <=
+     * sum(word1[i].length), sum(word2[i].length) <= 103 word1[i] 和 word2[i] 由小写字母组成
+     *
+     * @param word1
+     * @param word2
+     * @return
+     */
+    public boolean arrayStringsAreEqual(String[] word1, String[] word2) {
+        StringBuilder sb = new StringBuilder();
+        for (String word : word1) {
+            sb.append(word);
+        }
+        StringBuilder sb2 = new StringBuilder();
+        for (String word : word2) {
+            sb2.append(word);
+        }
+        return Objects.equals(sb.toString(), sb2.toString());
+    }
+
+    /**
+     * 5607. 生成平衡数组的方案数
+     *
+     * <p>给你一个整数数组 nums 。你需要选择 恰好 一个下标（下标从 0 开始）并删除对应的元素。请注意剩下元素的下标可能会因为删除操作而发生改变。
+     *
+     * <p>比方说，如果 nums = [6,1,7,4,1] ，那么：
+     *
+     * <p>选择删除下标 1 ，剩下的数组为 nums = [6,7,4,1] 。 选择删除下标 2 ，剩下的数组为 nums = [6,1,4,1] 。 选择删除下标 4 ，剩下的数组为
+     * nums = [6,1,7,4] 。 如果一个数组满足奇数下标元素的和与偶数下标元素的和相等，该数组就是一个 平衡数组 。
+     *
+     * <p>请你返回删除操作后，剩下的数组 nums 是 平衡数组 的 方案数 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：nums = [2,1,6,4] 输出：1 解释： 删除下标 0 ：[1,6,4] -> 偶数元素下标为：1 + 4 = 5 。奇数元素下标为：6 。不平衡。 删除下标 1
+     * ：[2,6,4] -> 偶数元素下标为：2 + 4 = 6 。奇数元素下标为：6 。平衡。 删除下标 2 ：[2,1,4] -> 偶数元素下标为：2 + 4 = 6 。奇数元素下标为：1
+     * 。不平衡。 删除下标 3 ：[2,1,6] -> 偶数元素下标为：2 + 6 = 8 。奇数元素下标为：1 。不平衡。 只有一种让剩余数组成为平衡数组的方案。 示例 2：
+     *
+     * <p>输入：nums = [1,1,1] 输出：3 解释：你可以删除任意元素，剩余数组都是平衡数组。 示例 3：
+     *
+     * <p>输入：nums = [1,2,3] 输出：0 解释：不管删除哪个元素，剩下数组都不是平衡数组。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= nums.length <= 105 1 <= nums[i] <= 104
+     *
+     * @param nums
+     * @return
+     */
+    public int waysToMakeFair(int[] nums) {
+        int count = 0;
+        int len = nums.length;
+        // 0 奇数 1 偶数
+        int[][] sums = new int[len][2];
+        int odd = 0, even = nums[0];
+        for (int i = 1; i < len; i++) {
+            sums[i][0] += odd;
+            sums[i][1] += even;
+            if ((i & 1) == 1) {
+                odd += nums[i];
+            } else {
+                even += nums[i];
+            }
+        }
+        // 奇偶互换
+        if (((len - 1) & 1) == 1) {
+            even = nums[len - 1];
+            odd = 0;
+        } else {
+            odd = nums[len - 1];
+            even = 0;
+        }
+
+        for (int i = len - 2; i >= 0; i--) {
+            sums[i][0] += odd;
+            sums[i][1] += even;
+            if ((i & 1) == 1) {
+                even += nums[i];
+            } else {
+                odd += nums[i];
+            }
+        }
+        logResult(sums);
+        for (int i = 0; i < len; i++) {
+            if (sums[i][0] == sums[i][1]) {
+                count++;
+            }
+        }
+
+        return count;
+    }
+
+    @Test
+    public void waysToMakeFair() {
+        int[] nums = {2, 1, 6, 4};
+        logResult(waysToMakeFair(nums));
+    }
+
+    /**
+     * 5608. 完成所有任务的最少初始能量
+     *
+     * <p>给你一个任务数组 tasks ，其中 tasks[i] = [actuali, minimumi] ：
+     *
+     * <p>actuali 是完成第 i 个任务 需要耗费 的实际能量。 minimumi 是开始第 i 个任务前需要达到的最低能量。 比方说，如果任务为 [10, 12] 且你当前的能量为
+     * 11 ，那么你不能开始这个任务。如果你当前的能量为 13 ，你可以完成这个任务，且完成它后剩余能量为 3 。
+     *
+     * <p>你可以按照 任意顺序 完成任务。
+     *
+     * <p>请你返回完成所有任务的 最少 初始能量。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：tasks = [[1,2],[2,4],[4,8]] 输出：8 解释： 一开始有 8 能量，我们按照如下顺序完成任务： - 完成第 3 个任务，剩余能量为 8 - 4 =
+     * 4 。 - 完成第 2 个任务，剩余能量为 4 - 2 = 2 。 - 完成第 1 个任务，剩余能量为 2 - 1 = 1 。 注意到尽管我们有能量剩余，但是如果一开始只有 7
+     * 能量是不能完成所有任务的，因为我们无法开始第 3 个任务。 示例 2：
+     *
+     * <p>输入：tasks = [[1,3],[2,4],[10,11],[10,12],[8,9]] 输出：32 解释： 一开始有 32 能量，我们按照如下顺序完成任务： - 完成第 1
+     * 个任务，剩余能量为 32 - 1 = 31 。 - 完成第 2 个任务，剩余能量为 31 - 2 = 29 。 - 完成第 3 个任务，剩余能量为 29 - 10 = 19 。 -
+     * 完成第 4 个任务，剩余能量为 19 - 10 = 9 。 - 完成第 5 个任务，剩余能量为 9 - 8 = 1 。 示例 3：
+     *
+     * <p>输入：tasks = [[1,7],[2,8],[3,9],[4,10],[5,11],[6,12]] 输出：27 解释： 一开始有 27 能量，我们按照如下顺序完成任务： -
+     * 完成第 5 个任务，剩余能量为 27 - 5 = 22 。 - 完成第 2 个任务，剩余能量为 22 - 2 = 20 。 - 完成第 3 个任务，剩余能量为 20 - 3 = 17 。
+     * - 完成第 1 个任务，剩余能量为 17 - 1 = 16 。 - 完成第 4 个任务，剩余能量为 16 - 4 = 12 。 - 完成第 6 个任务，剩余能量为 12 - 6 = 6
+     * 。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= tasks.length <= 105 1 <= actuali <= minimumi <= 104
+     *
+     * @param tasks
+     * @return
+     */
+    public int minimumEffort(int[][] tasks) {
+        /*Arrays.sort(
+                tasks,
+                (a, b) -> {
+                    int dif1 = a[1] - a[0], dif2 = b[1] - b[0];
+                    return dif1 == dif2 ? b[0] - a[0] : dif2 - dif1;
+                });
+        logResult(tasks);
+
+        for (int i = 0; i < len - 1; i++) {
+            result += tasks[i][0];
+        }
+        result += tasks[len - 1][1];*/
+        // 找到差值最小和 需求能量最新的 task
+        int len = tasks.length;
+        int result = 0;
+        int[] minTask = tasks[0];
+        int minDif = tasks[0][1] - tasks[0][0], minIdx = 0;
+        for (int i = 1; i < len; i++) {
+            int dif = tasks[i][1] - tasks[i][0];
+            if (dif < minDif) {
+                minDif = dif;
+                minTask = tasks[i];
+                minIdx = i;
+            } else if (dif == minDif && minTask[1] < tasks[i][1]) {
+                minTask = tasks[i];
+                minIdx = i;
+            }
+        }
+        List<int[]> taskList = new ArrayList<>();
+        int taskNum = 0;
+        for (int i = 0; i < len; i++) {
+            if (i == minIdx) {
+                taskNum += tasks[i][1];
+                continue;
+            }
+            taskList.add(tasks[i]);
+            taskNum += tasks[i][0];
+        }
+        taskList.sort((a, b) -> b[1] - b[0] - a[1] + a[0]);
+        for (int[] task : taskList) {
+            log.debug("task:{}", task);
+        }
+        log.debug("taskNum:{}", taskNum);
+        result = taskNum;
+        for (int[] task : taskList) {
+            int dif = task[1] - taskNum;
+            if (dif > 0) {
+                result += dif;
+                taskNum -= task[0];
+                taskNum += dif;
+                continue;
+            }
+            taskNum -= task[0];
+        }
+        if (taskNum < minTask[1]) {
+            result += minTask[1] - taskNum;
+        }
+
+        return result;
+    }
+
+    @Test
+    public void minimumEffort() {
+        // [[1,2],[1,7],[2,3],[5,9],[2,2]]
+        int[][] tasks = {{1, 2}, {18, 23}, {2, 4}};
+        logResult(minimumEffort(tasks));
+    }
 }
