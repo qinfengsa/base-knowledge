@@ -6286,4 +6286,138 @@ public class DynamicPlanTest {
         }
         return max;
     }
+
+    /**
+     * 1027. 最长等差数列
+     *
+     * <p>给定一个整数数组 A，返回 A 中最长等差子序列的长度。
+     *
+     * <p>回想一下，A 的子序列是列表 A[i_1], A[i_2], ..., A[i_k] 其中 0 <= i_1 < i_2 < ... < i_k <= A.length -
+     * 1。并且如果 B[i+1] - B[i]( 0 <= i < B.length - 1) 的值都相同，那么序列 B 是等差的。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：[3,6,9,12] 输出：4 解释： 整个数组是公差为 3 的等差数列。 示例 2：
+     *
+     * <p>输入：[9,4,7,2,10] 输出：3 解释： 最长的等差子序列是 [4,7,10]。 示例 3：
+     *
+     * <p>输入：[20,1,15,3,10,5,8] 输出：4 解释： 最长的等差子序列是 [20,15,10,5]。
+     *
+     * <p>提示：
+     *
+     * <p>2 <= A.length <= 2000 0 <= A[i] <= 10000
+     *
+     * @param A
+     * @return
+     */
+    public int longestArithSeqLength(int[] A) {
+        int max = 0, len = A.length;
+        // dp[i][j]为以A[i]和A[j]为最后两个元素的等差数列的长度
+        int[][] dp = new int[len][len];
+        for (int i = 0; i < len; i++) {
+            for (int j = i + 1; j < len; j++) {
+                dp[i][j] = 2;
+            }
+        }
+        Map<Integer, Integer> indexMap = new HashMap<>();
+        for (int i = 0; i < len; i++) {
+            for (int j = i + 1; j < len; j++) {
+                int last = (A[i] << 1) - A[j];
+                int index = indexMap.getOrDefault(last, -1);
+                if (index != -1) {
+                    dp[i][j] = dp[index][i] + 1;
+                }
+                max = Math.max(max, dp[i][j]);
+            }
+            indexMap.put(A[i], i);
+        }
+
+        return max;
+    }
+
+    /**
+     * 1039. 多边形三角剖分的最低得分
+     *
+     * <p>给定 N，想象一个凸 N 边多边形，其顶点按顺时针顺序依次标记为 A[0], A[i], ..., A[N-1]。
+     *
+     * <p>假设您将多边形剖分为 N-2 个三角形。对于每个三角形，该三角形的值是顶点标记的乘积，三角剖分的分数是进行三角剖分后所有 N-2 个三角形的值之和。
+     *
+     * <p>返回多边形进行三角剖分后可以得到的最低分。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：[1,2,3] 输出：6 解释：多边形已经三角化，唯一三角形的分数为 6。 示例 2：
+     *
+     * <p>输入：[3,7,4,5] 输出：144 解释：有两种三角剖分，可能得分分别为：3*7*5 + 4*5*7 = 245，或 3*4*5 + 3*4*7 = 144。最低分数为
+     * 144。 示例 3：
+     *
+     * <p>输入：[1,3,1,4,1,5] 输出：13 解释：最低分数三角剖分的得分情况为 1*1*3 + 1*1*4 + 1*1*5 + 1*1*1 = 13。
+     *
+     * <p>提示：
+     *
+     * <p>3 <= A.length <= 50 1 <= A[i] <= 100
+     *
+     * @param A
+     * @return
+     */
+    public int minScoreTriangulation(int[] A) {
+        // dp[i][j] = min(dp[i][j], dp[i][k] + dp[k][j] + A[i] * A[j] * A[k]);
+        int len = A.length;
+        int[][] dp = new int[len][len];
+        for (int i = len - 3; i >= 0; i--) {
+            for (int j = i + 2; j < len; j++) {
+                for (int k = i + 1; k < j; k++) {
+                    if (dp[i][j] == 0) {
+                        dp[i][j] = dp[i][k] + dp[k][j] + A[i] * A[j] * A[k];
+                    } else {
+                        dp[i][j] = Math.min(dp[i][j], dp[i][k] + dp[k][j] + A[i] * A[j] * A[k]);
+                    }
+                }
+            }
+        }
+        return dp[0][len - 1];
+    }
+
+    /**
+     * 1035. 不相交的线
+     *
+     * <p>我们在两条独立的水平线上按给定的顺序写下 A 和 B 中的整数。
+     *
+     * <p>现在，我们可以绘制一些连接两个数字 A[i] 和 B[j] 的直线，只要 A[i] == B[j]，且我们绘制的直线不与任何其他连线（非水平线）相交。
+     *
+     * <p>以这种方法绘制线条，并返回我们可以绘制的最大连线数。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：A = [1,4,2], B = [1,2,4] 输出：2 解释： 我们可以画出两条不交叉的线，如上图所示。 我们无法画出第三条不相交的直线，因为从 A[1]=4 到
+     * B[2]=4 的直线将与从 A[2]=2 到 B[1]=2 的直线相交。 示例 2：
+     *
+     * <p>输入：A = [2,5,1,2,5], B = [10,5,2,1,5,2] 输出：3 示例 3：
+     *
+     * <p>输入：A = [1,3,7,1,7,5], B = [1,9,2,5,1] 输出：2
+     *
+     * <p>提示：
+     *
+     * <p>1 <= A.length <= 500 1 <= B.length <= 500 1 <= A[i], B[i] <= 2000
+     *
+     * @param A
+     * @param B
+     * @return
+     */
+    public int maxUncrossedLines(int[] A, int[] B) {
+        // 最长公共子序列
+        int len1 = A.length, len2 = B.length;
+        int[][] dp = new int[len1 + 1][len2 + 1];
+        for (int i = 0; i < len1; i++) {
+            for (int j = 0; j < len2; j++) {
+                if (A[i] == B[j]) {
+                    dp[i + 1][j + 1] = dp[i][j] + 1;
+                } else {
+                    dp[i + 1][j + 1] = Math.max(dp[i + 1][j], dp[i][j + 1]);
+                }
+            }
+        }
+
+        return dp[len1][len2];
+    }
 }
