@@ -21433,4 +21433,67 @@ public class ArrayTest {
         int[][] tasks = {{1, 2}, {18, 23}, {2, 4}};
         logResult(minimumEffort(tasks));
     }
+
+    /**
+     * 1020. 飞地的数量
+     *
+     * <p>给出一个二维数组 A，每个单元格为 0（代表海）或 1（代表陆地）。
+     *
+     * <p>移动是指在陆地上从一个地方走到另一个地方（朝四个方向之一）或离开网格的边界。
+     *
+     * <p>返回网格中无法在任意次数的移动中离开网格边界的陆地单元格的数量。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：[[0,0,0,0],[1,0,1,0],[0,1,1,0],[0,0,0,0]] 输出：3 解释： 有三个 1 被 0 包围。一个 1 没有被包围，因为它在边界上。 示例
+     * 2：
+     *
+     * <p>输入：[[0,1,1,0],[0,0,1,0],[0,0,1,0],[0,0,0,0]] 输出：0 解释： 所有 1 都在边界上或可以到达边界。
+     *
+     * @param A
+     * @return
+     */
+    public int numEnclaves(int[][] A) {
+        // 从边界的1出发，把1变成2 , 剩下的1为答案
+        int rows = A.length, cols = A[0].length;
+        for (int i = 0; i < rows; i++) {
+            if (A[i][0] == 1) {
+                numEnclavesDfs(A, i, 0);
+            }
+            if (A[i][cols - 1] == 1) {
+                numEnclavesDfs(A, i, cols - 1);
+            }
+        }
+        for (int j = 1; j < cols - 1; j++) {
+            if (A[0][j] == 1) {
+                numEnclavesDfs(A, 0, j);
+            }
+            if (A[rows - 1][j] == 1) {
+                numEnclavesDfs(A, rows - 1, j);
+            }
+        }
+        int count = 0;
+        for (int[] nums : A) {
+            for (int num : nums) {
+                if (num == 1) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
+    private void numEnclavesDfs(int[][] A, int row, int col) {
+        if (!inArea(row, col, A.length, A[0].length)) {
+            return;
+        }
+        if (A[row][col] != 1) {
+            return;
+        }
+        A[row][col] = 2;
+        for (int i = 0; i < 4; i++) {
+            int r = row + DIR_ROW[i], c = col + DIR_COL[i];
+            numEnclavesDfs(A, r, c);
+        }
+    }
 }
