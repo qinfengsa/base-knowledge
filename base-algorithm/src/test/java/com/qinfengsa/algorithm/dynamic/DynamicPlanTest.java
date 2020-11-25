@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * 动态规划
@@ -707,7 +707,7 @@ public class DynamicPlanTest {
     }
 
     /**
-     * Best Time to Buy and Sell Stock with Cooldown 给定一个整数数组，其中第 i 个元素代表了第 i 天的股票价格 。​
+     * Best Time to Buy and Sell Stock with Cooldown 给定一个整数数组，其中第 i 个元素代表了第 i 天的股票价格 。
      *
      * <p>设计一个算法计算出最大利润。在满足以下约束条件下，你可以尽可能地完成更多的交易（多次买卖一支股票）:
      *
@@ -4027,7 +4027,7 @@ public class DynamicPlanTest {
     /**
      * 309. 最佳买卖股票时机含冷冻期
      *
-     * <p>给定一个整数数组，其中第 i 个元素代表了第 i 天的股票价格 。​
+     * <p>给定一个整数数组，其中第 i 个元素代表了第 i 天的股票价格 。
      *
      * <p>设计一个算法计算出最大利润。在满足以下约束条件下，你可以尽可能地完成更多的交易（多次买卖一支股票）:
      *

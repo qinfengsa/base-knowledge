@@ -1,30 +1,20 @@
 package com.qinfengsa.structure.leetcode;
 
-import lombok.extern.slf4j.Slf4j;
-import org.junit.Test;
-
 import java.util.Objects;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Test;
 
 /**
- * 旋转链表
- * 给定一个链表，旋转链表，将链表每个节点向右移动 k 个位置，其中 k 是非负数。
+ * 旋转链表 给定一个链表，旋转链表，将链表每个节点向右移动 k 个位置，其中 k 是非负数。
  *
- * 示例 1:
+ * <p>示例 1:
  *
- * 输入: 1->2->3->4->5->NULL, k = 2
- * 输出: 4->5->1->2->3->NULL
- * 解释:
- * 向右旋转 1 步: 5->1->2->3->4->NULL
- * 向右旋转 2 步: 4->5->1->2->3->NULL
- * 示例 2:
+ * <p>输入: 1->2->3->4->5->NULL, k = 2 输出: 4->5->1->2->3->NULL 解释: 向右旋转 1 步: 5->1->2->3->4->NULL 向右旋转
+ * 2 步: 4->5->1->2->3->NULL 示例 2:
  *
- * 输入: 0->1->2->NULL, k = 4
- * 输出: 2->0->1->NULL
- * 解释:
- * 向右旋转 1 步: 2->0->1->NULL
- * 向右旋转 2 步: 1->2->0->NULL
- * 向右旋转 3 步: 0->1->2->NULL
- * 向右旋转 4 步: 2->0->1->NULL
+ * <p>输入: 0->1->2->NULL, k = 4 输出: 2->0->1->NULL 解释: 向右旋转 1 步: 2->0->1->NULL 向右旋转 2 步: 1->2->0->NULL
+ * 向右旋转 3 步: 0->1->2->NULL 向右旋转 4 步: 2->0->1->NULL
+ *
  * @author: qinfengsa
  * @date: 2019/5/7 23:40
  */
@@ -48,7 +38,7 @@ public class RotateRightTest {
         node1.next = node2;
         node0.next = node1;*/
 
-        ListNode a = rotateRight(node1,5);
+        ListNode a = rotateRight(node1, 5);
         logNode(a);
     }
 
@@ -60,19 +50,17 @@ public class RotateRightTest {
         if (Objects.isNull(node.next)) {
             return node;
         }
-        if (k == 0)  {
+        if (k == 0) {
             return head;
         }
         // 把最后一位移动到头结点，然后循环k次
         int size = getSize(node);
-        if (k == size)  {
+        if (k == size) {
             return head;
         }
         k = k % size;
 
-
-
-        int num = size - k ;
+        int num = size - k;
 
         node = head;
         ListNode preNode = null;
@@ -90,7 +78,6 @@ public class RotateRightTest {
         }
         node.next = head;
 
-
         return newhead;
     }
 
@@ -101,7 +88,6 @@ public class RotateRightTest {
 
             node = node.next;
             size++;
-
         }
         return size;
     }
@@ -114,14 +100,15 @@ public class RotateRightTest {
             sb.append(",");
             node = node.next;
         }
-        log.info("node: {}",sb);
-
+        log.info("node: {}", sb);
     }
-
 
     public class ListNode {
         int val;
         ListNode next;
-        ListNode(int x) { val = x; }
+
+        ListNode(int x) {
+            val = x;
+        }
     }
 }

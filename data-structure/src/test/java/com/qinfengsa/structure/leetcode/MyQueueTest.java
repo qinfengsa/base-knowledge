@@ -1,7 +1,7 @@
 package com.qinfengsa.structure.leetcode;
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author: qinfengsa
@@ -17,9 +17,9 @@ public class MyQueueTest {
         queue.push(1);
         queue.push(2);
         int index = 0;
-        log.debug("{},{}",index++,queue.peek());  // 返回 1
-        log.debug("{},{}",index++,queue.pop());   // 返回 1
-        log.debug("{},{}",index++,queue.empty()); // 返回 false
+        log.debug("{},{}", index++, queue.peek()); // 返回 1
+        log.debug("{},{}", index++, queue.pop()); // 返回 1
+        log.debug("{},{}", index++, queue.empty()); // 返回 false
     }
 
     @Test
@@ -29,9 +29,9 @@ public class MyQueueTest {
         stack.push(1);
         stack.push(2);
         int index = 0;
-        log.debug("{},{}",index++,stack.top());  // 返回 2
-        log.debug("{},{}",index++,stack.pop());   // 返回 2
-        log.debug("{},{}",index++,stack.pop());   // 返回 1
-        log.debug("{},{}",index++,stack.empty()); // 返回 false
+        log.debug("{},{}", index++, stack.top()); // 返回 2
+        log.debug("{},{}", index++, stack.pop()); // 返回 2
+        log.debug("{},{}", index++, stack.pop()); // 返回 1
+        log.debug("{},{}", index++, stack.empty()); // 返回 false
     }
 }

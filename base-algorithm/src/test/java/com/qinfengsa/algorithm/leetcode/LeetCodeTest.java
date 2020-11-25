@@ -1,10 +1,11 @@
 package com.qinfengsa.algorithm.leetcode;
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * LeetCode题目
+ *
  * @author: qinfengsa
  * @date: 2019/3/30 00:30
  */
@@ -22,7 +23,7 @@ public class LeetCodeTest {
     @Test
     public void getSumTest() {
         LeetCode code = new LeetCode();
-        int a = code.getSum(-2,4);
+        int a = code.getSum(-2, 4);
         System.out.println(a);
     }
 
@@ -35,10 +36,10 @@ public class LeetCodeTest {
 
     @Test
     public void canCompleteCircuitTest() {
-        int[] gas = {1,2,3,4,5};
-        int[] cost = {3,4,5,1,2};
+        int[] gas = {1, 2, 3, 4, 5};
+        int[] cost = {3, 4, 5, 1, 2};
         LeetCode code = new LeetCode();
-        int index = code.canCompleteCircuit(gas,cost);
+        int index = code.canCompleteCircuit(gas, cost);
         System.out.println(index);
     }
 }

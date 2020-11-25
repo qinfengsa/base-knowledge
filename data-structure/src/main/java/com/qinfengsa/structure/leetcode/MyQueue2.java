@@ -1,31 +1,25 @@
 package com.qinfengsa.structure.leetcode;
 
-import lombok.extern.slf4j.Slf4j;
-import org.junit.Test;
-
 import java.util.Deque;
 import java.util.LinkedList;
+import lombok.extern.slf4j.Slf4j;
 
 /**
- * 面试题 03.04. 化栈为队
- * 实现一个MyQueue类，该类用两个栈来实现一个队列。
+ * 面试题 03.04. 化栈为队 实现一个MyQueue类，该类用两个栈来实现一个队列。
  *
+ * <p>示例：
  *
- * 示例：
+ * <p>MyQueue queue = new MyQueue();
  *
- * MyQueue queue = new MyQueue();
+ * <p>queue.push(1); queue.push(2); queue.peek(); // 返回 1 queue.pop(); // 返回 1 queue.empty(); // 返回
+ * false
  *
- * queue.push(1);
- * queue.push(2);
- * queue.peek();  // 返回 1
- * queue.pop();   // 返回 1
- * queue.empty(); // 返回 false
+ * <p>说明：
  *
- * 说明：
+ * <p>你只能使用标准的栈操作 -- 也就是只有 push to top, peek/pop from top, size 和 is empty 操作是合法的。
+ * 你所使用的语言也许不支持栈。你可以使用 list 或者 deque（双端队列）来模拟一个栈，只要是标准的栈操作即可。 假设所有操作都是有效的 （例如，一个空的队列不会调用 pop 或者 peek
+ * 操作）。
  *
- * 你只能使用标准的栈操作 -- 也就是只有 push to top, peek/pop from top, size 和 is empty 操作是合法的。
- * 你所使用的语言也许不支持栈。你可以使用 list 或者 deque（双端队列）来模拟一个栈，只要是标准的栈操作即可。
- * 假设所有操作都是有效的 （例如，一个空的队列不会调用 pop 或者 peek 操作）。
  * @author: qinfengsa
  * @create: 2020/04/19 08:04
  */
@@ -49,6 +43,7 @@ public class MyQueue2 {
 
     /**
      * 入队
+     *
      * @param x
      */
     public void push(int x) {
@@ -56,9 +51,9 @@ public class MyQueue2 {
         size++;
     }
 
-
     /**
      * 出队
+     *
      * @return
      */
     public int pop() {
@@ -69,7 +64,6 @@ public class MyQueue2 {
             while (!inDeque.isEmpty()) {
                 outDeque.push(inDeque.pop());
             }
-
         }
         size--;
         return outDeque.pop();
@@ -77,6 +71,7 @@ public class MyQueue2 {
 
     /**
      * 队首元素
+     *
      * @return
      */
     public int peek() {
@@ -96,11 +91,9 @@ public class MyQueue2 {
         return this.size == 0;
     }
 
-
     public static void main(String[] args) {
         test1();
     }
-
 
     public static void test1() {
         MyQueue2 queue = new MyQueue2();
@@ -108,9 +101,8 @@ public class MyQueue2 {
         queue.push(1);
         queue.push(2);
         int index = 0;
-        log.debug("{},{}",index++,queue.peek());  // 返回 1
-        log.debug("{},{}",index++,queue.pop());   // 返回 1
-        log.debug("{},{}",index++,queue.empty()); // 返回 false
+        log.debug("{},{}", index++, queue.peek()); // 返回 1
+        log.debug("{},{}", index++, queue.pop()); // 返回 1
+        log.debug("{},{}", index++, queue.empty()); // 返回 false
     }
-
 }

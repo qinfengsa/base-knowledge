@@ -1,10 +1,7 @@
 package com.qinfengsa.structure.leetcode;
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author: qinfengsa
@@ -13,15 +10,13 @@ import java.util.List;
 @Slf4j
 public class NAryTreeTest {
 
-
     @Test
-    public void  levelOrderTest() {
-
+    public void levelOrderTest() {
 
         NAryTree tree = new NAryTree();
 
         tree.levelOrderTest();
 
-        //log.debug("result:{}",result);
+        // log.debug("result:{}",result);
     }
 }

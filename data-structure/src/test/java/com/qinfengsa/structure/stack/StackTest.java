@@ -1,30 +1,27 @@
 package com.qinfengsa.structure.stack;
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Test;
-
-import java.util.Objects;
+import org.junit.jupiter.api.Test;
 
 /**
  * 栈测试
+ *
  * @author: qinfengsa
  * @date: 2019/5/6 08:12
  */
 @Slf4j
 public class StackTest {
 
-    /**
-     * 测试括号匹配
-     */
+    /** 测试括号匹配 */
     @Test
     public void testBracketMatch() {
         boolean b = bracketMatch("abcdd我的([])");
-        log.debug("b:{}",b);
+        log.debug("b:{}", b);
     }
-
 
     /**
      * 括号匹配
+     *
      * @param str
      * @return
      */
@@ -35,29 +32,29 @@ public class StackTest {
         for (int i = 0; i < chars.length; i++) {
             char c = chars[i];
             switch (c) {
-                case '{' :
-                case '[' :
-                case '(' :
-                    stack.push(Integer.valueOf(c));break;
-                case '}' :
-                    if (!stack.isEmpty() && ((Integer)stack.pop()).intValue() == '{') {
+                case '{':
+                case '[':
+                case '(':
+                    stack.push(Integer.valueOf(c));
+                    break;
+                case '}':
+                    if (!stack.isEmpty() && ((Integer) stack.pop()).intValue() == '{') {
                         break;
                     } else {
                         return false;
                     }
-                case ']' :
-                    if (!stack.isEmpty() && ((Integer)stack.pop()).intValue() == '[') {
+                case ']':
+                    if (!stack.isEmpty() && ((Integer) stack.pop()).intValue() == '[') {
                         break;
                     } else {
                         return false;
                     }
-                case ')' :
-                    if (!stack.isEmpty() && ((Integer)stack.pop()).intValue() == '(') {
+                case ')':
+                    if (!stack.isEmpty() && ((Integer) stack.pop()).intValue() == '(') {
                         break;
                     } else {
                         return false;
                     }
-
             }
         }
         if (stack.isEmpty()) {
@@ -67,31 +64,28 @@ public class StackTest {
         return false;
     }
 
-    /**
-     * 利用栈实现进制转换
-     */
+    /** 利用栈实现进制转换 */
     @Test
     public void testBaseConversion() {
 
-        baseConversion(2007,8);
+        baseConversion(2007, 8);
     }
-
-
 
     /**
      * 10进制转n进制
+     *
      * @param num
      */
-    private void baseConversion(int num,int n) {
+    private void baseConversion(int num, int n) {
         if (n <= 1) {
             return;
         }
 
         Stack stack = new StackSLinked();
 
-        while (num >0) {
-            int a = num%n;
-            num = num /n;
+        while (num > 0) {
+            int a = num % n;
+            num = num / n;
             stack.push(a);
         }
         log.debug(stack.toString());
@@ -100,12 +94,7 @@ public class StackTest {
             sb.append(stack.pop());
         }
         log.debug(sb.toString());
-
-
-
-
     }
-
 
     @Test
     public void test1() {
@@ -122,14 +111,13 @@ public class StackTest {
         stack.push("H");
         stack.push("K");
         log.debug(stack.toString());
-        log.debug("a:{}",stack.peek());
-        log.debug("b:{}",stack.pop());
+        log.debug("a:{}", stack.peek());
+        log.debug("b:{}", stack.pop());
         log.debug(stack.toString());
         stack.pop();
         stack.pop();
         stack.pop();
         log.debug(stack.toString());
-
     }
 
     @Test
@@ -147,14 +135,12 @@ public class StackTest {
         stack.push("H");
         stack.push("K");*/
         log.debug(stack.toString());
-        log.debug("a:{}",stack.peek());
-        log.debug("b:{}",stack.pop());
+        log.debug("a:{}", stack.peek());
+        log.debug("b:{}", stack.pop());
         log.debug(stack.toString());
         stack.pop();
         stack.pop();
         stack.pop();
         log.debug(stack.toString());
-
     }
-
 }

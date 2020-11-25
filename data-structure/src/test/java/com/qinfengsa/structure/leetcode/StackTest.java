@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Stack;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author: qinfengsa

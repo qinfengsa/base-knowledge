@@ -1,48 +1,47 @@
 package com.qinfengsa.structure.leetcode;
 
-import lombok.extern.slf4j.Slf4j;
-import org.junit.Test;
-
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Queue;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Test;
 
 /**
- *  N叉树
+ * N叉树
+ *
  * @author: qinfengsa
  * @date: 2019/5/15 13:41
  */
 @Slf4j
 public class NAryTree {
 
-
     /**
      * 给定一个 N 叉树，返回其节点值的前序遍历。
      *
-     * 例如，给定一个 3叉树 :
+     * <p>例如，给定一个 3叉树 :
      *
-     * 返回其前序遍历: [1,3,5,6,2,4]。
+     * <p>返回其前序遍历: [1,3,5,6,2,4]。
      *
+     * <p>说明: 递归法很简单，你可以使用迭代法完成此题吗?
      *
-     *
-     * 说明: 递归法很简单，你可以使用迭代法完成此题吗?
      * @param root
      * @return
      */
     public List<Integer> preorder(NaNode root) {
         List<Integer> list = new ArrayList<>();
-        preOrderTree(root,list);
+        preOrderTree(root, list);
         return list;
     }
 
     /**
      * N叉数前序遍历
+     *
      * @param root
      * @param list
      */
-    private void preOrderTree(NaNode root,List<Integer> list) {
+    private void preOrderTree(NaNode root, List<Integer> list) {
         if (Objects.isNull(root)) {
             return;
         }
@@ -50,45 +49,44 @@ public class NAryTree {
         list.add(root.val);
         if (Objects.nonNull(root.children) && root.children.size() > 0) {
             for (NaNode child : root.children) {
-                preOrderTree(child,list);
+                preOrderTree(child, list);
             }
         }
-
     }
-
-
 
     /**
      * 给定一个 N 叉树，返回其节点值的后序遍历。
+     *
      * @param root
      * @return
      */
     public List<Integer> postorder(NaNode root) {
         List<Integer> list = new ArrayList<>();
-        postOrderTree(root,list);
+        postOrderTree(root, list);
         return list;
     }
 
     /**
      * N叉数后序遍历
+     *
      * @param root
      * @param list
      */
-    private void postOrderTree(NaNode root,List<Integer> list) {
+    private void postOrderTree(NaNode root, List<Integer> list) {
         if (Objects.isNull(root)) {
             return;
         }
         if (Objects.nonNull(root.children) && root.children.size() > 0) {
             for (NaNode child : root.children) {
-                postOrderTree(child,list);
+                postOrderTree(child, list);
             }
         }
         list.add(root.val);
-
     }
 
     /**
      * 给定一个 N 叉树，返回其节点值的层序遍历。 (即从左到右，逐层遍历)。
+     *
      * @param root
      * @return
      */
@@ -111,7 +109,6 @@ public class NAryTree {
                     // 子结点入队
                     queue.offer(child);
                     last = child;
-
                 }
             }
             if (node == layerLast) {
@@ -119,20 +116,16 @@ public class NAryTree {
                 list.add(layerList);
                 layerList = new ArrayList<>();
             }
-
-
         }
-
-
 
         return list;
     }
 
-
     /**
      * 给定一个 N 叉树，找到其最大深度。
      *
-     * 最大深度是指从根节点到最远叶子节点的最长路径上的节点总数。
+     * <p>最大深度是指从根节点到最远叶子节点的最长路径上的节点总数。
+     *
      * @param root
      * @return
      */
@@ -151,18 +144,17 @@ public class NAryTree {
             if (height > maxHeight) {
                 maxHeight = height;
             }
-
         }
         return maxHeight + 1;
     }
 
     @Test
     public void maxDepthTest() {
-        NaNode root = new NaNode(1,null);
+        NaNode root = new NaNode(1, null);
 
-        NaNode node2 = new NaNode(3,null);
-        NaNode node3 = new NaNode(2,null);
-        NaNode node4 = new NaNode(4,null);
+        NaNode node2 = new NaNode(3, null);
+        NaNode node3 = new NaNode(2, null);
+        NaNode node4 = new NaNode(4, null);
 
         List<NaNode> list1 = new ArrayList<>();
         list1.add(node2);
@@ -170,8 +162,8 @@ public class NAryTree {
         list1.add(node4);
         root.children = list1;
 
-        NaNode node5 = new NaNode(5,null);
-        NaNode node6 = new NaNode(6,null);
+        NaNode node5 = new NaNode(5, null);
+        NaNode node6 = new NaNode(6, null);
         List<NaNode> list2 = new ArrayList<>();
         list2.add(node5);
         list2.add(node6);
@@ -181,17 +173,16 @@ public class NAryTree {
 
         int result = tree.maxDepth(root);
 
-        log.debug("result:{}",result);
+        log.debug("result:{}", result);
     }
 
-
     @Test
-    public void  levelOrderTest( ) {
-        NaNode root = new NaNode(1,null);
+    public void levelOrderTest() {
+        NaNode root = new NaNode(1, null);
 
-        NaNode node2 = new NaNode(3,null);
-        NaNode node3 = new NaNode(2,null);
-        NaNode node4 = new NaNode(4,null);
+        NaNode node2 = new NaNode(3, null);
+        NaNode node3 = new NaNode(2, null);
+        NaNode node4 = new NaNode(4, null);
 
         List<NaNode> list1 = new ArrayList<>();
         list1.add(node2);
@@ -199,8 +190,8 @@ public class NAryTree {
         list1.add(node4);
         root.children = list1;
 
-        NaNode node5 = new NaNode(5,null);
-        NaNode node6 = new NaNode(6,null);
+        NaNode node5 = new NaNode(5, null);
+        NaNode node6 = new NaNode(6, null);
         List<NaNode> list2 = new ArrayList<>();
         list2.add(node5);
         list2.add(node6);
@@ -210,10 +201,9 @@ public class NAryTree {
 
         List<List<Integer>> result = tree.levelOrder(root);
 
-        log.debug("result:{}",result);
+        log.debug("result:{}", result);
     }
 }
-
 
 class NaNode {
     public int val;
@@ -225,4 +215,5 @@ class NaNode {
         val = _val;
         children = _children;
     }
-};
+}
+;

@@ -1,20 +1,15 @@
 package com.qinfengsa.structure.list;
 
-import com.qinfengsa.structure.leetcode.ListNode;
 import com.qinfengsa.structure.leetcode.MyLinkedList;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Test;
-
-import java.util.Objects;
+import org.junit.jupiter.api.Test;
 
 /**
- *
  * @author: qinfengsa
  * @date: 2019/5/4 18:37
  */
 @Slf4j
 public class MyLinkedListTest {
-
 
     @Test
     public void test1() throws Exception {
@@ -23,23 +18,22 @@ public class MyLinkedListTest {
         log.debug(linkedList.toString());
         linkedList.addAtTail(3);
         log.debug(linkedList.toString());
-        linkedList.addAtIndex(1,2);   //链表变为1-> 2-> 3
+        linkedList.addAtIndex(1, 2); // 链表变为1-> 2-> 3
         log.debug(linkedList.toString());
-        int a = linkedList.get(1);            //返回2
-        log.debug("a:{}",a);
-        linkedList.deleteAtIndex(1);  //现在链表是1-> 3
+        int a = linkedList.get(1); // 返回2
+        log.debug("a:{}", a);
+        linkedList.deleteAtIndex(1); // 现在链表是1-> 3
         log.debug(linkedList.toString());
-        int b =  linkedList.get(1);            //返回3
-        log.debug("b:{}",b);
+        int b = linkedList.get(1); // 返回3
+        log.debug("b:{}", b);
     }
-
 
     @Test
     public void test2() throws Exception {
         MyLinkedList linkedList = new MyLinkedList();
         linkedList.addAtHead(38);
         linkedList.addAtHead(45);
-        log.debug("size:{}",linkedList.getSize());
+        log.debug("size:{}", linkedList.getSize());
         linkedList.deleteAtIndex(2);
         linkedList.addAtIndex(1, 24);
         linkedList.addAtTail(36);
