@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
@@ -7205,5 +7206,69 @@ public class MathTest {
         }
 
         return sb.reverse().toString();
+    }
+
+    /**
+     * 273. 整数转换英文表示
+     *
+     * <p>将非负整数 num 转换为其对应的英文表示。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：num = 123 输出："One Hundred Twenty Three" 示例 2：
+     *
+     * <p>输入：num = 12345 输出："Twelve Thousand Three Hundred Forty Five" 示例 3：
+     *
+     * <p>输入：num = 1234567 输出："One Million Two Hundred Thirty Four Thousand Five Hundred Sixty
+     * Seven" 示例 4：
+     *
+     * <p>输入：num = 1234567891 输出："One Billion Two Hundred Thirty Four Million Five Hundred Sixty
+     * Seven Thousand Eight Hundred Ninety One"
+     *
+     * <p>提示：
+     *
+     * <p>0 <= num <= 231 - 1
+     *
+     * @param num
+     * @return
+     */
+    public String numberToWords2(int num) {
+        if (num == 0) {
+            return "Zero";
+        }
+        List<String> list = new ArrayList<>();
+        numberToWordList(num, list);
+        return list.stream().filter(word -> word.length() > 0).collect(Collectors.joining(" "));
+    }
+
+    @Test
+    public void numberToWords() {
+        int num = 20;
+        logResult(numberToWords2(num));
+    }
+
+    private void numberToWordList(int num, List<String> list) {
+        int[] factors = {1000000000, 1000000, 1000};
+        for (int i = 0; i < 3; i++) {
+            if (num >= factors[i]) {
+                // 前缀
+                int prefixNum = num / factors[i];
+                num %= factors[i];
+                numberToWordList(prefixNum, list);
+                list.add(GENS[i]);
+            }
+        }
+        if (num >= 100) {
+            int hundredNum = num / 100;
+            num %= 100;
+            numberToWordList(hundredNum, list);
+            list.add("Hundred");
+        }
+        if (num >= 20) {
+            int tenIndex = num / 10;
+            num %= 10;
+            list.add(NUM_0_90[tenIndex]);
+        }
+        list.add(NUM_0_19[num]);
     }
 }

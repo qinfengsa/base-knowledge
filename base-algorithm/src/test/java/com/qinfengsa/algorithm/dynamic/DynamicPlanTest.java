@@ -6575,4 +6575,93 @@ public class DynamicPlanTest {
         String s = "aabbaacbbc";
         logResult(minCut(s));
     }
+
+    /**
+     * 188. 买卖股票的最佳时机 IV
+     *
+     * <p>给定一个整数数组 prices ，它的第 i 个元素 prices[i] 是一支给定的股票在第 i 天的价格。
+     *
+     * <p>设计一个算法来计算你所能获取的最大利润。你最多可以完成 k 笔交易。
+     *
+     * <p>注意：你不能同时参与多笔交易（你必须在再次购买前出售掉之前的股票）。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：k = 2, prices = [2,4,1] 输出：2 解释：在第 1 天 (股票价格 = 2) 的时候买入，在第 2 天 (股票价格 = 4)
+     * 的时候卖出，这笔交易所能获得利润 = 4-2 = 2 。 示例 2：
+     *
+     * <p>输入：k = 2, prices = [3,2,6,5,0,3] 输出：7 解释：在第 2 天 (股票价格 = 2) 的时候买入，在第 3 天 (股票价格 = 6) 的时候卖出,
+     * 这笔交易所能获得利润 = 6-2 = 4 。 随后，在第 5 天 (股票价格 = 0) 的时候买入，在第 6 天 (股票价格 = 3) 的时候卖出, 这笔交易所能获得利润 = 3-0 =
+     * 3 。
+     *
+     * <p>提示：
+     *
+     * <p>0 <= k <= 109 0 <= prices.length <= 1000 0 <= prices[i] <= 1000
+     *
+     * @param k
+     * @param prices
+     * @return
+     */
+    public int maxProfitIV(int k, int[] prices) {
+        int len = prices.length;
+        if (len < 2) {
+            return 0;
+        }
+        // dp[i][0] 表示  k 次交易的 利润
+        // 0 表示买入, 1 表示卖出
+        int[][] dp = new int[k + 1][2];
+        for (int i = 0; i <= k; i++) {
+            dp[i][0] = -prices[0];
+        }
+
+        for (int i = 1; i < len; i++) {
+            // 第 j 次交易的最大利润
+            for (int j = k; j > 0; j--) {
+
+                // 前一天买入 今天卖出
+                // 前一天 j 次交易卖出的最大利润, 前一天j 次交易买入 今天卖出的利润
+                dp[j][1] = Math.max(dp[j][1], dp[j][0] + prices[i]);
+                // 前一天卖出 今天买入
+                // 前一天 j 次交易买入的最大利润, 前一天 j - 1 次交易买出 今天买入的利润
+                dp[j][0] = Math.max(dp[j][0], dp[j - 1][1] - prices[i]);
+            }
+        }
+        return dp[k][1];
+    }
+    /*public int maxProfitIV(int k, int[] prices) {
+        int len = prices.length;
+        if (len < 2) {
+            return 0;
+        }
+
+        // dp[i][j] 表示第 i 天 k 次交易的 利润
+        // 0 表示买入, 1 表示卖出
+        int[][][] dp = new int[len][k + 1][2];
+
+        for (int j = 1; j <= k; j++) {
+            dp[0][j][0] = -prices[0];
+        }
+
+        for (int i = 1; i < len; i++) {
+            // 第 j 次交易的最大利润
+            for (int j = k; j > 0; j--) {
+
+                // 前一天买入 今天卖出
+                // 前一天 j 次交易卖出的最大利润, 前一天j 次交易买入 今天卖出的利润
+                dp[i][j][1] = Math.max(dp[i - 1][j][1], dp[i - 1][j][0] + prices[i]);
+                // 前一天卖出 今天买入
+                // 前一天 j 次交易买入的最大利润, 前一天 j - 1 次交易买出 今天买入的利润
+                dp[i][j][0] = Math.max(dp[i - 1][j][0], dp[i - 1][j - 1][1] - prices[i]);
+            }
+        }
+        logResult(dp);
+        return dp[len - 1][k][1];
+    }*/
+
+    @Test
+    public void maxProfitIV() {
+        int k = 2;
+        int[] prices = {3, 2, 6, 5, 0, 3};
+        logResult(maxProfitIV(k, prices));
+    }
 }
