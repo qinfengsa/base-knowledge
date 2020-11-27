@@ -1133,7 +1133,9 @@ public class MyHashTest {
     }
 
     /**
-     * 四数相加 II 给定四个包含整数的数组列表 A , B , C , D ,计算有多少个元组 (i, j, k, l) ，使得 A[i] + B[j] + C[k] + D[l] = 0。
+     * 454. 四数相加 II
+     *
+     * <p>给定四个包含整数的数组列表 A , B , C , D ,计算有多少个元组 (i, j, k, l) ，使得 A[i] + B[j] + C[k] + D[l] = 0。
      *
      * <p>为了使问题简单化，所有的 A, B, C, D 具有相同的长度 N，且 0 ≤ N ≤ 500 。所有整数的范围在 -228 到 228 - 1 之间，最终结果不会超过 231 -
      * 1 。
@@ -1157,26 +1159,21 @@ public class MyHashTest {
         int result = 0;
         Map<Integer, Integer> map = new HashMap<>();
 
-        for (int i = 0; i < A.length; i++) {
-            for (int j = 0; j < B.length; j++) {
-                int num = A[i] + B[j];
-                if (map.containsKey(num)) {
-                    map.put(num, map.get(num) + 1);
-                } else {
-                    map.put(num, 1);
-                }
+        for (int a : A) {
+            for (int b : B) {
+                int num = a + b;
+                int count = map.getOrDefault(num, 0);
+                map.put(num, count + 1);
             }
         }
-
-        for (int i = 0; i < C.length; i++) {
-            for (int j = 0; j < D.length; j++) {
-                int num = 0 - C[i] - D[j];
+        for (int c : C) {
+            for (int d : D) {
+                int num = -c - d;
                 if (map.containsKey(num)) {
                     result += map.get(num);
                 }
             }
         }
-
         return result;
     }
 

@@ -2983,4 +2983,74 @@ public class BackTest {
         list.add(sum);
         return splitIntoFibonacci(num.substring(next.length()), num2, sum, list);
     }
+
+    /**
+     * 282. 给表达式添加运算符
+     *
+     * <p>给定一个仅包含数字 0-9 的字符串和一个目标值，在数字之间添加二元运算符（不是一元）+、- 或 * ，返回所有能够得到目标值的表达式。
+     *
+     * <p>示例 1:
+     *
+     * <p>输入: num = "123", target = 6 输出: ["1+2+3", "1*2*3"] 示例 2:
+     *
+     * <p>输入: num = "232", target = 8 输出: ["2*3+2", "2+3*2"] 示例 3:
+     *
+     * <p>输入: num = "105", target = 5 输出: ["1*0+5","10-5"] 示例 4:
+     *
+     * <p>输入: num = "00", target = 0 输出: ["0+0", "0-0", "0*0"] 示例 5:
+     *
+     * <p>输入: num = "3456237490", target = 9191 输出: []
+     *
+     * @param num
+     * @param target
+     * @return
+     */
+    public List<String> addOperators(String num, int target) {
+        operatorResult = new ArrayList<>();
+        this.operatorNum = num;
+        this.target = target;
+        backOperators(0, 0, 0, new StringBuilder());
+        return operatorResult;
+    }
+
+    private String operatorNum;
+
+    private int target;
+
+    private List<String> operatorResult;
+
+    private void backOperators(int start, long num, long lastNum, StringBuilder sb) {
+        if (start == operatorNum.length()) {
+            if (num == target) {
+                operatorResult.add(sb.toString());
+            }
+            return;
+        }
+        for (int i = start; i < operatorNum.length(); i++) {
+            char c = operatorNum.charAt(i);
+            if (i > start && operatorNum.charAt(start) == '0') {
+                break;
+            }
+            long cur = Long.parseLong(operatorNum.substring(start, i + 1));
+            int len = sb.length();
+            if (start == 0) {
+                backOperators(i + 1, cur, cur, sb.append(cur));
+                sb.setLength(len);
+            } else {
+                // +
+                backOperators(i + 1, num + cur, cur, sb.append("+").append(cur));
+                sb.setLength(len);
+                // -
+                backOperators(i + 1, num - cur, -cur, sb.append("-").append(cur));
+                sb.setLength(len);
+                // *
+                backOperators(
+                        i + 1,
+                        num - lastNum + lastNum * cur,
+                        lastNum * cur,
+                        sb.append("*").append(cur));
+                sb.setLength(len);
+            }
+        }
+    }
 }

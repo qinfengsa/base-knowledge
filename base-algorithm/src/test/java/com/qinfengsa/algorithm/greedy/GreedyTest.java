@@ -2134,4 +2134,155 @@ public class GreedyTest {
         int[] ratings = {0};
         logResult(candy(ratings));
     }
+
+    /**
+     * 321. 拼接最大数
+     *
+     * <p>给定长度分别为 m 和 n 的两个数组，其元素由 0-9 构成，表示两个自然数各位上的数字。现在从这两个数组中选出 k (k <= m + n)
+     * 个数字拼接成一个新的数，要求从同一个数组中取出的数字保持其在原数组中的相对顺序。
+     *
+     * <p>求满足该条件的最大数。结果返回一个表示该最大数的长度为 k 的数组。
+     *
+     * <p>说明: 请尽可能地优化你算法的时间和空间复杂度。
+     *
+     * <p>示例 1:
+     *
+     * <p>输入: nums1 = [3, 4, 6, 5] nums2 = [9, 1, 2, 5, 8, 3] k = 5 输出: [9, 8, 6, 5, 3] 示例 2:
+     *
+     * <p>输入: nums1 = [6, 7] nums2 = [6, 0, 4] k = 5 输出: [6, 7, 6, 0, 4] 示例 3:
+     *
+     * <p>输入: nums1 = [3, 9] nums2 = [8, 9] k = 3 输出: [9, 8, 9]
+     *
+     * @param nums1
+     * @param nums2
+     * @param k
+     * @return
+     */
+    public int[] maxNumber(int[] nums1, int[] nums2, int k) {
+        int[] result = new int[k];
+        int len1 = nums1.length, len2 = nums2.length;
+
+        for (int i = Math.max(0, k - len2); i <= Math.min(k, len1); i++) {
+            int[] list1 = getMaxSubsequence(nums1, i), list2 = getMaxSubsequence(nums2, k - i);
+            int[] nums = mergeMaxNumber(list1, list2);
+            if (compare(nums, 0, result, 0)) {
+                result = nums;
+            }
+        }
+        return result;
+    }
+
+    @Test
+    public void maxNumber() {
+        int[] nums1 = {2, 5, 6, 4, 4, 0}, nums2 = {7, 3, 8, 0, 6, 5, 7, 6, 2};
+        int k = 15;
+        log.debug("nums:{}", maxNumber(nums1, nums2, k));
+    }
+
+    public boolean compare(int[] nums1, int i, int[] nums2, int j) {
+        if (j >= nums2.length) {
+            return true;
+        }
+        if (i >= nums1.length) {
+            return false;
+        }
+        if (nums1[i] > nums2[j]) {
+            return true;
+        }
+        if (nums1[i] < nums2[j]) {
+            return false;
+        }
+
+        return compare(nums1, i + 1, nums2, j + 1);
+    }
+
+    /**
+     * 合并两个数组
+     *
+     * @param nums1
+     * @param nums2
+     * @return
+     */
+    private int[] mergeMaxNumber(int[] nums1, int[] nums2) {
+        if (nums1.length == 0) {
+            return nums2;
+        }
+        if (nums2.length == 0) {
+            return nums1;
+        }
+        int len1 = nums1.length, len2 = nums2.length;
+        int[] result = new int[len1 + len2];
+        int index = 0, i = 0, j = 0;
+        while (i < len1 || j < len2) {
+            if (compare(nums1, i, nums2, j)) {
+                result[index++] = nums1[i++];
+            } else {
+                result[index++] = nums2[j++];
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 获取 nums 长度为k的最大子序列
+     *
+     * @param nums
+     * @param k
+     * @return
+     */
+    private int[] getMaxSubsequence(int[] nums, int k) {
+        if (k == 0) {
+            return new int[0];
+        }
+        int[] result = new int[k];
+        int index = 0, rem = nums.length - k;
+        for (int num : nums) {
+            while (index > 0 && rem > 0 && result[index - 1] < num) {
+                index--;
+                rem--;
+            }
+            if (index < k) {
+                result[index++] = num;
+            } else {
+                rem--;
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * 330. 按要求补齐数组
+     *
+     * <p>给定一个已排序的正整数数组 nums，和一个正整数 n 。从 [1, n] 区间内选取任意个数字补充到 nums 中，使得 [1, n] 区间内的任何数字都可以用 nums
+     * 中某几个数字的和来表示。请输出满足上述要求的最少需要补充的数字个数。
+     *
+     * <p>示例 1:
+     *
+     * <p>输入: nums = [1,3], n = 6 输出: 1 解释: 根据 nums 里现有的组合 [1], [3], [1,3]，可以得出 1, 3, 4。 现在如果我们将 2
+     * 添加到 nums 中， 组合变为: [1], [2], [3], [1,3], [2,3], [1,2,3]。 其和可以表示数字 1, 2, 3, 4, 5, 6，能够覆盖 [1, 6]
+     * 区间里所有的数。 所以我们最少需要添加一个数字。 示例 2:
+     *
+     * <p>输入: nums = [1,5,10], n = 20 输出: 2 解释: 我们需要添加 [2, 4]。 示例 3:
+     *
+     * <p>输入: nums = [1,2,2], n = 5 输出: 0
+     *
+     * @param nums
+     * @param n
+     * @return
+     */
+    public int minPatches(int[] nums, int n) {
+        int count = 0, i = 0;
+        long miss = 1;
+        while (miss <= n) {
+            if (i < nums.length && nums[i] <= miss) {
+                miss += nums[i++];
+            } else {
+                miss += miss;
+                count++;
+            }
+        }
+
+        return count;
+    }
 }
