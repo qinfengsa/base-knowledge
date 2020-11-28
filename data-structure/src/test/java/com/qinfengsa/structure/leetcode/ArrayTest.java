@@ -21523,4 +21523,162 @@ public class ArrayTest {
         }
         return max;
     }
+
+    /**
+     * 493. 翻转对
+     *
+     * <p>给定一个数组 nums ，如果 i < j 且 nums[i] > 2*nums[j] 我们就将 (i, j) 称作一个重要翻转对。
+     *
+     * <p>你需要返回给定数组中的重要翻转对的数量。
+     *
+     * <p>示例 1:
+     *
+     * <p>输入: [1,3,2,3,1] 输出: 2 示例 2:
+     *
+     * <p>输入: [2,4,3,5,1] 输出: 3 注意:
+     *
+     * <p>给定数组的长度不会超过50000。 输入数组中的所有数字都在32位整数的表示范围内。
+     *
+     * @param nums
+     * @return
+     */
+    public int reversePairs2(int[] nums) {
+        // 归并排序
+        return mergeSort(nums, 0, nums.length - 1);
+    }
+
+    private int mergeSort(int[] nums, int start, int end) {
+
+        // 当数组规模小于2时，非常容易
+        if (end - start == 0) {
+            return 0;
+        }
+        int mid = (start + end) >> 1;
+        int count1 = mergeSort(nums, start, mid);
+        int count2 = mergeSort(nums, mid + 1, end);
+        int result = count1 + count2;
+        int i = start, j = mid + 1;
+        for (; i <= mid; i++) {
+            while (j <= end && (long) nums[i] > ((long) nums[j] << 1)) {
+                j++;
+            }
+            result += j - mid - 1;
+        }
+
+        // 合并有序数组
+        int[] sortNums = new int[end - start + 1];
+        int index = 0;
+        i = start;
+        j = mid + 1;
+        while (index < sortNums.length) {
+            if (i > mid) {
+                sortNums[index++] = nums[j++];
+                continue;
+            }
+            if (j > end) {
+                sortNums[index++] = nums[i++];
+                continue;
+            }
+            if (nums[i] < nums[j]) {
+                sortNums[index++] = nums[i++];
+            } else {
+                sortNums[index++] = nums[j++];
+            }
+        }
+        for (int k = 0; k < sortNums.length; k++) {
+            nums[start + k] = sortNums[k];
+        }
+        return result;
+    }
+
+    @Test
+    public void reversePairs2() {
+        int[] nums = {2, 4, 3, 5, 1};
+        logResult(reversePairs2(nums));
+    }
+
+    /**
+     * 5559. 得到山形数组的最少删除次数
+     *
+     * <p>我们定义 arr 是 山形数组 当且仅当它满足：
+     *
+     * <p>arr.length >= 3 存在某个下标 i （从 0 开始） 满足 0 < i < arr.length - 1 且： arr[0] < arr[1] < ... <
+     * arr[i - 1] < arr[i] arr[i] > arr[i + 1] > ... > arr[arr.length - 1] 给你整数数组 nums ，请你返回将 nums
+     * 变成 山形状数组 的最少 删除次数。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：nums = [1,3,1] 输出：0 解释：数组本身就是山形数组，所以我们不需要删除任何元素。
+     *
+     * <p>示例 2：
+     *
+     * <p>输入：nums = [2,1,1,5,6,2,3,1] 输出：3 解释：一种方法是将下标为 0，1 和 5 的元素删除，剩余元素为 [1,5,6,3,1] ，是山形数组。
+     *
+     * <p>示例 3：
+     *
+     * <p>输入：nums = [4,3,2,1,1,2,3,1] 输出：4
+     *
+     * <p>示例4：
+     *
+     * <p>输入：nums = [1,2,3,4,4,3,2,1] 输出：1
+     *
+     * <p>提示：
+     *
+     * <p>3 <= nums.length <= 1000 1 <= nums[i] <= 109 题目保证 nums 删除一些元素后一定能得到山形数组。
+     *
+     * @param nums
+     * @return
+     */
+    public int minimumMountainRemovals(int[] nums) {
+        /**
+         * int count = 0; int maxLen = 0; int[] lens = new int[nums.length]; int[] counts = new
+         * int[nums.length]; Arrays.fill(counts, 1); // lens[0] = 1; for (int i = 0; i <
+         * nums.length; i++) { int num = nums[i]; for (int j = 0; j < i; j++) { if (num <= nums[j])
+         * { continue; } // lens[i] = Math.max(lens[j] + 1, lens[i]); if (lens[j] >= lens[i]) {
+         * lens[i] = lens[j] + 1; counts[i] = counts[j]; } else if (lens[j] + 1 == lens[i]) {
+         * counts[i] += counts[j]; } } maxLen = Math.max(maxLen, lens[i]); }
+         */
+        int len = nums.length;
+        if (len == 3) {
+            return 0;
+        }
+        // 从左向右找最长递增子序列
+        int[] leftLen = new int[len], rightLen = new int[len];
+        for (int i = 0; i < len; i++) {
+            int num = nums[i];
+            for (int j = 0; j < i; j++) {
+                if (num <= nums[j]) {
+                    continue;
+                }
+                leftLen[i] = Math.max(leftLen[j] + 1, leftLen[i]);
+            }
+        }
+        log.debug("left:{}", leftLen);
+        for (int i = len - 1; i >= 0; i--) {
+            int num = nums[i];
+            for (int j = len - 1; j > i; j--) {
+                if (num <= nums[j]) {
+                    continue;
+                }
+                rightLen[i] = Math.max(rightLen[j] + 1, rightLen[i]);
+            }
+        }
+        log.debug("right:{}", rightLen);
+        int min = len;
+        // 从右向左找最长递增子序列
+        for (int i = 1; i < len - 1; i++) {
+            if (leftLen[i] == 0 || rightLen[i] == 0) {
+                continue;
+            }
+            min = Math.min(min, len - leftLen[i] - rightLen[i] - 1);
+        }
+
+        return min;
+    }
+
+    @Test
+    public void minimumMountainRemovals() {
+        int[] nums = {2, 2, 3, 4, 3, 2, 1};
+        logResult(minimumMountainRemovals(nums));
+    }
 }
