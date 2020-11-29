@@ -21681,4 +21681,174 @@ public class ArrayTest {
         int[] nums = {2, 2, 3, 4, 3, 2, 1};
         logResult(minimumMountainRemovals(nums));
     }
+
+    /**
+     * 5613. 最富有客户的资产总量
+     *
+     * <p>给你一个 m x n 的整数网格 accounts ，其中 accounts[i][j] 是第 i 位客户在第 j 家银行托管的资产数量。返回最富有客户所拥有的 资产总量 。
+     *
+     * <p>客户的 资产总量 就是他们在各家银行托管的资产数量之和。最富有客户就是 资产总量 最大的客户。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：accounts = [[1,2,3],[3,2,1]] 输出：6 解释： 第 1 位客户的资产总量 = 1 + 2 + 3 = 6 第 2 位客户的资产总量 = 3 + 2
+     * + 1 = 6 两位客户都是最富有的，资产总量都是 6 ，所以返回 6 。 示例 2：
+     *
+     * <p>输入：accounts = [[1,5],[7,3],[3,5]] 输出：10 解释： 第 1 位客户的资产总量 = 6 第 2 位客户的资产总量 = 10 第 3
+     * 位客户的资产总量 = 8 第 2 位客户是最富有的，资产总量是 10 示例 3：
+     *
+     * <p>输入：accounts = [[2,8,7],[7,1,3],[1,9,5]] 输出：17
+     *
+     * <p>提示：
+     *
+     * <p>m == accounts.length n == accounts[i].length 1 <= m, n <= 50 1 <= accounts[i][j] <= 100
+     *
+     * @param accounts
+     * @return
+     */
+    public int maximumWealth(int[][] accounts) {
+        int max = 0;
+        for (int[] account : accounts) {
+            int sum = Arrays.stream(account).sum();
+            max = Math.max(max, sum);
+        }
+        return max;
+    }
+
+    /**
+     * 5614. 找出最具竞争力的子序列
+     *
+     * <p>题目难度Medium 给你一个整数数组 nums 和一个正整数 k ，返回长度为 k 且最具 竞争力 的 nums 子序列。
+     *
+     * <p>数组的子序列是从数组中删除一些元素（可能不删除元素）得到的序列。
+     *
+     * <p>在子序列 a 和子序列 b 第一个不相同的位置上，如果 a 中的数字小于 b 中对应的数字，那么我们称子序列 a 比子序列 b（相同长度下）更具 竞争力 。 例如，[1,3,4]
+     * 比 [1,3,5] 更具竞争力，在第一个不相同的位置，也就是最后一个位置上， 4 小于 5 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：nums = [3,5,2,6], k = 2 输出：[2,6] 解释：在所有可能的子序列集合 {[3,5], [3,2], [3,6], [5,2], [5,6],
+     * [2,6]} 中，[2,6] 最具竞争力。 示例 2：
+     *
+     * <p>输入：nums = [2,4,3,3,5,4,9,6], k = 4 输出：[2,3,3,4]
+     *
+     * <p>提示：
+     *
+     * <p>1 <= nums.length <= 105 0 <= nums[i] <= 109 1 <= k <= nums.length
+     *
+     * @param nums
+     * @param k
+     * @return
+     */
+    public int[] mostCompetitive(int[] nums, int k) {
+        int len = nums.length;
+        if (k >= len) {
+            return nums;
+        }
+        int[] result = new int[k];
+        Deque<Integer> stack = new LinkedList<>();
+        int i = 0;
+        for (; i < len; i++) {
+            int num = nums[i];
+            int leftSize = len - i;
+            while (!stack.isEmpty() && num < stack.peekLast() && stack.size() > k - leftSize) {
+                stack.pollLast();
+            }
+            stack.offerLast(num);
+        }
+        logResult(stack);
+        for (int j = 0; j < k; j++) {
+            result[j] = stack.pollFirst();
+        }
+
+        return result;
+        /*
+        Arrays.fill(result, Integer.MAX_VALUE);
+        for (int i = 0; i < len; i++) {
+            int num = nums[i];
+            int j = Math.max(0, k - len + i);
+            for (; j < k; j++) {
+                if (num < result[j]) {
+                    result[j] = num;
+                    break;
+                }
+            }
+            j++;
+            for (; j < k; j++) {
+                result[j] = Integer.MAX_VALUE;
+            }
+        }
+        return result;*/
+    }
+
+    @Test
+    public void mostCompetitive() {
+        int[] nums = {3, 5, 2, 6};
+        int k = 2;
+        log.debug("nums:{}", mostCompetitive(nums, k));
+    }
+
+    /**
+     * 5615. 使数组互补的最少操作次数
+     *
+     * <p>给你一个长度为 偶数 n 的整数数组 nums 和一个整数 limit 。每一次操作，你可以将 nums 中的任何整数替换为 1 到 limit 之间的另一个整数。
+     *
+     * <p>如果对于所有下标 i（下标从 0 开始），nums[i] + nums[n - 1 - i] 都等于同一个数，则数组 nums 是 互补的 。例如，数组 [1,2,3,4]
+     * 是互补的，因为对于所有下标 i ，nums[i] + nums[n - 1 - i] = 5 。
+     *
+     * <p>返回使数组 互补 的 最少 操作次数。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：nums = [1,2,4,3], limit = 4 输出：1 解释：经过 1 次操作，你可以将数组 nums 变成 [1,2,2,3]（加粗元素是变更的数字）：
+     * nums[0] + nums[3] = 1 + 3 = 4. nums[1] + nums[2] = 2 + 2 = 4. nums[2] + nums[1] = 2 + 2 = 4.
+     * nums[3] + nums[0] = 3 + 1 = 4. 对于每个 i ，nums[i] + nums[n-1-i] = 4 ，所以 nums 是互补的。 示例 2：
+     *
+     * <p>输入：nums = [1,2,2,1], limit = 2 输出：2 解释：经过 2 次操作，你可以将数组 nums 变成 [2,2,2,2] 。你不能将任何数字变更为 3
+     * ，因为 3 > limit 。 示例 3：
+     *
+     * <p>输入：nums = [1,2,1,2], limit = 2 输出：0 解释：nums 已经是互补的。
+     *
+     * <p>提示：
+     *
+     * <p>n == nums.length 2 <= n <= 105 1 <= nums[i] <= limit <= 105 n 是偶数。
+     *
+     * @param nums
+     * @param limit
+     * @return
+     */
+    public int minMoves(int[] nums, int limit) {
+
+        // 差分数组  nums[i] <= limit 最大是2 * limit
+        int[] diff = new int[(limit << 1) + 2];
+        int len = nums.length;
+        int left = 0, right = len - 1;
+        while (left < right) {
+
+            // [2, 2 * limit] 范围 + 2
+            int l = 2, r = 2 * limit;
+            diff[l] += 2;
+            diff[r + 1] -= 2;
+
+            // [1 + min(x, y), rlimit + max(x, y)] 范围 -1
+            int low = Math.min(nums[left], nums[right]) + 1;
+            int high = Math.max(nums[left], nums[right]) + limit;
+            diff[low]--;
+            diff[high + 1]++;
+
+            int sum = nums[left] + nums[right];
+            diff[sum]--;
+            diff[sum + 1]++;
+            left++;
+            right--;
+        }
+        int result = len, count = 0;
+
+        for (int i = 2; i <= limit << 1; i++) {
+            count += diff[i];
+            result = Math.min(result, count);
+        }
+
+        return result;
+    }
 }
