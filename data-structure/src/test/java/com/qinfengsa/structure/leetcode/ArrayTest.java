@@ -21851,4 +21851,123 @@ public class ArrayTest {
 
         return result;
     }
+
+    /**
+     * 480. 滑动窗口中位数
+     *
+     * <p>中位数是有序序列最中间的那个数。如果序列的大小是偶数，则没有最中间的数；此时中位数是最中间的两个数的平均数。
+     *
+     * <p>例如：
+     *
+     * <p>[2,3,4]，中位数是 3 [2,3]，中位数是 (2 + 3) / 2 = 2.5 给你一个数组 nums，有一个大小为 k 的窗口从最左端滑动到最右端。窗口中有 k
+     * 个数，每次窗口向右移动 1 位。你的任务是找出每次窗口移动后得到的新窗口中元素的中位数，并输出由它们组成的数组。
+     *
+     * <p>示例：
+     *
+     * <p>给出 nums = [1,3,-1,-3,5,3,6,7]，以及 k = 3。
+     *
+     * <p>窗口位置 中位数 --------------- ----- [1 3 -1] -3 5 3 6 7 1 1 [3 -1 -3] 5 3 6 7 -1 1 3 [-1 -3 5]
+     * 3 6 7 -1 1 3 -1 [-3 5 3] 6 7 3 1 3 -1 -3 [5 3 6] 7 5 1 3 -1 -3 5 [3 6 7] 6 因此，返回该滑动窗口的中位数数组
+     * [1,-1,-1,3,5,6]。
+     *
+     * <p>提示：
+     *
+     * <p>你可以假设 k 始终有效，即：k 始终小于输入的非空数组的元素个数。 与真实值误差在 10 ^ -5 以内的答案将被视作正确答案。
+     *
+     * @param nums
+     * @param k
+     * @return
+     */
+    public double[] medianSlidingWindow(int[] nums, int k) {
+        minHeap = new PriorityQueue<>();
+        maxHeap = new PriorityQueue<>(Collections.reverseOrder());
+        int i = 0;
+        int len = nums.length;
+        double[] result = new double[len - k + 1];
+        for (; i < k - 1; i++) {
+            add(nums[i]);
+        }
+
+        for (; i < len; i++) {
+            add(nums[i]);
+            Integer leftMid = maxHeap.peek();
+            Integer rightMid = minHeap.peek();
+            if (minHeap.size() == maxHeap.size()) {
+                result[i - k + 1] = (leftMid.doubleValue() + rightMid.doubleValue()) / 2.0;
+            } else {
+                result[i - k + 1] = leftMid.doubleValue();
+            }
+            remove(nums[i - k + 1]);
+        }
+
+        return result;
+    }
+
+    PriorityQueue<Integer> minHeap;
+    PriorityQueue<Integer> maxHeap;
+
+    private void add(int num) {
+        maxHeap.offer(num);
+        minHeap.offer(maxHeap.poll());
+        if (minHeap.size() > maxHeap.size()) {
+            maxHeap.offer(minHeap.poll());
+        }
+    }
+
+    private void remove(int num) {
+        if (num <= maxHeap.peek()) {
+            maxHeap.remove(num);
+        } else {
+            minHeap.remove(num);
+        }
+    }
+
+    /**
+     * 363. 矩形区域不超过 K 的最大数值和
+     *
+     * <p>给定一个非空二维矩阵 matrix 和一个整数 k，找到这个矩阵内部不大于 k 的最大矩形和。
+     *
+     * <p>示例:
+     *
+     * <p>输入: matrix = [[1,0,1],[0,-2,3]], k = 2 输出: 2 解释: 矩形区域 [[0, 1], [-2, 3]] 的数值和是 2，且 2 是不超过 k
+     * 的最大数字（k = 2）。 说明：
+     *
+     * <p>矩阵内的矩形区域面积必须大于 0。 如果行数远大于列数，你将如何解答呢？
+     *
+     * @param matrix
+     * @param k
+     * @return
+     */
+    public int maxSumSubmatrix(int[][] matrix, int k) {
+        int rows = matrix.length, cols = matrix[0].length;
+        int max = Integer.MIN_VALUE;
+        // 前缀和
+        for (int i = 0; i < rows; i++) {
+            for (int j = 1; j < cols; j++) {
+                matrix[i][j] += matrix[i][j - 1];
+            }
+        }
+        for (int left = 0; left < cols; left++) {
+            for (int right = left; right < cols; right++) {
+                // 前缀和
+                int sum = 0, curMax = Integer.MIN_VALUE;
+                TreeSet<Integer> set = new TreeSet<>();
+                set.add(0);
+                for (int i = 0; i < rows; i++) {
+                    sum += matrix[i][right];
+                    if (left > 0) {
+                        sum -= matrix[i][left - 1];
+                    }
+                    Integer another = set.ceiling(sum - k);
+                    if (null != another) {
+                        curMax = Math.max(curMax, sum - another);
+                    }
+                    set.add(sum);
+                }
+                max = Math.max(max, curMax);
+            }
+        }
+
+        return max;
+    }
 }

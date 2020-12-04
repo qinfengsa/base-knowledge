@@ -7338,4 +7338,49 @@ public class MathTest {
         int[] nums = {1, 1, 2, 1, 1};
         logResult(isSelfCrossing(nums));
     }
+
+    /**
+     * 440. 字典序的第K小数字
+     *
+     * <p>给定整数 n 和 k，找到 1 到 n 中字典序第 k 小的数字。
+     *
+     * <p>注意：1 ≤ k ≤ n ≤ 109。
+     *
+     * <p>示例 :
+     *
+     * <p>输入: n: 13 k: 2
+     *
+     * <p>输出: 10
+     *
+     * <p>解释: 字典序的排列是 [1, 10, 11, 12, 13, 2, 3, 4, 5, 6, 7, 8, 9]，所以第二小的数字是 10。
+     *
+     * @param n
+     * @param k
+     * @return
+     */
+    public int findKthNumber(int n, int k) {
+        int num = 1;
+        k--; // 扣除掉第一个0节点
+        while (k > 0) {
+            int count = getCount(n, num, num + 1);
+            if (count <= k) { // 第k个数不在以cur为根节点的树上
+                num += 1; // cur在字典序数组中从左往右移动
+                k -= count;
+            } else { // 在子树中
+                num *= 10; // cur在字典序数组中从上往下移动
+                k -= 1; // 刨除根节点
+            }
+        }
+        return num;
+    }
+
+    public int getCount(int n, long first, long last) {
+        int count = 0;
+        while (first <= n) {
+            count += Math.min(n + 1, last) - first; // 比如n是195的情况195到100有96个数
+            first *= 10;
+            last *= 10;
+        }
+        return count;
+    }
 }
