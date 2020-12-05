@@ -21970,4 +21970,88 @@ public class ArrayTest {
 
         return max;
     }
+
+    /**
+     * 407. 接雨水 II
+     *
+     * <p>给你一个 m x n 的矩阵，其中的值均为非负整数，代表二维高度图每个单元的高度，请计算图中形状最多能接多少体积的雨水。
+     *
+     * <p>示例：
+     *
+     * <p>给出如下 3x6 的高度图: [ [1,4,3,1,3,2], [3,2,1,3,2,4], [2,3,3,2,3,1] ]
+     *
+     * <p>返回 4 。
+     *
+     * <p>如上图所示，这是下雨前的高度图[[1,4,3,1,3,2],[3,2,1,3,2,4],[2,3,3,2,3,1]] 的状态。
+     *
+     * <p>下雨后，雨水将会被存储在这些方块中。总的接雨水量是4。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= m, n <= 110 0 <= heightMap[i][j] <= 20000
+     *
+     * @param heightMap
+     * @return
+     */
+    public int trapRainWater(int[][] heightMap) {
+
+        int m = heightMap.length, n = heightMap[0].length;
+        if (m < 3 || n < 3) {
+            return 0;
+        }
+        // 优先队列找到四周最小的height
+        PriorityQueue<Barrel> heap = new PriorityQueue<>((a, b) -> a.height - b.height);
+        boolean[][] visit = new boolean[m][n];
+        visit[0][0] = true;
+        visit[0][n - 1] = true;
+        visit[m - 1][0] = true;
+        visit[m - 1][n - 1] = true;
+        // 先把最外一圈放进去
+        for (int i = 1; i < m - 1; i++) {
+            heap.offer(new Barrel(i, 0, heightMap[i][0]));
+            heap.offer(new Barrel(i, n - 1, heightMap[i][n - 1]));
+            visit[i][0] = true;
+            visit[i][n - 1] = true;
+        }
+        for (int j = 1; j < n - 1; j++) {
+            heap.offer(new Barrel(0, j, heightMap[0][j]));
+            heap.offer(new Barrel(m - 1, j, heightMap[m - 1][j]));
+            visit[0][j] = true;
+            visit[m - 1][j] = true;
+        }
+
+        int result = 0;
+        while (!heap.isEmpty()) {
+            Barrel barrel = heap.poll();
+            for (int i = 0; i < 4; i++) {
+                int row = barrel.row + DIR_ROW[i], col = barrel.col + DIR_COL[i];
+                if (!inArea(row, col, m, n) || visit[row][col]) {
+                    continue;
+                }
+                if (barrel.height > heightMap[row][col]) {
+                    result += barrel.height - heightMap[row][col];
+                }
+                heap.offer(new Barrel(row, col, Math.max(barrel.height, heightMap[row][col])));
+                visit[row][col] = true;
+            }
+        }
+
+        return result;
+    }
+
+    static class Barrel {
+        int row, col, height;
+
+        public Barrel(int row, int col, int height) {
+            this.row = row;
+            this.col = col;
+            this.height = height;
+        }
+    }
+
+    @Test
+    public void trapRainWater() {
+        int[][] heightMap = {{5, 5, 5, 1}, {5, 1, 1, 5}, {5, 1, 5, 5}, {5, 2, 5, 8}};
+        logResult(trapRainWater(heightMap));
+    }
 }
