@@ -131,4 +131,59 @@ public class TrieTest {
 
         return result;
     }
+
+    /**
+     * 472. 连接词
+     *
+     * <p>给定一个不含重复单词的列表，编写一个程序，返回给定单词列表中所有的连接词。
+     *
+     * <p>连接词的定义为：一个字符串完全是由至少两个给定数组中的单词组成的。
+     *
+     * <p>示例:
+     *
+     * <p>输入: ["cat","cats","catsdogcats","dog","dogcatsdog","hippopotamuses","rat","ratcatdogcat"]
+     *
+     * <p>输出: ["catsdogcats","dogcatsdog","ratcatdogcat"]
+     *
+     * <p>解释: "catsdogcats"由"cats", "dog" 和 "cats"组成; "dogcatsdog"由"dog", "cats"和"dog"组成;
+     * "ratcatdogcat"由"rat", "cat", "dog"和"cat"组成。 说明:
+     *
+     * <p>给定数组的元素总数不超过 10000。 给定数组中元素的长度总和不超过 600000。 所有输入字符串只包含小写字母。 不需要考虑答案输出的顺序。
+     *
+     * @param words
+     * @return
+     */
+    public List<String> findAllConcatenatedWordsInADict(String[] words) {
+
+        List<String> list = new ArrayList<>();
+        for (String word : words) {
+            insert(word);
+        }
+        for (String word : words) {
+            if (findAllConcatenatedWordsInADictDfs(word, 0)) {
+                list.add(word);
+            }
+        }
+
+        return list;
+    }
+
+    private boolean findAllConcatenatedWordsInADictDfs(String word, int start) {
+
+        int len = word.length();
+        TrieNode node = root;
+        for (int i = start; i < len; i++) {
+            char c = word.charAt(i);
+            if (Objects.isNull(node.children[c - 'a'])) {
+                return false;
+            }
+            node = node.children[c - 'a'];
+            // 短路运算: 如果找到了一个字符串则尝试从头开始走, 找下一个字符串
+            if (node.isEnd && findAllConcatenatedWordsInADictDfs(word, i + 1)) {
+                return true;
+            }
+        }
+
+        return node.isEnd && start != 0;
+    }
 }

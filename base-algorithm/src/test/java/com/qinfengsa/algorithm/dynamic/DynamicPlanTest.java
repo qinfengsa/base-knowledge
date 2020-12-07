@@ -6704,16 +6704,75 @@ public class DynamicPlanTest {
         }
         stoneMap.get(0).add(0);
 
-        for (int i = 0; i < len; i++) {
-            for (int k : stoneMap.get(stones[i])) {
+        for (int stone : stones) {
+            for (int k : stoneMap.get(stone)) {
                 for (int step = k - 1; step <= k + 1; step++) {
-                    if (step > 0 && stoneMap.containsKey(stones[i] + step)) {
-                        stoneMap.get(stones[i] + step).add(step);
+                    if (step > 0 && stoneMap.containsKey(stone + step)) {
+                        stoneMap.get(stone + step).add(step);
                     }
                 }
             }
         }
 
         return !stoneMap.get(stones[len - 1]).isEmpty();
+    }
+
+    /**
+     * 446. 等差数列划分 II - 子序列
+     *
+     * <p>如果一个数列至少有三个元素，并且任意两个相邻元素之差相同，则称该数列为等差数列。
+     *
+     * <p>例如，以下数列为等差数列:
+     *
+     * <p>1, 3, 5, 7, 9 7, 7, 7, 7 3, -1, -5, -9 以下数列不是等差数列。
+     *
+     * <p>1, 1, 2, 5, 7
+     *
+     * <p>数组 A 包含 N 个数，且索引从 0 开始。该数组子序列将划分为整数序列 (P0, P1, ..., Pk)，满足 0 ≤ P0 < P1 < ... < Pk < N。
+     *
+     * <p>如果序列 A[P0]，A[P1]，...，A[Pk-1]，A[Pk] 是等差的，那么数组 A 的子序列 (P0，P1，…，PK) 称为等差序列。值得注意的是，这意味着 k ≥ 2。
+     *
+     * <p>函数要返回数组 A 中所有等差子序列的个数。
+     *
+     * <p>输入包含 N 个整数。每个整数都在 -231 和 231-1 之间，另外 0 ≤ N ≤ 1000。保证输出小于 231-1。
+     *
+     * <p>示例：
+     *
+     * <p>输入：[2, 4, 6, 8, 10]
+     *
+     * <p>输出：7
+     *
+     * <p>解释： 所有的等差子序列为： [2,4,6] [4,6,8] [6,8,10] [2,4,6,8] [4,6,8,10] [2,4,6,8,10] [2,6,10]
+     *
+     * @param A
+     * @return
+     */
+    public int numberOfArithmeticSlicesII(int[] A) {
+        int len = A.length;
+        // dp[i][j]为以A[i]和A[j]为最后两个元素的等差数列的个数
+        int[][] dp = new int[len][len];
+        int count = 0;
+        Map<Long, List<Integer>> indexMap = new HashMap<>();
+        for (int i = 0; i < len; i++) {
+            for (int j = i + 1; j < len; j++) {
+                long last = (((long) A[i]) << 1) - A[j];
+                List<Integer> indexList = indexMap.getOrDefault(last, new ArrayList<>());
+                for (int index : indexList) {
+                    dp[i][j] += dp[index][i] + 1;
+                }
+                count += dp[i][j];
+            }
+            List<Integer> list = indexMap.computeIfAbsent((long) A[i], k -> new ArrayList<>());
+            list.add(i);
+        }
+        logResult(dp);
+
+        return count;
+    }
+
+    @Test
+    public void numberOfArithmeticSlicesII() {
+        int[] A = {0, 2000000000, -294967296};
+        logResult(numberOfArithmeticSlicesII(A));
     }
 }
