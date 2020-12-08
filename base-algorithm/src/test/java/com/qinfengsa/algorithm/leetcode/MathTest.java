@@ -7465,4 +7465,106 @@ public class MathTest {
         int states = minutesToTest / minutesToDie + 1;
         return (int) Math.ceil(Math.log(buckets) / Math.log(states));
     }
+
+    /**
+     * 479. 最大回文数乘积
+     *
+     * <p>你需要找到由两个 n 位数的乘积组成的最大回文数。
+     *
+     * <p>由于结果会很大，你只需返回最大回文数 mod 1337得到的结果。
+     *
+     * <p>示例:
+     *
+     * <p>输入: 2
+     *
+     * <p>输出: 987
+     *
+     * <p>解释: 99 x 91 = 9009, 9009 % 1337 = 987
+     *
+     * <p>说明:
+     *
+     * <p>n 的取值范围为 [1,8]。
+     *
+     * @param n
+     * @return
+     */
+    public int largestPalindrome(int n) {
+        if (n == 1) {
+            return 9;
+        }
+        int max = 1;
+        for (int i = 0; i < n; i++) {
+            max *= 10;
+        }
+        int mod = 1337;
+        max--;
+        // 而相乘可以构成9的尾数只有3(33),7(77),9(9*1)
+        for (int i = max - 1; i > max / 10; i--) {
+            // 构造回文数 9889 后缀
+            long prev = i, sufNum = i;
+            while (sufNum > 0) {
+                prev = prev * 10 + sufNum % 10;
+                sufNum /= 10;
+            }
+            long num = max;
+            while (num > 0 && num * num >= prev) {
+                if (prev % num == 0) {
+                    return (int) (prev % 1337);
+                } else if (num % 10 == 9) {
+                    num -= 2;
+                } else {
+                    num -= 4;
+                }
+            }
+        }
+        return -1;
+    }
+
+    @Test
+    public void largestPalindrome() {
+        int n = 5;
+        logResult(largestPalindrome(n));
+    }
+
+    /**
+     * 483. 最小好进制
+     *
+     * <p>对于给定的整数 n, 如果n的k（k>=2）进制数的所有数位全为1，则称 k（k>=2）是 n 的一个好进制。
+     *
+     * <p>以字符串的形式给出 n, 以字符串的形式返回 n 的最小好进制。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入："13" 输出："3" 解释：13 的 3 进制是 111。 示例 2：
+     *
+     * <p>输入："4681" 输出："8" 解释：4681 的 8 进制是 11111。 示例 3：
+     *
+     * <p>输入："1000000000000000000" 输出："999999999999999999" 解释：1000000000000000000 的
+     * 999999999999999999 进制是 11。
+     *
+     * <p>提示：
+     *
+     * <p>n的取值范围是 [3, 10^18]。 输入总是有效且没有前导 0。
+     *
+     * @param n
+     * @return
+     */
+    public String smallestGoodBase(String n) {
+        long num = Long.valueOf(n);
+        for (int m = 59; m > 1; m--) {
+            long k = (long) Math.pow(num, 1.0 / m);
+            // 不存在1进制，如果k<=1，直接下一次
+            if (k <= 1) {
+                continue;
+            }
+            long s = 0L;
+            for (int i = 0; i <= m; i++) {
+                s = s * k + 1;
+            }
+            if (s == num) {
+                return String.valueOf(k);
+            }
+        }
+        return String.valueOf(num - 1);
+    }
 }
