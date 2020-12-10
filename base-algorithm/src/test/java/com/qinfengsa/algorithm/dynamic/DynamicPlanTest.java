@@ -6775,4 +6775,59 @@ public class DynamicPlanTest {
         int[] A = {0, 2000000000, -294967296};
         logResult(numberOfArithmeticSlicesII(A));
     }
+
+    /**
+     * 552. 学生出勤记录 II
+     *
+     * <p>给定一个正整数 n，返回长度为 n 的所有可被视为可奖励的出勤记录的数量。 答案可能非常大，你只需返回结果mod 109 + 7的值。
+     *
+     * <p>学生出勤记录是只包含以下三个字符的字符串：
+     *
+     * <p>'A' : Absent，缺勤 'L' : Late，迟到 'P' : Present，到场
+     * 如果记录不包含多于一个'A'（缺勤）或超过两个连续的'L'（迟到），则该记录被视为可奖励的。
+     *
+     * <p>示例 1:
+     *
+     * <p>输入: n = 2 输出: 8 解释： 有8个长度为2的记录将被视为可奖励： "PP" , "AP", "PA", "LP", "PL", "AL", "LA", "LL"
+     * 只有"AA"不会被视为可奖励，因为缺勤次数超过一次。 注意：n 的值不会超过100000。
+     *
+     * @param n
+     * @return
+     */
+    public int checkRecord(int n) {
+        if (n == 1) {
+            return 3;
+        }
+        // LL结尾包含A的数量
+        // LL结尾不包含A的数量
+        // L结尾包含A的数量
+        // L结尾不包含A的数量
+        // 其他包含A的数量
+        // 其他不包含A的数量
+        long dp0 = 0, dp1 = 1, dp2 = 1, dp3 = 1, dp4 = 3, dp5 = 2;
+        for (int i = 3; i <= n; i++) {
+            long tmp4 = dp4, tmp5 = dp5;
+            dp4 += dp0 + dp1 + dp2 + dp3 + dp5;
+            dp4 %= MOD;
+
+            dp5 += dp1 + dp3;
+            dp5 %= MOD;
+
+            dp0 = dp2;
+            dp1 = dp3;
+            dp2 = tmp4;
+            dp3 = tmp5;
+        }
+
+        dp0 += dp1 + dp2 + dp3 + dp4 + dp5;
+        dp0 %= MOD;
+
+        return (int) dp0;
+    }
+
+    @Test
+    public void checkRecord() {
+        int n = 101;
+        logResult(checkRecord(n));
+    }
 }
