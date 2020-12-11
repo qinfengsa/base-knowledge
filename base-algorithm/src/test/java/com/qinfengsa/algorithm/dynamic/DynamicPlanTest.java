@@ -6830,4 +6830,161 @@ public class DynamicPlanTest {
         int n = 101;
         logResult(checkRecord(n));
     }
+
+    /**
+     * 639. 解码方法 2
+     *
+     * <p>一条包含字母 A-Z 的消息通过以下的方式进行了编码：
+     *
+     * <p>'A' -> 1 'B' -> 2 ... 'Z' -> 26 除了上述的条件以外，现在加密字符串可以包含字符 '*'了，字符'*'可以被当做1到9当中的任意一个数字。
+     *
+     * <p>给定一条包含数字和字符'*'的加密信息，请确定解码方法的总数。
+     *
+     * <p>同时，由于结果值可能会相当的大，所以你应当对109 + 7取模。（翻译者标注：此处取模主要是为了防止溢出）
+     *
+     * <p>示例 1 :
+     *
+     * <p>输入: "*" 输出: 9 解释: 加密的信息可以被解密为: "A", "B", "C", "D", "E", "F", "G", "H", "I". 示例 2 :
+     *
+     * <p>输入: "1*" 输出: 9 + 9 = 18（翻译者标注：这里1*可以分解为1,* 或者当做1*来处理，所以结果是9+9=18） 说明 :
+     *
+     * <p>输入的字符串长度范围是 [1, 105]。 输入的字符串只会包含字符 '*' 和 数字'0' - '9'。
+     *
+     * @param s
+     * @return
+     */
+    public int numDecodings(String s) {
+        int len = s.length();
+        long[] dp = new long[len + 1];
+        char[] chars = s.toCharArray();
+        dp[0] = 1L;
+        for (int i = 0; i < len; i++) {
+            // * 是 1 到 9
+            if (chars[i] == '*') {
+                dp[i + 1] += dp[i] * 9;
+            } else if (chars[i] == '0') {
+
+                if (i > 0) {
+                    if (chars[i - 1] == '*') {
+                        dp[i + 1] += dp[i - 1] * 2;
+                    } else if (chars[i - 1] == '1' || chars[i - 1] == '2') {
+                        dp[i + 1] += dp[i - 1];
+                    }
+                }
+                continue;
+            } else {
+                dp[i + 1] += dp[i];
+            }
+            if (i > 0) {
+
+                if (chars[i - 1] == '1') {
+                    if (chars[i] == '*') {
+                        dp[i + 1] += dp[i - 1] * 9;
+                    } else {
+                        dp[i + 1] += dp[i - 1];
+                    }
+
+                } else if (chars[i - 1] == '2') {
+                    if (chars[i] == '*') {
+                        dp[i + 1] += dp[i - 1] * 6;
+                    } else if (chars[i] <= '6') {
+                        dp[i + 1] += dp[i - 1];
+                    }
+                } else if (chars[i - 1] == '*') {
+                    if (chars[i] == '*') {
+                        dp[i + 1] += dp[i - 1] * 15;
+                    } else if (chars[i] <= '6') {
+                        dp[i + 1] += dp[i - 1] * 2;
+                    } else {
+                        dp[i + 1] += dp[i - 1];
+                    }
+                }
+            }
+            dp[i + 1] %= MOD;
+        }
+        log.debug("dp:{}", dp);
+        return (int) dp[len];
+    }
+
+    @Test
+    public void numDecodings() {
+        String s = "**";
+        logResult(numDecodings(s));
+    }
+
+    /**
+     * 600. 不含连续1的非负整数
+     *
+     * <p>给定一个正整数 n，找出小于或等于 n 的非负整数中，其二进制表示不包含 连续的1 的个数。
+     *
+     * <p>示例 1:
+     *
+     * <p>输入: 5 输出: 5
+     *
+     * <p>解释: 下面是带有相应二进制表示的非负整数<= 5：
+     *
+     * <p>0 : 0
+     *
+     * <p>1 : 1
+     *
+     * <p>2 : 10
+     *
+     * <p>3 : 11
+     *
+     * <p>4 : 100
+     *
+     * <p>5 : 101
+     *
+     * <p>其中，只有整数3违反规则（有两个连续的1），其他5个满足规则。
+     *
+     * <p>说明: 1 <= n <= 109
+     *
+     * @param num
+     * @return
+     */
+    public int findIntegers(int num) {
+        // dp[i] 表示 小于1 << i  符合要求的数
+        int[] dp = new int[31];
+        dp[0] = 1;
+        dp[1] = 2;
+        for (int i = 2; i < 31; i++) {
+            dp[i] = dp[i - 1] + dp[i - 2];
+        }
+
+        int sum = 1;
+        /*int m = 1, idx = 0;
+        while (m <= num) {
+            if ((m & num) != 0) {
+                sum += dp[idx];
+            }
+            idx++;
+            m <<= 1;
+        }*/
+        int m = (1 << 30), idx = 30;
+        int preBit = 0;
+        while (m > 0) {
+            if ((num & m) != 0) {
+                sum += dp[idx];
+                if (preBit == 1) {
+                    sum--;
+                    break;
+                }
+                preBit = 1;
+
+            } else {
+                preBit = 0;
+            }
+            idx--;
+            m >>>= 1;
+        }
+
+        return sum;
+    }
+
+    @Test
+    public void findIntegers() {
+        // 999999999
+        int num = 7;
+        logResult(findIntegers(num));
+    }
 }
