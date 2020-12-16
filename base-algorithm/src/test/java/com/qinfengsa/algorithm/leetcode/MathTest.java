@@ -6,12 +6,15 @@ import com.qinfengsa.algorithm.util.LogUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.Stack;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -7642,5 +7645,148 @@ public class MathTest {
         }
 
         return max;
+    }
+
+    /**
+     * 587. 安装栅栏
+     *
+     * <p>在一个二维的花园中，有一些用 (x, y)
+     * 坐标表示的树。由于安装费用十分昂贵，你的任务是先用最短的绳子围起所有的树。只有当所有的树都被绳子包围时，花园才能围好栅栏。你需要找到正好位于栅栏边界上的树的坐标。
+     *
+     * <p>示例 1:
+     *
+     * <p>输入: [[1,1],[2,2],[2,0],[2,4],[3,3],[4,2]] 输出: [[1,1],[2,0],[4,2],[3,3],[2,4]] 解释:
+     *
+     * <p>示例 2:
+     *
+     * <p>输入: [[1,2],[2,2],[4,2]] 输出: [[1,2],[2,2],[4,2]] 解释:
+     *
+     * <p>即使树都在一条直线上，你也需要先用绳子包围它们。
+     *
+     * <p>注意:
+     *
+     * <p>所有的树应当被围在一起。你不能剪断绳子来包围树或者把树分成一组以上。 输入的整数在 0 到 100 之间。 花园至少有一棵树。 所有树的坐标都是不同的。
+     * 输入的点没有顺序。输出顺序也没有要求。
+     *
+     * @param points
+     * @return
+     */
+    public int[][] outerTrees(int[][] points) {
+        int len = points.length;
+        if (len <= 3) {
+            return points;
+        }
+        // 找到最左端的点
+        final int[] left = getLeft(points);
+        Arrays.sort(
+                points,
+                (p, q) -> {
+                    int diff = orientation(left, p, q) - orientation(left, q, p);
+                    if (diff == 0) {
+                        return distance(left, p) - distance(left, q);
+                    }
+                    return diff > 0 ? 1 : -1;
+                });
+        // 最后一条边(连接到起点)需要交换顺序, 否则会缺少点
+        int idx = points.length - 1;
+        while (idx > 0 && orientation(left, points[points.length - 1], points[idx - 1]) == 0) {
+            idx--;
+        }
+        for (int l = idx, r = points.length - 1; l < r; l++, r--) {
+            int[] tmp = points[l];
+            points[l] = points[r];
+            points[r] = tmp;
+        }
+
+        Deque<int[]> stack = new LinkedList<>();
+
+        for (int[] point : points) {
+            if (stack.size() < 2) {
+                stack.push(point);
+                continue;
+            }
+            int[] top = stack.pop();
+            while (orientation(stack.peek(), top, point) > 0) {
+                top = stack.pop();
+            }
+
+            stack.push(top);
+            stack.push(point);
+        }
+        int[][] result = new int[stack.size()][];
+        for (int i = stack.size() - 1; i >= 0; i--) {
+            result[i] = stack.pop();
+        }
+        return result;
+    }
+
+    public int[][] outerTrees2(int[][] points) {
+        int len = points.length;
+        if (len <= 3) {
+            return points;
+        }
+        // 找到最左端的点
+        Arrays.sort(points, (p, q) -> p[0] == q[0] ? p[1] - q[1] : p[0] - q[0]);
+        logResult(points);
+        Stack<int[]> stack = new Stack<>();
+        // 从左到右
+        for (int[] point : points) {
+
+            while (stack.size() >= 2
+                    && orientation(stack.get(stack.size() - 2), stack.get(stack.size() - 1), point)
+                            > 0) {
+                stack.pop();
+            }
+            stack.push(point);
+        }
+        stack.pop();
+        for (int i = points.length - 1; i >= 0; i--) {
+            while (stack.size() >= 2
+                    && orientation(
+                                    stack.get(stack.size() - 2),
+                                    stack.get(stack.size() - 1),
+                                    points[i])
+                            > 0) {
+                stack.pop();
+            }
+
+            stack.push(points[i]);
+        }
+
+        // 从右到左
+        int[][] result = new int[stack.size()][];
+        for (int i = stack.size() - 1; i >= 0; i--) {
+            result[i] = stack.pop();
+        }
+        return result;
+    }
+
+    private int[] getLeft(int[][] points) {
+        int[] left = points[0];
+        for (int i = 1; i < points.length; i++) {
+            if (points[i][0] < left[0]) {
+                left = points[i];
+            } else if (points[i][0] == left[0] && points[i][1] == left[1]) {
+                left = points[i];
+            }
+        }
+        return left;
+    }
+
+    private int orientation(int[] left, int[] p, int[] q) {
+        return (p[1] - left[1]) * (q[0] - left[0]) - (p[0] - left[0]) * (q[1] - left[1]);
+    }
+
+    private int distance(int[] p, int[] q) {
+        return (p[0] - q[0]) * (p[0] - q[0]) + (p[1] - q[1]) * (p[1] - q[1]);
+    }
+
+    @Test
+    public void outerTrees() {
+        int[][] points = {
+            {3, 0}, {4, 0}, {5, 0}, {6, 1}, {7, 2}, {7, 3}, {7, 4}, {6, 5}, {5, 5}, {4, 5}, {3, 5},
+            {2, 5}, {1, 4}, {1, 3}, {1, 2}, {2, 1}, {4, 2}, {0, 3}
+        };
+        logResult(outerTrees(points));
     }
 }

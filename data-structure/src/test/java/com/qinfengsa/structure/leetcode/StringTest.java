@@ -10332,4 +10332,125 @@ public class StringTest {
         String[] words = {"cc", "acd", "b", "ba", "bac", "bad", "ac", "d"};
         logResult(countConsistentStrings(allowed, words));
     }
+
+    /**
+     * 488. 祖玛游戏
+     *
+     * <p>回忆一下祖玛游戏。现在桌上有一串球，颜色有红色(R)，黄色(Y)，蓝色(B)，绿色(G)，还有白色(W)。 现在你手里也有几个球。
+     *
+     * <p>每一次，你可以从手里的球选一个，然后把这个球插入到一串球中的某个位置上（包括最左端，最右端）。接着，如果有出现三个或者三个以上颜色相同的球相连的话，就把它们移除掉。重复这一步骤直到桌上所有的球都被移除。
+     *
+     * <p>找到插入并可以移除掉桌上所有球所需的最少的球数。如果不能移除桌上所有的球，输出 -1 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：board = "WRRBBW", hand = "RB" 输出：-1 解释：WRRBBW -> WRR[R]BBW -> WBBW -> WBB[B]W -> WW 示例
+     * 2：
+     *
+     * <p>输入：board = "WWRRBBWW", hand = "WRBRW" 输出：2 解释：WWRRBBWW -> WWRR[R]BBWW -> WWBBWW ->
+     * WWBB[B]WW -> WWWW -> empty 示例 3：
+     *
+     * <p>输入：board = "G", hand = "GGGGG" 输出：2 解释：G -> G[G] -> GG[G] -> empty 示例 4：
+     *
+     * <p>输入：board = "RBYYBBRRB", hand = "YRBGB" 输出：3 解释：RBYYBBRRB -> RBYY[Y]BBRRB -> RBBBRRB ->
+     * RRRB -> B -> B[B] -> BB[B] -> empty
+     *
+     * <p>提示：
+     *
+     * <p>你可以假设桌上一开始的球中，不会有三个及三个以上颜色相同且连着的球。 1 <= board.length <= 16 1 <= hand.length <= 5
+     * 输入的两个字符串均为非空字符串，且只包含字符 'R','Y','B','G','W'。
+     *
+     * @param board
+     * @param hand
+     * @return
+     */
+    public int findMinStep(String board, String hand) {
+        for (char c : hand.toCharArray()) {
+            handBoll[c - 'A']++;
+        }
+        findMinStepBack(new StringBuilder(board), 0);
+        return minStep == Integer.MAX_VALUE ? -1 : minStep;
+    }
+
+    private int[] handBoll = new int[26];
+
+    static char[] colors = {'R', 'Y', 'B', 'G', 'W'};
+
+    private int minStep = Integer.MAX_VALUE;
+
+    /**
+     * 回溯
+     *
+     * @param board
+     * @param step
+     */
+    private void findMinStepBack(StringBuilder board, int step) {
+        if (step >= minStep) {
+            return;
+        }
+        if (board.length() == 0) {
+            minStep = Math.min(minStep, step);
+            return;
+        }
+        for (int i = 0; i < board.length(); i++) {
+            char c = board.charAt(i);
+            int j = i;
+            while (j + 1 < board.length() && board.charAt(j + 1) == c) {
+                j++;
+            }
+            // 一个球
+            if (i == j && handBoll[c - 'A'] >= 2) {
+                StringBuilder tmp = new StringBuilder(board);
+                tmp.insert(i, c + "" + c);
+                handBoll[c - 'A'] -= 2;
+                findMinStepBack(eliminate(tmp), step + 2);
+                handBoll[c - 'A'] += 2;
+
+            } else if (i + 1 == j) { // 两个球
+                if (handBoll[c - 'A'] >= 1) {
+                    StringBuilder tmp = new StringBuilder(board);
+                    tmp.insert(i, c);
+                    handBoll[c - 'A']--;
+                    findMinStepBack(eliminate(tmp), step + 1);
+                    handBoll[c - 'A']++;
+                }
+                for (char color : colors) {
+                    if (color == c) {
+                        continue;
+                    }
+                    if (handBoll[color - 'A'] >= 1) {
+                        StringBuilder tmp = new StringBuilder(board);
+                        tmp.insert(i + 1, color); // 尝试往这两个颜色相同且相邻的球中间插入一个颜色不同的球
+                        handBoll[color - 'A']--;
+                        findMinStepBack(eliminate(tmp), step + 1);
+                        handBoll[color - 'A']++;
+                    }
+                }
+            }
+        }
+    }
+
+    private StringBuilder eliminate(StringBuilder sb) {
+        boolean flag = true;
+        while (flag) {
+            flag = false;
+            for (int i = 0; i < sb.length(); i++) {
+                int j = i + 1;
+                while (j < sb.length() && sb.charAt(j) == sb.charAt(i)) {
+                    j++;
+                }
+                if (j - i >= 3) {
+                    sb.delete(i, j);
+                    flag = true;
+                }
+            }
+        }
+        return sb;
+    }
+
+    @Test
+    public void findMinStepBack() {
+        String board = "WWRRGGRRWWRRGGRRWW", hand = "GG";
+        logResult(findMinStep(board, hand));
+    }
 }
