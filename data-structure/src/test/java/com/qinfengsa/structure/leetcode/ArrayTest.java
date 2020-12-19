@@ -22152,4 +22152,104 @@ public class ArrayTest {
         int[] nums = {1, 4, 6, 8, 10};
         log.debug("result:{}", getSumAbsoluteDifferences(nums));
     }
+
+    /**
+     * 675. 为高尔夫比赛砍树
+     *
+     * <p>你被请来给一个要举办高尔夫比赛的树林砍树。树林由一个 m x n 的矩阵表示， 在这个矩阵中：
+     *
+     * <p>0 表示障碍，无法触碰 1 表示地面，可以行走 比 1 大的数 表示有树的单元格，可以行走，数值表示树的高度
+     * 每一步，你都可以向上、下、左、右四个方向之一移动一个单位，如果你站的地方有一棵树，那么你可以决定是否要砍倒它。
+     *
+     * <p>你需要按照树的高度从低向高砍掉所有的树，每砍过一颗树，该单元格的值变为 1（即变为地面）。
+     *
+     * <p>你将从 (0, 0) 点开始工作，返回你砍完所有树需要走的最小步数。 如果你无法砍完所有的树，返回 -1 。
+     *
+     * <p>可以保证的是，没有两棵树的高度是相同的，并且你至少需要砍倒一棵树。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：forest = [[1,2,3],[0,0,4],[7,6,5]] 输出：6 解释：沿着上面的路径，你可以用 6 步，按从最矮到最高的顺序砍掉这些树。 示例 2：
+     *
+     * <p>输入：forest = [[1,2,3],[0,0,0],[7,6,5]] 输出：-1 解释：由于中间一行被障碍阻塞，无法访问最下面一行中的树。 示例 3：
+     *
+     * <p>输入：forest = [[2,3,4],[0,0,5],[8,7,6]] 输出：6 解释：可以按与示例 1 相同的路径来砍掉所有的树。 (0,0)
+     * 位置的树，可以直接砍去，不用算步数。
+     *
+     * <p>提示：
+     *
+     * <p>m == forest.length n == forest[i].length 1 <= m, n <= 50 0 <= forest[i][j] <= 109
+     *
+     * @param forest
+     * @return
+     */
+    public int cutOffTree(List<List<Integer>> forest) {
+        int m = forest.size(), n = forest.get(0).size();
+        List<CutOffNode> list = new ArrayList<>();
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                int height = forest.get(i).get(j);
+                if (height > 1) {
+                    list.add(new CutOffNode(i, j, height));
+                }
+            }
+        }
+        list.sort(Comparator.comparingInt(a -> a.height));
+        int startRow = 0, startCol = 0;
+        int result = 0;
+        for (CutOffNode node : list) {
+            int d = distBfs(forest, startRow, startCol, node.row, node.col);
+            if (d == -1) {
+                return -1;
+            }
+            result += d;
+            startRow = node.row;
+            startCol = node.col;
+        }
+
+        return result;
+    }
+
+    private int distBfs(
+            List<List<Integer>> forest, int startRow, int startCol, int endRow, int endCol) {
+        int rows = forest.size(), cols = forest.get(0).size();
+        // 广度优先遍历
+        int step = 0;
+        Queue<int[]> queue = new LinkedList<>();
+        queue.offer(new int[] {startRow, startCol});
+        boolean[][] visited = new boolean[rows][cols];
+        visited[startRow][startCol] = true;
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                int[] node = queue.poll();
+                if (node[0] == endRow && node[1] == endCol) {
+                    return step;
+                }
+
+                for (int j = 0; j < 4; j++) {
+                    int row = node[0] + DIR_ROW[j], col = node[1] + DIR_COL[j];
+                    if (inArea(row, col, rows, cols)
+                            && !visited[row][col]
+                            && forest.get(row).get(col) > 0) {
+                        queue.offer(new int[] {row, col});
+                        visited[row][col] = true;
+                    }
+                }
+            }
+            step++;
+        }
+
+        return -1;
+    }
+
+    class CutOffNode {
+        int row, col, height;
+
+        public CutOffNode(int row, int col, int height) {
+            this.row = row;
+            this.col = col;
+            this.height = height;
+        }
+    }
 }

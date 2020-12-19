@@ -7038,4 +7038,133 @@ public class DynamicPlanTest {
         int[] stones = {7, 90, 5, 1, 100, 10, 10, 2};
         logResult(stoneGameVII(stones));
     }
+
+    /**
+     * 664. 奇怪的打印机
+     *
+     * <p>有台奇怪的打印机有以下两个特殊要求：
+     *
+     * <p>打印机每次只能打印同一个字符序列。 每次可以在任意起始和结束位置打印新字符，并且会覆盖掉原来已有的字符。
+     * 给定一个只包含小写英文字母的字符串，你的任务是计算这个打印机打印它需要的最少次数。
+     *
+     * <p>示例 1:
+     *
+     * <p>输入: "aaabbb" 输出: 2 解释: 首先打印 "aaa" 然后打印 "bbb"。 示例 2:
+     *
+     * <p>输入: "aba" 输出: 2 解释: 首先打印 "aaa" 然后在第二个位置打印 "b" 覆盖掉原来的字符 'a'。 提示: 输入字符串的长度不会超过 100。
+     *
+     * @param s
+     * @return
+     */
+    public int strangePrinter(String s) {
+        // dp[i][j]的含义是s[i]到s[j]的打印次数；
+        // [i,j]分成两个部分， dp[i,j] = dp[i,k] + dp[k+1,j];
+        int len = s.length();
+        if (len == 0) {
+            return 0;
+        }
+        int[][] dp = new int[len][len];
+        for (int i = 0; i < len; i++) {
+            dp[i][i] = 1;
+        }
+
+        for (int l = 1; l < len; l++) {
+            // 长度 从小到大
+            for (int i = 0; i < len - l; i++) {
+                int j = i + l;
+                dp[i][j] = l + 1;
+                for (int k = i; k < j; k++) {
+                    int total = dp[i][k] + dp[k + 1][j];
+                    if (s.charAt(j) == s.charAt(k)) {
+                        total--;
+                    }
+                    dp[i][j] = Math.min(dp[i][j], total);
+                }
+            }
+        }
+        logResult(dp);
+
+        return dp[0][len - 1];
+    }
+
+    @Test
+    public void strangePrinter() {
+        String s = "aaabbb";
+        logResult(strangePrinter(s));
+    }
+
+    /**
+     * 689. 三个无重叠子数组的最大和
+     *
+     * <p>给定数组 nums 由正整数组成，找到三个互不重叠的子数组的最大和。
+     *
+     * <p>每个子数组的长度为k，我们要使这3*k个项的和最大化。
+     *
+     * <p>返回每个区间起始索引的列表（索引从 0 开始）。如果有多个结果，返回字典序最小的一个。
+     *
+     * <p>示例:
+     *
+     * <p>输入: [1,2,1,2,6,7,5,1], 2 输出: [0, 3, 5] 解释: 子数组 [1, 2], [2, 6], [7, 5] 对应的起始索引为 [0, 3, 5]。
+     * 我们也可以取 [2, 1], 但是结果 [1, 3, 5] 在字典序上更大。 注意:
+     *
+     * <p>nums.length的范围在[1, 20000]之间。 nums[i]的范围在[1, 65535]之间。 k的范围在[1, floor(nums.length / 3)]之间。
+     *
+     * @param nums
+     * @param k
+     * @return
+     */
+    public int[] maxSumOfThreeSubarrays(int[] nums, int k) {
+        int len = nums.length - k + 1;
+        int[] sums = new int[len];
+        int sum = 0;
+        for (int i = 0; i < k; i++) {
+            sum += nums[i];
+        }
+        sums[0] = sum;
+        for (int i = 0; i < len - 1; i++) {
+            sum += nums[i + k];
+            sum -= nums[i];
+            sums[i + 1] = sum;
+        }
+        log.debug("sums:{}", sums);
+        int[] result = new int[] {-1, -1, -1};
+        int[] left = new int[len], right = new int[len];
+        left[0] = 0;
+        for (int i = 1; i < len; i++) {
+            int idx = left[i - 1];
+            if (sums[i] > sums[idx]) {
+                idx = i;
+            }
+            left[i] = idx;
+        }
+        log.debug("left:{}", left);
+        right[len - 1] = len - 1;
+        for (int i = len - 2; i > 0; i--) {
+            int idx = right[i + 1];
+            if (sums[i] >= sums[idx]) {
+                idx = i;
+            }
+            right[i] = idx;
+        }
+        log.debug("right:{}", right);
+        for (int i = k; i < len - k; i++) {
+            int leftIndex = left[i - k], rightIndex = right[i + k];
+            if (result[0] == -1
+                    || sums[leftIndex] + sums[i] + sums[rightIndex]
+                            > sums[result[0]] + sums[result[1]] + sums[result[2]]) {
+                result[0] = leftIndex;
+                result[1] = i;
+                result[2] = rightIndex;
+            }
+        }
+
+        return result;
+    }
+
+    @Test
+    public void maxSumOfThreeSubarrays() {
+        int[] nums = {1, 2, 1, 2, 1, 2, 1, 2, 1};
+        int k = 2;
+        log.debug("result:{}", maxSumOfThreeSubarrays(nums, k));
+    }
 }
