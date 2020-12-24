@@ -10277,4 +10277,246 @@ public class StringTest {
         String n = "13431";
         logResult(nearestPalindromic(n));
     }
+
+    /**
+     * 5609. 统计一致字符串的数目
+     *
+     * <p>给你一个由不同字符组成的字符串 allowed 和一个字符串数组 words 。如果一个字符串的每一个字符都在 allowed 中，就称这个字符串是 一致 字符串。
+     *
+     * <p>请你返回 words 数组中 一致 字符串的数目。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：allowed = "ab", words = ["ad","bd","aaab","baa","badab"] 输出：2 解释：字符串 "aaab" 和 "baa"
+     * 都是一致字符串，因为它们只包含字符 'a' 和 'b' 。 示例 2：
+     *
+     * <p>输入：allowed = "abc", words = ["a","b","c","ab","ac","bc","abc"] 输出：7 解释：所有字符串都是一致的。 示例 3：
+     *
+     * <p>输入：allowed = "cad", words = ["cc","acd","b","ba","bac","bad","ac","d"] 输出：4 解释：字符串
+     * "cc"，"acd"，"ac" 和 "d" 是一致字符串。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= words.length <= 104 1 <= allowed.length <= 26 1 <= words[i].length <= 10 allowed 中的字符
+     * 互不相同 。 words[i] 和 allowed 只包含小写英文字母。
+     *
+     * @param allowed
+     * @param words
+     * @return
+     */
+    public int countConsistentStrings(String allowed, String[] words) {
+
+        int count = 0;
+        int[] letters = new int[26];
+        for (char c : allowed.toCharArray()) {
+            letters[c - 'a']++;
+        }
+        out:
+        for (String word : words) {
+
+            for (char c : word.toCharArray()) {
+                if (letters[c - 'a'] == 0) {
+                    continue out;
+                }
+            }
+
+            count++;
+        }
+
+        return count;
+    }
+
+    @Test
+    public void countConsistentStrings() {
+        String allowed = "cad";
+        String[] words = {"cc", "acd", "b", "ba", "bac", "bad", "ac", "d"};
+        logResult(countConsistentStrings(allowed, words));
+    }
+
+    /**
+     * 488. 祖玛游戏
+     *
+     * <p>回忆一下祖玛游戏。现在桌上有一串球，颜色有红色(R)，黄色(Y)，蓝色(B)，绿色(G)，还有白色(W)。 现在你手里也有几个球。
+     *
+     * <p>每一次，你可以从手里的球选一个，然后把这个球插入到一串球中的某个位置上（包括最左端，最右端）。接着，如果有出现三个或者三个以上颜色相同的球相连的话，就把它们移除掉。重复这一步骤直到桌上所有的球都被移除。
+     *
+     * <p>找到插入并可以移除掉桌上所有球所需的最少的球数。如果不能移除桌上所有的球，输出 -1 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：board = "WRRBBW", hand = "RB" 输出：-1 解释：WRRBBW -> WRR[R]BBW -> WBBW -> WBB[B]W -> WW 示例
+     * 2：
+     *
+     * <p>输入：board = "WWRRBBWW", hand = "WRBRW" 输出：2 解释：WWRRBBWW -> WWRR[R]BBWW -> WWBBWW ->
+     * WWBB[B]WW -> WWWW -> empty 示例 3：
+     *
+     * <p>输入：board = "G", hand = "GGGGG" 输出：2 解释：G -> G[G] -> GG[G] -> empty 示例 4：
+     *
+     * <p>输入：board = "RBYYBBRRB", hand = "YRBGB" 输出：3 解释：RBYYBBRRB -> RBYY[Y]BBRRB -> RBBBRRB ->
+     * RRRB -> B -> B[B] -> BB[B] -> empty
+     *
+     * <p>提示：
+     *
+     * <p>你可以假设桌上一开始的球中，不会有三个及三个以上颜色相同且连着的球。 1 <= board.length <= 16 1 <= hand.length <= 5
+     * 输入的两个字符串均为非空字符串，且只包含字符 'R','Y','B','G','W'。
+     *
+     * @param board
+     * @param hand
+     * @return
+     */
+    public int findMinStep(String board, String hand) {
+        for (char c : hand.toCharArray()) {
+            handBoll[c - 'A']++;
+        }
+        findMinStepBack(new StringBuilder(board), 0);
+        return minStep == Integer.MAX_VALUE ? -1 : minStep;
+    }
+
+    private int[] handBoll = new int[26];
+
+    static char[] colors = {'R', 'Y', 'B', 'G', 'W'};
+
+    private int minStep = Integer.MAX_VALUE;
+
+    /**
+     * 回溯
+     *
+     * @param board
+     * @param step
+     */
+    private void findMinStepBack(StringBuilder board, int step) {
+        if (step >= minStep) {
+            return;
+        }
+        if (board.length() == 0) {
+            minStep = Math.min(minStep, step);
+            return;
+        }
+        for (int i = 0; i < board.length(); i++) {
+            char c = board.charAt(i);
+            int j = i;
+            while (j + 1 < board.length() && board.charAt(j + 1) == c) {
+                j++;
+            }
+            // 一个球
+            if (i == j && handBoll[c - 'A'] >= 2) {
+                StringBuilder tmp = new StringBuilder(board);
+                tmp.insert(i, c + "" + c);
+                handBoll[c - 'A'] -= 2;
+                findMinStepBack(eliminate(tmp), step + 2);
+                handBoll[c - 'A'] += 2;
+
+            } else if (i + 1 == j) { // 两个球
+                if (handBoll[c - 'A'] >= 1) {
+                    StringBuilder tmp = new StringBuilder(board);
+                    tmp.insert(i, c);
+                    handBoll[c - 'A']--;
+                    findMinStepBack(eliminate(tmp), step + 1);
+                    handBoll[c - 'A']++;
+                }
+                for (char color : colors) {
+                    if (color == c) {
+                        continue;
+                    }
+                    if (handBoll[color - 'A'] >= 1) {
+                        StringBuilder tmp = new StringBuilder(board);
+                        tmp.insert(i + 1, color); // 尝试往这两个颜色相同且相邻的球中间插入一个颜色不同的球
+                        handBoll[color - 'A']--;
+                        findMinStepBack(eliminate(tmp), step + 1);
+                        handBoll[color - 'A']++;
+                    }
+                }
+            }
+        }
+    }
+
+    private StringBuilder eliminate(StringBuilder sb) {
+        boolean flag = true;
+        while (flag) {
+            flag = false;
+            for (int i = 0; i < sb.length(); i++) {
+                int j = i + 1;
+                while (j < sb.length() && sb.charAt(j) == sb.charAt(i)) {
+                    j++;
+                }
+                if (j - i >= 3) {
+                    sb.delete(i, j);
+                    flag = true;
+                }
+            }
+        }
+        return sb;
+    }
+
+    @Test
+    public void findMinStepBack() {
+        String board = "WWRRGGRRWWRRGGRRWW", hand = "GG";
+        logResult(findMinStep(board, hand));
+    }
+
+    /**
+     * 5629. 重新格式化电话号码
+     *
+     * <p>给你一个字符串形式的电话号码 number 。number 由数字、空格 ' '、和破折号 '-' 组成。
+     *
+     * <p>请你按下述方式重新格式化电话号码。
+     *
+     * <p>首先，删除 所有的空格和破折号。 其次，将数组从左到右 每 3 个一组 分块，直到 剩下 4 个或更少数字。剩下的数字将按下述规定再分块： 2 个数字：单个含 2 个数字的块。 3
+     * 个数字：单个含 3 个数字的块。 4 个数字：两个分别含 2 个数字的块。 最后用破折号将这些块连接起来。注意，重新格式化过程中 不应该 生成仅含 1 个数字的块，并且 最多 生成两个含
+     * 2 个数字的块。
+     *
+     * <p>返回格式化后的电话号码。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：number = "1-23-45 6" 输出："123-456" 解释：数字是 "123456" 步骤 1：共有超过 4 个数字，所以先取 3 个数字分为一组。第 1
+     * 个块是 "123" 。 步骤 2：剩下 3 个数字，将它们放入单个含 3 个数字的块。第 2 个块是 "456" 。 连接这些块后得到 "123-456" 。 示例 2：
+     *
+     * <p>输入：number = "123 4-567" 输出："123-45-67" 解释：数字是 "1234567". 步骤 1：共有超过 4 个数字，所以先取 3 个数字分为一组。第
+     * 1 个块是 "123" 。 步骤 2：剩下 4 个数字，所以将它们分成两个含 2 个数字的块。这 2 块分别是 "45" 和 "67" 。 连接这些块后得到 "123-45-67" 。
+     * 示例 3：
+     *
+     * <p>输入：number = "123 4-5678" 输出："123-456-78" 解释：数字是 "12345678" 。 步骤 1：第 1 个块 "123" 。 步骤 2：第 2
+     * 个块 "456" 。 步骤 3：剩下 2 个数字，将它们放入单个含 2 个数字的块。第 3 个块是 "78" 。 连接这些块后得到 "123-456-78" 。 示例 4：
+     *
+     * <p>输入：number = "12" 输出："12" 示例 5：
+     *
+     * <p>输入：number = "--17-5 229 35-39475 " 输出："175-229-353-94-75"
+     *
+     * <p>提示：
+     *
+     * <p>2 <= number.length <= 100 number 由数字和字符 '-' 及 ' ' 组成。 number 中至少含 2 个数字。
+     *
+     * @param number
+     * @return
+     */
+    public String reformatNumber(String number) {
+        List<Character> list = new ArrayList<>();
+        for (char c : number.toCharArray()) {
+            if (c >= '0' & c <= '9') {
+                list.add(c);
+            }
+        }
+        int size = list.size();
+        int left = size % 3;
+        if (left == 1) {
+            left += 3;
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < size - left; i += 3) {
+            if (sb.length() > 0) {
+                sb.append("-");
+            }
+            sb.append(list.get(i)).append(list.get(i + 1)).append(list.get(i + 2));
+        }
+
+        for (int i = size - left; i < size; i += 2) {
+            if (sb.length() > 0) {
+                sb.append("-");
+            }
+            sb.append(list.get(i)).append(list.get(i + 1));
+        }
+
+        return sb.toString();
+    }
 }

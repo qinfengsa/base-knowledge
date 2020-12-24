@@ -2469,4 +2469,138 @@ public class GreedyTest {
 
         return queue.size();
     }
+
+    /**
+     * 1686. 石子游戏 VI
+     *
+     * <p>Alice 和 Bob 轮流玩一个游戏，Alice 先手。
+     *
+     * <p>一堆石子里总共有 n 个石子，轮到某个玩家时，他可以 移出 一个石子并得到这个石子的价值。Alice 和 Bob 对石子价值有 不一样的的评判标准 。
+     *
+     * <p>给你两个长度为 n 的整数数组 aliceValues 和 bobValues 。aliceValues[i] 和 bobValues[i] 分别表示 Alice 和 Bob
+     * 认为第 i 个石子的价值。
+     *
+     * <p>所有石子都被取完后，得分较高的人为胜者。如果两个玩家得分相同，那么为平局。两位玩家都会采用 最优策略 进行游戏。
+     *
+     * <p>请你推断游戏的结果，用如下的方式表示：
+     *
+     * <p>如果 Alice 赢，返回 1 。 如果 Bob 赢，返回 -1 。 如果游戏平局，返回 0 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：aliceValues = [1,3], bobValues = [2,1] 输出：1 解释： 如果 Alice 拿石子 1 （下标从 0开始），那么 Alice 可以得到
+     * 3 分。 Bob 只能选择石子 0 ，得到 2 分。 Alice 获胜。 示例 2：
+     *
+     * <p>输入：aliceValues = [1,2], bobValues = [3,1] 输出：0 解释： Alice 拿石子 0 ， Bob 拿石子 1 ，他们得分都为 1 分。
+     * 打平。 示例 3：
+     *
+     * <p>输入：aliceValues = [2,4,3], bobValues = [1,6,7] 输出：-1 解释： 不管 Alice 怎么操作，Bob 都可以得到比 Alice
+     * 更高的得分。 比方说，Alice 拿石子 1 ，Bob 拿石子 2 ， Alice 拿石子 0 ，Alice 会得到 6 分而 Bob 得分为 7 分。 Bob 会获胜。
+     *
+     * <p>提示：
+     *
+     * <p>n == aliceValues.length == bobValues.length 1 <= n <= 105 1 <= aliceValues[i],
+     * bobValues[i] <= 100
+     *
+     * @param aliceValues
+     * @param bobValues
+     * @return
+     */
+    public int stoneGameVI(int[] aliceValues, int[] bobValues) {
+        // 假设只有两个石头,对于 a， b 的价值分别是 a1, a2, b1, b2
+        //
+        // 第一种方案是A取第一个，B取第二个，A与B的价值差是 c1 = a1 - b2
+        // 第二种方案是A取第二个，B取第一个，A与B的价值差是 c2 = a2 - b1
+        // c1 - c2 = a1 - b2 - a2 + b1 => a1+ b1 - (a2 + b2);
+        int len = aliceValues.length;
+        // 按 a1+ b1 排序
+        int[][] values = new int[len][2];
+        for (int i = 0; i < len; i++) {
+            values[i][0] = aliceValues[i];
+            values[i][1] = bobValues[i];
+        }
+        Arrays.sort(values, (a, b) -> b[0] + b[1] - a[0] - a[1]);
+        int a = 0, b = 0;
+        for (int i = 0; i < len; i++) {
+            if ((i & 1) == 0) {
+                a += values[i][0];
+            } else {
+                b += values[i][1];
+            }
+        }
+        if (a == b) {
+            return 0;
+        }
+
+        return a > b ? 1 : -1;
+    }
+
+    /**
+     * 5631. 跳跃游戏 VI
+     *
+     * <p>给你一个下标从 0 开始的整数数组 nums 和一个整数 k 。
+     *
+     * <p>一开始你在下标 0 处。每一步，你最多可以往前跳 k 步，但你不能跳出数组的边界。也就是说，你可以从下标 i 跳到 [i + 1， min(n - 1, i + k)] 包含
+     * 两个端点的任意位置。
+     *
+     * <p>你的目标是到达数组最后一个位置（下标为 n - 1 ），你的 得分 为经过的所有数字之和。
+     *
+     * <p>请你返回你能得到的 最大得分 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：nums = [1,-1,-2,4,-7,3], k = 2 输出：7 解释：你可以选择子序列 [1,-1,4,3] （上面加粗的数字），和为 7 。 示例 2：
+     *
+     * <p>输入：nums = [10,-5,-2,4,0,3], k = 3 输出：17 解释：你可以选择子序列 [10,4,3] （上面加粗数字），和为 17 。 示例 3：
+     *
+     * <p>输入：nums = [1,-5,-20,4,-1,3,-6,-3], k = 2 输出：0
+     *
+     * <p>提示：
+     *
+     * <p>1 <= nums.length, k <= 105 -104 <= nums[i] <= 104
+     *
+     * @param nums
+     * @param k
+     * @return
+     */
+    public int maxResult(int[] nums, int k) {
+        int len = nums.length;
+        if (len == 1) {
+            return nums[0];
+        }
+        int result = 0;
+        // 如果后面k个数字里面碰到第一个大于0的数，就直接跳到那个数
+        // 如果里面都是小于0的数，就找这里面最大的一个跳
+
+        for (int i = 0; i < len; ) {
+            result += nums[i];
+            int end = Math.min(i + k, len - 1);
+            int next = i + 1;
+            int max = Integer.MIN_VALUE;
+            for (int j = i + 1; j <= end; j++) {
+                if (j == len - 1) {
+                    return result + nums[len - 1];
+                }
+                if (nums[j] > 0) {
+                    next = j;
+                    break;
+                }
+                if (nums[j] > max) {
+                    max = nums[j];
+                    next = j;
+                }
+            }
+
+            i = next;
+        }
+
+        return result + nums[len - 1];
+    }
+
+    @Test
+    public void maxResult() {
+        int[] nums = {10, -5, -2, 4, 0, 3};
+        int k = 3;
+        logResult(maxResult(nums, k));
+    }
 }

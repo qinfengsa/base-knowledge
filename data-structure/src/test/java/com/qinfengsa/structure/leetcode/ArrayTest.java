@@ -22096,4 +22096,280 @@ public class ArrayTest {
         }
         return result;
     }
+
+    /**
+     * 5610. 有序数组中差绝对值之和
+     *
+     * <p>给你一个 非递减 有序整数数组 nums 。
+     *
+     * <p>请你建立并返回一个整数数组 result，它跟 nums 长度相同，且result[i] 等于 nums[i] 与数组中所有其他元素差的绝对值之和。
+     *
+     * <p>换句话说， result[i] 等于 sum(|nums[i]-nums[j]|) ，其中 0 <= j < nums.length 且 j != i （下标从 0 开始）。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：nums = [2,3,5] 输出：[4,3,5] 解释：假设数组下标从 0 开始，那么 result[0] = |2-2| + |2-3| + |2-5| = 0 + 1
+     * + 3 = 4， result[1] = |3-2| + |3-3| + |3-5| = 1 + 0 + 2 = 3， result[2] = |5-2| + |5-3| + |5-5|
+     * = 3 + 2 + 0 = 5。 示例 2：
+     *
+     * <p>输入：nums = [1,4,6,8,10] 输出：[24,15,13,15,21]
+     *
+     * <p>提示：
+     *
+     * <p>2 <= nums.length <= 105 1 <= nums[i] <= nums[i + 1] <= 104
+     *
+     * @param nums
+     * @return
+     */
+    public int[] getSumAbsoluteDifferences(int[] nums) {
+        //  非递减 有序整数
+        int len = nums.length;
+        int[] result = new int[len];
+        int[] sums = new int[len + 1];
+        int sum = 0;
+        for (int i = 0; i < len; i++) {
+            sum += nums[i];
+            sums[i + 1] = sum;
+        }
+        log.debug("sums:{}", sums);
+        for (int i = 0; i < len; i++) {
+            int num = nums[i];
+            int allsum = 0;
+            // 左边
+            int a = sums[i] - sums[0];
+            result[i] += num * i - a;
+            // 右边
+            int b = sums[len] - sums[i + 1];
+            result[i] += b - num * (len - i - 1);
+        }
+        log.debug("result:{}", result);
+
+        return result;
+    }
+
+    @Test
+    public void getSumAbsoluteDifferences() {
+        int[] nums = {1, 4, 6, 8, 10};
+        log.debug("result:{}", getSumAbsoluteDifferences(nums));
+    }
+
+    /**
+     * 675. 为高尔夫比赛砍树
+     *
+     * <p>你被请来给一个要举办高尔夫比赛的树林砍树。树林由一个 m x n 的矩阵表示， 在这个矩阵中：
+     *
+     * <p>0 表示障碍，无法触碰 1 表示地面，可以行走 比 1 大的数 表示有树的单元格，可以行走，数值表示树的高度
+     * 每一步，你都可以向上、下、左、右四个方向之一移动一个单位，如果你站的地方有一棵树，那么你可以决定是否要砍倒它。
+     *
+     * <p>你需要按照树的高度从低向高砍掉所有的树，每砍过一颗树，该单元格的值变为 1（即变为地面）。
+     *
+     * <p>你将从 (0, 0) 点开始工作，返回你砍完所有树需要走的最小步数。 如果你无法砍完所有的树，返回 -1 。
+     *
+     * <p>可以保证的是，没有两棵树的高度是相同的，并且你至少需要砍倒一棵树。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：forest = [[1,2,3],[0,0,4],[7,6,5]] 输出：6 解释：沿着上面的路径，你可以用 6 步，按从最矮到最高的顺序砍掉这些树。 示例 2：
+     *
+     * <p>输入：forest = [[1,2,3],[0,0,0],[7,6,5]] 输出：-1 解释：由于中间一行被障碍阻塞，无法访问最下面一行中的树。 示例 3：
+     *
+     * <p>输入：forest = [[2,3,4],[0,0,5],[8,7,6]] 输出：6 解释：可以按与示例 1 相同的路径来砍掉所有的树。 (0,0)
+     * 位置的树，可以直接砍去，不用算步数。
+     *
+     * <p>提示：
+     *
+     * <p>m == forest.length n == forest[i].length 1 <= m, n <= 50 0 <= forest[i][j] <= 109
+     *
+     * @param forest
+     * @return
+     */
+    public int cutOffTree(List<List<Integer>> forest) {
+        int m = forest.size(), n = forest.get(0).size();
+        List<CutOffNode> list = new ArrayList<>();
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                int height = forest.get(i).get(j);
+                if (height > 1) {
+                    list.add(new CutOffNode(i, j, height));
+                }
+            }
+        }
+        list.sort(Comparator.comparingInt(a -> a.height));
+        int startRow = 0, startCol = 0;
+        int result = 0;
+        for (CutOffNode node : list) {
+            int d = distBfs(forest, startRow, startCol, node.row, node.col);
+            if (d == -1) {
+                return -1;
+            }
+            result += d;
+            startRow = node.row;
+            startCol = node.col;
+        }
+
+        return result;
+    }
+
+    private int distBfs(
+            List<List<Integer>> forest, int startRow, int startCol, int endRow, int endCol) {
+        int rows = forest.size(), cols = forest.get(0).size();
+        // 广度优先遍历
+        int step = 0;
+        Queue<int[]> queue = new LinkedList<>();
+        queue.offer(new int[] {startRow, startCol});
+        boolean[][] visited = new boolean[rows][cols];
+        visited[startRow][startCol] = true;
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                int[] node = queue.poll();
+                if (node[0] == endRow && node[1] == endCol) {
+                    return step;
+                }
+
+                for (int j = 0; j < 4; j++) {
+                    int row = node[0] + DIR_ROW[j], col = node[1] + DIR_COL[j];
+                    if (inArea(row, col, rows, cols)
+                            && !visited[row][col]
+                            && forest.get(row).get(col) > 0) {
+                        queue.offer(new int[] {row, col});
+                        visited[row][col] = true;
+                    }
+                }
+            }
+            step++;
+        }
+
+        return -1;
+    }
+
+    class CutOffNode {
+        int row, col, height;
+
+        public CutOffNode(int row, int col, int height) {
+            this.row = row;
+            this.col = col;
+            this.height = height;
+        }
+    }
+
+    /**
+     * 5630. 删除子数组的最大得分
+     *
+     * <p>给你一个正整数数组 nums ，请你从中删除一个含有 若干不同元素 的子数组。删除子数组的 得分 就是子数组各元素之 和 。
+     *
+     * <p>返回 只删除一个 子数组可获得的 最大得分 。
+     *
+     * <p>如果数组 b 是数组 a 的一个连续子序列，即如果它等于 a[l],a[l+1],...,a[r] ，那么它就是 a 的一个子数组。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：nums = [4,2,4,5,6] 输出：17 解释：最优子数组是 [2,4,5,6] 示例 2：
+     *
+     * <p>输入：nums = [5,2,1,2,5,2,1,2,5] 输出：8 解释：最优子数组是 [5,2,1] 或 [1,2,5]
+     *
+     * <p>提示：
+     *
+     * <p>1 <= nums.length <= 105 1 <= nums[i] <= 104
+     *
+     * @param nums
+     * @return
+     */
+    public int maximumUniqueSubarray(int[] nums) {
+        Map<Integer, Integer> indexMap = new HashMap<>();
+        int left = 0, len = nums.length;
+        int[] sums = new int[len + 1];
+        int sum = 0;
+        for (int i = 0; i < len; i++) {
+            sum += nums[i];
+            sums[i + 1] = sum;
+        }
+        sum = 0;
+        int max = 0;
+        int preIndex = 0;
+        for (int i = 0; i < len; i++) {
+            int num = nums[i];
+            int lastIndex = indexMap.getOrDefault(num, -1);
+            if (lastIndex >= preIndex) {
+                preIndex = lastIndex + 1;
+            }
+            sum = sums[i + 1] - sums[preIndex];
+            indexMap.put(num, i);
+            max = Math.max(max, sum);
+        }
+
+        return max;
+    }
+    /*public int maximumUniqueSubarray(int[] nums) {
+        int left = 0;
+        int len = nums.length;
+        int sum = nums[0], max = nums[0];
+        Set<Integer> set = new HashSet<>();
+        set.add(nums[0]);
+        for (int right = 1; right < len; right++) {
+            int num = nums[right];
+            // 前后相等
+            if (nums[right] == nums[right - 1]) {
+                left = right;
+                sum = num;
+                max = Math.max(sum,max);
+                continue;
+            }
+            if (set.contains(num)) {
+                sum -= nums[left];
+                left++;
+            }
+            sum += num;
+            set.add(num);
+            max = Math.max(max, sum);
+        }
+        return max;
+    }*/
+
+    @Test
+    public void maximumUniqueSubarray() {
+        int[] nums = {
+            537, 249, 738, 540, 349, 982, 27, 818, 845, 917, 149, 163, 400, 616, 506, 120, 527, 812,
+            52, 764, 970, 217, 328, 549, 806, 684, 62, 860, 580, 334, 302, 756, 53, 707, 279, 800,
+            421, 352, 57, 303, 873, 394, 299, 271, 805, 33, 460, 885, 874, 591, 140, 489, 591, 576,
+            748, 667, 25, 525, 795, 399, 135, 812, 424, 645, 437, 502, 546, 81, 285, 66, 36, 870,
+            514, 90, 489, 525, 690, 977, 701, 373, 350, 642, 46, 660, 361, 628, 362, 177, 820, 655,
+            257, 293, 398, 276, 559, 629, 1000, 858, 54, 961, 154, 719, 162, 645, 789, 927, 320,
+            595, 699, 329, 340, 368, 490, 224, 231, 642, 651, 342, 362, 540, 987, 411, 372, 402, 18,
+            77, 930, 819, 80, 647, 183, 211, 181, 923, 99, 781, 159, 365, 181, 293, 984, 69, 730,
+            653, 41, 107, 79, 620, 115, 771, 156, 766, 448, 190, 738, 589, 558, 186, 15, 467, 706,
+            913, 843, 757, 785, 927, 93, 258, 740, 911, 242, 501, 625, 509, 36, 320, 593, 13, 333,
+            457, 411, 289, 586, 26, 112, 816, 959, 501, 766, 502, 688, 688, 222, 19, 918, 514, 200,
+            176, 833, 568, 950, 18, 369, 714, 578, 782, 646, 621, 177, 527, 209, 790, 666, 817, 191,
+            661, 808, 983, 332, 793, 152, 39, 458, 110, 500, 357, 674, 137, 780, 786, 153, 74, 429,
+            41, 930, 765, 13, 582, 462, 229, 554, 538, 826, 984, 207, 168, 595, 517, 789, 344, 927,
+            910, 8, 99, 688, 549, 505, 295, 432, 795, 702, 639, 665, 277, 261, 51, 793, 717, 545,
+            976, 993, 214, 710, 304, 261, 176, 88, 487, 660, 871, 465, 253, 227, 601, 48, 112, 450,
+            698, 881, 656, 632, 640, 235, 760, 77, 465, 487, 339, 981, 782, 419, 165, 517, 809, 654,
+            33, 651, 462, 628, 894, 736, 916, 540, 136, 537, 35, 27, 352, 805, 18, 777, 911, 23,
+            352, 804, 650, 902, 783, 234, 393, 141, 403, 353, 941, 299, 744, 9, 895, 17, 376, 979,
+            683, 806, 704, 31, 801, 958, 548, 776, 557, 897, 792, 798, 520, 797, 264, 713, 214, 466,
+            864, 992, 626, 209, 97, 977, 64, 529, 118, 876, 617, 643, 272, 211, 936, 685, 212, 63,
+            471, 58, 654, 145, 471, 742, 623, 848, 245, 368, 290, 636, 356, 850, 382, 994, 45, 554,
+            376, 732, 225, 456, 89, 518, 439, 564, 786, 286, 856, 963, 831, 341, 147, 131, 915, 833,
+            534, 20, 982, 372, 938, 966, 966, 746, 577, 860, 539, 960, 767, 755, 479, 502, 16, 370,
+            442, 602, 913, 21, 956, 558, 431, 446, 41, 828, 763, 351, 545, 805, 869, 820, 398, 337,
+            215, 981, 488, 493, 313, 191, 464, 585, 247, 445, 976, 667, 271, 169, 768, 207, 46, 117,
+            947, 467, 678, 602, 42, 124, 388, 173, 514, 576, 271, 812, 17, 277, 34, 650, 417, 609,
+            902, 800, 430, 363, 367, 294, 433, 547, 986, 395, 9, 79, 330, 880, 647, 907, 473, 335,
+            440, 825, 176, 250, 327, 69, 338, 233, 975, 463, 215, 960, 764, 296, 227, 727, 297, 253,
+            468, 672, 226, 710, 335, 770, 241, 886, 155, 870, 293, 92, 985, 297, 212, 303, 32, 150,
+            309, 112, 71, 954, 810, 623, 953, 554, 776, 965, 486, 953, 412, 580, 554, 802, 757, 587,
+            504, 560, 728, 525, 918, 303, 773, 851, 507, 718, 775, 47, 435, 150, 873, 90, 989, 661,
+            894, 802, 566, 762, 808, 225, 707, 278, 20, 857, 900, 604, 756, 631, 181, 608, 167, 189,
+            855, 249, 800, 352, 869, 66, 133, 445, 178, 7, 891, 475, 22, 531, 686, 470, 623, 743,
+            565, 364, 351, 164, 428, 784, 216, 251, 585, 422, 16, 765, 998, 784, 744, 489, 842, 80,
+            259, 944, 347, 703, 766, 658, 337, 843, 368, 40, 133, 624, 99, 722, 524, 667, 323, 137,
+            655, 603, 796, 921, 26, 321, 546, 948, 352, 624, 480, 557, 192, 755, 183, 849, 842, 926,
+            852, 204, 665, 963, 462, 594, 991, 131, 18, 148, 908, 523, 239, 290, 82, 247, 770, 576,
+            534, 349, 662, 956, 283, 678, 914, 274, 524, 365, 273
+        };
+        // int[] nums = {4, 2, 4, 5, 6};
+        logResult(maximumUniqueSubarray(nums));
+    }
 }
