@@ -7236,4 +7236,135 @@ public class DynamicPlanTest {
         }
         return Math.max(0, dp[0][0]);
     }
+
+    /**
+     * 691. 贴纸拼词
+     *
+     * <p>我们给出了 N 种不同类型的贴纸。每个贴纸上都有一个小写的英文单词。
+     *
+     * <p>你希望从自己的贴纸集合中裁剪单个字母并重新排列它们，从而拼写出给定的目标字符串 target。
+     *
+     * <p>如果你愿意的话，你可以不止一次地使用每一张贴纸，而且每一张贴纸的数量都是无限的。
+     *
+     * <p>拼出目标 target 所需的最小贴纸数量是多少？如果任务不可能，则返回 -1。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：
+     *
+     * <p>["with", "example", "science"], "thehat" 输出：
+     *
+     * <p>3 解释：
+     *
+     * <p>我们可以使用 2 个 "with" 贴纸，和 1 个 "example" 贴纸。 把贴纸上的字母剪下来并重新排列后，就可以形成目标 “thehat“ 了。
+     * 此外，这是形成目标字符串所需的最小贴纸数量。 示例 2：
+     *
+     * <p>输入：
+     *
+     * <p>["notice", "possible"], "basicbasic" 输出：
+     *
+     * <p>-1 解释：
+     *
+     * <p>我们不能通过剪切给定贴纸的字母来形成目标“basicbasic”。
+     *
+     * <p>提示：
+     *
+     * <p>stickers 长度范围是 [1, 50]。 stickers 由小写英文单词组成（不带撇号）。 target 的长度在 [1, 15] 范围内，由小写字母组成。
+     * 在所有的测试案例中，所有的单词都是从 1000 个最常见的美国英语单词中随机选取的，目标是两个随机单词的串联。 时间限制可能比平时更具挑战性。预计 50
+     * 个贴纸的测试案例平均可在35ms内解决。
+     *
+     * @param stickers
+     * @param target
+     * @return
+     */
+    public int minStickers(String[] stickers, String target) {
+        int n = stickers.length, len = target.length();
+        // 每个字符 用 0 1 状态表示
+        int m = 1 << len;
+        int[] dp = new int[m];
+        Arrays.fill(dp, -1);
+        dp[0] = 0;
+        for (String sticker : stickers) {
+            for (int status = 0; status < m; status++) {
+                if (dp[status] == -1) {
+                    continue;
+                }
+                int curStatus = status;
+                for (char c : sticker.toCharArray()) {
+                    for (int i = 0; i < target.length(); i++) {
+                        if (c == target.charAt(i) && (curStatus & (1 << i)) == 0) {
+                            curStatus |= 1 << i;
+                            break;
+                        }
+                    }
+                }
+                dp[curStatus] =
+                        dp[curStatus] == -1
+                                ? dp[status] + 1
+                                : Math.min(dp[curStatus], dp[status] + 1);
+            }
+        }
+
+        return dp[m - 1];
+    }
+
+    /**
+     * 1706. 球会落何处
+     *
+     * <p>用一个大小为 m x n 的二维网格 grid 表示一个箱子。你有 n 颗球。箱子的顶部和底部都是开着的。
+     *
+     * <p>箱子中的每个单元格都有一个对角线挡板，跨过单元格的两个角，可以将球导向左侧或者右侧。
+     *
+     * <p>将球导向右侧的挡板跨过左上角和右下角，在网格中用 1 表示。 将球导向左侧的挡板跨过右上角和左下角，在网格中用 -1 表示。
+     * 在箱子每一列的顶端各放一颗球。每颗球都可能卡在箱子里或从底部掉出来。如果球恰好卡在两块挡板之间的 "V" 形图案，或者被一块挡导向到箱子的任意一侧边上，就会卡住。
+     *
+     * <p>返回一个大小为 n 的数组 answer ，其中 answer[i] 是球放在顶部的第 i 列后从底部掉出来的那一列对应的下标，如果球卡在盒子里，则返回 -1 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：grid = [[1,1,1,-1,-1],[1,1,1,-1,-1],[-1,-1,-1,1,1],[1,1,1,1,-1],[-1,-1,-1,-1,-1]]
+     * 输出：[1,-1,-1,-1,-1] 解释：示例如图： b0 球开始放在第 0 列上，最终从箱子底部第 1 列掉出。 b1 球开始放在第 1 列上，会卡在第 2、3 列和第 1 行之间的
+     * "V" 形里。 b2 球开始放在第 2 列上，会卡在第 2、3 列和第 0 行之间的 "V" 形里。 b3 球开始放在第 3 列上，会卡在第 2、3 列和第 0 行之间的 "V" 形里。
+     * b4 球开始放在第 4 列上，会卡在第 2、3 列和第 1 行之间的 "V" 形里。 示例 2：
+     *
+     * <p>输入：grid = [[-1]] 输出：[-1] 解释：球被卡在箱子左侧边上。
+     *
+     * <p>提示：
+     *
+     * <p>m == grid.length n == grid[i].length 1 <= m, n <= 100 grid[i][j] 为 1 或 -1
+     *
+     * @param grid
+     * @return
+     */
+    public int[] findBall(int[][] grid) {
+        int m = grid.length, n = grid[0].length;
+        int[] result = new int[n];
+
+        // 默认位置
+        for (int i = 0; i < n; i++) {
+            result[i] = i;
+        }
+
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (result[j] == -1) {
+                    continue;
+                }
+                // 右移
+                if (grid[i][result[i]] == 1 && result[i] + 1 < n && grid[i][result[i] + 1] == 1) {
+                    result[j]++;
+                } else if (grid[i][result[i]] == -1
+                        && result[i] - 1 >= 0
+                        && grid[i][result[i] - 1] == -1) {
+                    // 左移
+                    result[j]--;
+                } else {
+                    // 卡住
+                    result[j] = -1;
+                }
+            }
+        }
+
+        return result;
+    }
 }
