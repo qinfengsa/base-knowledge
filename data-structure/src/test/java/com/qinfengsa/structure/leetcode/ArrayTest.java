@@ -22639,4 +22639,119 @@ public class ArrayTest {
             return o.next.size() - this.next.size();
         }
     }
+
+    /**
+     * 5642. 大餐计数
+     *
+     * <p>大餐 是指 恰好包含两道不同餐品 的一餐，其美味程度之和等于 2 的幂。
+     *
+     * <p>你可以搭配 任意 两道餐品做一顿大餐。
+     *
+     * <p>给你一个整数数组 deliciousness ，其中 deliciousness[i] 是第 i​​​​​​​​​​​​​​ 道餐品的美味程度，返回你可以用数组中的餐品做出的不同
+     * 大餐 的数量。结果需要对 109 + 7 取余。
+     *
+     * <p>注意，只要餐品下标不同，就可以认为是不同的餐品，即便它们的美味程度相同。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：deliciousness = [1,3,5,7,9] 输出：4 解释：大餐的美味程度组合为 (1,3) 、(1,7) 、(3,5) 和 (7,9) 。
+     * 它们各自的美味程度之和分别为 4 、8 、8 和 16 ，都是 2 的幂。 示例 2：
+     *
+     * <p>输入：deliciousness = [1,1,1,3,3,3,7] 输出：15 解释：大餐的美味程度组合为 3 种 (1,1) ，9 种 (1,3) ，和 3 种 (1,7) 。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= deliciousness.length <= 105 0 <= deliciousness[i] <= 220
+     *
+     * @param deliciousness
+     * @return
+     */
+    public int countPairs(int[] deliciousness) {
+        // 2的0 次幂 到 2的20次幂
+        int[] nums = {
+            1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536,
+            131072, 262144, 524288, 1048576, 2097152
+        };
+        long result = 0;
+        int len = deliciousness.length;
+        Map<Integer, Integer> countMap = new HashMap<>();
+
+        for (int num : deliciousness) {
+
+            // 为什么是21？ 因为数字最大为2^20, 2^20 + 2^20 = 2^21为可能的最大值，不可能再大啦！
+            for (int i = 0; i <= 21; i++) {
+                int powerOfTwo = nums[i];
+                if (powerOfTwo >= num && countMap.containsKey(powerOfTwo - num)) {
+                    result += countMap.get(powerOfTwo - num);
+                    result %= MOD;
+                }
+            }
+            countMap.put(num, countMap.getOrDefault(num, 0) + 1);
+        }
+
+        return (int) result;
+    }
+
+    @Test
+    public void countPairs() {
+        int[] deliciousness = {1, 1, 1, 3, 3, 3, 7};
+        logResult(countPairs(deliciousness));
+    }
+
+    /**
+     * 5643. 将数组分成三个子数组的方案数
+     *
+     * <p>我们称一个分割整数数组的方案是 好的 ，当它满足：
+     *
+     * <p>数组被分成三个 非空 连续子数组，从左至右分别命名为 left ， mid ， right 。 left 中元素和小于等于 mid 中元素和，mid 中元素和小于等于 right
+     * 中元素和。 给你一个 非负 整数数组 nums ，请你返回 好的 分割 nums 方案数目。由于答案可能会很大，请你将结果对 109 + 7 取余后返回。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：nums = [1,1,1] 输出：1 解释：唯一一种好的分割方案是将 nums 分成 [1] [1] [1] 。 示例 2：
+     *
+     * <p>输入：nums = [1,2,2,2,5,0] 输出：3 解释：nums 总共有 3 种好的分割方案： [1] [2] [2,2,5,0] [1] [2,2] [2,5,0]
+     * [1,2] [2,2] [5,0] 示例 3：
+     *
+     * <p>输入：nums = [3,2,1] 输出：0 解释：没有好的分割方案。
+     *
+     * <p>提示：
+     *
+     * <p>3 <= nums.length <= 105 0 <= nums[i] <= 104
+     *
+     * @param nums
+     * @return
+     */
+    public int waysToSplit(int[] nums) {
+        int len = nums.length;
+        int[] sums = new int[len + 1];
+        int sum = 0;
+        for (int i = 0; i < len; i++) {
+            sum += nums[i];
+            sums[i + 1] = sum;
+        }
+
+        int result = 0;
+        int left = 2, right = 2;
+        for (int i = 2; i <= len - 1; i++) {
+            left = Math.max(left, i);
+            right = Math.max(right, i);
+            while (right + 1 < len
+                    && sums[len] - sums[right + 1] >= sums[right + 1] - sums[i - 1]) {
+                right++;
+            }
+            while (left < len && sums[left] - sums[i - 1] < sums[i - 1]) {
+                left++;
+            }
+            if (right < len
+                    && left <= right
+                    && sums[left] - sums[i - 1] >= sums[i - 1]
+                    && sums[len] - sums[right] >= sums[right] - sums[i - 1]) {
+                result += right - left + 1;
+                result %= MOD;
+            }
+        }
+
+        return result;
+    }
 }

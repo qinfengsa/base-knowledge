@@ -2603,4 +2603,127 @@ public class GreedyTest {
         int k = 3;
         logResult(maxResult(nums, k));
     }
+
+    /**
+     * 757. 设置交集大小至少为2
+     *
+     * <p>一个整数区间 [a, b] ( a < b ) 代表着从 a 到 b 的所有连续整数，包括 a 和 b。
+     *
+     * <p>给你一组整数区间intervals，请找到一个最小的集合 S，使得 S 里的元素与区间intervals中的每一个整数区间都至少有2个元素相交。
+     *
+     * <p>输出这个最小集合S的大小。
+     *
+     * <p>示例 1:
+     *
+     * <p>输入: intervals = [[1, 3], [1, 4], [2, 5], [3, 5]] 输出: 3 解释: 考虑集合 S = {2, 3, 4}.
+     * S与intervals中的四个区间都有至少2个相交的元素。 且这是S最小的情况，故我们输出3。 示例 2:
+     *
+     * <p>输入: intervals = [[1, 2], [2, 3], [2, 4], [4, 5]] 输出: 5 解释: 最小的集合S = {1, 2, 3, 4, 5}. 注意:
+     *
+     * <p>intervals 的长度范围为[1, 3000]。 intervals[i] 长度为 2，分别代表左、右边界。 intervals[i][j] 的值是 [0,
+     * 10^8]范围内的整数。
+     *
+     * @param intervals
+     * @return
+     */
+    public int intersectionSizeTwo(int[][] intervals) {
+        int result = 0;
+        // 起点升序 终点降序
+        Arrays.sort(intervals, (a, b) -> a[0] == b[0] ? a[1] - b[1] : b[0] - a[0]);
+        logResult(intervals);
+        // 假设前一个区间为[a1,b1]，与集合的交集是min1,min2，保证min1 < min2,接下来要处理的区间是[a2,b2]。 有以下几种情况：
+        // 1、a2 <= min1 < min2 <= b2,min1、min2都在[a2,b2]内部，不需要更新。
+        // 2、a2 <= min1 <= b2 < min2,min1在[a2,b2]内部，更新min2。
+        // 3、min1 < a2 <= min2 <= b2,,min2在[a2,b2]内部，更新min1。
+        // 4、min1、min2不在[a2,b2]内部，同时更新min1、min2。
+        // 关键点：更新的时候需要保证min1 < min2
+        int min1 = Integer.MAX_VALUE, min2 = Integer.MAX_VALUE;
+        for (int[] interval : intervals) {
+
+            if (interval[0] <= min1
+                    && min1 <= interval[1]
+                    && interval[0] <= min2
+                    && min2 <= interval[1]) {
+                continue;
+            } else if (interval[0] <= min1 && min1 <= interval[1]) {
+                result++;
+                if (min1 == interval[0]) {
+                    min2 = interval[0] + 1;
+                } else {
+                    min2 = min1;
+                    min1 = interval[0];
+                }
+            } else if (interval[0] <= min2 && min2 <= interval[1]) {
+                result++;
+                if (min2 == interval[0]) {
+                    min1 = interval[0];
+                    min2 = interval[0] + 1;
+                } else {
+                    min1 = interval[0];
+                }
+            } else {
+                result += 2;
+                min1 = interval[0];
+                min2 = interval[0] + 1;
+            }
+            log.debug("min1 {} min2 {}", min1, min2);
+        }
+
+        return result;
+    }
+
+    @Test
+    public void intersectionSizeTwo() {
+        int[][] intervals = {{1, 3}, {1, 4}, {2, 5}, {3, 5}};
+        logResult(intersectionSizeTwo(intervals));
+    }
+
+    /**
+     * 5641. 卡车上的最大单元数
+     *
+     * <p>请你将一些箱子装在 一辆卡车 上。给你一个二维数组 boxTypes ，其中 boxTypes[i] = [numberOfBoxesi,
+     * numberOfUnitsPerBoxi] ：
+     *
+     * <p>numberOfBoxesi 是类型 i 的箱子的数量。 numberOfUnitsPerBoxi 是类型 i 每个箱子可以装载的单元数量。 整数 truckSize
+     * 表示卡车上可以装载 箱子 的 最大数量 。只要箱子数量不超过 truckSize ，你就可以选择任意箱子装到卡车上。
+     *
+     * <p>返回卡车可以装载 单元 的 最大 总数。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：boxTypes = [[1,3],[2,2],[3,1]], truckSize = 4 输出：8 解释：箱子的情况如下： - 1 个第一类的箱子，里面含 3 个单元。 -
+     * 2 个第二类的箱子，每个里面含 2 个单元。 - 3 个第三类的箱子，每个里面含 1 个单元。 可以选择第一类和第二类的所有箱子，以及第三类的一个箱子。 单元总数 = (1 * 3) +
+     * (2 * 2) + (1 * 1) = 8 示例 2：
+     *
+     * <p>输入：boxTypes = [[5,10],[2,5],[4,7],[3,9]], truckSize = 10 输出：91
+     *
+     * <p>提示：
+     *
+     * <p>1 <= boxTypes.length <= 1000 1 <= numberOfBoxesi, numberOfUnitsPerBoxi <= 1000 1 <=
+     * truckSize <= 106
+     *
+     * @param boxTypes
+     * @param truckSize
+     * @return
+     */
+    public int maximumUnits(int[][] boxTypes, int truckSize) {
+        int result = 0;
+        Arrays.sort(boxTypes, (a, b) -> b[1] - a[1]);
+        int idx = 0, len = boxTypes.length;
+        logResult(boxTypes);
+        while (idx < len && truckSize > 0) {
+            int[] box = boxTypes[idx];
+            result += Math.min(box[0], truckSize) * box[1];
+            truckSize -= box[0];
+            idx++;
+        }
+        return result;
+    }
+
+    @Test
+    public void maximumUnits() {
+        int[][] boxTypes = {{1, 3}, {2, 2}, {3, 1}};
+        int truckSize = 4;
+        logResult(maximumUnits(boxTypes, truckSize));
+    }
 }
