@@ -1936,4 +1936,51 @@ public class ListTest {
 
         return head.next;
     }
+
+    /**
+     * 5652. 交换链表中的节点
+     *
+     * <p>给你链表的头节点 head 和一个整数 k 。
+     *
+     * <p>交换 链表正数第 k 个节点和倒数第 k 个节点的值后，返回链表的头节点（链表 从 1 开始索引）。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：head = [1,2,3,4,5], k = 2 输出：[1,4,3,2,5] 示例 2：
+     *
+     * <p>输入：head = [7,9,6,6,7,8,3,0,9,5], k = 5 输出：[7,9,6,6,8,7,3,0,9,5] 示例 3：
+     *
+     * <p>输入：head = [1], k = 1 输出：[1] 示例 4：
+     *
+     * <p>输入：head = [1,2], k = 1 输出：[2,1] 示例 5：
+     *
+     * <p>输入：head = [1,2,3], k = 2 输出：[1,2,3]
+     *
+     * <p>提示：
+     *
+     * <p>链表中节点的数目是 n 1 <= k <= n <= 105 0 <= Node.val <= 100
+     *
+     * @param head
+     * @param k
+     * @return
+     */
+    public ListNode swapNodes(ListNode head, int k) {
+
+        // 快慢指针
+        ListNode fast = head, slow = head;
+        for (int i = 1; i < k; i++) {
+            fast = fast.next;
+        }
+        ListNode node1 = fast;
+        while (Objects.nonNull(fast.next)) {
+            fast = fast.next;
+            slow = slow.next;
+        }
+
+        ListNode node2 = slow;
+        int tmp = node1.val;
+        node1.val = node2.val;
+        node2.val = tmp;
+        return head;
+    }
 }
