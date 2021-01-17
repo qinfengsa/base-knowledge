@@ -1,5 +1,7 @@
 package com.qinfengsa.structure.leetcode;
 
+import static com.qinfengsa.structure.util.LogUtils.logResult;
+
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
@@ -7,6 +9,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
@@ -406,5 +409,173 @@ public class Array2Test {
         }
 
         return stack.size();
+    }
+
+    /**
+     * 5653. 可以形成最大正方形的矩形数目
+     *
+     * <p>给你一个数组 rectangles ，其中 rectangles[i] = [li, wi] 表示第 i 个矩形的长度为 li 、宽度为 wi 。
+     *
+     * <p>如果存在 k 同时满足 k <= li 和 k <= wi ，就可以将第 i 个矩形切成边长为 k 的正方形。例如，矩形 [4,6] 可以切成边长最大为 4 的正方形。
+     *
+     * <p>设 maxLen 为可以从矩形数组 rectangles 切分得到的 最大正方形 的边长。
+     *
+     * <p>返回可以切出边长为 maxLen 的正方形的矩形 数目 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：rectangles = [[5,8],[3,9],[5,12],[16,5]] 输出：3 解释：能从每个矩形中切出的最大正方形边长分别是 [5,3,5,5] 。
+     * 最大正方形的边长为 5 ，可以由 3 个矩形切分得到。 示例 2：
+     *
+     * <p>输入：rectangles = [[2,3],[3,7],[4,3],[3,7]] 输出：3
+     *
+     * <p>提示：
+     *
+     * <p>1 <= rectangles.length <= 1000 rectangles[i].length == 2 1 <= li, wi <= 109 li != wi
+     *
+     * @param rectangles
+     * @return
+     */
+    public int countGoodRectangles(int[][] rectangles) {
+        int maxLen = 0, count = 0;
+        for (int[] rectangle : rectangles) {
+            int len = Math.min(rectangle[0], rectangle[1]);
+            if (len > maxLen) {
+                maxLen = len;
+                count = 1;
+            } else if (len == maxLen) {
+                count++;
+            }
+        }
+
+        return count;
+    }
+
+    /**
+     * 5243. 同积元组
+     *
+     * <p>给你一个由 不同 正整数组成的数组 nums ，请你返回满足 a * b = c * d 的元组 (a, b, c, d) 的数量。其中 a、b、c 和 d 都是 nums
+     * 中的元素，且 a != b != c != d 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：nums = [2,3,4,6] 输出：8 解释：存在 8 个满足题意的元组： (2,6,3,4) , (2,6,4,3) , (6,2,3,4) , (6,2,4,3)
+     * (3,4,2,6) , (3,4,2,6) , (3,4,6,2) , (4,3,6,2) 示例 2：
+     *
+     * <p>输入：nums = [1,2,4,5,10] 输出：16 解释：存在 16 个满足题意的元组： (1,10,2,5) , (1,10,5,2) , (10,1,2,5) ,
+     * (10,1,5,2) (2,5,1,10) , (2,5,10,1) , (5,2,1,10) , (5,2,10,1) (2,10,4,5) , (2,10,5,4) ,
+     * (10,2,4,5) , (10,2,4,5) (4,5,2,10) , (4,5,10,2) , (5,4,2,10) , (5,4,10,2) 示例 3：
+     *
+     * <p>输入：nums = [2,3,4,6,8,12] 输出：40 示例 4：
+     *
+     * <p>输入：nums = [2,3,5,7] 输出：0
+     *
+     * <p>提示：
+     *
+     * <p>1 <= nums.length <= 1000 1 <= nums[i] <= 104 nums 中的所有元素 互不相同
+     *
+     * @param nums
+     * @return
+     */
+    public int tupleSameProduct(int[] nums) {
+        Map<Integer, Integer> tupleMap = new HashMap<>();
+        int len = nums.length;
+        for (int i = 0; i < len; i++) {
+            for (int j = i + 1; j < len; j++) {
+                int mult = nums[i] * nums[j];
+                int count = tupleMap.getOrDefault(mult, 0);
+                tupleMap.put(mult, count + 1);
+            }
+        }
+        int result = 0;
+        for (int v : tupleMap.values()) {
+            if (v > 1) {
+                result += 4 * v * (v - 1);
+            }
+        }
+        return result;
+    }
+
+    @Test
+    public void tupleSameProduct() {
+        int[] nums = {2, 3, 4, 6, 8, 12};
+        logResult(tupleSameProduct(nums));
+    }
+
+    /**
+     * 5655. 重新排列后的最大子矩阵
+     *
+     * <p>给你一个二进制矩阵 matrix ，它的大小为 m x n ，你可以将 matrix 中的 列 按任意顺序重新排列。
+     *
+     * <p>请你返回最优方案下将 matrix 重新排列后，全是 1 的子矩阵面积。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：matrix = [[0,0,1],[1,1,1],[1,0,1]] 输出：4 解释：你可以按照上图方式重新排列矩阵的每一列。 最大的全 1 子矩阵是上图中加粗的部分，面积为
+     * 4 。 示例 2：
+     *
+     * <p>输入：matrix = [[1,0,1,0,1]] 输出：3 解释：你可以按照上图方式重新排列矩阵的每一列。 最大的全 1 子矩阵是上图中加粗的部分，面积为 3 。 示例 3：
+     *
+     * <p>输入：matrix = [[1,1,0],[1,0,1]] 输出：2 解释：由于你只能整列整列重新排布，所以没有比面积为 2 更大的全 1 子矩形。 示例 4：
+     *
+     * <p>输入：matrix = [[0,0],[0,0]] 输出：0 解释：由于矩阵中没有 1 ，没有任何全 1 的子矩阵，所以面积为 0 。
+     *
+     * <p>提示：
+     *
+     * <p>m == matrix.length n == matrix[i].length 1 <= m * n <= 105 matrix[i][j] 要么是 0 ，要么是 1 。
+     *
+     * @param matrix
+     * @return
+     */
+    public int largestSubmatrix(int[][] matrix) {
+        int m = matrix.length, n = matrix[0].length;
+        int result = 0;
+        TreeMap<Integer, Integer> treeMap;
+        for (int i = 0; i < m; i++) {
+            treeMap = new TreeMap<>();
+            for (int j = 0; j < n; j++) {
+                if (matrix[i][j] == 1) {
+                    if (i > 0) {
+                        matrix[i][j] += matrix[i - 1][j];
+                    }
+                    int len = matrix[i][j];
+                    int count = treeMap.getOrDefault(len, 0);
+                    treeMap.put(len, count + 1);
+                }
+            }
+            int count = 0;
+            for (Map.Entry<Integer, Integer> entry : treeMap.descendingMap().entrySet()) {
+                count += entry.getValue();
+                result = Math.max(result, count * entry.getKey());
+            }
+        }
+        logResult(matrix);
+
+        return result;
+    }
+
+    @Test
+    public void largestSubmatrix() {
+        int[][] matrix = {
+            {0, 1, 1, 1, 0, 1, 1, 1, 0},
+            {1, 1, 0, 1, 1, 1, 1, 1, 1},
+            {1, 1, 1, 1, 0, 1, 1, 0, 1},
+            {1, 1, 1, 1, 1, 1, 0, 1, 0},
+            {1, 1, 1, 1, 1, 1, 1, 1, 0},
+            {1, 1, 1, 1, 1, 1, 1, 1, 1},
+            {1, 1, 1, 0, 1, 1, 0, 1, 1},
+            {1, 1, 1, 1, 1, 0, 0, 1, 1},
+            {1, 1, 0, 1, 1, 1, 1, 1, 1},
+            {1, 1, 1, 1, 1, 1, 1, 0, 1},
+            {1, 1, 1, 1, 1, 1, 1, 1, 1},
+            {1, 0, 1, 1, 0, 1, 0, 1, 1},
+            {1, 1, 1, 1, 1, 1, 1, 1, 1},
+            {1, 0, 0, 1, 1, 1, 1, 1, 1},
+            {1, 1, 1, 1, 0, 1, 1, 0, 1},
+            {1, 1, 0, 0, 0, 1, 1, 1, 1},
+            {0, 1, 0, 0, 1, 1, 1, 1, 1},
+            {1, 1, 1, 1, 1, 0, 1, 1, 1}
+        };
+        logResult(largestSubmatrix(matrix));
     }
 }
