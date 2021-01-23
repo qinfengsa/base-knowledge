@@ -5,10 +5,12 @@ import static com.qinfengsa.structure.util.LogUtils.logResult;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -577,5 +579,170 @@ public class Array2Test {
             {1, 1, 1, 1, 1, 0, 1, 1, 1}
         };
         logResult(largestSubmatrix(matrix));
+    }
+
+    /**
+     * 5645. 找到最高海拔
+     *
+     * <p>有一个自行车手打算进行一场公路骑行，这条路线总共由 n + 1 个不同海拔的点组成。自行车手从海拔为 0 的点 0 开始骑行。
+     *
+     * <p>给你一个长度为 n 的整数数组 gain ，其中 gain[i] 是点 i 和点 i + 1 的 净海拔高度差（0 <= i < n）。请你返回 最高点的海拔 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：gain = [-5,1,5,0,-7] 输出：1 解释：海拔高度依次为 [0,-5,-4,1,1,-6] 。最高海拔为 1 。 示例 2：
+     *
+     * <p>输入：gain = [-4,-3,-2,-1,4,3,2] 输出：0 解释：海拔高度依次为 [0,-4,-7,-9,-10,-6,-3,-1] 。最高海拔为 0 。
+     *
+     * <p>提示：
+     *
+     * <p>n == gain.length 1 <= n <= 100 -100 <= gain[i] <= 100
+     *
+     * @param gain
+     * @return
+     */
+    public int largestAltitude(int[] gain) {
+        int result = 0, max = 0;
+        for (int g : gain) {
+            result += g;
+            max = Math.max(result, max);
+        }
+
+        return max;
+    }
+
+    /**
+     * 5646. 需要教语言的最少人数
+     *
+     * <p>在一个由 m 个用户组成的社交网络里，我们获取到一些用户之间的好友关系。两个用户之间可以相互沟通的条件是他们都掌握同一门语言。
+     *
+     * <p>给你一个整数 n ，数组 languages 和数组 friendships ，它们的含义如下：
+     *
+     * <p>总共有 n 种语言，编号从 1 到 n 。 languages[i] 是第 i 位用户掌握的语言集合。 friendships[i] = [ui, vi] 表示 ui 和 vi
+     * 为好友关系。 你可以选择 一门 语言并教会一些用户，使得所有好友之间都可以相互沟通。请返回你 最少 需要教会多少名用户。
+     *
+     * <p>请注意，好友关系没有传递性，也就是说如果 x 和 y 是好友，且 y 和 z 是好友， x 和 z 不一定是好友。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：n = 2, languages = [[1],[2],[1,2]], friendships = [[1,2],[1,3],[2,3]] 输出：1 解释：你可以选择教用户
+     * 1 第二门语言，也可以选择教用户 2 第一门语言。 示例 2：
+     *
+     * <p>输入：n = 3, languages = [[2],[1,3],[1,2],[3]], friendships = [[1,4],[1,2],[3,4],[2,3]] 输出：2
+     * 解释：教用户 1 和用户 2 第三门语言，需要教 2 名用户。
+     *
+     * <p>提示：
+     *
+     * <p>2 <= n <= 500 languages.length == m 1 <= m <= 500 1 <= languages[i].length <= n 1 <=
+     * languages[i][j] <= n 1 <= ui < vi <= languages.length 1 <= friendships.length <= 500 所有的好友关系
+     * (ui, vi) 都是唯一的。 languages[i] 中包含的值互不相同。
+     *
+     * @param n
+     * @param languages
+     * @param friendships
+     * @return
+     */
+    public int minimumTeachings(int n, int[][] languages, int[][] friendships) {
+
+        int max = 0;
+        // 语言 -> 用户
+        Map<Integer, Set<Integer>> langUser = new HashMap<>();
+
+        Set<Integer> noFriends = new HashSet<>();
+        for (int[] friend : friendships) {
+            // 判断两个人是否可以沟通
+            if (!sameLanguage(friend[0], friend[1], languages)) {
+                noFriends.add(friend[0]);
+                noFriends.add(friend[1]);
+                for (int ulang : languages[friend[0] - 1]) {
+                    Set<Integer> userSet = langUser.computeIfAbsent(ulang, k -> new HashSet<>());
+                    userSet.add(friend[0]);
+                    max = Math.max(max, userSet.size());
+                }
+                for (int vlang : languages[friend[1] - 1]) {
+                    Set<Integer> userSet = langUser.computeIfAbsent(vlang, k -> new HashSet<>());
+                    userSet.add(friend[1]);
+                    max = Math.max(max, userSet.size());
+                }
+            }
+        }
+        log.debug("noLang:{}", noFriends.size());
+        log.debug("max:{}", max);
+
+        return noFriends.size() - max;
+    }
+
+    private boolean sameLanguage(int u, int v, int[][] languages) {
+        for (int ulang : languages[u - 1]) {
+            for (int vlang : languages[v - 1]) {
+                if (ulang == vlang) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    @Test
+    public void minimumTeachings() {
+        int n = 3;
+        int[][] languages = {{2}, {1, 3}, {1, 2}, {3}},
+                friendships = {{1, 4}, {1, 2}, {3, 4}, {2, 3}};
+        logResult(minimumTeachings(n, languages, friendships));
+    }
+
+    /**
+     * 5647. 解码异或后的排列
+     *
+     * <p>给你一个整数数组 perm ，它是前 n 个正整数的排列，且 n 是个 奇数 。
+     *
+     * <p>它被加密成另一个长度为 n - 1 的整数数组 encoded ，满足 encoded[i] = perm[i] XOR perm[i + 1] 。比方说，如果 perm =
+     * [1,3,2] ，那么 encoded = [2,1] 。
+     *
+     * <p>给你 encoded 数组，请你返回原始数组 perm 。题目保证答案存在且唯一。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：encoded = [3,1] 输出：[1,2,3] 解释：如果 perm = [1,2,3] ，那么 encoded = [1 XOR 2,2 XOR 3] = [3,1]
+     * 示例 2：
+     *
+     * <p>输入：encoded = [6,5,4,6] 输出：[2,4,1,5,3]
+     *
+     * <p>提示：
+     *
+     * <p>3 <= n < 105 n 是奇数。 encoded.length == n - 1
+     *
+     * @param encoded
+     * @return
+     */
+    public int[] decode(int[] encoded) {
+        int n = encoded.length + 1;
+        int[] result = new int[n];
+        // a b c d e
+        // encoded = [6,5,4,6] 输出：[2,4,1,5,3]
+        // 先算 b ^ c ^ d ^ e = 5 ^ 6 ;
+        int sum = 0;
+        for (int i = 1; i <= n; i++) {
+            sum ^= i;
+        }
+        int right = 0;
+        for (int i = 1; i < encoded.length; i += 2) {
+            right ^= encoded[i];
+        }
+        int first = sum ^ right;
+        result[0] = first;
+        for (int i = 0; i < encoded.length; i++) {
+
+            result[i + 1] = result[i] ^ encoded[i];
+        }
+
+        return result;
+    }
+
+    @Test
+    public void decode() {
+        int[] encoded = {3, 1};
+        int[] result = decode(encoded);
+        log.debug("result:{}", result);
     }
 }
