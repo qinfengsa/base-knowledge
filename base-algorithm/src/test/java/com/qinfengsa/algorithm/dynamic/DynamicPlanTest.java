@@ -7429,4 +7429,86 @@ public class DynamicPlanTest {
 
         return dp[0][len - 1];
     }
+
+    /**
+     * 1074. 元素和为目标值的子矩阵数量
+     *
+     * <p>给出矩阵 matrix 和目标值 target，返回元素总和等于目标值的非空子矩阵的数量。
+     *
+     * <p>子矩阵 x1, y1, x2, y2 是满足 x1 <= x <= x2 且 y1 <= y <= y2 的所有单元 matrix[x][y] 的集合。
+     *
+     * <p>如果 (x1, y1, x2, y2) 和 (x1', y1', x2', y2') 两个子矩阵中部分坐标不同（如：x1 != x1'），那么这两个子矩阵也不同。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：matrix = [[0,1,0],[1,1,1],[0,1,0]], target = 0 输出：4
+     *
+     * <p>解释：四个只含 0 的 1x1 子矩阵。
+     *
+     * <p>示例 2：
+     *
+     * <p>输入：matrix = [[1,-1],[-1,1]], target = 0 输出：5
+     *
+     * <p>解释：两个 1x2 子矩阵，加上两个 2x1 子矩阵，再加上一个 2x2 子矩阵。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= matrix.length <= 300 1 <= matrix[0].length <= 300 -1000 <= matrix[i] <= 1000 -10^8 <=
+     * target <= 10^8
+     *
+     * @param matrix
+     * @param target
+     * @return
+     */
+    public int numSubmatrixSumTarget(int[][] matrix, int target) {
+        int rows = matrix.length, cols = matrix[0].length;
+
+        int[][] sums = new int[rows][cols];
+
+        // 先计算每一行的前缀和
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                sums[i][j] = matrix[i][j];
+                if (j > 0) {
+                    sums[i][j] += sums[i][j - 1];
+                }
+            }
+        }
+        logResult(sums);
+        int result = 0;
+        Map<Integer, Integer> countMap = new HashMap<>();
+        for (int j = 0; j < cols; j++) {
+            for (int k = j; k < cols; k++) {
+                countMap.clear();
+                int temp = 0;
+                for (int i = 0; i < rows; i++) {
+                    // 代码中最关键的部分，计算扫描线i和j之间的矩阵值
+                    temp += sums[i][k] - sums[i][j] + matrix[i][j];
+
+                    // 此矩阵值为target，增加result
+                    if (temp == target) {
+                        result++;
+                    }
+
+                    // 每次是一个矩阵值，mp里面保存着子矩阵值
+                    int count = countMap.getOrDefault(temp - target, 0);
+
+                    result += count;
+                    count = countMap.getOrDefault(temp, 0);
+                    countMap.put(temp, count + 1);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    @Test
+    public void numSubmatrixSumTarget() {
+        int[][] matrix = {
+            {0, 1, 0, 0, 1}, {0, 0, 1, 1, 1}, {1, 1, 1, 0, 1}, {1, 1, 0, 1, 1}, {0, 1, 1, 0, 0}
+        };
+        int target = 1;
+        logResult(numSubmatrixSumTarget(matrix, target));
+    }
 }

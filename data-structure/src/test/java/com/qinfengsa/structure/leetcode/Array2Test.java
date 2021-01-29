@@ -3,6 +3,7 @@ package com.qinfengsa.structure.leetcode;
 import static com.qinfengsa.structure.util.LogUtils.logResult;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -10,7 +11,9 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.Set;
 import java.util.TreeMap;
 import lombok.extern.slf4j.Slf4j;
@@ -819,5 +822,171 @@ public class Array2Test {
         int[][] matrix = {{5, 2}, {1, 6}};
         int k = 3;
         logResult(kthLargestValue(matrix, k));
+    }
+
+    /**
+     * 778. 水位上升的泳池中游泳
+     *
+     * <p>在一个 N x N 的坐标方格 grid 中，每一个方格的值 grid[i][j] 表示在位置 (i,j) 的平台高度。
+     *
+     * <p>现在开始下雨了。当时间为 t 时，此时雨水导致水池中任意位置的水位为 t
+     * 。你可以从一个平台游向四周相邻的任意一个平台，但是前提是此时水位必须同时淹没这两个平台。假定你可以瞬间移动无限距离，也就是默认在方格内部游动是不耗时的。当然，在你游泳的时候你必须待在坐标方格里面。
+     *
+     * <p>你从坐标方格的左上平台 (0，0) 出发。最少耗时多久你才能到达坐标方格的右下平台 (N-1, N-1)？
+     *
+     * <p>示例 1:
+     *
+     * <p>输入: [[0,2],[1,3]] 输出: 3 解释: 时间为0时，你位于坐标方格的位置为 (0, 0)。 此时你不能游向任意方向，因为四个相邻方向平台的高度都大于当前时间为 0
+     * 时的水位。
+     *
+     * <p>等时间到达 3 时，你才可以游向平台 (1, 1). 因为此时的水位是 3，坐标方格中的平台没有比水位 3 更高的，所以你可以游向坐标方格中的任意位置 示例2:
+     *
+     * <p>输入: [[0,1,2,3,4],[24,23,22,21,5],[12,13,14,15,16],[11,17,18,19,20],[10,9,8,7,6]] 输出: 16
+     * 解释: 0 1 2 3 4 24 23 22 21 5 12 13 14 15 16 11 17 18 19 20 10 9 8 7 6
+     *
+     * <p>最终的路线用加粗进行了标记。 我们必须等到时间为 16，此时才能保证平台 (0, 0) 和 (4, 4) 是连通的
+     *
+     * <p>提示:
+     *
+     * <p>2 <= N <= 50. grid[i][j] 是 [0, ..., N*N - 1] 的排列。
+     *
+     * @param grid
+     * @return
+     */
+    public int swimInWater(int[][] grid) {
+        int N = grid.length;
+        // 优先队列
+        PriorityQueue<Integer> priorityQueue =
+                new PriorityQueue<>(Comparator.comparingInt(a -> grid[a / N][a % N]));
+
+        int result = 0;
+        priorityQueue.offer(0);
+        Set<Integer> visited = new HashSet<>();
+        visited.add(0);
+        while (!priorityQueue.isEmpty()) {
+            int num = priorityQueue.poll();
+            int row = num / N, col = num % N;
+            result = Math.max(result, grid[row][col]);
+            if (row == N - 1 && col == N - 1) {
+                return result;
+            }
+            for (int i = 0; i < 4; i++) {
+                int rowNum = row + DIR_ROW[i], colNum = col + DIR_COL[i];
+                num = rowNum * N + colNum;
+                if (inArea(rowNum, colNum, N, N) && !visited.contains(num)) {
+                    priorityQueue.offer(num);
+                    visited.add(num);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * 773. 滑动谜题
+     *
+     * <p>在一个 2 x 3 的板上（board）有 5 块砖瓦，用数字 1~5 来表示, 以及一块空缺用 0 来表示.
+     *
+     * <p>一次移动定义为选择 0 与一个相邻的数字（上下左右）进行交换.
+     *
+     * <p>最终当板 board 的结果是 [[1,2,3],[4,5,0]] 谜板被解开。
+     *
+     * <p>给出一个谜板的初始状态，返回最少可以通过多少次移动解开谜板，如果不能解开谜板，则返回 -1 。
+     *
+     * <p>示例：
+     *
+     * <p>输入：board = [[1,2,3],[4,0,5]] 输出：1 解释：交换 0 和 5 ，1 步完成
+     *
+     * <p>输入：board = [[1,2,3],[5,4,0]] 输出：-1 解释：没有办法完成谜板
+     *
+     * <p>输入：board = [[4,1,2],[5,0,3]] 输出：5
+     *
+     * <p>解释： 最少完成谜板的最少移动次数是 5 ， 一种移动路径: 尚未移动: [[4,1,2],[5,0,3]] 移动 1 次: [[4,1,2],[0,5,3]] 移动 2 次:
+     * [[0,1,2],[4,5,3]] 移动 3 次: [[1,0,2],[4,5,3]] 移动 4 次: [[1,2,0],[4,5,3]] 移动 5 次:
+     * [[1,2,3],[4,5,0]]
+     *
+     * <p>输入：board = [[3,2,4],[1,5,0]] 输出：14
+     *
+     * <p>提示：board 是一个如上所述的 2 x 3 的数组. board[i][j] 是一个 [0, 1, 2, 3, 4, 5] 的排列.
+     *
+     * @param board
+     * @return
+     */
+    public int slidingPuzzle(int[][] board) {
+        // 把 324150 变成 123450 的最小操作
+        int[] nums = new int[6];
+        // 广度优先遍历
+        Set<String> visited = new HashSet<>();
+        Queue<PuzzleNode> queue = new LinkedList<>();
+        int index = 0;
+        StringBuilder sb = new StringBuilder();
+        int rows = board.length, cols = board[0].length;
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                sb.append(board[i][j]);
+                if (board[i][j] == 0) {
+                    index = i * cols + j;
+                }
+            }
+        }
+        queue.offer(new PuzzleNode(index, sb.toString()));
+        visited.add(sb.toString());
+        int step = 0;
+
+        int[][] exchangeArrs = {
+            {1, 3},
+            {0, 2, 4},
+            {1, 5},
+            {0, 4},
+            {1, 3, 5},
+            {2, 4}
+        };
+
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                PuzzleNode node = queue.poll();
+                if (Objects.equals(node.val, "123450")) {
+                    return step;
+                }
+                int[] exchanges = exchangeArrs[node.index];
+                for (int idx : exchanges) {
+                    String next = getSlidingResult(node.val, node.index, idx);
+                    if (!visited.contains(next)) {
+                        queue.offer(new PuzzleNode(idx, next));
+                        visited.add(next);
+                    }
+                }
+            }
+            step++;
+        }
+
+        return -1;
+    }
+
+    private String getSlidingResult(String val, int idx1, int idx2) {
+        char[] chars = val.toCharArray();
+        char tmp = chars[idx1];
+        chars[idx1] = chars[idx2];
+        chars[idx2] = tmp;
+        return new String(chars);
+    }
+
+    class PuzzleNode {
+        int index;
+
+        String val;
+
+        PuzzleNode(int index, String val) {
+            this.index = index;
+            this.val = val;
+        }
+    }
+
+    @Test
+    public void slidingPuzzle() {
+        int[][] board = {{3, 2, 4}, {1, 5, 0}};
+        logResult(slidingPuzzle(board));
     }
 }
