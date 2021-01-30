@@ -883,6 +883,72 @@ public class Array2Test {
         return result;
     }
 
+    int[][] grid;
+    static int M, N;
+
+    /**
+     * 778. 水位上升的泳池中游泳
+     *
+     * <p>二分法
+     *
+     * @param grid
+     * @return
+     */
+    public int swimInWater2(int[][] grid) {
+        this.grid = grid;
+        this.N = grid.length;
+
+        int left = 1, right = N * N - 1;
+
+        while (left < right) {
+            int mid = (left + right) >> 1;
+            // 判断能否 以mid 游到终点
+            if (canSwim2End(0, 0, mid, new boolean[N][N])) {
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+
+        return left;
+    }
+
+    /**
+     * dfs 深度优先遍历
+     *
+     * @param row
+     * @param col
+     * @param max
+     * @param visited
+     * @return
+     */
+    private boolean canSwim2End(int row, int col, int max, boolean[][] visited) {
+        if (row == N - 1 && col == N - 1) {
+            return true;
+        }
+        if (grid[row][col] > max) {
+            return false;
+        }
+        visited[row][col] = true;
+        for (int i = 0; i < 4; i++) {
+            int rowNum = row + DIR_ROW[i], colNum = col + DIR_COL[i];
+            if (!inArea(rowNum, colNum, N, N)) {
+                continue;
+            }
+            if (visited[rowNum][colNum]) {
+                continue;
+            }
+            if (grid[rowNum][colNum] > max) {
+                continue;
+            }
+            if (canSwim2End(rowNum, colNum, max, visited)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     /**
      * 773. 滑动谜题
      *
