@@ -10761,4 +10761,56 @@ public class StringTest {
         list.add(expression.substring(start, expression.length()));
         return list;
     }
+
+    /**
+     * 1163. 按字典序排在最后的子串
+     *
+     * <p>给你一个字符串 s，找出它的所有子串并按字典序排列，返回排在最后的那个子串。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入："abab" 输出："bab" 解释：我们可以找出 7 个子串 ["a", "ab", "aba", "abab", "b", "ba",
+     * "bab"]。按字典序排在最后的子串是 "bab"。 示例 2：
+     *
+     * <p>输入："leetcode" 输出："tcode"
+     *
+     * <p>提示：
+     *
+     * <p>1 <= s.length <= 4 * 10^5 s 仅含有小写英文字符。
+     *
+     * @param s
+     * @return
+     */
+    public String lastSubstring(String s) {
+
+        int len = s.length();
+        if (len == 1) {
+            return s;
+        }
+        // 双指针
+        int left = 0, right = 1;
+        char[] chars = s.toCharArray();
+        int k = 0;
+        while (right + k < len) {
+            if (chars[left + k] < chars[right + k]) {
+                left = right;
+                right++;
+                k = 0;
+            } else if (chars[left + k] == chars[right + k] && left + k < right) {
+                k++;
+            } else {
+                // right + k 比 left + k 小
+                right += k + 1;
+                k = 0;
+            }
+        }
+
+        return s.substring(left);
+    }
+
+    @Test
+    public void lastSubstring() {
+        String s = "cacacb";
+        logResult(lastSubstring(s));
+    }
 }
