@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TreeSet;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
@@ -7753,5 +7754,67 @@ public class DynamicPlanTest {
     public void countVowelPermutation() {
         int n = 158;
         logResult(countVowelPermutation(n));
+    }
+
+    /**
+     * 1187. 使数组严格递增
+     *
+     * <p>给你两个整数数组 arr1 和 arr2，返回使 arr1 严格递增所需要的最小「操作」数（可能为 0）。
+     *
+     * <p>每一步「操作」中，你可以分别从 arr1 和 arr2 中各选出一个索引，分别为 i 和 j，0 <= i < arr1.length 和 0 <= j <
+     * arr2.length，然后进行赋值运算 arr1[i] = arr2[j]。
+     *
+     * <p>如果无法让 arr1 严格递增，请返回 -1。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：arr1 = [1,5,3,6,7], arr2 = [1,3,2,4] 输出：1 解释：用 2 来替换 5，之后 arr1 = [1, 2, 3, 6, 7]。 示例 2：
+     *
+     * <p>输入：arr1 = [1,5,3,6,7], arr2 = [4,3,1] 输出：2 解释：用 3 来替换 5，然后用 4 来替换 3，得到 arr1 = [1, 3, 4, 6,
+     * 7]。 示例 3：
+     *
+     * <p>输入：arr1 = [1,5,3,6,7], arr2 = [1,6,3,3] 输出：-1 解释：无法使 arr1 严格递增。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= arr1.length, arr2.length <= 2000 0 <= arr1[i], arr2[i] <= 10^9
+     *
+     * @param arr1
+     * @param arr2
+     * @return
+     */
+    public int makeArrayIncreasing(int[] arr1, int[] arr2) {
+        int len1 = arr1.length;
+        if (len1 == 1) {
+            return 0;
+        }
+        TreeSet<Integer> treeSet = new TreeSet<>();
+        for (int num : arr2) {
+            treeSet.add(num);
+        }
+        int[][] dp = new int[len1 + 1][len1 + 1];
+        for (int i = 0; i <= len1; i++) {
+            Arrays.fill(dp[i], Integer.MAX_VALUE);
+        }
+        dp[0][0] = Integer.MIN_VALUE;
+        // dp[i][j] 表示 将数组arr1的前j个元素通过i次替换后变为严格递增序列时，序列中最后一个元素的最小值,第j个元素的最小值
+        for (int j = 1; j <= len1; j++) {
+            for (int i = 0; i <= j; i++) {
+                if (arr1[j - 1] > dp[i][j - 1]) {
+                    dp[i][j] = arr1[j - 1];
+                }
+
+                if (i > 0) {
+                    Integer highVal = treeSet.higher(dp[i - 1][j - 1]);
+                    if (Objects.nonNull(highVal)) {
+                        dp[i][j] = Math.min(dp[i][j], highVal);
+                    }
+                }
+                if (j == len1 && dp[i][j] != Integer.MAX_VALUE) {
+                    return i;
+                }
+            }
+        }
+        return -1;
     }
 }
