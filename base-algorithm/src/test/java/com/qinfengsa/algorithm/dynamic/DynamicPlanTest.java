@@ -7817,4 +7817,79 @@ public class DynamicPlanTest {
         }
         return -1;
     }
+
+    /**
+     * 1240. 铺瓷砖
+     *
+     * <p>你是一位施工队的工长，根据设计师的要求准备为一套设计风格独特的房子进行室内装修。
+     *
+     * <p>房子的客厅大小为 n x m，为保持极简的风格，需要使用尽可能少的 正方形 瓷砖来铺盖地面。
+     *
+     * <p>假设正方形瓷砖的规格不限，边长都是整数。
+     *
+     * <p>请你帮设计师计算一下，最少需要用到多少块方形瓷砖？
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：n = 2, m = 3 输出：3 解释：3 块地砖就可以铺满卧室。 2 块 1x1 地砖 1 块 2x2 地砖 示例 2：
+     *
+     * <p>输入：n = 5, m = 8 输出：5 示例 3：
+     *
+     * <p>输入：n = 11, m = 13 输出：6
+     *
+     * <p>提示：
+     *
+     * <p>1 <= n <= 13 1 <= m <= 13
+     *
+     * @param n
+     * @param m
+     * @return
+     */
+    public int tilingRectangle(int n, int m) {
+        // 动态规划
+        int[][] dp = new int[m + 1][n + 1];
+
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                if (i == j) {
+                    dp[i][j] = 1;
+                    continue;
+                }
+                dp[i][j] = Integer.MAX_VALUE;
+                // 横切
+                for (int k = 1; k < i; k++) {
+                    dp[i][j] = Math.min(dp[i][j], dp[k][j] + dp[i - k][j]);
+                }
+
+                // 竖切
+                for (int k = 1; k < j; k++) {
+                    dp[i][j] = Math.min(dp[i][j], dp[i][k] + dp[i][j - k]);
+                }
+
+                // 横竖切
+                int min = Math.min(i, j);
+                for (int k = 1; k < min; k++) {
+                    for (int l = 1; l < k && k + l < i; l++) {
+                        log.debug("i:{} j :{} k :{} l :{}", i, j, k, l);
+
+                        dp[i][j] =
+                                Math.min(
+                                        dp[i][j],
+                                        dp[i - k][k - l]
+                                                + dp[k + l][j - k]
+                                                + dp[i - k - l][j - k + l]
+                                                + 2);
+                    }
+                }
+            }
+        }
+
+        return dp[m][n];
+    }
+
+    @Test
+    public void tilingRectangle() {
+        int n = 7, m = 4;
+        logResult(tilingRectangle(n, m));
+    }
 }
