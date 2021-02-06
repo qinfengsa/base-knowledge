@@ -1284,4 +1284,184 @@ public class Array2Test {
 
         return target;
     }*/
+
+    /**
+     * 1263. 推箱子
+     *
+     * <p>「推箱子」是一款风靡全球的益智小游戏，玩家需要将箱子推到仓库中的目标位置。
+     *
+     * <p>游戏地图用大小为 n * m 的网格 grid 表示，其中每个元素可以是墙、地板或者是箱子。
+     *
+     * <p>现在你将作为玩家参与游戏，按规则将箱子 'B' 移动到目标位置 'T' ：
+     *
+     * <p>玩家用字符 'S' 表示，只要他在地板上，就可以在网格中向上、下、左、右四个方向移动。 地板用字符 '.' 表示，意味着可以自由行走。 墙用字符 '#'
+     * 表示，意味着障碍物，不能通行。 箱子仅有一个，用字符 'B' 表示。相应地，网格上有一个目标位置 'T'。
+     * 玩家需要站在箱子旁边，然后沿着箱子的方向进行移动，此时箱子会被移动到相邻的地板单元格。记作一次「推动」。 玩家无法越过箱子。 返回将箱子推到目标位置的最小 推动
+     * 次数，如果无法做到，请返回 -1。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：grid = [["#","#","#","#","#","#"], ["#","T","#","#","#","#"],
+     * ["#",".",".","B",".","#"], ["#",".","#","#",".","#"], ["#",".",".",".","S","#"],
+     * ["#","#","#","#","#","#"]] 输出：3 解释：我们只需要返回推箱子的次数。 示例 2：
+     *
+     * <p>输入：grid = [["#","#","#","#","#","#"], ["#","T","#","#","#","#"],
+     * ["#",".",".","B",".","#"], ["#","#","#","#",".","#"], ["#",".",".",".","S","#"],
+     * ["#","#","#","#","#","#"]] 输出：-1 示例 3：
+     *
+     * <p>输入：grid = [["#","#","#","#","#","#"], ["#","T",".",".","#","#"],
+     * ["#",".","#","B",".","#"], ["#",".",".",".",".","#"], ["#",".",".",".","S","#"],
+     * ["#","#","#","#","#","#"]] 输出：5 解释：向下、向左、向左、向上再向上。 示例 4：
+     *
+     * <p>输入：grid = [["#","#","#","#","#","#","#"], ["#","S","#",".","B","T","#"],
+     * ["#","#","#","#","#","#","#"]] 输出：-1
+     *
+     * <p>提示：
+     *
+     * <p>1 <= grid.length <= 20 1 <= grid[i].length <= 20 grid 仅包含字符 '.', '#', 'S' , 'T', 以及 'B'。
+     * grid 中 'S', 'B' 和 'T' 各只能出现一个。
+     *
+     * @param grid
+     * @return
+     */
+    public int minPushBox(char[][] grid) {
+
+        this.boxGrid = grid;
+
+        // bfs 广度优先遍历
+        M = grid.length;
+        N = grid[0].length;
+        int[] box = new int[2], target = new int[2], person = new int[2];
+
+        for (int i = 0; i < M; i++) {
+            for (int j = 0; j < N; j++) {
+                switch (grid[i][j]) {
+                    case 'S':
+                        {
+                            person[0] = i;
+                            person[1] = j;
+                        }
+                        break;
+                    case 'T':
+                        {
+                            target[0] = i;
+                            target[1] = j;
+                        }
+                        break;
+                    case 'B':
+                        {
+                            box[0] = i;
+                            box[1] = j;
+                        }
+                        break;
+                }
+            }
+        }
+        // 记录访问的节点和方向
+        boolean[][][] visited = new boolean[M][N][4];
+        // 找到箱子, 目标 人 的位置
+        // 广度优先遍历 箱子向四个方向移动
+        // 判断 人能否到达指定位置(深度优先遍历)
+        Queue<BoxNode> queue = new LinkedList<>();
+        queue.offer(new BoxNode(box[0], box[1], person[0], person[1]));
+        int step = 0;
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int k = 0; k < size; k++) {
+                BoxNode node = queue.poll();
+                if (node.boxRow == target[0] && node.boxCol == target[1]) {
+                    return step;
+                }
+                for (int i = 0; i < 4; i++) {
+                    int nextRow = node.boxRow + DIR_ROW[i], nextCol = node.boxCol + DIR_COL[i];
+
+                    if (!inArea(nextRow, nextCol, M, N)) {
+                        continue;
+                    }
+                    if (grid[nextRow][nextCol] == '#') {
+                        continue;
+                    }
+                    if (visited[nextRow][nextCol][i]) {
+                        continue;
+                    }
+                    int pTargetRow = node.boxRow - DIR_ROW[i],
+                            pTargetCol = node.boxCol - DIR_COL[i];
+
+                    if (!inArea(pTargetRow, pTargetCol, M, N)) {
+                        continue;
+                    }
+                    if (grid[pTargetRow][pTargetCol] == '#') {
+                        continue;
+                    }
+                    // 判断 人能否到达指定位置(深度优先遍历)
+                    if (canArriveTarget(
+                            new int[] {node.personRow, node.personCol},
+                            new int[] {pTargetRow, pTargetCol},
+                            new int[] {node.boxRow, node.boxCol},
+                            new boolean[M][N])) {
+
+                        visited[nextRow][nextCol][i] = true;
+                        // person 的 位置会在原来 box 的位置
+                        queue.offer(new BoxNode(nextRow, nextCol, node.boxRow, node.boxCol));
+                    }
+                }
+            }
+            step++;
+        }
+        return -1;
+    }
+
+    char[][] boxGrid;
+
+    static class BoxNode {
+        int boxRow, boxCol, personRow, personCol;
+
+        public BoxNode(int boxRow, int boxCol, int personRow, int personCol) {
+            this.boxRow = boxRow;
+            this.boxCol = boxCol;
+            this.personRow = personRow;
+            this.personCol = personCol;
+        }
+    }
+
+    private boolean canArriveTarget(int[] person, int[] target, int[] box, boolean[][] visited) {
+        if (person[0] == target[0] && person[1] == target[1]) {
+            return true;
+        }
+        visited[person[0]][person[1]] = true;
+        for (int i = 0; i < 4; i++) {
+            int nextRow = person[0] + DIR_ROW[i], nextCol = person[1] + DIR_COL[i];
+            if (!inArea(nextRow, nextCol, M, N)) {
+                continue;
+            }
+            if (boxGrid[nextRow][nextCol] == '#') {
+                continue;
+            }
+            if (nextRow == box[0] && nextCol == box[1]) {
+                continue;
+            }
+            if (visited[nextRow][nextCol]) {
+                continue;
+            }
+            visited[nextRow][nextCol] = true;
+            if (canArriveTarget(new int[] {nextRow, nextCol}, target, box, visited)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    @Test
+    public void minPushBox() {
+        char[][] grid = {
+            {'#', '#', '#', '#', '#', '#'},
+            {'#', 'T', '.', '.', '#', '#'},
+            {'#', '.', '#', 'B', '.', '#'},
+            {'#', '.', '.', '.', '.', '#'},
+            {'#', '.', '.', '.', 'S', '#'},
+            {'#', '#', '#', '#', '#', '#'}
+        };
+        logResult(minPushBox(grid));
+    }
 }

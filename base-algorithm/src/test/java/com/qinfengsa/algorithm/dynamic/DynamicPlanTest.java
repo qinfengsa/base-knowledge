@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TreeSet;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
@@ -7579,5 +7580,316 @@ public class DynamicPlanTest {
     public void shortestCommonSupersequence() {
         String str1 = "abac", str2 = "cab";
         logResult(shortestCommonSupersequence(str1, str2));
+    }
+
+    /**
+     * 1125. 最小的必要团队
+     *
+     * <p>作为项目经理，你规划了一份需求的技能清单 req_skills，并打算从备选人员名单 people 中选出些人组成一个「必要团队」（ 编号为 i 的备选人员 people[i]
+     * 含有一份该备选人员掌握的技能列表）。
+     *
+     * <p>所谓「必要团队」，就是在这个团队中，对于所需求的技能列表 req_skills 中列出的每项技能，团队中至少有一名成员已经掌握。
+     *
+     * <p>我们可以用每个人的编号来表示团队中的成员：例如，团队 team = [0, 1, 3] 表示掌握技能分别为 people[0]，people[1]，和 people[3]
+     * 的备选人员。
+     *
+     * <p>请你返回 任一 规模最小的必要团队，团队成员用人员编号表示。你可以按任意顺序返回答案，本题保证答案存在。
+     *
+     * <p>示例 1： 输入：req_skills = ["java","nodejs","reactjs"], people =
+     * [["java"],["nodejs"],["nodejs","reactjs"]] 输出：[0,2]
+     *
+     * <p>示例 2： 输入：req_skills = ["algorithms","math","java","reactjs","csharp","aws"], people =
+     * [["algorithms","math","java"],["algorithms","math","reactjs"],["java","csharp","aws"],["reactjs","csharp"],["csharp","math"],["aws","java"]]
+     * 输出：[1,2]
+     *
+     * <p>提示：
+     *
+     * <p>1 <= req_skills.length <= 16
+     *
+     * <p>1 <= people.length <= 60
+     *
+     * <p>1 <= people[i].length, req_skills[i].length, people[i][j].length <= 16
+     *
+     * <p>req_skills 和 people[i] 中的元素分别各不相同
+     *
+     * <p>req_skills[i][j], people[i][j][k] 都由小写英文字母组成
+     *
+     * <p>本题保证「必要团队」一定存在
+     *
+     * @param req_skills
+     * @param people
+     * @return
+     */
+    public int[] smallestSufficientTeam(String[] req_skills, List<List<String>> people) {
+
+        Map<String, Integer> skillMap = new HashMap<>();
+
+        for (int i = 0; i < req_skills.length; i++) {
+            skillMap.put(req_skills[i], 1 << i);
+        }
+
+        int size = people.size();
+        int[] peopleSkill = new int[size];
+        int total = 1 << req_skills.length;
+        int full = total - 1;
+
+        for (int i = 0; i < size; i++) {
+            List<String> skills = people.get(i);
+            int skillNum = 0;
+            for (String skill : skills) {
+                skillNum |= skillMap.get(skill);
+            }
+            peopleSkill[i] = skillNum;
+        }
+        int[][] dp = new int[total][];
+        dp[0] = new int[0];
+        int maxNum = 0;
+        log.debug("peopleSkill:{}", peopleSkill);
+        for (int i = 0; i < size; i++) {
+
+            for (int j = 0; j <= maxNum; j++) {
+                if (Objects.isNull(dp[j])) {
+                    continue;
+                }
+                int sum = j | peopleSkill[i];
+                if (Objects.isNull(dp[sum]) || dp[j].length + 1 < dp[sum].length) {
+                    dp[sum] = Arrays.copyOf(dp[j], dp[j].length + 1);
+
+                    dp[sum][dp[j].length] = i;
+                }
+            }
+
+            maxNum |= peopleSkill[i];
+        }
+        return dp[full];
+    }
+
+    @Test
+    public void smallestSufficientTeam() {
+        String[] req_skills = {"java", "nodejs", "reactjs"};
+        List<List<String>> people = new ArrayList<>();
+        people.add(Arrays.asList("java"));
+        people.add(Arrays.asList("nodejs"));
+        people.add(Arrays.asList("nodejs", "reactjs"));
+        int[] result = smallestSufficientTeam(req_skills, people);
+        log.debug("result:{}", result);
+    }
+
+    /**
+     * 1220. 统计元音字母序列的数目
+     *
+     * <p>给你一个整数 n，请你帮忙统计一下我们可以按下述规则形成多少个长度为 n 的字符串：
+     *
+     * <p>字符串中的每个字符都应当是小写元音字母（'a', 'e', 'i', 'o', 'u'）
+     *
+     * <p>每个元音 'a' 后面都只能跟着 'e'
+     *
+     * <p>每个元音 'e' 后面只能跟着 'a' 或者是 'i'
+     *
+     * <p>每个元音 'i' 后面 不能 再跟着另一个 'i'
+     *
+     * <p>每个元音 'o' 后面只能跟着 'i' 或者是 'u'
+     *
+     * <p>每个元音 'u' 后面只能跟着 'a'
+     *
+     * <p>由于答案可能会很大，所以请你返回 模 10^9 + 7 之后的结果。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：n = 1 输出：5 解释：所有可能的字符串分别是："a", "e", "i" , "o" 和 "u"。 示例 2：
+     *
+     * <p>输入：n = 2 输出：10 解释：所有可能的字符串分别是："ae", "ea", "ei", "ia", "ie", "io", "iu", "oi", "ou" 和 "ua"。
+     * 示例 3：
+     *
+     * <p>输入：n = 5 输出：68
+     *
+     * <p>提示：
+     *
+     * <p>1 <= n <= 2 * 10^4
+     *
+     * @param n
+     * @return
+     */
+    public int countVowelPermutation(int n) {
+        int[][] dp = new int[n][5];
+        Arrays.fill(dp[0], 1);
+        // 'a', 'e', 'i', 'o', 'u'
+        // 0    1    2    3    4
+
+        for (int i = 1; i < n; i++) {
+            // 每个元音 'a' 后面都只能跟着 'e'
+            dp[i][1] += dp[i - 1][0];
+            dp[i][1] %= MOD;
+            // 每个元音 'e' 后面只能跟着 'a' 或者是 'i'
+            dp[i][0] += dp[i - 1][1];
+            dp[i][0] %= MOD;
+            dp[i][2] += dp[i - 1][1];
+            dp[i][2] %= MOD;
+            // 每个元音 'i' 后面 不能 再跟着另一个 'i'
+            for (int j = 0; j < 5; j++) {
+                if (j == 2) {
+                    continue;
+                }
+                dp[i][j] += dp[i - 1][2];
+                dp[i][j] %= MOD;
+            }
+            // 每个元音 'o' 后面只能跟着 'i' 或者是 'u'
+            dp[i][2] += dp[i - 1][3];
+            dp[i][2] %= MOD;
+            dp[i][4] += dp[i - 1][3];
+            dp[i][4] %= MOD;
+            // 每个元音 'u' 后面只能跟着 'a'
+            dp[i][0] += dp[i - 1][4];
+            dp[i][0] %= MOD;
+        }
+        int sum = 0;
+        for (int num : dp[n - 1]) {
+            sum += num;
+            sum %= MOD;
+        }
+        return sum;
+    }
+
+    @Test
+    public void countVowelPermutation() {
+        int n = 158;
+        logResult(countVowelPermutation(n));
+    }
+
+    /**
+     * 1187. 使数组严格递增
+     *
+     * <p>给你两个整数数组 arr1 和 arr2，返回使 arr1 严格递增所需要的最小「操作」数（可能为 0）。
+     *
+     * <p>每一步「操作」中，你可以分别从 arr1 和 arr2 中各选出一个索引，分别为 i 和 j，0 <= i < arr1.length 和 0 <= j <
+     * arr2.length，然后进行赋值运算 arr1[i] = arr2[j]。
+     *
+     * <p>如果无法让 arr1 严格递增，请返回 -1。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：arr1 = [1,5,3,6,7], arr2 = [1,3,2,4] 输出：1 解释：用 2 来替换 5，之后 arr1 = [1, 2, 3, 6, 7]。 示例 2：
+     *
+     * <p>输入：arr1 = [1,5,3,6,7], arr2 = [4,3,1] 输出：2 解释：用 3 来替换 5，然后用 4 来替换 3，得到 arr1 = [1, 3, 4, 6,
+     * 7]。 示例 3：
+     *
+     * <p>输入：arr1 = [1,5,3,6,7], arr2 = [1,6,3,3] 输出：-1 解释：无法使 arr1 严格递增。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= arr1.length, arr2.length <= 2000 0 <= arr1[i], arr2[i] <= 10^9
+     *
+     * @param arr1
+     * @param arr2
+     * @return
+     */
+    public int makeArrayIncreasing(int[] arr1, int[] arr2) {
+        int len1 = arr1.length;
+        if (len1 == 1) {
+            return 0;
+        }
+        TreeSet<Integer> treeSet = new TreeSet<>();
+        for (int num : arr2) {
+            treeSet.add(num);
+        }
+        int[][] dp = new int[len1 + 1][len1 + 1];
+        for (int i = 0; i <= len1; i++) {
+            Arrays.fill(dp[i], Integer.MAX_VALUE);
+        }
+        dp[0][0] = Integer.MIN_VALUE;
+        // dp[i][j] 表示 将数组arr1的前j个元素通过i次替换后变为严格递增序列时，序列中最后一个元素的最小值,第j个元素的最小值
+        for (int j = 1; j <= len1; j++) {
+            for (int i = 0; i <= j; i++) {
+                if (arr1[j - 1] > dp[i][j - 1]) {
+                    dp[i][j] = arr1[j - 1];
+                }
+
+                if (i > 0) {
+                    Integer highVal = treeSet.higher(dp[i - 1][j - 1]);
+                    if (Objects.nonNull(highVal)) {
+                        dp[i][j] = Math.min(dp[i][j], highVal);
+                    }
+                }
+                if (j == len1 && dp[i][j] != Integer.MAX_VALUE) {
+                    return i;
+                }
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * 1240. 铺瓷砖
+     *
+     * <p>你是一位施工队的工长，根据设计师的要求准备为一套设计风格独特的房子进行室内装修。
+     *
+     * <p>房子的客厅大小为 n x m，为保持极简的风格，需要使用尽可能少的 正方形 瓷砖来铺盖地面。
+     *
+     * <p>假设正方形瓷砖的规格不限，边长都是整数。
+     *
+     * <p>请你帮设计师计算一下，最少需要用到多少块方形瓷砖？
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：n = 2, m = 3 输出：3 解释：3 块地砖就可以铺满卧室。 2 块 1x1 地砖 1 块 2x2 地砖 示例 2：
+     *
+     * <p>输入：n = 5, m = 8 输出：5 示例 3：
+     *
+     * <p>输入：n = 11, m = 13 输出：6
+     *
+     * <p>提示：
+     *
+     * <p>1 <= n <= 13 1 <= m <= 13
+     *
+     * @param n
+     * @param m
+     * @return
+     */
+    public int tilingRectangle(int n, int m) {
+        // 动态规划
+        int[][] dp = new int[m + 1][n + 1];
+
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                if (i == j) {
+                    dp[i][j] = 1;
+                    continue;
+                }
+                dp[i][j] = Integer.MAX_VALUE;
+                // 横切
+                for (int k = 1; k < i; k++) {
+                    dp[i][j] = Math.min(dp[i][j], dp[k][j] + dp[i - k][j]);
+                }
+
+                // 竖切
+                for (int k = 1; k < j; k++) {
+                    dp[i][j] = Math.min(dp[i][j], dp[i][k] + dp[i][j - k]);
+                }
+
+                // 横竖切
+                int min = Math.min(i, j);
+                for (int k = 1; k < min; k++) {
+                    for (int l = 1; l < k && k + l < i; l++) {
+                        log.debug("i:{} j :{} k :{} l :{}", i, j, k, l);
+
+                        dp[i][j] =
+                                Math.min(
+                                        dp[i][j],
+                                        dp[i - k][k - l]
+                                                + dp[k + l][j - k]
+                                                + dp[i - k - l][j - k + l]
+                                                + 2);
+                    }
+                }
+            }
+        }
+
+        return dp[m][n];
+    }
+
+    @Test
+    public void tilingRectangle() {
+        int n = 7, m = 4;
+        logResult(tilingRectangle(n, m));
     }
 }
