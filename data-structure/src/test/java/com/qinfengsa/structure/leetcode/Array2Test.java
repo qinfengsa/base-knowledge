@@ -1055,4 +1055,233 @@ public class Array2Test {
         int[][] board = {{3, 2, 4}, {1, 5, 0}};
         logResult(slidingPuzzle(board));
     }
+
+    /**
+     * 5665. 从相邻元素对还原数组
+     *
+     * <p>存在一个由 n 个不同元素组成的整数数组 nums ，但你已经记不清具体内容。好在你还记得 nums 中的每一对相邻元素。
+     *
+     * <p>给你一个二维整数数组 adjacentPairs ，大小为 n - 1 ，其中每个 adjacentPairs[i] = [ui, vi] 表示元素 ui 和 vi 在 nums
+     * 中相邻。
+     *
+     * <p>题目数据保证所有由元素 nums[i] 和 nums[i+1] 组成的相邻元素对都存在于 adjacentPairs 中，存在形式可能是 [nums[i], nums[i+1]]
+     * ，也可能是 [nums[i+1], nums[i]] 。这些相邻元素对可以 按任意顺序 出现。
+     *
+     * <p>返回 原始数组 nums 。如果存在多种解答，返回 其中任意一个 即可。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：adjacentPairs = [[2,1],[3,4],[3,2]] 输出：[1,2,3,4] 解释：数组的所有相邻元素对都在 adjacentPairs 中。
+     * 特别要注意的是，adjacentPairs[i] 只表示两个元素相邻，并不保证其 左-右 顺序。 示例 2：
+     *
+     * <p>输入：adjacentPairs = [[4,-2],[1,4],[-3,1]] 输出：[-2,4,1,-3] 解释：数组中可能存在负数。 另一种解答是 [-3,1,4,-2]
+     * ，也会被视作正确答案。 示例 3：
+     *
+     * <p>输入：adjacentPairs = [[100000,-100000]] 输出：[100000,-100000]
+     *
+     * <p>提示：
+     *
+     * <p>nums.length == n adjacentPairs.length == n - 1 adjacentPairs[i].length == 2 2 <= n <= 105
+     * -105 <= nums[i], ui, vi <= 105 题目数据保证存在一些以 adjacentPairs 作为元素对的数组 nums
+     *
+     * @param adjacentPairs
+     * @return
+     */
+    public int[] restoreArray(int[][] adjacentPairs) {
+
+        if (adjacentPairs.length == 1) {
+            return adjacentPairs[0];
+        }
+        // 并查集
+        int n = adjacentPairs.length + 1;
+        Map<Integer, List<Integer>> arrayMap = new HashMap<>();
+
+        for (int[] pairs : adjacentPairs) {
+            int u = pairs[0], v = pairs[1];
+            List<Integer> list1 = arrayMap.computeIfAbsent(u, k -> new ArrayList<>());
+            list1.add(v);
+            List<Integer> list2 = arrayMap.computeIfAbsent(v, k -> new ArrayList<>());
+            list2.add(u);
+        }
+        int start = -1;
+        for (Map.Entry<Integer, List<Integer>> entry : arrayMap.entrySet()) {
+            if (entry.getValue().size() == 1) {
+                start = entry.getKey();
+                break;
+            }
+        }
+        Set<Integer> visited = new HashSet<>();
+        visited.add(start);
+
+        int[] result = new int[n];
+        result[0] = start;
+        Queue<Integer> queue = new LinkedList<>();
+        queue.offer(start);
+        int index = 1;
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                int num = queue.poll();
+                for (int next : arrayMap.get(num)) {
+                    if (!visited.contains(next)) {
+                        result[index++] = next;
+                        queue.offer(next);
+                        visited.add(next);
+                        break;
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    @Test
+    public void restoreArray() {
+        int[][] adjacentPairs = {{4, -2}, {1, 4}, {-3, 1}};
+        int[] result = restoreArray(adjacentPairs);
+        log.debug("result:{}", result);
+    }
+
+    /**
+     * 839. 相似字符串组
+     *
+     * <p>如果交换字符串 X 中的两个不同位置的字母，使得它和字符串 Y 相等，那么称 X 和 Y 两个字符串相似。如果这两个字符串本身是相等的，那它们也是相似的。
+     *
+     * <p>例如，"tars" 和 "rats" 是相似的 (交换 0 与 2 的位置)； "rats" 和 "arts" 也是相似的，但是 "star" 不与 "tars"，"rats"，或
+     * "arts" 相似。
+     *
+     * <p>总之，它们通过相似性形成了两个关联组：{"tars", "rats", "arts"} 和 {"star"}。注意，"tars" 和 "arts"
+     * 是在同一组中，即使它们并不相似。形式上，对每个组而言，要确定一个单词在组中，只需要这个词和该组中至少一个单词相似。
+     *
+     * <p>给你一个字符串列表 strs。列表中的每个字符串都是 strs 中其它所有字符串的一个字母异位词。请问 strs 中有多少个相似字符串组？
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：strs = ["tars","rats","arts","star"] 输出：2 示例 2：
+     *
+     * <p>输入：strs = ["omv","ovm"] 输出：1
+     *
+     * <p>提示：
+     *
+     * <p>1 <= strs.length <= 100 1 <= strs[i].length <= 1000 sum(strs[i].length) <= 2 * 104 strs[i]
+     * 只包含小写字母。 strs 中的所有单词都具有相同的长度，且是彼此的字母异位词。
+     *
+     * <p>备注：
+     *
+     * <p>字母异位词（anagram），一种把某个字符串的字母的位置（顺序）加以改换所形成的新词。
+     *
+     * @param strs
+     * @return
+     */
+    public int numSimilarGroups(String[] strs) {
+
+        int len = strs.length;
+        groupMap = new HashMap<>();
+        for (String str : strs) {
+            groupMap.put(str, str);
+        }
+
+        for (int i = 0; i < len; i++) {
+            for (int j = i + 1; j < len; j++) {
+                if (Objects.equals(strs[i], strs[j])) {
+                    continue;
+                }
+                if (isSimilar(strs[i], strs[j])) {
+                    unionGroup(strs[i], strs[j]);
+                }
+            }
+        }
+        Set<String> set = new HashSet<>();
+        for (String str : strs) {
+            set.add(findRoot(str));
+        }
+
+        return set.size();
+    }
+
+    /**
+     * 判断两个字符串是否相似
+     *
+     * @param str1
+     * @param str2
+     * @return
+     */
+    private boolean isSimilar(String str1, String str2) {
+        if (Objects.equals(str1, str2)) {
+            return true;
+        }
+        if (str1.length() != str2.length()) {
+            return false;
+        }
+        int count = 0, len = str1.length();
+        char[] chars1 = str1.toCharArray(), chars2 = str2.toCharArray();
+        int firstIndex = -1, secondIndex = -1;
+        for (int i = 0; i < len; i++) {
+            if (chars1[i] != chars2[i]) {
+                if (firstIndex == -1) {
+                    firstIndex = i;
+                } else {
+                    secondIndex = i;
+                }
+                count++;
+            }
+            if (count > 2) {
+                return false;
+            }
+        }
+        return chars1[firstIndex] == chars2[secondIndex]
+                && chars1[secondIndex] == chars2[firstIndex];
+    }
+
+    Map<String, String> groupMap;
+
+    private void unionGroup(String str1, String str2) {
+        str1 = findRoot(str1);
+        str2 = findRoot(str2);
+        groupMap.put(str2, str1);
+    }
+
+    private String findRoot(String target) {
+        String root = groupMap.get(target);
+        if (!Objects.equals(root, target)) {
+            root = findRoot(root);
+            // 压缩路径
+            groupMap.put(target, root);
+            return root;
+        }
+        return target;
+    }
+
+    @Test
+    public void numSimilarGroups() {
+        String[] strs = {"omv", "ovm"};
+        logResult(numSimilarGroups(strs));
+    }
+
+    /*
+    Map<Integer, List<Integer>> listMap;
+    Map<Integer, Integer> union;
+
+    private void unionArray(int u, int v) {
+        u = findRoot(u);
+        v = findRoot(v);
+        union.put(u, v);
+    }
+
+    private int findRoot(int target) {
+        Integer root = union.get(target);
+        if (Objects.isNull(root)) {
+            union.put(target, target);
+            return target;
+        }
+        if (root != target) {
+            root = findRoot(root);
+            // 压缩路径
+            union.put(target, root);
+            return root;
+        }
+
+        return target;
+    }*/
 }
