@@ -1464,4 +1464,97 @@ public class Array2Test {
         };
         logResult(minPushBox(grid));
     }
+
+    /**
+     * 5657. 唯一元素的和
+     *
+     * <p>给你一个整数数组 nums 。数组中唯一元素是那些只出现 恰好一次 的元素。
+     *
+     * <p>请你返回 nums 中唯一元素的 和 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：nums = [1,2,3,2] 输出：4 解释：唯一元素为 [1,3] ，和为 4 。 示例 2：
+     *
+     * <p>输入：nums = [1,1,1,1,1] 输出：0 解释：没有唯一元素，和为 0 。 示例 3 ：
+     *
+     * <p>输入：nums = [1,2,3,4,5] 输出：15 解释：唯一元素为 [1,2,3,4,5] ，和为 15 。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= nums.length <= 100 1 <= nums[i] <= 100
+     *
+     * @param nums
+     * @return
+     */
+    public int sumOfUnique(int[] nums) {
+        int[] countNums = new int[101];
+        for (int num : nums) {
+            countNums[num]++;
+        }
+        int result = 0;
+        for (int i = 1; i <= 100; i++) {
+            if (countNums[i] == 1) {
+                result += i;
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 5658. 任意子数组和的绝对值的最大值
+     *
+     * <p>给你一个整数数组 nums 。一个子数组 [numsl, numsl+1, ..., numsr-1, numsr] 的 和的绝对值 为 abs(numsl + numsl+1 +
+     * ... + numsr-1 + numsr) 。
+     *
+     * <p>请你找出 nums 中 和的绝对值 最大的任意子数组（可能为空），并返回该 最大值 。
+     *
+     * <p>abs(x) 定义如下：
+     *
+     * <p>如果 x 是负整数，那么 abs(x) = -x 。 如果 x 是非负整数，那么 abs(x) = x 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：nums = [1,-3,2,3,-4] 输出：5 解释：子数组 [2,3] 和的绝对值最大，为 abs(2+3) = abs(5) = 5 。 示例 2：
+     *
+     * <p>输入：nums = [2,-5,1,-4,3,-2] 输出：8 解释：子数组 [-5,1,-4] 和的绝对值最大，为 abs(-5+1-4) = abs(-8) = 8 。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= nums.length <= 105 -104 <= nums[i] <= 104
+     *
+     * @param nums
+     * @return
+     */
+    public int maxAbsoluteSum(int[] nums) {
+        int len = nums.length;
+
+        int[] maxNums = new int[len], minNums = new int[len];
+        maxNums[0] = nums[0];
+        minNums[0] = nums[0];
+        int max = nums[0], min = nums[0];
+        for (int i = 1; i < len; i++) {
+            if (maxNums[i - 1] > 0) {
+                maxNums[i] = maxNums[i - 1] + nums[i];
+            } else {
+                maxNums[i] = nums[i];
+            }
+            max = Math.max(max, maxNums[i]);
+            if (minNums[i - 1] < 0) {
+                minNums[i] = minNums[i - 1] + nums[i];
+            } else {
+                minNums[i] = nums[i];
+            }
+            min = Math.min(min, minNums[i]);
+        }
+        log.debug("maxNums:{}", maxNums);
+        log.debug("minNums:{}", minNums);
+        return Math.max(max, -min);
+    }
+
+    @Test
+    public void maxAbsoluteSum() {
+        int[] nums = {-11, 1, 1, 1, 1, 1};
+        logResult(maxAbsoluteSum(nums));
+    }
 }
