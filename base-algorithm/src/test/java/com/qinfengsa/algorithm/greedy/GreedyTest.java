@@ -2860,4 +2860,130 @@ public class GreedyTest {
         String text = "aaa";
         logResult(longestDecomposition(text));
     }
+
+    /**
+     * 5673. 移除石子的最大得分
+     *
+     * <p>你正在玩一个单人游戏，面前放置着大小分别为 a、b 和 c 的 三堆 石子。
+     *
+     * <p>每回合你都要从两个 不同的非空堆 中取出一颗石子，并在得分上加 1 分。当存在 两个或更多 的空堆时，游戏停止。
+     *
+     * <p>给你三个整数 a 、b 和 c ，返回可以得到的 最大分数 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：a = 2, b = 4, c = 6 输出：6 解释：石子起始状态是 (2, 4, 6) ，最优的一组操作是： - 从第一和第三堆取，石子状态现在是 (1, 4, 5) -
+     * 从第一和第三堆取，石子状态现在是 (0, 4, 4) - 从第二和第三堆取，石子状态现在是 (0, 3, 3) - 从第二和第三堆取，石子状态现在是 (0, 2, 2) -
+     * 从第二和第三堆取，石子状态现在是 (0, 1, 1) - 从第二和第三堆取，石子状态现在是 (0, 0, 0) 总分：6 分 。 示例 2：
+     *
+     * <p>输入：a = 4, b = 4, c = 6 输出：7 解释：石子起始状态是 (4, 4, 6) ，最优的一组操作是： - 从第一和第二堆取，石子状态现在是 (3, 3, 6) -
+     * 从第一和第三堆取，石子状态现在是 (2, 3, 5) - 从第一和第三堆取，石子状态现在是 (1, 3, 4) - 从第一和第三堆取，石子状态现在是 (0, 3, 3) -
+     * 从第二和第三堆取，石子状态现在是 (0, 2, 2) - 从第二和第三堆取，石子状态现在是 (0, 1, 1) - 从第二和第三堆取，石子状态现在是 (0, 0, 0) 总分：7 分 。
+     * 示例 3：
+     *
+     * <p>输入：a = 1, b = 8, c = 8 输出：8 解释：最优的一组操作是连续从第二和第三堆取 8 回合，直到将它们取空。
+     * 注意，由于第二和第三堆已经空了，游戏结束，不能继续从第一堆中取石子。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= a, b, c <= 105
+     *
+     * @param a
+     * @param b
+     * @param c
+     * @return
+     */
+    public int maximumScore(int a, int b, int c) {
+        int[] nums = new int[] {a, b, c};
+
+        Arrays.sort(nums);
+        if (nums[0] + nums[1] <= nums[2]) {
+            return nums[0] + nums[1];
+        }
+
+        // nums[0] + nums[1] > nums[2];
+        // 先移除前两个
+
+        int left = (nums[0] + nums[1] - nums[2]) >> 1;
+
+        return nums[2] + left;
+    }
+
+    @Test
+    public void maximumScore() {
+        int a = 3, b = 8, c = 7;
+        logResult(maximumScore(a, b, c));
+    }
+
+    /**
+     * 5674. 构造字典序最大的合并字符串
+     *
+     * <p>给你两个字符串 word1 和 word2 。你需要按下述方式构造一个新字符串 merge ：如果 word1 或 word2 非空，选择 下面选项之一 继续操作：
+     *
+     * <p>如果 word1 非空，将 word1 中的第一个字符附加到 merge 的末尾，并将其从 word1 中移除。 例如，word1 = "abc" 且 merge = "dv"
+     * ，在执行此选项操作之后，word1 = "bc" ，同时 merge = "dva" 。 如果 word2 非空，将 word2 中的第一个字符附加到 merge 的末尾，并将其从
+     * word2 中移除。 例如，word2 = "abc" 且 merge = "" ，在执行此选项操作之后，word2 = "bc" ，同时 merge = "a" 。
+     * 返回你可以构造的字典序 最大 的合并字符串 merge 。
+     *
+     * <p>长度相同的两个字符串 a 和 b 比较字典序大小，如果在 a 和 b 出现不同的第一个位置，a 中字符在字母表中的出现顺序位于 b 中相应字符之后，就认为字符串 a
+     * 按字典序比字符串 b 更大。例如，"abcd" 按字典序比 "abcc" 更大，因为两个字符串出现不同的第一个位置是第四个字符，而 d 在字母表中的出现顺序位于 c 之后。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：word1 = "cabaa", word2 = "bcaaa" 输出："cbcabaaaaa" 解释：构造字典序最大的合并字符串，可行的一种方法如下所示： - 从
+     * word1 中取第一个字符：merge = "c"，word1 = "abaa"，word2 = "bcaaa" - 从 word2 中取第一个字符：merge = "cb"，word1
+     * = "abaa"，word2 = "caaa" - 从 word2 中取第一个字符：merge = "cbc"，word1 = "abaa"，word2 = "aaa" - 从
+     * word1 中取第一个字符：merge = "cbca"，word1 = "baa"，word2 = "aaa" - 从 word1 中取第一个字符：merge =
+     * "cbcab"，word1 = "aa"，word2 = "aaa" - 将 word1 和 word2 中剩下的 5 个 a 附加到 merge 的末尾。 示例 2：
+     *
+     * <p>输入：word1 = "abcabc", word2 = "abdcaba" 输出："abdcabcabcaba"
+     *
+     * <p>提示：
+     *
+     * <p>1 <= word1.length, word2.length <= 3000 word1 和 word2 仅由小写英文组成
+     *
+     * @param word1
+     * @param word2
+     * @return
+     */
+    public String largestMerge(String word1, String word2) {
+        int idx1 = 0, idx2 = 0;
+        int len1 = word1.length(), len2 = word2.length();
+        StringBuilder sb = new StringBuilder();
+        while (idx1 < len1 || idx2 < len2) {
+            if (idx1 == len1) {
+                sb.append(word2.substring(idx2));
+                break;
+            } else if (idx2 == len2) {
+                sb.append(word1.substring(idx1));
+                break;
+            }
+            char c1 = word1.charAt(idx1), c2 = word2.charAt(idx2);
+            if (c1 > c2) {
+                sb.append(word1.charAt(idx1++));
+            } else if (c2 > c1) {
+                sb.append(word2.charAt(idx2++));
+            } else {
+                if (idx1 == len1 - 1) {
+                    sb.append(word2.charAt(idx2++));
+                } else if (idx2 == len2 - 1) {
+                    sb.append(word1.charAt(idx1++));
+                }
+                // 比较下一位
+            }
+            /*if (word1.substring(idx1).compareTo(word2.substring(idx2)) >= 0) {
+                sb.append(word1.charAt(idx1++));
+            } else {
+                sb.append(word2.charAt(idx2++));
+            }*/
+        }
+
+        return sb.toString();
+    }
+
+    @Test
+    public void largestMerge() {
+        String word1 = "abcabc", word2 = "abdcaba";
+        logResult(largestMerge(word1, word2));
+    }
 }

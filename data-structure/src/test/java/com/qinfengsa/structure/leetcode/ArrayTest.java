@@ -6796,7 +6796,7 @@ public class ArrayTest {
 
     @Test
     public void checkPossibility() {
-        int[] nums = {1, 2, 6, 7, 3, 5};
+        int[] nums = {3, 4, 2, 3};
         logResult(checkPossibility(nums));
     }
 
@@ -6829,12 +6829,13 @@ public class ArrayTest {
             count++;
         }
         int index = 1;
-        for (int i = 2; i < len; i++) {
+        for (int i = 1; i < len; i++) {
 
             if (nums[i] >= nums[index]) {
                 index = i;
             } else if (nums[i] >= nums[index - 1]) {
                 index = i;
+                count++;
             } else {
                 count++;
             }
