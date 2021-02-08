@@ -6253,8 +6253,8 @@ public class DynamicPlanTest {
         // 1 当 k 为偶数时，A[k] > A[k+1]，且当 k 为奇数时，A[k] < A[k+1]。
         int[][] dp = new int[len][2];
         int max = 1;
-        dp[0][0] = 1;
-        dp[0][1] = 1;
+        dp[len - 1][0] = 1;
+        dp[len - 1][1] = 1;
         for (int i = len - 2; i >= 0; i--) {
 
             if ((i & 1) == 1) {
@@ -6287,7 +6287,14 @@ public class DynamicPlanTest {
             max = Math.max(max, dp[i][0]);
             max = Math.max(max, dp[i][1]);
         }
+        logResult(dp);
         return max;
+    }
+
+    @Test
+    public void maxTurbulenceSize() {
+        int[] nums = {0, 8, 45, 88, 48, 68, 28, 55, 17, 24};
+        logResult(maxTurbulenceSize(nums));
     }
 
     /**
@@ -7891,5 +7898,159 @@ public class DynamicPlanTest {
     public void tilingRectangle() {
         int n = 7, m = 4;
         logResult(tilingRectangle(n, m));
+    }
+
+    /**
+     * 1269. 停在原地的方案数
+     *
+     * <p>有一个长度为 arrLen 的数组，开始有一个指针在索引 0 处。
+     *
+     * <p>每一步操作中，你可以将指针向左或向右移动 1 步，或者停在原地（指针不能被移动到数组范围外）。
+     *
+     * <p>给你两个整数 steps 和 arrLen ，请你计算并返回：在恰好执行 steps 次操作以后，指针仍然指向索引 0 处的方案数。
+     *
+     * <p>由于答案可能会很大，请返回方案数 模 10^9 + 7 后的结果。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：steps = 3, arrLen = 2 输出：4 解释：3 步后，总共有 4 种不同的方法可以停在索引 0 处。 向右，向左，不动 不动，向右，向左 向右，不动，向左
+     * 不动，不动，不动 示例 2：
+     *
+     * <p>输入：steps = 2, arrLen = 4 输出：2 解释：2 步后，总共有 2 种不同的方法可以停在索引 0 处。 向右，向左 不动，不动 示例 3：
+     *
+     * <p>输入：steps = 4, arrLen = 2 输出：8
+     *
+     * <p>提示：
+     *
+     * <p>1 <= steps <= 500 1 <= arrLen <= 10^6
+     *
+     * @param steps
+     * @param arrLen
+     * @return
+     */
+    public int numWays(int steps, int arrLen) {
+        int[][] dp = new int[2][arrLen];
+        dp[0][0] = 1;
+        int curIdx = 0, lastIdx = 0;
+        for (int i = 1; i <= steps; i++) {
+            curIdx = i % 2;
+
+            lastIdx = 1 - curIdx;
+            for (int j = 0; j < Math.min(steps + 1, arrLen); j++) {
+                // 原地不动
+                // dp[j] = dp[j];
+                dp[curIdx][j] = dp[lastIdx][j];
+                // 右移
+                if (j > 0) {
+                    dp[curIdx][j] += dp[lastIdx][j - 1];
+                    dp[curIdx][j] %= MOD;
+                }
+                // 左移
+                if (j < arrLen - 1) {
+                    dp[curIdx][j] += dp[lastIdx][j + 1];
+                    dp[curIdx][j] %= MOD;
+                }
+            }
+        }
+        log.debug("curIdx:{}", curIdx);
+        logResult(dp);
+        return dp[curIdx][0];
+    }
+
+    @Test
+    public void numWays() {
+        int steps = 4, arrLen = 2;
+        logResult(numWays(steps, arrLen));
+    }
+
+    /**
+     * 1235. 规划兼职工作
+     *
+     * <p>你打算利用空闲时间来做兼职工作赚些零花钱。
+     *
+     * <p>这里有 n 份兼职工作，每份工作预计从 startTime[i] 开始到 endTime[i] 结束，报酬为 profit[i]。
+     *
+     * <p>给你一份兼职工作表，包含开始时间 startTime，结束时间 endTime 和预计报酬 profit 三个数组，请你计算并返回可以获得的最大报酬。
+     *
+     * <p>注意，时间上出现重叠的 2 份工作不能同时进行。
+     *
+     * <p>如果你选择的工作在时间 X 结束，那么你可以立刻进行在时间 X 开始的下一份工作。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：startTime = [1,2,3,3], endTime = [3,4,5,6], profit = [50,10,40,70] 输出：120 解释： 我们选出第 1
+     * 份和第 4 份工作， 时间范围是 [1-3]+[3-6]，共获得报酬 120 = 50 + 70。 示例 2：
+     *
+     * <p>输入：startTime = [1,2,3,4,6], endTime = [3,5,10,6,9], profit = [20,20,100,70,60] 输出：150 解释：
+     * 我们选择第 1，4，5 份工作。 共获得报酬 150 = 20 + 70 + 60。 示例 3：
+     *
+     * <p>输入：startTime = [1,1,1], endTime = [2,3,4], profit = [5,6,4] 输出：6
+     *
+     * <p>提示：
+     *
+     * <p>1 <= startTime.length == endTime.length == profit.length <= 5 * 10^4 1 <= startTime[i] <
+     * endTime[i] <= 10^9 1 <= profit[i] <= 10^4
+     *
+     * @param startTime
+     * @param endTime
+     * @param profit
+     * @return
+     */
+    public int jobScheduling(int[] startTime, int[] endTime, int[] profit) {
+        int len = startTime.length;
+        List<Job> jobList = new ArrayList<>();
+        for (int i = 0; i < len; i++) {
+            jobList.add(new Job(startTime[i], endTime[i], profit[i]));
+        }
+        jobList.sort(Comparator.comparingInt(o -> o.end));
+        int[] dp = new int[len + 1];
+        int maxProfit = 0;
+        for (int i = 0; i < len; i++) {
+            // 根据start 找 dp的index（二分查找）
+            Job job = jobList.get(i);
+            int start = job.start;
+            // 二分查找
+            int index = getEndTimeIndex(jobList, start);
+            log.debug("index:{}", index);
+            dp[i + 1] = Math.max(dp[i], dp[index] + job.profix);
+            // dp[i + 1] ;
+            maxProfit = Math.max(maxProfit, dp[i + 1]);
+        }
+
+        return maxProfit;
+    }
+
+    static class Job {
+        int start, end, profix;
+
+        public Job(int start, int end, int profix) {
+            this.start = start;
+            this.end = end;
+            this.profix = profix;
+        }
+    }
+
+    private int getEndTimeIndex(List<Job> jobList, int start) {
+        int low = 0, high = jobList.size() - 1;
+        int result = 0;
+        while (low < high) {
+            int mid = (low + high) >> 1;
+            if (jobList.get(mid).end <= start) {
+                result = mid;
+                low = mid + 1;
+            } else {
+                high = mid;
+            }
+        }
+
+        return low;
+    }
+
+    @Test
+    public void jobScheduling() {
+        int[] startTime = {1, 2, 3, 4, 6},
+                endTime = {3, 5, 10, 6, 9},
+                profit = {20, 20, 100, 70, 60};
+        logResult(jobScheduling(startTime, endTime, profit));
     }
 }

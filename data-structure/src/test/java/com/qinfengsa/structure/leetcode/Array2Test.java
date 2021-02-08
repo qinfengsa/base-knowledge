@@ -1630,4 +1630,151 @@ public class Array2Test {
         int[] nums = {1, 2, 3, 2};
         logResult(check(nums));
     }
+
+    /**
+     * 1210. 穿过迷宫的最少移动次数
+     *
+     * <p>你还记得那条风靡全球的贪吃蛇吗？
+     *
+     * <p>我们在一个 n*n 的网格上构建了新的迷宫地图，蛇的长度为 2，也就是说它会占去两个单元格。蛇会从左上角（(0, 0) 和 (0, 1)）开始移动。我们用 0 表示空单元格，用 1
+     * 表示障碍物。蛇需要移动到迷宫的右下角（(n-1, n-2) 和 (n-1, n-1)）。
+     *
+     * <p>每次移动，蛇可以这样走：
+     *
+     * <p>如果没有障碍，则向右移动一个单元格。并仍然保持身体的水平／竖直状态。 如果没有障碍，则向下移动一个单元格。并仍然保持身体的水平／竖直状态。
+     * 如果它处于水平状态并且其下面的两个单元都是空的，就顺时针旋转 90 度。蛇从（(r, c)、(r, c+1)）移动到 （(r, c)、(r+1, c)）。
+     *
+     * <p>如果它处于竖直状态并且其右面的两个单元都是空的，就逆时针旋转 90 度。蛇从（(r, c)、(r+1, c)）移动到（(r, c)、(r, c+1)）。
+     *
+     * <p>返回蛇抵达目的地所需的最少移动次数。
+     *
+     * <p>如果无法到达目的地，请返回 -1。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：grid = [[0,0,0,0,0,1], [1,1,0,0,1,0], [0,0,0,0,1,1], [0,0,1,0,1,0], [0,1,1,0,0,0],
+     * [0,1,1,0,0,0]] 输出：11 解释： 一种可能的解决方案是 [右, 右, 顺时针旋转, 右, 下, 下, 下, 下, 逆时针旋转, 右, 下]。 示例 2：
+     *
+     * <p>输入：grid = [[0,0,1,1,1,1], [0,0,0,0,1,1], [1,1,0,0,0,1], [1,1,1,0,0,1], [1,1,1,0,0,1],
+     * [1,1,1,0,0,0]] 输出：9
+     *
+     * <p>提示：
+     *
+     * <p>2 <= n <= 100 0 <= grid[i][j] <= 1 蛇保证从空单元格开始出发。
+     *
+     * @param grid
+     * @return
+     */
+    public int minimumMoves(int[][] grid) {
+        int n = grid.length;
+        if (grid[n - 1][n - 1] != 0 || grid[n - 1][n - 2] != 0) {
+            return -1;
+        }
+
+        // 广度优先遍历，
+
+        MoveNode root = new MoveNode(0, 1, true);
+        Queue<MoveNode> queue = new LinkedList<>();
+        queue.offer(root);
+        // 有
+        int step = 0;
+        boolean[][][] visited = new boolean[n][n][2];
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                MoveNode node = queue.poll();
+                if (node.headRow == n - 1 && node.headCol == n - 1 && node.flag) {
+                    return step;
+                }
+                int flagIdx = node.flag ? 1 : 0;
+                if (visited[node.headRow][node.headCol][flagIdx]) {
+                    continue;
+                }
+                visited[node.headRow][node.headCol][flagIdx] = true;
+
+                // 横着
+                if (node.flag) {
+                    // 右移
+                    int nextRow = node.headRow, nextCol = node.headCol + 1;
+                    if (nextCol < n
+                            && grid[nextRow][nextCol] == 0
+                            && !visited[nextRow][nextCol][1]) {
+                        queue.offer(new MoveNode(nextRow, nextCol, true));
+                    }
+                    // 下移 旋转
+                    nextRow = node.headRow + 1;
+                    nextCol = node.headCol;
+                    if (nextRow < n
+                            && nextCol < n
+                            && grid[nextRow][nextCol - 1] == 0
+                            && grid[nextRow][nextCol] == 0) {
+                        // 下移
+                        if (!visited[nextRow][nextCol][1]) {
+                            queue.offer(new MoveNode(nextRow, nextCol, true));
+                        }
+                        // 旋转
+                        if (!visited[nextRow][nextCol - 1][0]) {
+                            queue.offer(new MoveNode(nextRow, nextCol - 1, false));
+                        }
+                    }
+
+                } else {
+                    // 竖着
+
+                    // 下移
+                    int nextRow = node.headRow + 1, nextCol = node.headCol;
+                    if (nextRow < n
+                            && grid[nextRow][nextCol] == 0
+                            && !visited[nextRow][nextCol][0]) {
+                        queue.offer(new MoveNode(nextRow, nextCol, false));
+                    }
+
+                    // 右移 + 旋转
+                    nextRow = node.headRow;
+                    nextCol = node.headCol + 1;
+                    if (nextRow < n
+                            && nextCol < n
+                            && grid[nextRow - 1][nextCol] == 0
+                            && grid[nextRow][nextCol] == 0) {
+                        // 右移
+                        if (!visited[nextRow][nextCol][0]) {
+                            queue.offer(new MoveNode(nextRow, nextCol, false));
+                        }
+                        // 旋转
+                        if (!visited[nextRow - 1][nextCol][1]) {
+                            queue.offer(new MoveNode(nextRow - 1, nextCol, true));
+                        }
+                    }
+                }
+            }
+            step++;
+        }
+
+        return -1;
+    }
+
+    static class MoveNode {
+        int headRow, headCol;
+
+        boolean flag;
+
+        public MoveNode(int headRow, int headCol, boolean flag) {
+            this.headRow = headRow;
+            this.headCol = headCol;
+            this.flag = flag;
+        }
+    }
+
+    @Test
+    public void minimumMoves() {
+        int[][] grid = {
+            {0, 0, 1, 1, 1, 1},
+            {0, 0, 0, 0, 1, 1},
+            {1, 1, 0, 0, 0, 1},
+            {1, 1, 1, 0, 0, 1},
+            {1, 1, 1, 0, 0, 1},
+            {1, 1, 1, 0, 0, 0}
+        };
+        logResult(minimumMoves(grid));
+    }
 }
