@@ -2,9 +2,13 @@ package com.qinfengsa.structure.leetcode;
 
 import static com.qinfengsa.structure.util.LogUtils.logResult;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -391,6 +395,216 @@ public class CalculatorTest {
      */
     public List<String> basicCalculatorIV(String expression, String[] evalvars, int[] evalints) {
 
-        return null;
+        Map<String, Integer> evalMap = new HashMap<>();
+        for (int i = 0; i < evalvars.length; i++) {
+            evalMap.put(evalvars[i], evalints[i]);
+        }
+
+        Deque<Expression> expStack = new LinkedList<>();
+        Deque<String> opStack = new LinkedList<>();
+
+        int i = 0, len = expression.length();
+        while (i < len) {
+            if (expression.charAt(i) == ' ') {
+                i++;
+                continue;
+            }
+            char c = expression.charAt(i);
+            if (isNumber(c)) {
+                int num = 0;
+                while (i < len && isNumber(expression.charAt(i))) {
+                    num = num * 10 + (expression.charAt(i) - '0');
+                    i++;
+                }
+                expStack.push(new Expression(new Polynomial(num)));
+            } else if (c >= 'a' && c <= 'z') {
+                int start = i;
+                while (i < len && expression.charAt(i) >= 'a' && expression.charAt(i) <= 'z') {
+                    i++;
+                }
+                String factor = expression.substring(start, i);
+                if (evalMap.containsKey(factor)) {
+                    expStack.push(new Expression(new Polynomial(evalMap.get(factor))));
+                } else {
+                    expStack.push(new Expression(new Polynomial(factor, 1)));
+                }
+
+            } else if (c == '(') {
+                opStack.push("(");
+                i++;
+            } else if (c == ')') {
+                while (!opStack.isEmpty() && !opStack.peek().equals("(")) {
+                    Expression exp2 = expStack.pop();
+                    Expression exp1 = expStack.pop();
+                    expStack.push(exp1.operate(exp2, opStack.pop()));
+                }
+                opStack.pop();
+                i++;
+            } else if (c == '*') {
+                while (!opStack.isEmpty() && opStack.peek().equals("*")) {
+                    Expression exp2 = expStack.pop();
+                    Expression exp1 = expStack.pop();
+                    expStack.push(exp1.operate(exp2, opStack.pop()));
+                }
+                opStack.push("*");
+                i++;
+            } else {
+                while (!opStack.isEmpty()
+                        && (opStack.peek().equals("+")
+                                || opStack.peek().equals("-")
+                                || opStack.peek().equals("*"))) {
+                    Expression exp2 = expStack.pop();
+                    Expression exp1 = expStack.pop();
+                    expStack.push(exp1.operate(exp2, opStack.pop()));
+                }
+                opStack.push(c == '+' ? "+" : "-");
+
+                i++;
+            }
+        }
+        while (!opStack.isEmpty()) {
+            Expression exp2 = expStack.pop();
+            Expression exp1 = expStack.pop();
+            expStack.push(exp1.operate(exp2, opStack.pop()));
+        }
+        List<String> result = new ArrayList<>();
+        Expression exp = expStack.pop();
+        exp.clean();
+        Collections.sort(exp.items);
+        for (Polynomial item : exp.items) {
+            result.add(item.toString());
+        }
+
+        return result;
+    }
+
+    // 多项式
+    static class Polynomial implements Comparable<Polynomial> {
+        // 系数
+        int coeff;
+
+        List<String> factors;
+
+        Polynomial(String factor, int coeff) {
+            this.factors = new ArrayList<>();
+            this.factors.add(factor);
+            this.coeff = coeff;
+        }
+
+        Polynomial(int coeff) {
+            this.factors = new ArrayList<>();
+            this.coeff = coeff;
+        }
+
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder().append(coeff);
+
+            factors.forEach(factor -> sb.append("*").append(factor));
+
+            return sb.toString();
+        }
+
+        @Override
+        public int compareTo(Polynomial o) {
+            if (this.factors.size() == o.factors.size()) {
+                for (int i = 0; i < factors.size(); i++) {
+                    int num = factors.get(i).compareTo(o.factors.get(i));
+                    if (num != 0) {
+                        return num;
+                    }
+                }
+                return 0;
+            }
+            return o.factors.size() - this.factors.size();
+        }
+
+        public Polynomial mult(Polynomial item) {
+            Polynomial result = new Polynomial(this.coeff * item.coeff);
+            result.factors.addAll(this.factors);
+            result.factors.addAll(item.factors);
+            Collections.sort(result.factors);
+            return result;
+        }
+    }
+
+    // 表达式
+    static class Expression {
+
+        private List<Polynomial> items;
+
+        Expression(Polynomial item) {
+            items = new ArrayList<>();
+            items.add(item);
+        }
+
+        void add(Expression expression) {
+            this.items.addAll(expression.items);
+            Collections.sort(this.items);
+            clean();
+        }
+
+        void mult(Expression expression) {
+            List<Polynomial> tmpItems = items;
+            items = new ArrayList<>();
+            for (Polynomial item1 : tmpItems) {
+                for (Polynomial item2 : expression.items) {
+                    items.add(item1.mult(item2));
+                }
+            }
+            Collections.sort(this.items);
+            clean();
+        }
+
+        void clean() {
+            List<Polynomial> tmpItems = items;
+            items = new ArrayList<>();
+
+            for (Polynomial item : tmpItems) {
+                if (items.isEmpty()) {
+                    if (item.coeff != 0) {
+                        items.add(item);
+                    }
+                    continue;
+                }
+                Polynomial last = items.get(items.size() - 1);
+                if (last.compareTo(item) == 0) {
+                    last.coeff += item.coeff;
+                    if (last.coeff == 0) {
+                        items.remove(items.size() - 1);
+                    }
+                } else {
+                    items.add(item);
+                }
+            }
+        }
+
+        Expression operate(Expression expression, String op) {
+            switch (op) {
+                case "+":
+                    add(expression);
+                    break;
+                case "-":
+                    {
+                        for (Polynomial item : expression.items) {
+                            item.coeff *= -1;
+                        }
+                        add(expression);
+                    }
+                    break;
+                case "*":
+                    mult(expression);
+                    break;
+            }
+            return this;
+        }
+    }
+
+    @Test
+    public void basicCalculatorIV() {
+        String expression = "0";
+        String[] evalvars = {};
+        int[] evalints = {};
+        logResult(basicCalculatorIV(expression, evalvars, evalints));
     }
 }
