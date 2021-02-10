@@ -3,6 +3,7 @@ package com.qinfengsa.structure.leetcode;
 import static com.qinfengsa.structure.util.LogUtils.logResult;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Deque;
 import java.util.HashMap;
@@ -1847,5 +1848,82 @@ public class Array2Test {
         int[] A = {1, 2, 1, 3, 4};
         int K = 3;
         logResult(subarraysWithKDistinct(A, K));
+    }
+
+    /**
+     * LCP 04. 覆盖
+     *
+     * <p>你有一块棋盘，棋盘上有一些格子已经坏掉了。你还有无穷块大小为1 *
+     * 2的多米诺骨牌，你想把这些骨牌不重叠地覆盖在完好的格子上，请找出你最多能在棋盘上放多少块骨牌？这些骨牌可以横着或者竖着放。
+     *
+     * <p>输入：n, m代表棋盘的大小；broken是一个b * 2的二维数组，其中每个元素代表棋盘上每一个坏掉的格子的位置。
+     *
+     * <p>输出：一个整数，代表最多能在棋盘上放的骨牌数。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：n = 2, m = 3, broken = [[1, 0], [1, 1]] 输出：2 解释：我们最多可以放两块骨牌：[[0, 0], [0, 1]]以及[[0, 2],
+     * [1, 2]]。（见下图）
+     *
+     * <p>示例 2：
+     *
+     * <p>输入：n = 3, m = 3, broken = [] 输出：4 解释：下图是其中一种可行的摆放方式
+     *
+     * <p>限制：
+     *
+     * <p>1 <= n <= 8 1 <= m <= 8 0 <= b <= n * m
+     *
+     * @param n
+     * @param m
+     * @param broken
+     * @return
+     */
+    public int domino(int n, int m, int[][] broken) {
+        int len = n * m;
+        boolean[][] graph = new boolean[n][m];
+        for (int[] b : broken) {
+            graph[b[0]][b[1]] = true;
+        }
+        int[] match = new int[len];
+        Arrays.fill(match, -1);
+        boolean[] visited = new boolean[len];
+        int result = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (graph[i][j] || ((i + j) & 1) == 1) {
+                    continue;
+                }
+                Arrays.fill(visited, false);
+                if (findDomino(graph, match, visited, i, j)) {
+                    result++;
+                }
+            }
+        }
+
+        return result;
+    }
+
+    private boolean findDomino(
+            boolean[][] graph, int[] match, boolean[] visited, int row, int col) {
+
+        int n = graph.length, m = graph[0].length;
+        for (int i = 0; i < 4; i++) {
+            int newRow = row + DIR_ROW[i], newCol = col + DIR_COL[i];
+            if (!inArea(newRow, newCol, n, m) || graph[newRow][newCol]) {
+                continue;
+            }
+
+            int idx = newRow * m + newCol;
+            if (visited[idx]) {
+                continue;
+            }
+            visited[idx] = true;
+            if (match[idx] == -1
+                    || findDomino(graph, match, visited, match[idx] / m, match[idx] % m)) {
+                match[idx] = row * m + col;
+                return true;
+            }
+        }
+        return false;
     }
 }
