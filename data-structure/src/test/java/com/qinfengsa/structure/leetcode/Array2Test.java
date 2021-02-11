@@ -1926,4 +1926,178 @@ public class Array2Test {
         }
         return false;
     }
+
+    /**
+     * LCP 20. 快速公交
+     *
+     * <p>小扣打算去秋日市集，由于游客较多，小扣的移动速度受到了人流影响：
+     *
+     * <p>小扣从 x 号站点移动至 x + 1 号站点需要花费的时间为 inc； 小扣从 x 号站点移动至 x - 1 号站点需要花费的时间为 dec。 现有 m 辆公交车，编号为 0 到
+     * m-1。小扣也可以通过搭乘编号为 i 的公交车，从 x 号站点移动至 jump[i]*x 号站点，耗时仅为 cost[i]。小扣可以搭乘任意编号的公交车且搭乘公交次数不限。
+     *
+     * <p>假定小扣起始站点记作 0，秋日市集站点记作 target，请返回小扣抵达秋日市集最少需要花费多少时间。由于数字较大，最终答案需要对 1000000007 (1e9 + 7) 取模。
+     *
+     * <p>注意：小扣可在移动过程中到达编号大于 target 的站点。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：target = 31, inc = 5, dec = 3, jump = [6], cost = [10]
+     *
+     * <p>输出：33
+     *
+     * <p>解释： 小扣步行至 1 号站点，花费时间为 5； 小扣从 1 号站台搭乘 0 号公交至 6 * 1 = 6 站台，花费时间为 10； 小扣从 6 号站台步行至 5
+     * 号站台，花费时间为 3； 小扣从 5 号站台搭乘 0 号公交至 6 * 5 = 30 站台，花费时间为 10； 小扣从 30 号站台步行至 31 号站台，花费时间为 5；
+     * 最终小扣花费总时间为 33。
+     *
+     * <p>示例 2：
+     *
+     * <p>输入：target = 612, inc = 4, dec = 5, jump = [3,6,8,11,5,10,4], cost = [4,7,6,3,7,6,4]
+     *
+     * <p>输出：26
+     *
+     * <p>解释： 小扣步行至 1 号站点，花费时间为 4； 小扣从 1 号站台搭乘 0 号公交至 3 * 1 = 3 站台，花费时间为 4； 小扣从 3 号站台搭乘 3 号公交至 11 *
+     * 3 = 33 站台，花费时间为 3； 小扣从 33 号站台步行至 34 站台，花费时间为 4； 小扣从 34 号站台搭乘 0 号公交至 3 * 34 = 102 站台，花费时间为 4；
+     * 小扣从 102 号站台搭乘 1 号公交至 6 * 102 = 612 站台，花费时间为 7； 最终小扣花费总时间为 26。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= target <= 10^9 1 <= jump.length, cost.length <= 10 2 <= jump[i] <= 10^6 1 <= inc,
+     * dec, cost[i] <= 10^6
+     *
+     * @param target
+     * @param inc
+     * @param dec
+     * @param jump
+     * @param cost
+     * @return
+     */
+    public int busRapidTransit(int target, int inc, int dec, int[] jump, int[] cost) {
+        if (jump.length == 0) {
+            return target * inc;
+        }
+        this.inc = inc;
+        this.dec = dec;
+        this.jump = jump;
+        this.cost = cost;
+        costMap = new HashMap<>();
+        // 从终点出发
+        return (int) (busRapidTransitDfs(target) % MOD);
+    }
+
+    static final int MOD = 1000000007;
+
+    private long busRapidTransitDfs(long target) {
+        if (target == 0) {
+            return 0;
+        }
+        if (target == 1) {
+            return inc;
+        }
+        if (costMap.containsKey(target)) {
+            return costMap.get(target);
+        }
+        long result = target * inc;
+        for (int i = 0; i < jump.length; i++) {
+            long num = target % jump[i];
+            if (num == 0) {
+                result = Math.min(result, busRapidTransitDfs(target / jump[i]) + cost[i]);
+            } else {
+                // 左移 num 个站点
+                result =
+                        Math.min(
+                                result, busRapidTransitDfs(target / jump[i]) + cost[i] + num * inc);
+                // 右移 jump[i] - num 个站点
+                result =
+                        Math.min(
+                                result,
+                                busRapidTransitDfs(target / jump[i] + 1)
+                                        + cost[i]
+                                        + (jump[i] - num) * dec);
+            }
+        }
+        costMap.put(target, result);
+        return result;
+    }
+
+    private Map<Long, Long> costMap;
+
+    private int inc, dec;
+    private int[] jump, cost;
+
+    /**
+     * LCP 14. 切分数组
+     *
+     * <p>给定一个整数数组 nums ，小李想将 nums 切割成若干个非空子数组，使得每个子数组最左边的数和最右边的数的最大公约数大于 1
+     * 。为了减少他的工作量，请求出最少可以切成多少个子数组。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：nums = [2,3,3,2,3,3]
+     *
+     * <p>输出：2
+     *
+     * <p>解释：最优切割为 [2,3,3,2] 和 [3,3] 。第一个子数组头尾数字的最大公约数为 2 ，第二个子数组头尾数字的最大公约数为 3 。
+     *
+     * <p>示例 2：
+     *
+     * <p>输入：nums = [2,3,5,7]
+     *
+     * <p>输出：4
+     *
+     * <p>解释：只有一种可行的切割：[2], [3], [5], [7]
+     *
+     * <p>限制：
+     *
+     * <p>1 <= nums.length <= 10^5 2 <= nums[i] <= 10^6
+     *
+     * @param nums
+     * @return
+     */
+    public int splitArray(int[] nums) {
+
+        int maxNum = Arrays.stream(nums).max().getAsInt();
+        // 最小质数
+        minPrime = new int[maxNum + 1];
+        for (int i = 2; i <= maxNum; i++) {
+            if (minPrime[i] > 0) {
+                continue;
+            }
+            // 记录最小质数
+            for (int j = i; j <= maxNum; j += i) {
+                minPrime[j] = i;
+            }
+        }
+        int len = nums.length;
+        int[] dp = new int[len];
+        primeMinIndexMap = new HashMap<>();
+        for (int i = 0; i < len; i++) {
+            int num = nums[i];
+            // 当前num 单独拆分1个数组
+            dp[i] = i > 0 ? dp[i - 1] + 1 : 1;
+            // 因式分解
+            while (num > 1) {
+                // 当前元素的最小质数
+                int factor = minPrime[num];
+                int minIndex = primeMinIndexMap.getOrDefault(factor, i);
+                primeMinIndexMap.put(factor, minIndex);
+                if (minIndex > 0) {
+                    dp[i] = Math.min(dp[i], dp[minIndex - 1] + 1);
+                } else {
+                    // 和第一位组合
+                    dp[i] = 1;
+                }
+                if (dp[i] < dp[minIndex]) {
+                    primeMinIndexMap.put(factor, i);
+                }
+                // 因式分解
+                num /= factor;
+            }
+        }
+
+        return dp[len - 1];
+    }
+
+    private int[] minPrime;
+
+    Map<Integer, Integer> primeMinIndexMap;
 }
