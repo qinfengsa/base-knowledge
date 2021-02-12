@@ -2100,4 +2100,182 @@ public class Array2Test {
     private int[] minPrime;
 
     Map<Integer, Integer> primeMinIndexMap;
+
+    /**
+     * LCP 15. 游乐园的迷宫
+     *
+     * <p>小王来到了游乐园，她玩的第一个项目是模拟推销员。有一个二维平面地图，其中散布着 N 个推销点，编号 0 到
+     * N-1，不存在三点共线的情况。每两点之间有一条直线相连。游戏没有规定起点和终点，但限定了每次转角的方向。首先，小王需要先选择两个点分别作为起点和终点，然后从起点开始访问剩余 N-2
+     * 个点恰好一次并回到终点。访问的顺序需要满足一串给定的长度为 N-2 由 L 和 R 组成的字符串
+     * direction，表示从起点出发之后在每个顶点上转角的方向。根据这个提示，小王希望你能够帮她找到一个可行的遍历顺序，输出顺序下标（若有多个方案，输出任意一种）。可以证明这样的遍历顺序一定是存在的。
+     *
+     * <p>Screenshot 2020-03-20 at 17.04.58.png
+     *
+     * <p>（上图：A->B->C 右转； 下图：D->E->F 左转）
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：points = [[1,1],[1,4],[3,2],[2,1]], direction = "LL"
+     *
+     * <p>输入：[0,2,1,3]
+     *
+     * <p>解释：[0,2,1,3] 是符合"LL"的方案之一。在 [0,2,1,3] 方案中，0->2->1 是左转方向， 2->1->3 也是左转方向 图片.gif
+     *
+     * <p>示例 2：
+     *
+     * <p>输入：points = [[1,3],[2,4],[3,3],[2,1]], direction = "LR"
+     *
+     * <p>输入：[0,3,1,2]
+     *
+     * <p>解释：[0,3,1,2] 是符合"LR"的方案之一。在 [0,3,1,2] 方案中，0->3->1 是左转方向， 3->1->2 是右转方向
+     *
+     * <p>限制：
+     *
+     * <p>3 <= points.length <= 1000 且 points[i].length == 2 1 <= points[i][0],points[i][1] <= 10000
+     * direction.length == points.length - 2 direction 只包含 "L","R"
+     *
+     * @param points
+     * @param direction
+     * @return
+     */
+    public int[] visitOrder(int[][] points, String direction) {
+        int len = points.length, start = 0, index = 0;
+
+        int[] result = new int[len];
+        boolean[] visited = new boolean[len];
+        // 找最左边的点
+        for (int i = 1; i < len; i++) {
+            if (points[i][0] < points[start][0]) {
+                start = i;
+            }
+        }
+        result[index++] = start;
+        visited[start] = true;
+
+        for (char c : direction.toCharArray()) {
+            int next = -1;
+
+            for (int i = 0; i < len; i++) {
+                if (visited[i]) {
+                    continue;
+                }
+                if (next == -1) {
+                    next = i;
+                    continue;
+                }
+                // 斜率大 靠左 (point[next][1] - point[start][1]) y/  (point[next][0] - point[start][0])x
+                // >  (point[i[1] - point[start][1]) y/  (point[i][0] - point[start][0])x
+                // => (point[next][1] - point[start][1]) *  (point[i][0] - point[start][0])
+                // >  (point[i[1] - point[start][1]) * (point[next][0] - point[start][0])
+
+                int sub =
+                        (points[next][1] - points[start][1]) * (points[i][0] - points[start][0])
+                                - (points[i][1] - points[start][1])
+                                        * (points[next][0] - points[start][0]);
+                if ((c == 'L' && sub > 0) || (c == 'R' && sub < 0)) {
+                    next = i;
+                }
+            }
+
+            visited[next] = true;
+            result[index++] = next;
+            start = next;
+        }
+
+        for (int i = 0; i < len; i++) {
+            if (!visited[i]) {
+                result[index++] = i;
+            }
+        }
+
+        return result;
+    }
+
+    @Test
+    public void visitOrder() {
+        int[][] points = {{1, 1}, {1, 4}, {3, 2}, {2, 1}};
+        String direction = "LL";
+        int[] result = visitOrder(points, direction);
+        log.debug("result:{}", result);
+    }
+
+    /**
+     * 1719. 重构一棵树的方案数
+     *
+     * <p>给你一个数组 pairs ，其中 pairs[i] = [xi, yi] ，并且满足：
+     *
+     * <p>pairs 中没有重复元素 xi < yi 令 ways 为满足下面条件的有根树的方案数：
+     *
+     * <p>树所包含的所有节点值都在 pairs 中。 一个数对 [xi, yi] 出现在 pairs 中 当且仅当 xi 是 yi 的祖先或者 yi 是 xi 的祖先。
+     * 注意：构造出来的树不一定是二叉树。 两棵树被视为不同的方案当存在至少一个节点在两棵树中有不同的父节点。
+     *
+     * <p>请你返回：
+     *
+     * <p>如果 ways == 0 ，返回 0 。 如果 ways == 1 ，返回 1 。 如果 ways > 1 ，返回 2 。 一棵 有根树
+     * 指的是只有一个根节点的树，所有边都是从根往外的方向。
+     *
+     * <p>我们称从根到一个节点路径上的任意一个节点（除去节点本身）都是该节点的 祖先 。根节点没有祖先。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：pairs = [[1,2],[2,3]] 输出：1 解释：如上图所示，有且只有一个符合规定的有根树。 示例 2：
+     *
+     * <p>输入：pairs = [[1,2],[2,3],[1,3]] 输出：2 解释：有多个符合规定的有根树，其中三个如上图所示。 示例 3：
+     *
+     * <p>输入：pairs = [[1,2],[2,3],[2,4],[1,5]] 输出：0 解释：没有符合规定的有根树。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= pairs.length <= 105 1 <= xi < yi <= 500 pairs 中的元素互不相同。
+     *
+     * @param pairs
+     * @return
+     */
+    public int checkWays(int[][] pairs) {
+        int result = 1;
+        int maxNum = 501;
+        int[] degree = new int[maxNum];
+        boolean[] visited = new boolean[maxNum];
+        int[] pre = new int[maxNum];
+        Map<Integer, List<Integer>> graph = new HashMap<>();
+
+        for (int[] pair : pairs) {
+            graph.computeIfAbsent(pair[0], k -> new ArrayList<>()).add(pair[1]);
+            graph.computeIfAbsent(pair[1], k -> new ArrayList<>()).add(pair[0]);
+            degree[pair[0]]++;
+            degree[pair[1]]++;
+            pre[pair[0]] = -1;
+            pre[pair[1]] = -1;
+        }
+        List<int[]> degreeList = new ArrayList<>();
+        for (int i = 0; i < degree.length; i++) {
+            if (degree[i] == 0) {
+                continue;
+            }
+            degreeList.add(new int[] {i, degree[i]});
+        }
+        degreeList.sort((a, b) -> b[1] - a[1]);
+        // 所有的祖先 节点 是 degree 最大的 == 所有节点数 - 1
+        if (degreeList.get(0)[1] != degreeList.size() - 1) {
+            return 0;
+        }
+
+        for (int[] degreeNum : degreeList) {
+            int u = degreeNum[0];
+            for (int v : graph.get(u)) {
+                if (degree[u] == degree[v]) {
+                    result = 2;
+                }
+                if (!visited[v]) {
+                    if (pre[u] != pre[v]) {
+                        return 0;
+                    }
+                    pre[v] = u;
+                }
+                visited[u] = true;
+            }
+        }
+
+        return result;
+    }
 }
