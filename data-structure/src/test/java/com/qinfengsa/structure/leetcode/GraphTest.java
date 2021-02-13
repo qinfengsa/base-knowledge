@@ -2463,4 +2463,327 @@ public class GraphTest {
         }
         return depthNums[num];
     }
+
+    /**
+     * LCP 16. 游乐园的游览计划
+     *
+     * <p>又到了一年一度的春游时间，小吴计划去游乐场游玩 1 天，游乐场总共有 N 个游乐项目，编号从 0 到 N-1。小吴给每个游乐项目定义了一个非负整数值 value[i]
+     * 表示自己的喜爱值。两个游乐项目之间会有双向路径相连，整个游乐场总共有 M 条双向路径，保存在二维数组 edges中。 小吴计划选择一个游乐项目 A
+     * 作为这一天游玩的重点项目。上午小吴准备游玩重点项目 A 以及与项目 A 相邻的两个项目 B、C （项目A、B与C要求是不同的项目，且项目B与项目C要求相邻），并返回 A ，即存在一条
+     * A-B-C-A 的路径。 下午，小吴决定再游玩重点项目 A以及与A相邻的两个项目 B'、C'，（项目A、B'与C'要求是不同的项目，且项目B'与项目C'要求相邻），并返回 A
+     * ，即存在一条 A-B'-C'-A 的路径。下午游玩项目 B'、C' 可与上午游玩项目B、C存在重复项目。
+     * 小吴希望提前安排好游玩路径，使得喜爱值之和最大。请你返回满足游玩路径选取条件的最大喜爱值之和，如果没有这样的路径，返回 0。
+     * 注意：一天中重复游玩同一个项目并不能重复增加喜爱值了。例如：上下午游玩路径分别是 A-B-C-A与A-C-D-A 那么只能获得 value[A] + value[B] +
+     * value[C] + value[D] 的总和。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：edges = [[0,1],[1,2],[0,2]], value = [1,2,3]
+     *
+     * <p>输出：6
+     *
+     * <p>解释：喜爱值之和最高的方案之一是 0->1->2->0 与 0->2->1->0 。重复游玩同一点不重复计入喜爱值，返回1+2+3=6
+     *
+     * <p>示例 2：
+     *
+     * <p>输入：edges = [[0,2],[2,1]], value = [1,2,5]
+     *
+     * <p>输出：0
+     *
+     * <p>解释：无满足要求的游玩路径，返回 0
+     *
+     * <p>示例 3：
+     *
+     * <p>输入：edges = [[0,1],[0,2],[0,3],[0,4],[0,5],[1,3],[2,4],[2,5],[3,4],[3,5],[4,5]], value =
+     * [7,8,6,8,9,7]
+     *
+     * <p>输出：39
+     *
+     * <p>解释：喜爱值之和最高的方案之一是 3->0->1->3 与 3->4->5->3 。喜爱值最高为 7+8+8+9+7=39
+     *
+     * <p>限制：
+     *
+     * <p>3 <= value.length <= 10000 1 <= edges.length <= 10000 0 <= edges[i][0],edges[i][1] <
+     * value.length 0 <= value[i] <= 10000 edges中没有重复的边 edges[i][0] != edges[i][1]
+     *
+     * @param edges
+     * @param value
+     * @return
+     */
+    public int maxWeight(int[][] edges, int[] value) {
+        if (edges.length < 3 || value.length < 3) {
+            return 0;
+        }
+        int len = value.length;
+        this.valueNums = value;
+        Map<Integer, Set<Integer>> graph = new HashMap<>();
+        int[] degree = new int[len];
+        List<int[]> edgeList = new ArrayList<>();
+
+        // 构建图
+        for (int[] edge : edges) {
+            graph.computeIfAbsent(edge[0], k -> new HashSet<>()).add(edge[1]);
+            graph.computeIfAbsent(edge[1], k -> new HashSet<>()).add(edge[0]);
+            degree[edge[0]]++;
+            degree[edge[1]]++;
+            edgeList.add(edge);
+        }
+        edgeList.sort((a, b) -> (value[b[0]] + value[b[1]]) - (value[a[0]] + value[a[1]]));
+        int maxD = (int) Math.sqrt(edges.length);
+
+        int result = 0;
+        // 遍历 value
+        for (int i = 0; i < len; i++) {
+            Set<Integer> set = graph.get(i);
+            if (Objects.isNull(set)) {
+                continue;
+            }
+            // 以点i 作为 重点项目 A
+            if (degree[i] >= maxD) {
+                // 枚举权重最大的前3条边
+                int b = -1, b1 = -1, b2 = -1, c = -1, c1 = -1, c2 = -1;
+
+                int maxEdgeValue = -1;
+                // 直接遍历所有的边
+                for (int[] edge : edgeList) {
+                    if (!set.contains(edge[0]) || !set.contains(edge[1])) {
+                        continue;
+                    }
+                    if (b == -1) {
+                        b = edge[0];
+                        c = edge[1];
+                        maxEdgeValue = Math.max(maxEdgeValue, calcValue(b, c, b, c));
+                    } else if (b1 == -1) {
+                        b1 = edge[0];
+                        c1 = edge[1];
+                        maxEdgeValue = Math.max(maxEdgeValue, calcValue(b1, c1, b, c));
+                    } else if (b2 == -1) {
+                        b2 = edge[0];
+                        c2 = edge[1];
+                        maxEdgeValue = Math.max(maxEdgeValue, calcValue(b, c, b2, c2));
+                        maxEdgeValue = Math.max(maxEdgeValue, calcValue(b1, c1, b2, c2));
+                    } else {
+                        maxEdgeValue = Math.max(maxEdgeValue, calcValue(b, c, edge[0], edge[1]));
+                        maxEdgeValue = Math.max(maxEdgeValue, calcValue(b1, c1, edge[0], edge[1]));
+                        maxEdgeValue = Math.max(maxEdgeValue, calcValue(b2, c2, edge[0], edge[1]));
+                    }
+                }
+                if (maxEdgeValue != -1) {
+                    result = Math.max(result, value[i] + maxEdgeValue);
+                }
+            } else {
+                // 遍历所有的点 计算
+                // 当前点的所有边
+                List<int[]> pointEdgeList = new ArrayList<>();
+                for (int b : set) {
+                    for (int c : set) {
+                        if (b >= c) {
+                            continue;
+                        }
+                        Set<Integer> bSet = graph.get(b);
+                        if (Objects.isNull(bSet) || !bSet.contains(c)) {
+                            continue;
+                        }
+                        pointEdgeList.add(new int[] {b, c});
+                    }
+                }
+                int maxEdgeValue = -1;
+                // 排序
+                pointEdgeList.sort(
+                        (a, b) -> (value[b[0]] + value[b[1]]) - (value[a[0]] + value[a[1]]));
+                // 枚举权重最大的前3条边
+                int b = -1, b1 = -1, b2 = -1, c = -1, c1 = -1, c2 = -1;
+                // 直接遍历所有的边
+                for (int[] edge : pointEdgeList) {
+                    if (b == -1) {
+                        b = edge[0];
+                        c = edge[1];
+                        maxEdgeValue = Math.max(maxEdgeValue, calcValue(b, c, b, c));
+                    } else if (b1 == -1) {
+                        b1 = edge[0];
+                        c1 = edge[1];
+                        maxEdgeValue = Math.max(maxEdgeValue, calcValue(b1, c1, b, c));
+                    } else if (b2 == -1) {
+                        b2 = edge[0];
+                        c2 = edge[1];
+                        maxEdgeValue = Math.max(maxEdgeValue, calcValue(b, c, b2, c2));
+                        maxEdgeValue = Math.max(maxEdgeValue, calcValue(b1, c1, b2, c2));
+                    } else {
+                        maxEdgeValue = Math.max(maxEdgeValue, calcValue(b, c, edge[0], edge[1]));
+                        maxEdgeValue = Math.max(maxEdgeValue, calcValue(b1, c1, edge[0], edge[1]));
+                        maxEdgeValue = Math.max(maxEdgeValue, calcValue(b2, c2, edge[0], edge[1]));
+                    }
+                }
+                if (maxEdgeValue != -1) {
+                    result = Math.max(result, value[i] + maxEdgeValue);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    private int[] valueNums;
+
+    /**
+     * 获取两个三角形的 最大value
+     *
+     * @param b
+     * @param c
+     * @param b1
+     * @param c1
+     * @return
+     */
+    private int calcValue(int b, int c, int b1, int c1) {
+        int result = valueNums[b] + valueNums[c];
+        if (b1 != b && b1 != c) {
+            result += valueNums[b1];
+        }
+        if (c1 != b && c1 != c) {
+            result += valueNums[c1];
+        }
+        return result;
+    }
+
+    @Test
+    public void maxWeight() {
+        int[][] edges = {{0, 1}, {1, 2}, {0, 2}};
+        int[] value = {1, 2, 3};
+        logResult(maxWeight(edges, value));
+    }
+
+    /**
+     * LCP 21. 追逐游戏
+     *
+     * <p>秋游中的小力和小扣设计了一个追逐游戏。他们选了秋日市集景区中的 N 个景点，景点编号为 1~N。此外，他们还选择了 N
+     * 条小路，满足任意两个景点之间都可以通过小路互相到达，且不存在两条连接景点相同的小路。整个游戏场景可视作一个无向连通图，记作二维数组 edges，数组中以 [a,b] 形式表示景点 a
+     * 与景点 b 之间有一条小路连通。
+     *
+     * <p>小力和小扣只能沿景点间的小路移动。小力的目标是在最快时间内追到小扣，小扣的目标是尽可能延后被小力追到的时间。游戏开始前，两人分别站在两个不同的景点 startA 和
+     * startB。每一回合，小力先行动，小扣观察到小力的行动后再行动。小力和小扣在每回合可选择以下行动之一：
+     *
+     * <p>移动至相邻景点 留在原地 如果小力追到小扣（即两人于某一时刻出现在同一位置），则游戏结束。若小力可以追到小扣，请返回最少需要多少回合；若小力无法追到小扣，请返回 -1。
+     *
+     * <p>注意：小力和小扣一定会采取最优移动策略。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：edges = [[1,2],[2,3],[3,4],[4,1],[2,5],[5,6]], startA = 3, startB = 5
+     *
+     * <p>输出：3
+     *
+     * <p>解释： image.png
+     *
+     * <p>第一回合，小力移动至 2 号点，小扣观察到小力的行动后移动至 6 号点； 第二回合，小力移动至 5 号点，小扣无法移动，留在原地； 第三回合，小力移动至 6
+     * 号点，小力追到小扣。返回 3。
+     *
+     * <p>示例 2：
+     *
+     * <p>输入：edges = [[1,2],[2,3],[3,4],[4,1]], startA = 1, startB = 3
+     *
+     * <p>输出：-1
+     *
+     * <p>解释： image.png
+     *
+     * <p>小力如果不动，则小扣也不动；否则小扣移动到小力的对角线位置。这样小力无法追到小扣。
+     *
+     * <p>提示：
+     *
+     * <p>edges 的长度等于图中节点个数 3 <= edges.length <= 10^5 1 <= edges[i][0], edges[i][1] <= edges.length
+     * 且 edges[i][0] != edges[i][1] 1 <= startA, startB <= edges.length 且 startA != startB
+     *
+     * @param edges
+     * @param startA
+     * @param startB
+     * @return
+     */
+    public int chaseGame(int[][] edges, int startA, int startB) {
+        int n = edges.length;
+        Map<Integer, List<Integer>> graph = new HashMap<>();
+        int[] degree = new int[n + 1];
+
+        int ringHead = -1;
+        // 构建图
+        for (int[] edge : edges) {
+            graph.computeIfAbsent(edge[0], k -> new ArrayList<>()).add(edge[1]);
+            graph.computeIfAbsent(edge[1], k -> new ArrayList<>()).add(edge[0]);
+            // startA 和 startB 相邻
+            if ((edge[0] == startA && edge[1] == startB)
+                    || (edge[1] == startA && edge[0] == startB)) {
+                return 1;
+            }
+            degree[edge[0]]++;
+            degree[edge[1]]++;
+            if (degree[edge[0]] == 3) {
+                ringHead = edge[0];
+            }
+            if (degree[edge[1]] == 3) {
+                ringHead = edge[1];
+            }
+        }
+
+        // n 个点 n条边 一定有一个环 通过 degree 找到 环 degree == 3 的是换的焦点,
+        // 不存在度数为3的点 说明所有的点都在 环上
+        if (ringHead == -1) {
+            // 永远追不上
+            return -1;
+        }
+        // 记录 所有点 到 startA 和 startB 的距离
+        int[] distA = new int[n + 1], distB = new int[n + 1];
+        chaseGameBfs(graph, distA, startA);
+        chaseGameBfs(graph, distB, startB);
+        // 找到 degree 为 1 的点, 作为起点, ringHead 作为终点, 这些点在环外, 其他点在环内
+        Queue<Integer> queue = new LinkedList<>();
+        for (int i = 1; i <= n; i++) {
+            if (degree[i] == 1) {
+                queue.offer(i);
+            }
+        }
+        int ringCount = n;
+        while (!queue.isEmpty()) {
+            Integer p = queue.poll();
+            if (Objects.isNull(p)) {
+                break;
+            }
+            ringCount--;
+            for (int next : graph.get(p)) {
+                degree[next]--;
+                if (degree[next] == 1) {
+                    queue.offer(next);
+                }
+            }
+        }
+        int result = -1;
+        for (int i = 1; i <= n; i++) {
+            if (distA[i] > distB[i] + 1) {
+                // 表示这是环上的点，B可以先一步到达
+                if (degree[i] > 1 && ringCount > 3) {
+                    result = -1;
+                    break;
+                } else {
+                    result = Math.max(result, distA[i]);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    private void chaseGameBfs(Map<Integer, List<Integer>> graph, int[] dist, int start) {
+        Queue<Integer> queue = new LinkedList<>();
+        queue.offer(start);
+        dist[start] = 0;
+        while (!queue.isEmpty()) {
+            Integer p = queue.poll();
+            if (Objects.isNull(p)) {
+                break;
+            }
+            for (int next : graph.get(p)) {
+                if (dist[next] == 0 && next != start) {
+                    dist[next] = dist[p] + 1;
+                    queue.offer(next);
+                }
+            }
+        }
+    }
 }
