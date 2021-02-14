@@ -414,4 +414,106 @@ public class String2Test {
 
         logResult(minimumLength(s));
     }
+
+    /**
+     * 5676. 生成交替二进制字符串的最少操作数
+     *
+     * <p>给你一个仅由字符 '0' 和 '1' 组成的字符串 s 。一步操作中，你可以将任一 '0' 变成 '1' ，或者将 '1' 变成 '0' 。
+     *
+     * <p>交替字符串 定义为：如果字符串中不存在相邻两个字符相等的情况，那么该字符串就是交替字符串。例如，字符串 "010" 是交替字符串，而字符串 "0100" 不是。
+     *
+     * <p>返回使 s 变成 交替字符串 所需的 最少 操作数。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：s = "0100" 输出：1 解释：如果将最后一个字符变为 '1' ，s 就变成 "0101" ，即符合交替字符串定义。 示例 2：
+     *
+     * <p>输入：s = "10" 输出：0 解释：s 已经是交替字符串。 示例 3：
+     *
+     * <p>输入：s = "1111" 输出：2 解释：需要 2 步操作得到 "0101" 或 "1010" 。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= s.length <= 104 s[i] 是 '0' 或 '1'
+     *
+     * @param s
+     * @return
+     */
+    public int minOperations(String s) {
+        // 0101
+        int min1 = 0, min2 = 0;
+        int len = s.length();
+        for (int i = 0; i < len; i++) {
+            char c = s.charAt(i);
+            // 0101
+            if ((i & 1) == 0) { // 偶数位
+                if (c == '1') {
+                    min1++;
+                } else {
+                    min2++;
+                }
+            } else {
+                if (c == '0') {
+                    min1++;
+                } else {
+                    min2++;
+                }
+            }
+            // 1010
+        }
+        return Math.min(min1, min2);
+    }
+
+    /**
+     * 5677. 统计同构子字符串的数目
+     *
+     * <p>给你一个字符串 s ，返回 s 中 同构子字符串 的数目。由于答案可能很大，只需返回对 109 + 7 取余 后的结果。
+     *
+     * <p>同构字符串 的定义为：如果一个字符串中的所有字符都相同，那么该字符串就是同构字符串。
+     *
+     * <p>子字符串 是字符串中的一个连续字符序列。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：s = "abbcccaa" 输出：13 解释：同构子字符串如下所列： "a" 出现 3 次。 "aa" 出现 1 次。 "b" 出现 2 次。 "bb" 出现 1 次。
+     * "c" 出现 3 次。 "cc" 出现 2 次。 "ccc" 出现 1 次。 3 + 1 + 2 + 1 + 3 + 2 + 1 = 13 示例 2：
+     *
+     * <p>输入：s = "xy" 输出：2 解释：同构子字符串是 "x" 和 "y" 。 示例 3：
+     *
+     * <p>输入：s = "zzzzz" 输出：15
+     *
+     * <p>提示：
+     *
+     * <p>1 <= s.length <= 105 s 由小写字符串组成
+     *
+     * @param s
+     * @return
+     */
+    public int countHomogenous(String s) {
+        char[] chars = s.toCharArray();
+
+        int count = 1;
+        // 求连续字符个数
+        int result = 0;
+        for (int i = 1; i < chars.length; i++) {
+            if (chars[i] == chars[i - 1]) {
+                count++;
+            } else {
+                long num = getCountHomogenous(count);
+                result += num % MOD;
+                count = 1;
+            }
+        }
+
+        long num = getCountHomogenous(count);
+        result += num % MOD;
+
+        return result;
+    }
+
+    static final int MOD = 1000000007;
+
+    private long getCountHomogenous(int count) {
+        return ((long) (1 + count) * count) >> 1;
+    }
 }

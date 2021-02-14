@@ -2786,4 +2786,112 @@ public class GraphTest {
             }
         }
     }
+
+    /**
+     * 5679. 一个图中连通三元组的最小度数
+     *
+     * <p>给你一个无向图，整数 n 表示图中节点的数目，edges 数组表示图中的边，其中 edges[i] = [ui, vi] ，表示 ui 和 vi 之间有一条无向边。
+     *
+     * <p>一个 连通三元组 指的是 三个 节点组成的集合且这三个点之间 两两 有边。
+     *
+     * <p>连通三元组的度数 是所有满足此条件的边的数目：一个顶点在三元组内，而另一个顶点不在三元组内。
+     *
+     * <p>请你返回所有连通三元组中度数的 最小值 ，如果图中没有连通三元组，那么返回 -1 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：n = 6, edges = [[1,2],[1,3],[3,2],[4,1],[5,2],[3,6]] 输出：3 解释：只有一个三元组 [1,2,3]
+     * 。构成度数的边在上图中已被加粗。 示例 2：
+     *
+     * <p>输入：n = 7, edges = [[1,3],[4,1],[4,3],[2,5],[5,6],[6,7],[7,5],[2,6]] 输出：0 解释：有 3 个三元组： 1)
+     * [1,4,3]，度数为 0 。 2) [2,5,6]，度数为 2 。 3) [5,6,7]，度数为 2 。
+     *
+     * <p>提示：
+     *
+     * <p>2 <= n <= 400 edges[i].length == 2 1 <= edges.length <= n * (n-1) / 2 1 <= ui, vi <= n ui
+     * != vi 图中没有重复的边。
+     *
+     * @param n
+     * @param edges
+     * @return
+     */
+    public int minTrioDegree(int n, int[][] edges) {
+
+        Map<Integer, Set<Integer>> graph = new HashMap<>();
+        int[] degree = new int[n + 1];
+        List<int[]> edgeList = new ArrayList<>();
+        // 构建图
+        for (int[] edge : edges) {
+            graph.computeIfAbsent(edge[0], k -> new HashSet<>()).add(edge[1]);
+            graph.computeIfAbsent(edge[1], k -> new HashSet<>()).add(edge[0]);
+            degree[edge[0]]++;
+            degree[edge[1]]++;
+            edgeList.add(edge);
+        }
+        edgeList.sort(Comparator.comparingInt(a -> degree[a[0]] + degree[a[1]]));
+        int result = Integer.MAX_VALUE;
+
+        int maxD = (int) Math.sqrt(n);
+        for (int i = 1; i <= n; i++) {
+            Set<Integer> set = graph.get(i);
+            if (Objects.isNull(set)) {
+                continue;
+            }
+            // 以点i 作为 重点项目 A
+            if (degree[i] >= maxD) {
+                int[] pointEdge = new int[2];
+                // 直接遍历所有的边
+                for (int[] edge : edgeList) {
+                    if (!set.contains(edge[0]) || !set.contains(edge[1])) {
+                        continue;
+                    }
+                    pointEdge[0] = edge[0];
+                    pointEdge[1] = edge[1];
+                    break;
+                }
+                if (pointEdge[0] != 0) {
+                    result =
+                            Math.min(
+                                    result,
+                                    degree[i] + degree[pointEdge[0]] + degree[pointEdge[1]] - 6);
+                }
+            } else {
+                // 遍历所有的点 计算
+                // 当前点的所有边
+                List<int[]> pointEdgeList = new ArrayList<>();
+                for (int b : set) {
+                    for (int c : set) {
+                        if (b >= c) {
+                            continue;
+                        }
+                        Set<Integer> bSet = graph.get(b);
+                        if (Objects.isNull(bSet) || !bSet.contains(c)) {
+                            continue;
+                        }
+                        pointEdgeList.add(new int[] {b, c});
+                    }
+                }
+                int minDegree = Integer.MAX_VALUE;
+                // 直接遍历所有的边
+                for (int[] edge : pointEdgeList) {
+
+                    minDegree =
+                            Math.min(minDegree, degree[i] + degree[edge[0]] + degree[edge[1]] - 6);
+                }
+                result = Math.min(result, minDegree);
+            }
+            if (result == 0) {
+                return 0;
+            }
+        }
+
+        return result == Integer.MAX_VALUE ? -1 : result;
+    }
+
+    @Test
+    public void minTrioDegree() {
+        int n = 6;
+        int[][] edges = {{1, 2}, {1, 3}, {3, 2}, {4, 1}, {5, 2}, {3, 6}};
+        logResult(minTrioDegree(n, edges));
+    }
 }
