@@ -6434,4 +6434,78 @@ public class TreeTest {
         double minTime = Math.max(Math.max(leftTime[0], rightTime[0]), sum / n) + node.val;
         return new double[] {minTime, sum + node.val};
     }
+
+    int navigationResult;
+
+    /**
+     * LCP 26. 导航装置
+     *
+     * <p>小扣参加的秋日市集景区共有 NN 个景点，景点编号为 11~NN。景点内设有 N-1N−1 条双向道路，使所有景点形成了一个二叉树结构，根结点记为 root，景点编号即为节点值。
+     *
+     * <p>由于秋日市集景区的结构特殊，游客很容易迷路，主办方决定在景区的若干个景点设置导航装置，按照所在景点编号升序排列后定义装置编号为 1 ~ M。导航装置向游客发送数据，数据内容为列表
+     * [游客与装置 1 的相对距离,游客与装置 2 的相对距离,...,游客与装置 M
+     * 的相对距离]。由于游客根据导航装置发送的信息来确认位置，因此主办方需保证游客在每个景点接收的数据信息皆不相同。请返回主办方最少需要设置多少个导航装置。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：root = [1,2,null,3,4]
+     *
+     * <p>输出：2
+     *
+     * <p>解释：在景点 1、3 或景点 1、4 或景点 3、4 设置导航装置。
+     *
+     * <p>image.png
+     *
+     * <p>示例 2：
+     *
+     * <p>输入：root = [1,2,3,4]
+     *
+     * <p>输出：1
+     *
+     * <p>解释：在景点 3、4 设置导航装置皆可。
+     *
+     * <p>image.png
+     *
+     * <p>提示：
+     *
+     * <p>2 <= N <= 50000 二叉树的非空节点值为 1~N 的一个排列。
+     *
+     * @param root
+     * @return
+     */
+    public int navigation(TreeNode root) {
+        if (Objects.isNull(root)) {
+            return 0;
+        }
+        navigationResult = 0;
+        int leftNum = navigationDfs(root.left);
+        int rightNum = navigationDfs(root.right);
+        if (leftNum + rightNum >= 2) {
+            return navigationResult;
+        }
+        return navigationResult + 1;
+    }
+
+    private int navigationDfs(TreeNode root) {
+        if (Objects.isNull(root)) {
+            return 0;
+        }
+        int leftNum = navigationDfs(root.left);
+        int rightNum = navigationDfs(root.right);
+        // 左右都不为空, 三叉口
+        if (Objects.nonNull(root.left) && Objects.nonNull(root.right)) {
+            if (leftNum == 0 && rightNum == 0) {
+                navigationResult++;
+                return 1;
+            }
+            if (leftNum == 0 || rightNum == 0) {
+                return 1;
+            }
+            return 2;
+        } else if (Objects.nonNull(root.left)) {
+            return leftNum;
+        }
+
+        return rightNum;
+    }
 }
