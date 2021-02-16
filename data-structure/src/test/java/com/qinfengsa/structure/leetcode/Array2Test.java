@@ -2444,4 +2444,142 @@ public class Array2Test {
         int maxOperations = 1;
         logResult(minimumSize(nums, maxOperations));
     }
+
+    /**
+     * 1697. 检查边长度限制的路径是否存在
+     *
+     * <p>给你一个 n 个点组成的无向图边集 edgeList ，其中 edgeList[i] = [ui, vi, disi] 表示点 ui 和点 vi 之间有一条长度为 disi
+     * 的边。请注意，两个点之间可能有 超过一条边 。
+     *
+     * <p>给你一个查询数组queries ，其中 queries[j] = [pj, qj, limitj] ，你的任务是对于每个查询 queries[j] ，判断是否存在从 pj 到 qj
+     * 的路径，且这条路径上的每一条边都 严格小于 limitj 。
+     *
+     * <p>请你返回一个 布尔数组 answer ，其中 answer.length == queries.length ，当 queries[j] 的查询结果为 true 时， answer
+     * 第 j 个值为 true ，否则为 false 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：n = 3, edgeList = [[0,1,2],[1,2,4],[2,0,8],[1,0,16]], queries = [[0,1,2],[0,2,5]]
+     * 输出：[false,true] 解释：上图为给定的输入数据。注意到 0 和 1 之间有两条重边，分别为 2 和 16 。 对于第一个查询，0 和 1 之间没有小于 2 的边，所以我们返回
+     * false 。 对于第二个查询，有一条路径（0 -> 1 -> 2）两条边都小于 5 ，所以这个查询我们返回 true 。 示例 2：
+     *
+     * <p>输入：n = 5, edgeList = [[0,1,10],[1,2,5],[2,3,9],[3,4,13]], queries = [[0,4,14],[1,4,13]]
+     * 输出：[true,false] 解释：上图为给定数据。
+     *
+     * <p>提示：
+     *
+     * <p>2 <= n <= 105 1 <= edgeList.length, queries.length <= 105 edgeList[i].length == 3
+     * queries[j].length == 3 0 <= ui, vi, pj, qj <= n - 1 ui != vi pj != qj 1 <= disi, limitj <=
+     * 109 两个点之间可能有 多条 边。
+     *
+     * @param n
+     * @param edgeList
+     * @param queries
+     * @return
+     */
+    public boolean[] distanceLimitedPathsExist(int n, int[][] edgeList, int[][] queries) {
+        int len = queries.length;
+        // 并查集
+
+        boolean[] result = new boolean[len];
+        List<QueryNode> queryNodeList = new ArrayList<>();
+        for (int i = 0; i < len; i++) {
+            queryNodeList.add(new QueryNode(i, queries[i][0], queries[i][1], queries[i][2]));
+        }
+        // 按limit 从小到大排序
+        queryNodeList.sort(Comparator.comparingInt(a -> a.limit));
+        Arrays.sort(edgeList, Comparator.comparingInt(a -> a[2]));
+
+        swapParents = new int[n];
+
+        for (int i = 0; i < swapParents.length; i++) {
+            swapParents[i] = i;
+        }
+
+        int i = 0;
+        for (QueryNode node : queryNodeList) {
+            for (; i < edgeList.length; i++) {
+                if (edgeList[i][2] < node.limit) {
+                    union(edgeList[i][0], edgeList[i][1]);
+                } else {
+                    break;
+                }
+            }
+            result[node.index] = findParent(node.start) == findParent(node.end);
+        }
+
+        return result;
+    }
+
+    static class QueryNode {
+        int index, start, end, limit;
+
+        public QueryNode(int index, int start, int end, int limit) {
+            this.index = index;
+            this.start = start;
+            this.end = end;
+            this.limit = limit;
+        }
+    }
+
+    /**
+     * 1703. 得到连续 K 个 1 的最少相邻交换次数
+     *
+     * <p>给你一个整数数组 nums 和一个整数 k 。 nums 仅包含 0 和 1 。每一次移动，你可以选择 相邻 两个数字并将它们交换。
+     *
+     * <p>请你返回使 nums 中包含 k 个 连续 1 的 最少 交换次数。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：nums = [1,0,0,1,0,1], k = 2 输出：1 解释：在第一次操作时，nums 可以变成 [1,0,0,0,1,1] 得到连续两个 1 。 示例 2：
+     *
+     * <p>输入：nums = [1,0,0,0,0,0,1,1], k = 3 输出：5 解释：通过 5 次操作，最左边的 1 可以移到右边直到 nums 变为
+     * [0,0,0,0,0,1,1,1] 。 示例 3：
+     *
+     * <p>输入：nums = [1,1,0,1], k = 2 输出：0 解释：nums 已经有连续 2 个 1 了。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= nums.length <= 105 nums[i] 要么是 0 ，要么是 1 。 1 <= k <= sum(nums)
+     *
+     * @param nums
+     * @param k
+     * @return
+     */
+    public int minMoves(int[] nums, int k) {
+        int len = nums.length;
+        // 把所有的“1”的index找出来，对这些“index”做size为k的滑窗，不要对nums做滑窗。问题就成了滑窗内求中位数距离和
+        List<Integer> indexList = new ArrayList<>();
+        int count = -1;
+        for (int i = 0; i < len; i++) {
+            if (nums[i] == 1) {
+                count++;
+                indexList.add(i - count);
+            }
+        }
+        log.debug("list:{}", indexList);
+        int[] sums = new int[indexList.size() + 1];
+        for (int i = 0; i < indexList.size(); i++) {
+            sums[i + 1] = sums[i] + indexList.get(i);
+        }
+        log.debug("sums:{}", sums);
+        // 滑动窗口, 记录距离差
+        int min = Integer.MAX_VALUE;
+        for (int i = 0; i + k - 1 < indexList.size(); i++) {
+            int j = i + k - 1;
+            int mid = (i + j) >> 1;
+            int leftNum = indexList.get(mid) * (mid - i) - (sums[mid] - sums[i]);
+            int rightNum = sums[j + 1] - sums[mid + 1] - indexList.get(mid) * (j - mid);
+            min = Math.min(min, leftNum + rightNum);
+        }
+
+        return min;
+    }
+
+    @Test
+    public void minMoves() {
+        int[] nums = {1, 0, 0, 1, 0, 1};
+        int k = 2;
+        logResult(minMoves(nums, k));
+    }
 }
