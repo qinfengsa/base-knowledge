@@ -516,4 +516,55 @@ public class String2Test {
     private long getCountHomogenous(int count) {
         return ((long) (1 + count) * count) >> 1;
     }
+
+    /**
+     * 1745. 回文串分割 IV
+     *
+     * <p>给你一个字符串 s ，如果可以将它分割成三个 非空 回文子字符串，那么返回 true ，否则返回 false 。
+     *
+     * <p>当一个字符串正着读和反着读是一模一样的，就称其为 回文字符串 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：s = "abcbdd" 输出：true 解释："abcbdd" = "a" + "bcb" + "dd"，三个子字符串都是回文的。 示例 2：
+     *
+     * <p>输入：s = "bcbddxy" 输出：false 解释：s 没办法被分割成 3 个回文子字符串。
+     *
+     * <p>提示：
+     *
+     * <p>3 <= s.length <= 2000 s 只包含小写英文字母。
+     *
+     * @param s
+     * @return
+     */
+    public boolean checkPartitioning(String s) {
+        int len = s.length();
+        char[] chars = s.toCharArray();
+        boolean[][] palindrome = new boolean[len][len];
+        for (int i = len - 1; i >= 0; i--) {
+
+            for (int j = i; j < len; j++) {
+                if (i == j) {
+                    palindrome[i][j] = true;
+                } else if (i + 1 == j) {
+                    palindrome[i][j] = chars[i] == chars[j];
+                } else {
+                    palindrome[i][j] = chars[i] == chars[j] && palindrome[i + 1][j - 1];
+                }
+            }
+        }
+        // 枚举分割点
+        for (int i = 0; i < len - 2; i++) {
+            if (!palindrome[0][i]) {
+                continue;
+            }
+            for (int j = i + 1; j < len - 1; j++) {
+                if (palindrome[i + 1][j] && palindrome[j + 1][len - 1]) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
 }

@@ -2582,4 +2582,136 @@ public class Array2Test {
         int k = 2;
         logResult(minMoves(nums, k));
     }
+
+    /**
+     * 1713. 得到子序列的最少操作次数
+     *
+     * <p>给你一个数组 target ，包含若干 互不相同 的整数，以及另一个整数数组 arr ，arr 可能 包含重复元素。
+     *
+     * <p>每一次操作中，你可以在 arr 的任意位置插入任一整数。比方说，如果 arr = [1,4,1,2] ，那么你可以在中间添加 3 得到 [1,4,3,1,2]
+     * 。你可以在数组最开始或最后面添加整数。
+     *
+     * <p>请你返回 最少 操作次数，使得 target 成为 arr 的一个子序列。
+     *
+     * <p>一个数组的 子序列 指的是删除原数组的某些元素（可能一个元素都不删除），同时不改变其余元素的相对顺序得到的数组。比方说，[2,7,4] 是 [4,2,3,7,2,1,4]
+     * 的子序列（加粗元素），但 [2,4,2] 不是子序列。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：target = [5,1,3], arr = [9,4,2,3,4] 输出：2 解释：你可以添加 5 和 1 ，使得 arr 变为 [5,9,4,1,2,3,4]
+     * ，target 为 arr 的子序列。 示例 2：
+     *
+     * <p>输入：target = [6,4,8,1,3,2], arr = [4,7,6,2,3,8,6,1] 输出：3
+     *
+     * <p>提示：
+     *
+     * <p>1 <= target.length, arr.length <= 105 1 <= target[i], arr[i] <= 109 target 不包含任何重复元素。
+     *
+     * @param target
+     * @param arr
+     * @return
+     */
+    public int minOperations(int[] target, int[] arr) {
+        Map<Integer, Integer> targetIndex = new HashMap<>();
+        for (int i = 0; i < target.length; i++) {
+            targetIndex.put(target[i], i);
+        }
+        int len = arr.length;
+        List<Integer> list = new ArrayList<>();
+        for (int i = 0; i < len; i++) {
+            int index = targetIndex.getOrDefault(arr[i], -1);
+            if (index != -1) {
+                list.add(index);
+            }
+        }
+        log.debug("list:{}", list);
+        // 求最长上升子序列
+        List<Integer> dpList = new ArrayList<>();
+        for (int i = 0; i < list.size(); i++) {
+            if (dpList.isEmpty() || list.get(i) > dpList.get(dpList.size() - 1)) {
+                dpList.add(list.get(i));
+            } else {
+                int left = 0, right = dpList.size() - 1;
+                while (left < right) {
+                    int mid = (left + right) >> 1;
+                    if (dpList.get(mid) >= list.get(i)) {
+                        right = mid;
+                    } else {
+                        left = mid + 1;
+                    }
+                }
+                dpList.set(left, list.get(i));
+            }
+        }
+        return target.length - dpList.size();
+    }
+
+    @Test
+    public void minOperations() {
+        // int[] target = {5, 1, 3}, arr = {9, 4, 2, 3, 4};
+        int[] target = {6, 4, 8, 1, 3, 2}, arr = {4, 7, 6, 2, 3, 8, 6, 1};
+        logResult(minOperations(target, arr));
+    }
+
+    /**
+     * 1751. 最多可以参加的会议数目 II
+     *
+     * <p>给你一个 events 数组，其中 events[i] = [startDayi, endDayi, valuei] ，表示第 i 个会议在 startDayi 天开始，第
+     * endDayi 天结束，如果你参加这个会议，你能得到价值 valuei 。同时给你一个整数 k 表示你能参加的最多会议数目。
+     *
+     * <p>你同一时间只能参加一个会议。如果你选择参加某个会议，那么你必须 完整
+     * 地参加完这个会议。会议结束日期是包含在会议内的，也就是说你不能同时参加一个开始日期与另一个结束日期相同的两个会议。
+     *
+     * <p>请你返回能得到的会议价值 最大和 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：events = [[1,2,4],[3,4,3],[2,3,1]], k = 2 输出：7 解释：选择绿色的活动会议 0 和 1，得到总价值和为 4 + 3 = 7 。
+     * 示例 2：
+     *
+     * <p>输入：events = [[1,2,4],[3,4,3],[2,3,10]], k = 2 输出：10 解释：参加会议 2 ，得到价值和为 10 。
+     * 你没法再参加别的会议了，因为跟会议 2 有重叠。你 不 需要参加满 k 个会议。 示例 3：
+     *
+     * <p>输入：events = [[1,1,1],[2,2,2],[3,3,3],[4,4,4]], k = 3 输出：9 解释：尽管会议互不重叠，你只能参加 3
+     * 个会议，所以选择价值最大的 3 个会议。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= k <= events.length 1 <= k * events.length <= 106 1 <= startDayi <= endDayi <= 109 1
+     * <= valuei <= 106
+     *
+     * @param events
+     * @param k
+     * @return
+     */
+    public int maxValue(int[][] events, int k) {
+
+        int len = events.length;
+        Arrays.sort(events, Comparator.comparingInt(a -> a[1]));
+
+        int[][] dp = new int[len + 1][k + 1];
+
+        for (int i = 0; i < len; i++) {
+            int start = events[i][0], end = events[i][1], val = events[i][2];
+            int prevIdx = 0;
+            for (int j = i; j >= 0; j--) {
+                if (events[j][1] < start) {
+                    prevIdx = j + 1;
+                    break;
+                }
+            }
+            for (int j = 1; j <= k; j++) {
+                dp[i + 1][j] = Math.max(dp[i][j], dp[prevIdx][j - 1] + val);
+            }
+        }
+
+        return dp[len][k];
+    }
+
+    @Test
+    public void maxValue() {
+        int[][] events = {{1, 2, 4}, {3, 4, 3}, {2, 3, 1}};
+        int k = 2;
+        logResult(maxValue(events, k));
+    }
 }
