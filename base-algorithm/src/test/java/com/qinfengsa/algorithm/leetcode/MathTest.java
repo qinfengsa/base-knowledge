@@ -7837,18 +7837,6 @@ public class MathTest {
         logResult(totalMoney(n));
     }
 
-    public int minimumBoxes(int n) {
-        int num = n * 6;
-
-        int last = (int) Math.pow(num, 1.0 / 3);
-        log.debug("last:{}", last);
-        int total = last * (last + 1) * (last + 2) / 6;
-        log.debug("total:{}", total);
-        int result = last * (last + 1) / 2 + (total - n);
-
-        return result;
-    }
-
     /**
      * 5654. 盒子中小球的最大数量
      *
@@ -8010,5 +7998,47 @@ public class MathTest {
             num = getGcd(num, nums[i]);
         }
         return num == 1;
+    }
+
+    /**
+     * 1739. 放置盒子
+     *
+     * <p>有一个立方体房间，其长度、宽度和高度都等于 n 个单位。请你在房间里放置 n 个盒子，每个盒子都是一个单位边长的立方体。放置规则如下：
+     *
+     * <p>你可以把盒子放在地板上的任何地方。 如果盒子 x 需要放置在盒子 y 的顶部，那么盒子 y 竖直的四个侧面都 必须 与另一个盒子或墙相邻。 给你一个整数 n ，返回接触地面的盒子的
+     * 最少 可能数量。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：n = 3 输出：3 解释：上图是 3 个盒子的摆放位置。 这些盒子放在房间的一角，对应左侧位置。 示例 2：
+     *
+     * <p>输入：n = 4 输出：3 解释：上图是 3 个盒子的摆放位置。 这些盒子放在房间的一角，对应左侧位置。 示例 3：
+     *
+     * <p>输入：n = 10 输出：6 解释：上图是 10 个盒子的摆放位置。 这些盒子放在房间的一角，对应后方位置。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= n <= 109
+     *
+     * @param n
+     * @return
+     */
+    public int minimumBoxes(int n) {
+        int sum = 0;
+        int tmp = 0;
+        int height = 1;
+        for (; sum < n; height++) {
+            tmp += height;
+            sum = sum + tmp;
+        }
+        int remain = n - sum + tmp;
+        height--;
+        return tmp - height + (int) Math.ceil((Math.ceil(Math.sqrt(1 + 8 * remain)) - 1) / 2);
+    }
+
+    @Test
+    public void minimumBoxes() {
+        int n = 37910271;
+        logResult(minimumBoxes(n));
     }
 }
