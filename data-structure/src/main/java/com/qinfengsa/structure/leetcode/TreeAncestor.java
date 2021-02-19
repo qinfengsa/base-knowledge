@@ -2,10 +2,11 @@ package com.qinfengsa.structure.leetcode;
 
 import static com.qinfengsa.structure.util.LogUtils.logResult;
 
+import java.util.Arrays;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * 5188. 树节点的第 K 个祖先
+ * 1483. 树节点的第 K 个祖先
  *
  * <p>给你一棵树，树上有 n 个节点，按从 0 到 n-1 编号。树以父节点数组的形式给出，其中 parent[i] 是节点 i 的父节点。树的根节点是编号为 0 的节点。
  *
@@ -36,26 +37,31 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TreeAncestor {
 
-    int[][] nums;
+    int[][] dp;
 
     int len;
 
     public TreeAncestor(int n, int[] parent) {
-        nums = new int[n][0];
-        nums[0] = new int[] {parent[0]};
 
+        dp = new int[n][20];
+        Arrays.fill(dp[0], -1);
+        dp[0][0] = -1;
         for (int i = 1; i < n; i++) {
+            Arrays.fill(dp[i], -1);
+            dp[i][0] = parent[i];
+        }
 
-            int parentIndex = parent[i];
-            int len = nums[parentIndex].length;
-
-            int[] arr = new int[len + 1];
-            arr[0] = parent[i];
-            System.arraycopy(nums[parentIndex], 0, arr, 1, len);
-            nums[i] = arr;
+        // 使用二分进行压缩
+        for (int j = 1; j < 20; j++) {
+            for (int i = 0; i < n; i++) {
+                if (dp[i][j - 1] == -1) {
+                    continue;
+                }
+                dp[i][j] = dp[dp[i][j - 1]][j - 1];
+            }
         }
         len = n;
-        logResult(nums);
+        logResult(dp);
     }
 
     public int getKthAncestor(int node, int k) {
@@ -65,11 +71,17 @@ public class TreeAncestor {
         if (node == -1) {
             return -1;
         }
-        int[] arr = nums[node];
-        if (k >= arr.length) {
-            return -1;
+        int result = node;
+        for (int j = 0; j < 20; j++) {
+            if (result == -1) {
+                break;
+            }
+            if (((1 << j) & k) > 0) {
+                result = dp[result][j];
+            }
         }
-        return arr[k - 1];
+
+        return result;
     }
 
     public static void main(String[] args) {
@@ -92,5 +104,7 @@ public class TreeAncestor {
         log.debug("val4:{}", val4);
         int val5 = treeAncestor.getKthAncestor(3, 5);
         log.debug("val5:{}", val5);
+        int val6 = treeAncestor.getKthAncestor(4, 2);
+        log.debug("val6:{}", val6);
     }
 }

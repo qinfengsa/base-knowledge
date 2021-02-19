@@ -2756,4 +2756,105 @@ public class Array2Test {
         }
         return result;
     }
+
+    /**
+     * 1755. 最接近目标值的子序列和
+     *
+     * <p>给你一个整数数组 nums 和一个目标值 goal 。
+     *
+     * <p>你需要从 nums 中选出一个子序列，使子序列元素总和最接近 goal 。也就是说，如果子序列元素和为 sum ，你需要 最小化绝对差 abs(sum - goal) 。
+     *
+     * <p>返回 abs(sum - goal) 可能的 最小值 。
+     *
+     * <p>注意，数组的子序列是通过移除原始数组中的某些元素（可能全部或无）而形成的数组。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：nums = [5,-7,3,5], goal = 6 输出：0 解释：选择整个数组作为选出的子序列，元素和为 6 。 子序列和与目标值相等，所以绝对差为 0 。 示例 2：
+     *
+     * <p>输入：nums = [7,-9,15,-2], goal = -5 输出：1 解释：选出子序列 [7,-9,-2] ，元素和为 -4 。 绝对差为 abs(-4 - (-5)) =
+     * abs(1) = 1 ，是可能的最小值。 示例 3：
+     *
+     * <p>输入：nums = [1,2,3], goal = -7 输出：7
+     *
+     * <p>提示：
+     *
+     * <p>1 <= nums.length <= 40 -107 <= nums[i] <= 107 -109 <= goal <= 109
+     *
+     * @param nums
+     * @param goal
+     * @return
+     */
+    public int minAbsDifference(int[] nums, int goal) {
+        //  1 <= nums.length <= 40
+        // 首先把数组分成两个部分，然后暴力枚举子集的和，得到所有的和的可能；
+        // 将其中一个部分的和暴力排序；
+        // 最后，针对另一个部分的每一个情况，调用 lower_bound 函数找到第一个大于等于 goal 的和，然后将指针左移一个来找到小于等于 goal 的最大值。
+        int leftLen = nums.length >> 1;
+        int rightLen = nums.length - leftLen;
+        // 所有组合
+        int[] leftNums = new int[1 << leftLen], rightNums = new int[1 << rightLen];
+        for (int i = 0; i < leftNums.length; i++) {
+            for (int j = 0; j < leftLen; j++) {
+                if ((i & (1 << j)) > 0) {
+                    // 所有组合
+                    leftNums[i] += nums[j];
+                }
+            }
+        }
+
+        for (int i = 0; i < rightNums.length; i++) {
+            for (int j = 0; j < rightLen; j++) {
+                if ((i & (1 << j)) > 0) {
+                    // 所有组合
+                    rightNums[i] += nums[leftLen + j];
+                }
+            }
+        }
+        // 排序 然后使用二分查找
+        Arrays.sort(rightNums);
+        int min = Integer.MAX_VALUE;
+        for (int num : leftNums) {
+            int target = goal - num;
+            if (target == 0) {
+                return 0;
+            }
+            min = Math.min(min, Math.abs(target));
+
+            int idx = binarySearch(rightNums, target);
+            min = Math.min(min, Math.abs(target - rightNums[idx]));
+            if (idx < rightNums.length - 1) {
+                min = Math.min(min, Math.abs(target - rightNums[idx + 1]));
+            }
+        }
+        // e
+        return min;
+    }
+
+    private int binarySearch(int[] nums, int target) {
+        int low = 0, high = nums.length - 1;
+        int result = 0;
+        while (low < high) {
+            int mid = (low + high) >> 1;
+            if (nums[mid] == target) {
+                return mid;
+            }
+            if (nums[mid] < target) {
+                low = mid + 1;
+                result = mid;
+            } else if (nums[mid] > target) {
+                high = mid;
+            }
+        }
+        return result;
+    }
+
+    @Test
+    public void minAbsDifference() {
+        int[] nums = {
+            9152249, 8464156, -2493402, 8990685, -7257152, -1050240, 2243737, -82901, 8939692
+        };
+        int goal = 26915229;
+        logResult(minAbsDifference(nums, goal));
+    }
 }

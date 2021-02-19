@@ -1118,7 +1118,7 @@ public class GraphTest {
     }
 
     /**
-     * 5435. 并行课程 II
+     * 1494. 并行课程 II
      *
      * <p>给你一个整数 n 表示某所大学里课程的数目，编号为 1 到 n ，数组 dependencies 中， dependencies[i] = [xi, yi]
      * 表示一个先修课的关系，也就是课程 xi 必须在课程 yi 之前上。同时你还有一个整数 k 。
@@ -1152,19 +1152,38 @@ public class GraphTest {
         if (dependencies.length == 0) {
             return (n - 1) / k + 1;
         }
-        // 入度
-        int[] inDegree = new int[n + 1];
-        // 出度
-        int[] outDegree = new int[n + 1];
-        boolean[][] graph = new boolean[n + 1][n + 1];
-        for (int[] dependency : dependencies) {
-            outDegree[dependency[0]]++;
-            inDegree[dependency[1]]++;
-            graph[dependency[0]][dependency[1]] = true;
+        // 1 <= n <= 15 使用二进制表示每个课程
+        int[] dependNum = new int[n + 1];
+        // 记录每个课程依赖的课程
+        for (int[] dep : dependencies) {
+            dependNum[dep[1] - 1] |= 1 << (dep[0] - 1);
         }
-        // 入度为0的点开始遍历
-        minNumberOfSemesters(n, k, inDegree, graph);
-        return minNumberOfSemestersResult;
+        int[] dp = new int[1 << n];
+        Arrays.fill(dp, n);
+        dp[0] = 0;
+
+        for (int i = 0; i < 1 << n; i++) {
+            int canStudy = 0;
+            // 统计当前状态下所有可以学习的课程(未学习)
+            for (int j = 0; j < n; j++) {
+                if ((i & (1 << j)) == 0 && (dependNum[j] & i) == dependNum[j]) {
+                    canStudy |= 1 << j;
+                }
+            }
+            // 如果课程数小于等于k, 可以进行状态转移
+            if (Integer.bitCount(canStudy) <= k) {
+                dp[i | canStudy] = Math.min(dp[i | canStudy], dp[i] + 1);
+            } else {
+                // 枚举所有子集
+                for (int cur = canStudy; cur > 0; cur = (cur - 1) & canStudy) {
+                    if (Integer.bitCount(cur) <= k) {
+                        dp[i | cur] = Math.min(dp[i | cur], dp[i] + 1);
+                    }
+                }
+            }
+        }
+
+        return dp[(1 << n) - 1];
     }
 
     private int minNumberOfSemestersResult = 0;
