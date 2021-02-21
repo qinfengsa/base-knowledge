@@ -2857,4 +2857,155 @@ public class Array2Test {
         int goal = 26915229;
         logResult(minAbsDifference(nums, goal));
     }
+
+    /**
+     * 5686. 移动所有球到每个盒子所需的最小操作数
+     *
+     * <p>有 n 个盒子。给你一个长度为 n 的二进制字符串 boxes ，其中 boxes[i] 的值为 '0' 表示第 i 个盒子是 空 的，而 boxes[i] 的值为 '1'
+     * 表示盒子里有 一个 小球。
+     *
+     * <p>在一步操作中，你可以将 一个 小球从某个盒子移动到一个与之相邻的盒子中。第 i 个盒子和第 j 个盒子相邻需满足 abs(i - j) == 1
+     * 。注意，操作执行后，某些盒子中可能会存在不止一个小球。
+     *
+     * <p>返回一个长度为 n 的数组 answer ，其中 answer[i] 是将所有小球移动到第 i 个盒子所需的 最小 操作数。
+     *
+     * <p>每个 answer[i] 都需要根据盒子的 初始状态 进行计算。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：boxes = "110" 输出：[1,1,3] 解释：每个盒子对应的最小操作数如下： 1) 第 1 个盒子：将一个小球从第 2 个盒子移动到第 1 个盒子，需要 1
+     * 步操作。 2) 第 2 个盒子：将一个小球从第 1 个盒子移动到第 2 个盒子，需要 1 步操作。 3) 第 3 个盒子：将一个小球从第 1 个盒子移动到第 3 个盒子，需要 2
+     * 步操作。将一个小球从第 2 个盒子移动到第 3 个盒子，需要 1 步操作。共计 3 步操作。 示例 2：
+     *
+     * <p>输入：boxes = "001011" 输出：[11,8,5,4,3,4]
+     *
+     * <p>提示：
+     *
+     * <p>n == boxes.length 1 <= n <= 2000 boxes[i] 为 '0' 或 '1'
+     *
+     * @param boxes
+     * @return
+     */
+    public int[] minOperations(String boxes) {
+        int n = boxes.length();
+        int[] result = new int[n];
+        // 滑动窗口
+
+        char[] chars = boxes.toCharArray();
+        int leftCount = 0;
+        int[] leftNums = new int[n], rightNums = new int[n];
+        for (int i = 0; i < n; i++) {
+            if (i > 0) {
+                leftNums[i] = leftNums[i - 1] + leftCount;
+            }
+
+            if (chars[i] == '1') {
+                leftCount++;
+            }
+        }
+        int rightCount = 0;
+        for (int i = n - 1; i >= 0; i--) {
+            if (i < n - 1) {
+                rightNums[i] = rightNums[i + 1] + rightCount;
+            }
+            if (chars[i] == '1') {
+                rightCount++;
+            }
+        }
+        log.debug("leftNums:{}", leftNums);
+        log.debug("rightNums:{}", rightNums);
+
+        for (int i = 0; i < n; i++) {
+            result[i] = leftNums[i] + rightNums[i];
+        }
+
+        return result;
+    }
+
+    @Test
+    public void minOperations2() {
+        String boxes = "001011";
+        int[] result = minOperations(boxes);
+        log.debug("result:{}", result);
+    }
+
+    /**
+     * 5687. 执行乘法运算的最大分数
+     *
+     * <p>给你两个长度分别 n 和 m 的整数数组 nums 和 multipliers ，其中 n >= m ，数组下标 从 1 开始 计数。
+     *
+     * <p>初始时，你的分数为 0 。你需要执行恰好 m 步操作。在第 i 步操作（从 1 开始 计数）中，需要：
+     *
+     * <p>选择数组 nums 开头处或者末尾处 的整数 x 。 你获得 multipliers[i] * x 分，并累加到你的分数中。 将 x 从数组 nums 中移除。 在执行 m
+     * 步操作后，返回 最大 分数。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：nums = [1,2,3], multipliers = [3,2,1] 输出：14 解释：一种最优解决方案如下： - 选择末尾处的整数 3 ，[1,2,3] ，得 3 *
+     * 3 = 9 分，累加到分数中。 - 选择末尾处的整数 2 ，[1,2] ，得 2 * 2 = 4 分，累加到分数中。 - 选择末尾处的整数 1 ，[1] ，得 1 * 1 = 1
+     * 分，累加到分数中。 总分数为 9 + 4 + 1 = 14 。 示例 2：
+     *
+     * <p>输入：nums = [-5,-3,-3,-2,7,1], multipliers = [-10,-5,3,4,6] 输出：102 解释：一种最优解决方案如下： - 选择开头处的整数
+     * -5 ，[-5,-3,-3,-2,7,1] ，得 -5 * -10 = 50 分，累加到分数中。 - 选择开头处的整数 -3 ，[-3,-3,-2,7,1] ，得 -3 * -5 =
+     * 15 分，累加到分数中。 - 选择开头处的整数 -3 ，[-3,-2,7,1] ，得 -3 * 3 = -9 分，累加到分数中。 - 选择末尾处的整数 1 ，[-2,7,1] ，得 1
+     * * 4 = 4 分，累加到分数中。 - 选择末尾处的整数 7 ，[-2,7] ，得 7 * 6 = 42 分，累加到分数中。 总分数为 50 + 15 - 9 + 4 + 42 =
+     * 102 。
+     *
+     * <p>提示：
+     *
+     * <p>n == nums.length m == multipliers.length 1 <= m <= 103 m <= n <= 105 -1000 <= nums[i],
+     * multipliers[i] <= 1000
+     *
+     * @param nums
+     * @param multipliers
+     * @return
+     */
+    public int maximumScore(int[] nums, int[] multipliers) {
+        int n = nums.length, m = multipliers.length;
+        // 动态规划
+
+        int result = Integer.MIN_VALUE;
+        int[] dp = new int[m + 1];
+        for (int k = 1; k <= m; k++) {
+            int multi = multipliers[k - 1];
+            //  前面取了i个数，后面取了k-i个数
+            for (int i = k; i >= 0; i--) {
+                int num = Integer.MIN_VALUE;
+                if (i > 0) {
+                    num = Math.max(num, dp[i - 1] + nums[i - 1] * multi);
+                }
+                if (i < k) {
+                    num = Math.max(num, dp[i] + nums[n - k + i] * multi);
+                }
+                dp[i] = num;
+                if (k == m) {
+                    result = Math.max(result, dp[i]);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    @Test
+    public void maximumScore() {
+        // [        // [83,315,-442,-714,461,920,-737,-93,-818,-760,558,-584,-358,-228,-220]
+        int[]
+                nums =
+                        {
+                            -854, -941, 10, 299, 995, -346, 294, -393, 351, -76, 210, 897, -651,
+                            920, 624, 969, -629, 985, -695, 236, 637, -901, -817, 546, -69, 192,
+                            -377, 251, 542, -316, -879, -764, -560, 927, 629, 877, 42, 381, 367,
+                            -549, 602, 139, -312, -281, 105, 690, -376, -705, -906, 85, -608, 639,
+                            752, 770, -139, -601, 341, 61, 969, 276, 176, -715, -545, 471, -170,
+                            -126, 596, -737, 130
+                        },
+                multipliers =
+                        {
+                            83, 315, -442, -714, 461, 920, -737, -93, -818, -760, 558, -584, -358,
+                            -228, -220
+                        };
+        // 3068054 3040819
+        logResult(maximumScore(nums, multipliers));
+    }
 }
