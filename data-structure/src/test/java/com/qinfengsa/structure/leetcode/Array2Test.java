@@ -3008,4 +3008,168 @@ public class Array2Test {
         // 3068054 3040819
         logResult(maximumScore(nums, multipliers));
     }
+
+    /**
+     * 5669. 通过连接另一个数组的子数组得到一个数组
+     *
+     * <p>给你一个长度为 n 的二维整数数组 groups ，同时给你一个整数数组 nums 。
+     *
+     * <p>你是否可以从 nums 中选出 n 个 不相交 的子数组，使得第 i 个子数组与 groups[i] （下标从 0 开始）完全相同，且如果 i > 0 ，那么第 (i-1)
+     * 个子数组在 nums 中出现的位置在第 i 个子数组前面。（也就是说，这些子数组在 nums 中出现的顺序需要与 groups 顺序相同）
+     *
+     * <p>如果你可以找出这样的 n 个子数组，请你返回 true ，否则返回 false 。
+     *
+     * <p>如果不存在下标为 k 的元素 nums[k] 属于不止一个子数组，就称这些子数组是 不相交 的。子数组指的是原数组中连续元素组成的一个序列。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：groups = [[1,-1,-1],[3,-2,0]], nums = [1,-1,0,1,-1,-1,3,-2,0] 输出：true 解释：你可以分别在 nums
+     * 中选出第 0 个子数组 [1,-1,0,1,-1,-1,3,-2,0] 和第 1 个子数组 [1,-1,0,1,-1,-1,3,-2,0] 。
+     * 这两个子数组是不相交的，因为它们没有任何共同的元素。 示例 2：
+     *
+     * <p>输入：groups = [[10,-2],[1,2,3,4]], nums = [1,2,3,4,10,-2] 输出：false 解释：选择子数组 [1,2,3,4,10,-2]
+     * 和 [1,2,3,4,10,-2] 是不正确的，因为它们出现的顺序与 groups 中顺序不同。 [10,-2] 必须出现在 [1,2,3,4] 之前。 示例 3：
+     *
+     * <p>输入：groups = [[1,2,3],[3,4]], nums = [7,7,1,2,3,4,7,7] 输出：false 解释：选择子数组 [7,7,1,2,3,4,7,7]
+     * 和 [7,7,1,2,3,4,7,7] 是不正确的，因为它们不是不相交子数组。 它们有一个共同的元素 nums[4] （下标从 0 开始）。
+     *
+     * <p>提示：
+     *
+     * <p>groups.length == n 1 <= n <= 103 1 <= groups[i].length, sum(groups[i].length) <= 103 1 <=
+     * nums.length <= 103 -107 <= groups[i][j], nums[k] <= 107
+     *
+     * @param groups
+     * @param nums
+     * @return
+     */
+    public boolean canChoose(int[][] groups, int[] nums) {
+
+        // 双指针
+        int len1 = nums.length, len2 = groups.length;
+
+        int idx = 0;
+        for (int i = 0; i < len1; i++) {
+            int num = nums[i];
+            if (num != groups[idx][0]) {
+                continue;
+            }
+            int len = groups[idx].length;
+            int j = 1;
+            for (; j < len && i + j < len1; j++) {
+                if (nums[i + j] != groups[idx][j]) {
+                    break;
+                }
+            }
+
+            if (j == len) {
+                idx++;
+                i += len - 1;
+            }
+            if (idx == len2) {
+                break;
+            }
+        }
+        return idx == len2;
+    }
+
+    @Test
+    public void canChoose() {
+        int[][] groups = {
+            {
+                1363850, 6300176, 8430440, -9635380, -1343994, -9365453, 5210548, -1702094, 8165619,
+                4988596, -1524607, -4244825, -7838619, -1604017, 8054294, 3277839
+            },
+            {-9180987, 4743777, 9146280, -7908834, 1909925, 4434157},
+            {3981590}
+        };
+        int[] nums = {
+            -1702094, -9635380, 5210548, 8165619, 8054294, 1363850, 6300176, 8430440, -9635380,
+            -1343994, -9365453, 5210548, -1702094, 8165619, 4988596, -1524607, -4244825, -7838619,
+            -1604017, 8054294, 3277839, -1343994, -1524607, 1363850, 6300176, 8165619, -9180987,
+            4743777, 9146280, -7908834
+        };
+        logResult(canChoose(groups, nums));
+    }
+
+    /**
+     * 5671. 地图中的最高点
+     *
+     * <p>给你一个大小为 m x n 的整数矩阵 isWater ，它代表了一个由 陆地 和 水域 单元格组成的地图。
+     *
+     * <p>如果 isWater[i][j] == 0 ，格子 (i, j) 是一个 陆地 格子。 如果 isWater[i][j] == 1 ，格子 (i, j) 是一个 水域 格子。
+     * 你需要按照如下规则给每个单元格安排高度：
+     *
+     * <p>每个格子的高度都必须是非负的。 如果一个格子是是 水域 ，那么它的高度必须为 0 。 任意相邻的格子高度差 至多 为 1
+     * 。当两个格子在正东、南、西、北方向上相互紧挨着，就称它们为相邻的格子。（也就是说它们有一条公共边） 找到一种安排高度的方案，使得矩阵中的最高高度值 最大 。
+     *
+     * <p>请你返回一个大小为 m x n 的整数矩阵 height ，其中 height[i][j] 是格子 (i, j) 的高度。如果有多种解法，请返回 任意一个 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：isWater = [[0,1],[0,0]] 输出：[[1,0],[2,1]] 解释：上图展示了给各个格子安排的高度。 蓝色格子是水域格，绿色格子是陆地格。 示例 2：
+     *
+     * <p>输入：isWater = [[0,0,1],[1,0,0],[0,0,0]] 输出：[[1,1,0],[0,1,1],[1,2,2]] 解释：所有安排方案中，最高可行高度为 2 。
+     * 任意安排方案中，只要最高高度为 2 且符合上述规则的，都为可行方案。
+     *
+     * <p>提示：
+     *
+     * <p>m == isWater.length n == isWater[i].length 1 <= m, n <= 1000 isWater[i][j] 要么是 0 ，要么是 1 。
+     * 至少有 1 个水域格子。
+     *
+     * @param isWater
+     * @return
+     */
+    public int[][] highestPeak(int[][] isWater) {
+        int m = isWater.length, n = isWater[0].length;
+
+        // 广度优先遍历
+        Queue<PeakNode> queue = new LinkedList<>();
+        boolean[][] visited = new boolean[m][n];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (isWater[i][j] == 1) {
+                    queue.offer(new PeakNode(i, j, 0));
+                    visited[i][j] = true;
+                }
+            }
+        }
+        int[][] result = new int[m][n];
+
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                PeakNode node = queue.poll();
+                int row = node.row, col = node.col;
+
+                int height = node.height;
+                result[row][col] = height;
+
+                for (int j = 0; j < 4; j++) {
+                    int nextRow = row + DIR_ROW[j], nextCol = col + DIR_COL[j];
+                    if (inArea(nextRow, nextCol, m, n) && !visited[nextRow][nextCol]) {
+                        queue.offer(new PeakNode(nextRow, nextCol, height + 1));
+                        visited[nextRow][nextCol] = true;
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    static class PeakNode {
+        int row, col, height;
+
+        public PeakNode(int row, int col, int height) {
+            this.row = row;
+            this.col = col;
+            this.height = height;
+        }
+    }
+
+    @Test
+    public void highestPeak() {
+        int[][] isWater = {{0, 0, 1}, {1, 0, 0}, {0, 0, 0}};
+        logResult(highestPeak(isWater));
+    }
 }
