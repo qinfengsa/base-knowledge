@@ -3172,4 +3172,99 @@ public class Array2Test {
         int[][] isWater = {{0, 0, 1}, {1, 0, 0}, {0, 0, 0}};
         logResult(highestPeak(isWater));
     }
+
+    /**
+     * 1521. 找到最接近目标值的函数值
+     *
+     * <p>Winston 构造了一个如上所示的函数 func 。他有一个整数数组 arr 和一个整数 target ，他想找到让 |func(arr, l, r) - target| 最小的
+     * l 和 r 。
+     *
+     * <p>请你返回 |func(arr, l, r) - target| 的最小值。
+     *
+     * <p>请注意， func 的输入参数 l 和 r 需要满足 0 <= l, r < arr.length 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：arr = [9,12,3,7,15], target = 5 输出：2 解释：所有可能的 [l,r] 数对包括
+     * [[0,0],[1,1],[2,2],[3,3],[4,4],[0,1],[1,2],[2,3],[3,4],[0,2],[1,3],[2,4],[0,3],[1,4],[0,4]]，
+     * Winston 得到的相应结果为 [9,12,3,7,15,8,0,3,7,0,0,3,0,0,0] 。最接近 5 的值是 7 和 3，所以最小差值为 2 。 示例 2：
+     *
+     * <p>输入：arr = [1000000,1000000,1000000], target = 1 输出：999999 解释：Winston 输入函数的所有可能 [l,r]
+     * 数对得到的函数值都为 1000000 ，所以最小差值为 999999 。 示例 3：
+     *
+     * <p>输入：arr = [1,2,4,8,16], target = 0 输出：0
+     *
+     * <p>提示：
+     *
+     * <p>1 <= arr.length <= 10^5 1 <= arr[i] <= 10^6 0 <= target <= 10^7
+     *
+     * @param arr
+     * @param target
+     * @return
+     */
+    public int closestToTarget(int[] arr, int target) {
+        int result = Math.abs(arr[0] - target);
+        Set<Integer> nums = new HashSet<>();
+        nums.add(arr[0]);
+        for (int num : arr) {
+            Set<Integer> nextNums = new HashSet<>();
+            nextNums.add(num);
+
+            for (int lastNum : nums) {
+                int curNum = lastNum & num;
+                nextNums.add(curNum);
+                result = Math.min(result, Math.abs(curNum - target));
+            }
+
+            nums = nextNums;
+        }
+
+        return result;
+    }
+
+    /**
+     * 1526. 形成目标数组的子数组最少增加次数
+     *
+     * <p>给你一个整数数组 target 和一个数组 initial ，initial 数组与 target 数组有同样的维度，且一开始全部为 0 。
+     *
+     * <p>请你返回从 initial 得到 target 的最少操作次数，每次操作需遵循以下规则：
+     *
+     * <p>在 initial 中选择 任意 子数组，并将子数组中每个元素增加 1 。 答案保证在 32 位有符号整数以内。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：target = [1,2,3,2,1] 输出：3 解释：我们需要至少 3 次操作从 intial 数组得到 target 数组。 [0,0,0,0,0] 将下标为 0 到
+     * 4 的元素（包含二者）加 1 。 [1,1,1,1,1] 将下标为 1 到 3 的元素（包含二者）加 1 。 [1,2,2,2,1] 将下表为 2 的元素增加 1 。
+     * [1,2,3,2,1] 得到了目标数组。 示例 2：
+     *
+     * <p>输入：target = [3,1,1,2] 输出：4 解释：(initial)[0,0,0,0] -> [1,1,1,1] -> [1,1,1,2] -> [2,1,1,2] ->
+     * [3,1,1,2] (target) 。 示例 3：
+     *
+     * <p>输入：target = [3,1,5,4,2] 输出：7 解释：(initial)[0,0,0,0,0] -> [1,1,1,1,1] -> [2,1,1,1,1] ->
+     * [3,1,1,1,1] -> [3,1,2,2,2] -> [3,1,3,3,2] -> [3,1,4,4,2] -> [3,1,5,4,2] (target)。 示例 4：
+     *
+     * <p>输入：target = [1,1,1,1] 输出：1
+     *
+     * <p>提示：
+     *
+     * <p>1 <= target.length <= 10^5 1 <= target[i] <= 10^5
+     *
+     * @param target
+     * @return
+     */
+    public int minNumberOperations(int[] target) {
+        int len = target.length;
+        // dp[i] 表示在前 i 个数时需要的操作总共是多少
+        int[] dp = new int[len];
+        dp[0] = target[0];
+        for (int i = 1; i < len; i++) {
+            if (target[i] <= target[i - 1]) {
+                dp[i] = dp[i - 1];
+            } else {
+                dp[i] = dp[i - 1] + target[i] - target[i - 1];
+            }
+        }
+
+        return dp[len - 1];
+    }
 }

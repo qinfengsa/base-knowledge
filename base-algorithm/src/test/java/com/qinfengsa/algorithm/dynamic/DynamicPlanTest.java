@@ -8233,4 +8233,82 @@ public class DynamicPlanTest {
         }
         return (int) dp[n][26];
     }
+
+    /**
+     * 1531. 压缩字符串 II
+     *
+     * <p>行程长度编码 是一种常用的字符串压缩方法，它将连续的相同字符（重复 2 次或更多次）替换为字符和表示字符计数的数字（行程长度）。例如，用此方法压缩字符串 "aabccc" ，将
+     * "aa" 替换为 "a2" ，"ccc" 替换为` "c3" 。因此压缩后的字符串变为 "a2bc3" 。
+     *
+     * <p>注意，本问题中，压缩时没有在单个字符后附加计数 '1' 。
+     *
+     * <p>给你一个字符串 s 和一个整数 k 。你需要从字符串 s 中删除最多 k 个字符，以使 s 的行程长度编码长度最小。
+     *
+     * <p>请你返回删除最多 k 个字符后，s 行程长度编码的最小长度 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：s = "aaabcccd", k = 2 输出：4 解释：在不删除任何内容的情况下，压缩后的字符串是 "a3bc3d" ，长度为 6 。最优的方案是删除 'b' 和
+     * 'd'，这样一来，压缩后的字符串为 "a3c3" ，长度是 4 。 示例 2：
+     *
+     * <p>输入：s = "aabbaa", k = 2 输出：2 解释：如果删去两个 'b' 字符，那么压缩后的字符串是长度为 2 的 "a4" 。 示例 3：
+     *
+     * <p>输入：s = "aaaaaaaaaaa", k = 0 输出：3 解释：由于 k 等于 0 ，不能删去任何字符。压缩后的字符串是 "a11" ，长度为 3 。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= s.length <= 100 0 <= k <= s.length s 仅包含小写英文字母
+     *
+     * @param s
+     * @param k
+     * @return
+     */
+    public int getLengthOfOptimalCompression(String s, int k) {
+        int n = s.length();
+        int[][] dp = new int[n + 1][k + 1];
+        for (int[] nums : dp) {
+            Arrays.fill(nums, n);
+        }
+        dp[0][0] = 0;
+        for (int i = 1; i <= n; i++) {
+            // 前i个字符
+            for (int j = 0; j <= i && j <= k; j++) {
+                // 删除 j 的 长度
+                if (j > 0) {
+                    dp[i][j] = dp[i - 1][j - 1];
+                }
+
+                int count = 0, del = 0;
+
+                for (int l = i; l >= 1 && del <= j; l--) {
+                    if (s.charAt(i - 1) == s.charAt(l - 1)) {
+                        count++;
+                        dp[i][j] = Math.min(dp[i][j], dp[l - 1][j - del] + getLen(count));
+                    } else {
+                        del++;
+                    }
+                }
+            }
+        }
+        logResult(dp);
+        return dp[n][k];
+    }
+
+    private int getLen(int count) {
+        if (count <= 1) {
+            return 1;
+        } else if (count < 10) {
+            return 2;
+        } else if (count < 100) {
+            return 3;
+        }
+        return 4;
+    }
+
+    @Test
+    public void getLengthOfOptimalCompression() {
+        String s = "aaabcccd";
+        int k = 2;
+        logResult(getLengthOfOptimalCompression(s, k));
+    }
 }
