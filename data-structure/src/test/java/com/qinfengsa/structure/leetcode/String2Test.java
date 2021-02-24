@@ -5,9 +5,11 @@ import static com.qinfengsa.structure.util.LogUtils.logResult;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -669,5 +671,58 @@ public class String2Test {
     public void longestNiceSubstring() {
         String s = "dDzeE";
         logResult(longestNiceSubstring(s));
+    }
+
+    /**
+     * 1542. 找出最长的超赞子字符串
+     *
+     * <p>给你一个字符串 s 。请返回 s 中最长的 超赞子字符串 的长度。
+     *
+     * <p>「超赞子字符串」需满足满足下述两个条件：
+     *
+     * <p>该字符串是 s 的一个非空子字符串 进行任意次数的字符交换后，该字符串可以变成一个回文字符串
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：s = "3242415" 输出：5 解释："24241" 是最长的超赞子字符串，交换其中的字符后，可以得到回文 "24142" 示例 2：
+     *
+     * <p>输入：s = "12345678" 输出：1 示例 3：
+     *
+     * <p>输入：s = "213123" 输出：6 解释："213123" 是最长的超赞子字符串，交换其中的字符后，可以得到回文 "231132" 示例 4：
+     *
+     * <p>输入：s = "00" 输出：2
+     *
+     * <p>提示：
+     *
+     * <p>1 <= s.length <= 10^5 s 仅由数字组成
+     *
+     * @param s
+     * @return
+     */
+    public int longestAwesome(String s) {
+        char[] chars = s.toCharArray();
+        int result = 1;
+        Map<Integer, Integer> prefixMap = new HashMap<>();
+        int num = 0;
+        prefixMap.put(0, -1);
+        for (int i = 0; i < s.length(); i++) {
+            char c = chars[i];
+            num ^= 1 << (c - '0');
+            // 完全由两两字符组成的回文字符串
+            if (prefixMap.containsKey(num)) {
+                result = Math.max(result, i - prefixMap.get(num));
+            } else {
+                prefixMap.put(num, i);
+            }
+            // 存在单个字符的回文字符串
+            for (int j = 0; j < 10; j++) {
+                int singNum = num ^ (1 << j);
+                if (prefixMap.containsKey(singNum)) {
+                    result = Math.max(result, i - prefixMap.get(singNum));
+                }
+            }
+        }
+
+        return result;
     }
 }

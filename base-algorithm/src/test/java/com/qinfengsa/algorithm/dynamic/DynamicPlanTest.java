@@ -8311,4 +8311,142 @@ public class DynamicPlanTest {
         int k = 2;
         logResult(getLengthOfOptimalCompression(s, k));
     }
+
+    /**
+     * 1537. 最大得分
+     *
+     * <p>你有两个 有序 且数组内元素互不相同的数组 nums1 和 nums2 。
+     *
+     * <p>一条 合法路径 定义如下：
+     *
+     * <p>选择数组 nums1 或者 nums2 开始遍历（从下标 0 处开始）。 从左到右遍历当前数组。 如果你遇到了 nums1 和 nums2
+     * 中都存在的值，那么你可以切换路径到另一个数组对应数字处继续遍历（但在合法路径中重复数字只会被统计一次）。 得分定义为合法路径中不同数字的和。
+     *
+     * <p>请你返回所有可能合法路径中的最大得分。
+     *
+     * <p>由于答案可能很大，请你将它对 10^9 + 7 取余后返回。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：nums1 = [2,4,5,8,10], nums2 = [4,6,8,9] 输出：30 解释：合法路径包括： [2,4,5,8,10], [2,4,5,8,9],
+     * [2,4,6,8,9], [2,4,6,8,10],（从 nums1 开始遍历） [4,6,8,9], [4,5,8,10], [4,5,8,9], [4,6,8,10] （从
+     * nums2 开始遍历） 最大得分为上图中的绿色路径 [2,4,6,8,10] 。 示例 2：
+     *
+     * <p>输入：nums1 = [1,3,5,7,9], nums2 = [3,5,100] 输出：109 解释：最大得分由路径 [1,3,5,100] 得到。 示例 3：
+     *
+     * <p>输入：nums1 = [1,2,3,4,5], nums2 = [6,7,8,9,10] 输出：40 解释：nums1 和 nums2 之间无相同数字。 最大得分由路径
+     * [6,7,8,9,10] 得到。 示例 4：
+     *
+     * <p>输入：nums1 = [1,4,5,8,9,11,19], nums2 = [2,3,4,11,12] 输出：61
+     *
+     * <p>提示：
+     *
+     * <p>1 <= nums1.length <= 10^5 1 <= nums2.length <= 10^5 1 <= nums1[i], nums2[i] <= 10^7 nums1
+     * 和 nums2 都是严格递增的数组。
+     *
+     * @param nums1
+     * @param nums2
+     * @return
+     */
+    public int maxSum(int[] nums1, int[] nums2) {
+        // nums1 nums2 是有序的，可以使用双指针，类似归并排序
+        int len1 = nums1.length, len2 = nums2.length;
+        int i = 0, j = 0;
+        long sum1 = 0L, sum2 = 0L;
+        while (i < len1 || j < len2) {
+            if (i == len1) {
+                sum2 += nums2[j++];
+                continue;
+            }
+            if (j == len2) {
+                sum1 += nums1[i++];
+                continue;
+            }
+
+            if (nums1[i] < nums2[j]) {
+                sum1 += nums1[i++];
+            } else if (nums1[i] > nums2[j]) {
+                sum2 += nums2[j++];
+            } else {
+                // 两个相等
+                if (sum1 > sum2) {
+                    sum1 += nums1[i];
+                    sum2 = sum1;
+                } else {
+                    sum2 += nums1[i];
+                    sum1 = sum2;
+                }
+                i++;
+                j++;
+            }
+        }
+
+        return (int) (Math.max(sum1, sum2) % MOD);
+    }
+
+    /**
+     * 1547. 切棍子的最小成本
+     *
+     * <p>有一根长度为 n 个单位的木棍，棍上从 0 到 n 标记了若干位置。例如，长度为 6 的棍子可以标记如下：
+     *
+     * <p>给你一个整数数组 cuts ，其中 cuts[i] 表示你需要将棍子切开的位置。
+     *
+     * <p>你可以按顺序完成切割，也可以根据需要更改切割的顺序。
+     *
+     * <p>每次切割的成本都是当前要切割的棍子的长度，切棍子的总成本是历次切割成本的总和。对棍子进行切割将会把一根木棍分成两根较小的木棍（这两根木棍的长度和就是切割前木棍的长度）。请参阅第一个示例以获得更直观的解释。
+     *
+     * <p>返回切棍子的 最小总成本 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：n = 7, cuts = [1,3,4,5] 输出：16 解释：按 [1, 3, 4, 5] 的顺序切割的情况如下所示：
+     *
+     * <p>第一次切割长度为 7 的棍子，成本为 7 。第二次切割长度为 6 的棍子（即第一次切割得到的第二根棍子），第三次切割为长度 4 的棍子，最后切割长度为 3 的棍子。总成本为 7 +
+     * 6 + 4 + 3 = 20 。 而将切割顺序重新排列为 [3, 5, 1, 4] 后，总成本 = 16（如示例图中 7 + 4 + 3 + 2 = 16）。 示例 2：
+     *
+     * <p>输入：n = 9, cuts = [5,6,1,4,2] 输出：22 解释：如果按给定的顺序切割，则总成本为 25 。总成本 <= 25 的切割顺序很多，例如，[4, 6, 5,
+     * 2, 1] 的总成本 = 22，是所有可能方案中成本最小的。
+     *
+     * <p>提示：
+     *
+     * <p>2 <= n <= 10^6 1 <= cuts.length <= min(n - 1, 100) 1 <= cuts[i] <= n - 1 cuts 数组中的所有整数都
+     * 互不相同
+     *
+     * @param n
+     * @param cuts
+     * @return
+     */
+    public int minCost(int n, int[] cuts) {
+
+        Arrays.sort(cuts);
+        int m = cuts.length;
+        int[] newCuts = new int[m + 2];
+        System.arraycopy(cuts, 0, newCuts, 1, m);
+        newCuts[m + 1] = n;
+        int[][] dp = new int[m + 2][m + 2];
+
+        //  dp(0,m + 1) = min {dp(0,i) + dp(i,m + 1) + cuts[m + 1] - cuts[0]}
+        for (int i = m; i >= 0; i--) {
+            // 枚举区间 [i,j]
+            for (int j = i + 2; j <= m + 1; j++) {
+                int min = Integer.MAX_VALUE;
+                // 枚举中间的分割点
+                for (int k = i + 1; k < j; k++) {
+                    int num = dp[i][k] + dp[k][j] + newCuts[j] - newCuts[i];
+                    min = Math.min(min, num);
+                }
+                dp[i][j] = min;
+            }
+        }
+        logResult(dp);
+
+        return dp[0][m + 1];
+    }
+
+    @Test
+    public void minCost() {
+        int n = 9;
+        int[] cuts = {5, 6, 1, 4, 2};
+        logResult(minCost(n, cuts));
+    }
 }
