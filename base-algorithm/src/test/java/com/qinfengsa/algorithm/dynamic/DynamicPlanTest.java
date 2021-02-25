@@ -8449,4 +8449,130 @@ public class DynamicPlanTest {
         int[] cuts = {5, 6, 1, 4, 2};
         logResult(minCost(n, cuts));
     }
+
+    /**
+     * 1510. 石子游戏 IV
+     *
+     * <p>Alice 和 Bob 两个人轮流玩一个游戏，Alice 先手。
+     *
+     * <p>一开始，有 n 个石子堆在一起。每个人轮流操作，正在操作的玩家可以从石子堆里拿走 任意 非零 平方数 个石子。
+     *
+     * <p>如果石子堆里没有石子了，则无法操作的玩家输掉游戏。
+     *
+     * <p>给你正整数 n ，且已知两个人都采取最优策略。如果 Alice 会赢得比赛，那么返回 True ，否则返回 False 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：n = 1 输出：true 解释：Alice 拿走 1 个石子并赢得胜利，因为 Bob 无法进行任何操作。 示例 2：
+     *
+     * <p>输入：n = 2 输出：false 解释：Alice 只能拿走 1 个石子，然后 Bob 拿走最后一个石子并赢得胜利（2 -> 1 -> 0）。 示例 3：
+     *
+     * <p>输入：n = 4 输出：true 解释：n 已经是一个平方数，Alice 可以一次全拿掉 4 个石子并赢得胜利（4 -> 0）。 示例 4：
+     *
+     * <p>输入：n = 7 输出：false 解释：当 Bob 采取最优策略时，Alice 无法赢得比赛。 如果 Alice 一开始拿走 4 个石子， Bob 会拿走 1 个石子，然后
+     * Alice 只能拿走 1 个石子，Bob 拿走最后一个石子并赢得胜利（7 -> 3 -> 2 -> 1 -> 0）。 如果 Alice 一开始拿走 1 个石子， Bob 会拿走 4
+     * 个石子，然后 Alice 只能拿走 1 个石子，Bob 拿走最后一个石子并赢得胜利（7 -> 6 -> 2 -> 1 -> 0）。 示例 5：
+     *
+     * <p>输入：n = 17 输出：false 解释：如果 Bob 采取最优策略，Alice 无法赢得胜利。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= n <= 10^5
+     *
+     * @param n
+     * @return
+     */
+    public boolean winnerSquareGame(int n) {
+        // dp[i] 表示 有i个石子是是否必胜
+        boolean[] dp = new boolean[n + 1];
+        for (int i = 1; i <= n; i++) {
+
+            for (int j = 1; j * j <= i; j++) {
+                // 对面必输
+                if (!dp[i - j * j]) {
+                    dp[i] = true;
+                    break;
+                }
+            }
+        }
+        log.debug("dp:{}", dp);
+        return dp[n];
+    }
+
+    @Test
+    public void winnerSquareGame() {
+        int n = 4;
+        logResult(winnerSquareGame(n));
+    }
+
+    /**
+     * 1563. 石子游戏 V
+     *
+     * <p>几块石子 排成一行 ，每块石子都有一个关联值，关联值为整数，由数组 stoneValue 给出。
+     *
+     * <p>游戏中的每一轮：Alice 会将这行石子分成两个 非空行（即，左侧行和右侧行）；Bob 负责计算每一行的值，即此行中所有石子的值的总和。Bob 会丢弃值最大的行，Alice
+     * 的得分为剩下那行的值（每轮累加）。如果两行的值相等，Bob 让 Alice 决定丢弃哪一行。下一轮从剩下的那一行开始。
+     *
+     * <p>只 剩下一块石子 时，游戏结束。Alice 的分数最初为 0 。
+     *
+     * <p>返回 Alice 能够获得的最大分数 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：stoneValue = [6,2,3,4,5,5] 输出：18 解释：在第一轮中，Alice 将行划分为 [6，2，3]，[4，5，5] 。左行的值是 11 ，右行的值是
+     * 14 。Bob 丢弃了右行，Alice 的分数现在是 11 。 在第二轮中，Alice 将行分成 [6]，[2，3] 。这一次 Bob 扔掉了左行，Alice 的分数变成了 16（11
+     * + 5）。 最后一轮 Alice 只能将行分成 [2]，[3] 。Bob 扔掉右行，Alice 的分数现在是 18（16 + 2）。游戏结束，因为这行只剩下一块石头了。 示例 2：
+     *
+     * <p>输入：stoneValue = [7,7,7,7,7,7,7] 输出：28 示例 3：
+     *
+     * <p>输入：stoneValue = [4] 输出：0
+     *
+     * <p>提示：
+     *
+     * <p>1 <= stoneValue.length <= 500 1 <= stoneValue[i] <= 10^6
+     *
+     * @param stoneValue
+     * @return
+     */
+    public int stoneGameV(int[] stoneValue) {
+        int n = stoneValue.length;
+        if (n <= 1) {
+            return 0;
+        }
+        int[] sums = new int[n + 1];
+        int sum = 0;
+        for (int i = 0; i < n; i++) {
+            sum += stoneValue[i];
+            sums[i + 1] = sum;
+        }
+        int[][] dp = new int[n][n];
+        // dp[i][j]代表： 从i到j 区间,Alice分数最大值
+        for (int i = n - 2; i >= 0; i--) {
+            for (int j = i + 1; j < n; j++) {
+
+                // 切割点 k
+                for (int k = i; k < j; k++) {
+                    int leftDp = dp[i][k], rightDp = dp[k + 1][j];
+                    int leftSum = sums[k + 1] - sums[i], rightSum = sums[j + 1] - sums[k + 1];
+                    if (leftSum == rightSum) {
+                        // Alice 决定丢弃哪一行 选大的
+                        int score = leftSum + Math.max(leftDp, rightDp);
+                        dp[i][j] = Math.max(dp[i][j], score);
+                    } else if (leftSum < rightSum) {
+                        dp[i][j] = Math.max(dp[i][j], leftDp + leftSum);
+                    } else {
+                        dp[i][j] = Math.max(dp[i][j], rightDp + rightSum);
+                    }
+                }
+            }
+        }
+
+        return dp[0][n - 1];
+    }
+
+    @Test
+    public void stoneGameV() {
+        int[] stoneValue = {7, 7, 7, 7, 7, 7, 7};
+        logResult(stoneGameV(stoneValue));
+    }
 }
