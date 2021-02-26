@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
@@ -8574,5 +8575,174 @@ public class DynamicPlanTest {
     public void stoneGameV() {
         int[] stoneValue = {7, 7, 7, 7, 7, 7, 7};
         logResult(stoneGameV(stoneValue));
+    }
+
+    /**
+     * 1569. 将子数组重新排序得到同一个二叉查找树的方案数
+     *
+     * <p>给你一个数组 nums 表示 1 到 n 的一个排列。我们按照元素在 nums 中的顺序依次插入一个初始为空的二叉查找树（BST）。请你统计将 nums
+     * 重新排序后，统计满足如下条件的方案数：重排后得到的二叉查找树与 nums 原本数字顺序得到的二叉查找树相同。
+     *
+     * <p>比方说，给你 nums = [2,1,3]，我们得到一棵 2 为根，1 为左孩子，3 为右孩子的树。数组 [2,3,1] 也能得到相同的 BST，但 [3,2,1]
+     * 会得到一棵不同的 BST 。
+     *
+     * <p>请你返回重排 nums 后，与原数组 nums 得到相同二叉查找树的方案数。
+     *
+     * <p>由于答案可能会很大，请将结果对 10^9 + 7 取余数。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：nums = [2,1,3] 输出：1 解释：我们将 nums 重排， [2,3,1] 能得到相同的 BST 。没有其他得到相同 BST 的方案了。 示例 2：
+     *
+     * <p>输入：nums = [3,4,5,1,2] 输出：5 解释：下面 5 个数组会得到相同的 BST： [3,1,2,4,5] [3,1,4,2,5] [3,1,4,5,2]
+     * [3,4,1,2,5] [3,4,1,5,2] 示例 3：
+     *
+     * <p>输入：nums = [1,2,3] 输出：0 解释：没有别的排列顺序能得到相同的 BST 。 示例 4：
+     *
+     * <p>输入：nums = [3,1,2,5,4,6] 输出：19 示例 5：
+     *
+     * <p>输入：nums = [9,4,2,1,3,6,5,7,8,14,11,10,12,13,16,15,17,18] 输出：216212978 解释：得到相同 BST 的方案数是
+     * 3216212999。将它对 10^9 + 7 取余后得到 216212978。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= nums.length <= 1000 1 <= nums[i] <= nums.length nums 中所有数 互不相同 。
+     *
+     * @param nums
+     * @return
+     */
+    public int numOfWays(int[] nums) {
+        int n = nums.length;
+
+        initComp(n);
+        List<Integer> list = new ArrayList<>();
+        for (int num : nums) {
+            list.add(num);
+        }
+        long count = getNumOfTree(list);
+        if (count == 0) {
+            return MOD - 1;
+        }
+
+        return (int) (count - 1);
+    }
+
+    long[][] compNum = new long[1010][1010];
+
+    /**
+     * 初始化组合数
+     *
+     * @param n
+     */
+    private void initComp(int n) {
+        for (int i = 0; i <= n; i++) {
+            for (int j = 0; j <= i; j++) {
+                if (j == 0) {
+                    compNum[i][j] = 1;
+                } else {
+                    compNum[i][j] = (compNum[i - 1][j] + compNum[i - 1][j - 1]) % MOD;
+                }
+            }
+        }
+    }
+
+    private long getNumOfTree(List<Integer> list) {
+        if (list.size() <= 1) {
+            return 1;
+        }
+        int root = list.get(0);
+        List<Integer> leftList =
+                list.stream().filter(num -> num < root).collect(Collectors.toList());
+        List<Integer> rightList =
+                list.stream().filter(num -> num > root).collect(Collectors.toList());
+        int num = Math.min(leftList.size(), rightList.size());
+        long comb = compNum[list.size() - 1][num];
+
+        long result = comb * (getNumOfTree(leftList) * getNumOfTree(rightList) % MOD) % MOD;
+
+        return result;
+    }
+
+    @Test
+    public void numOfWays() {
+        int[] nums = {
+            31, 23, 14, 24, 15, 12, 25, 28, 5, 35, 17, 6, 9, 11, 1, 27, 18, 20, 2, 3, 33, 10, 13, 4,
+            7, 36, 32, 29, 8, 30, 26, 19, 34, 22, 21, 16
+        };
+        logResult(numOfWays(nums));
+    }
+
+    /**
+     * 1575. 统计所有可行路径
+     *
+     * <p>给你一个 互不相同 的整数数组，其中 locations[i] 表示第 i 个城市的位置。同时给你 start，finish 和 fuel
+     * 分别表示出发城市、目的地城市和你初始拥有的汽油总量
+     *
+     * <p>每一步中，如果你在城市 i ，你可以选择任意一个城市 j ，满足 j != i 且 0 <= j < locations.length ，并移动到城市 j 。从城市 i 移动到 j
+     * 消耗的汽油量为 |locations[i] - locations[j]|，|x| 表示 x 的绝对值。
+     *
+     * <p>请注意， fuel 任何时刻都 不能 为负，且你 可以 经过任意城市超过一次（包括 start 和 finish ）。
+     *
+     * <p>请你返回从 start 到 finish 所有可能路径的数目。
+     *
+     * <p>由于答案可能很大， 请将它对 10^9 + 7 取余后返回。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：locations = [2,3,6,8,4], start = 1, finish = 3, fuel = 5 输出：4 解释：以下为所有可能路径，每一条都用了 5
+     * 单位的汽油： 1 -> 3 1 -> 2 -> 3 1 -> 4 -> 3 1 -> 4 -> 2 -> 3 示例 2：
+     *
+     * <p>输入：locations = [4,3,1], start = 1, finish = 0, fuel = 6 输出：5 解释：以下为所有可能的路径： 1 -> 0，使用汽油量为
+     * fuel = 1 1 -> 2 -> 0，使用汽油量为 fuel = 5 1 -> 2 -> 1 -> 0，使用汽油量为 fuel = 5 1 -> 0 -> 1 -> 0，使用汽油量为
+     * fuel = 3 1 -> 0 -> 1 -> 0 -> 1 -> 0，使用汽油量为 fuel = 5 示例 3：
+     *
+     * <p>输入：locations = [5,2,1], start = 0, finish = 2, fuel = 3 输出：0 解释：没有办法只用 3 单位的汽油从 0 到达 2
+     * 。因为最短路径需要 4 单位的汽油。 示例 4 ：
+     *
+     * <p>输入：locations = [2,1,5], start = 0, finish = 0, fuel = 3 输出：2 解释：总共有两条可行路径，0 和 0 -> 1 -> 0
+     * 。 示例 5：
+     *
+     * <p>输入：locations = [1,2,3], start = 0, finish = 2, fuel = 40 输出：615088286 解释：路径总数为 2615088300
+     * 。将结果对 10^9 + 7 取余，得到 615088286 。
+     *
+     * <p>提示：
+     *
+     * <p>2 <= locations.length <= 100 1 <= locations[i] <= 10^9 所有 locations 中的整数 互不相同 。 0 <=
+     * start, finish < locations.length 1 <= fuel <= 200
+     *
+     * @param locations
+     * @param start
+     * @param finish
+     * @param fuel
+     * @return
+     */
+    public int countRoutes(int[] locations, int start, int finish, int fuel) {
+        int n = locations.length;
+        // dp[i][k]表示花正好k的油到达i点的路径数
+        int[][] dp = new int[n][fuel + 1];
+        dp[start][0] = 1;
+        for (int k = 0; k < fuel; k++) {
+
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    if (i == j) {
+                        continue;
+                    }
+                    int useFuel = Math.abs(locations[i] - locations[j]);
+                    if (k + useFuel > fuel) {
+                        continue;
+                    }
+                    dp[j][k + useFuel] += dp[i][k];
+                    dp[j][k + useFuel] %= MOD;
+                }
+            }
+        }
+        int result = 0;
+        for (int k = 0; k <= fuel; k++) {
+            result += dp[finish][k];
+            result %= MOD;
+        }
+
+        return result;
     }
 }

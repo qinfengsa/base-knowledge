@@ -15847,7 +15847,7 @@ public class ArrayTest {
     public static int MOD = 1_000_000_007;
 
     /**
-     * 5501. 使陆地分离的最少天数
+     * 1568. 使陆地分离的最少天数
      *
      * <p>给你一个由若干 0 和 1 组成的二维网格 grid ，其中 0 表示水，而 1 表示陆地。岛屿由水平方向或竖直方向上相邻的 1 （陆地）连接形成。
      *
@@ -15881,27 +15881,64 @@ public class ArrayTest {
         // 计算岛屿数量 ！= 1 返回 0
 
         int count = 0;
-
-        int m = grid.length;
-        int n = grid[0].length;
+        this.grid = grid;
+        this.m = grid.length;
+        this.n = grid[0].length;
+        if (check(grid)) {
+            return 0;
+        }
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < n; j++) {
                 if (grid[i][j] == 1) {
-                    count++;
-                    if (count > 1) {
-                        return 0;
+                    grid[i][j] = 0;
+                    if (check(grid)) {
+                        return 1;
                     }
-                    updateAround(grid, i, j);
+                    grid[i][j] = 1;
                 }
             }
-        }
-        if (count == 0) {
-            return 0;
         }
 
         // 找交点,有交点，则答案为1 否则答案为2
 
         return 2;
+    }
+
+    /**
+     * 校验 grid 是否 有两个
+     *
+     * @param grid
+     * @return
+     */
+    private boolean check(int[][] grid) {
+        int count = 0;
+        visited = new boolean[m][n];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (!visited[i][j] && grid[i][j] == 1) {
+                    count++;
+                    dfsCheck(grid, i, j);
+                }
+            }
+        }
+        return count > 1 || count == 0;
+    }
+
+    private void dfsCheck(int[][] grid, int row, int col) {
+        visited[row][col] = true;
+        for (int i = 0; i < 4; i++) {
+            int nextRow = row + DIR_ROW[i], nextCol = col + DIR_COL[i];
+            if (!inArea(nextRow, nextCol, m, n)) {
+                continue;
+            }
+            if (visited[nextRow][nextCol]) {
+                continue;
+            }
+            if (grid[nextRow][nextCol] != 1) {
+                continue;
+            }
+            dfsCheck(grid, nextRow, nextCol);
+        }
     }
 
     /**
@@ -15932,7 +15969,7 @@ public class ArrayTest {
      * @param threshold
      * @return
      */
-    public int smallestDivisor(int[] nums, int threshold) {
+    private int smallestDivisor(int[] nums, int threshold) {
         int left = 1;
         int right = Arrays.stream(nums).max().orElse(0);
         int result = 0;
