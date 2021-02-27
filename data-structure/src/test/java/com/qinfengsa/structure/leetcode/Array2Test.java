@@ -3357,4 +3357,117 @@ public class Array2Test {
         char[][] grid = {{'a', 'b', 'b'}, {'b', 'z', 'b'}, {'b', 'b', 'a'}};
         logResult(containsCycle(grid));
     }
+
+    /**
+     * 1591. 奇怪的打印机 II
+     *
+     * <p>给你一个奇怪的打印机，它有如下两个特殊的打印规则：
+     *
+     * <p>每一次操作时，打印机会用同一种颜色打印一个矩形的形状，每次打印会覆盖矩形对应格子里原本的颜色。 一旦矩形根据上面的规则使用了一种颜色，那么 相同的颜色不能再被使用 。
+     * 给你一个初始没有颜色的 m x n 的矩形 targetGrid ，其中 targetGrid[row][col] 是位置 (row, col) 的颜色。
+     *
+     * <p>如果你能按照上述规则打印出矩形 targetGrid ，请你返回 true ，否则返回 false 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：targetGrid = [[1,1,1,1],[1,2,2,1],[1,2,2,1],[1,1,1,1]] 输出：true 示例 2：
+     *
+     * <p>输入：targetGrid = [[1,1,1,1],[1,1,3,3],[1,1,3,4],[5,5,1,4]] 输出：true 示例 3：
+     *
+     * <p>输入：targetGrid = [[1,2,1],[2,1,2],[1,2,1]] 输出：false 解释：没有办法得到 targetGrid ，因为每一轮操作使用的颜色互不相同。
+     * 示例 4：
+     *
+     * <p>输入：targetGrid = [[1,1,1],[3,1,3]] 输出：false
+     *
+     * <p>提示：
+     *
+     * <p>m == targetGrid.length n == targetGrid[i].length 1 <= m, n <= 60 1 <= targetGrid[row][col]
+     * <= 60
+     *
+     * @param targetGrid
+     * @return
+     */
+    public boolean isPrintable(int[][] targetGrid) {
+        int m = targetGrid.length, n = targetGrid[0].length;
+        int[] leftCol = new int[61],
+                rightCol = new int[61],
+                upRow = new int[61],
+                downRow = new int[61];
+        Arrays.fill(leftCol, 61);
+        Arrays.fill(upRow, 61);
+        Arrays.fill(rightCol, -1);
+        Arrays.fill(downRow, -1);
+        Set<Integer> colorSet = new HashSet<>();
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                int val = targetGrid[i][j];
+                colorSet.add(val);
+                leftCol[val] = Math.min(leftCol[val], j);
+                rightCol[val] = Math.max(rightCol[val], j);
+
+                upRow[val] = Math.min(upRow[val], i);
+                downRow[val] = Math.max(downRow[val], i);
+            }
+        }
+
+        while (!allZero(targetGrid)) {
+            int value = -1;
+            for (int color : colorSet) {
+                if (allValid(
+                        upRow[color],
+                        downRow[color],
+                        leftCol[color],
+                        rightCol[color],
+                        color,
+                        targetGrid)) {
+                    updateZero(
+                            upRow[color],
+                            downRow[color],
+                            leftCol[color],
+                            rightCol[color],
+                            targetGrid);
+                    value = color;
+                    break;
+                }
+            }
+
+            if (value == -1) {
+                return false;
+            }
+            colorSet.remove(value);
+        }
+
+        return true;
+    }
+
+    boolean allValid(
+            int upRow, int downRow, int leftCol, int rightCol, int val, int[][] targetGrid) {
+        for (int i = upRow; i <= downRow; i++) {
+            for (int j = leftCol; j <= rightCol; j++) {
+                if (targetGrid[i][j] != val && targetGrid[i][j] != 0) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    boolean allZero(int[][] targetGrid) {
+        for (int[] rows : targetGrid) {
+            for (int num : rows) {
+                if (num != 0) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    void updateZero(int upRow, int downRow, int leftCol, int rightCol, int[][] targetGrid) {
+        for (int i = upRow; i <= downRow; i++) {
+            for (int j = leftCol; j <= rightCol; j++) {
+                targetGrid[i][j] = 0;
+            }
+        }
+    }
 }

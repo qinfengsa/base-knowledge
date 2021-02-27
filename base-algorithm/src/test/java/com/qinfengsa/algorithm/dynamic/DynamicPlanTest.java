@@ -8745,4 +8745,86 @@ public class DynamicPlanTest {
 
         return result;
     }
+
+    /**
+     * 1595. 连通两组点的最小成本
+     *
+     * <p>给你两组点，其中第一组中有 size1 个点，第二组中有 size2 个点，且 size1 >= size2 。
+     *
+     * <p>任意两点间的连接成本 cost 由大小为 size1 x size2 矩阵给出，其中 cost[i][j] 是第一组中的点 i 和第二组中的点 j
+     * 的连接成本。如果两个组中的每个点都与另一组中的一个或多个点连接，则称这两组点是连通的。换言之，第一组中的每个点必须至少与第二组中的一个点连接，且第二组中的每个点必须至少与第一组中的一个点连接。
+     *
+     * <p>返回连通两组点所需的最小成本。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：cost = [[15, 96], [36, 2]] 输出：17 解释：连通两组点的最佳方法是： 1--A 2--B 总成本为 17 。 示例 2：
+     *
+     * <p>输入：cost = [[1, 3, 5], [4, 1, 1], [1, 5, 3]] 输出：4 解释：连通两组点的最佳方法是： 1--A 2--B 2--C 3--A 最小成本为
+     * 4 。 请注意，虽然有多个点连接到第一组中的点 2 和第二组中的点 A ，但由于题目并不限制连接点的数目，所以只需要关心最低总成本。 示例 3：
+     *
+     * <p>输入：cost = [[2, 5, 1], [3, 4, 7], [8, 1, 2], [6, 2, 4], [3, 8, 8]] 输出：10
+     *
+     * <p>提示：
+     *
+     * <p>size1 == cost.length size2 == cost[i].length 1 <= size1, size2 <= 12 size1 >= size2 0 <=
+     * cost[i][j] <= 100
+     *
+     * @param cost
+     * @return
+     */
+    public int connectTwoGroups(List<List<Integer>> cost) {
+        int m = cost.size(), n = cost.get(0).size();
+        // 1 <= size1, size2 <= 12
+
+        int[][] costSum = new int[m][1 << n];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < 1 << n; j++) {
+                int costNum = 0;
+                for (int k = 0; k < n; k++) {
+                    // 选择了 第二组 第k个点
+                    if ((j & (1 << k)) > 0) {
+                        costNum += cost.get(i).get(k);
+                    }
+                }
+                costSum[i][j] = costNum;
+            }
+        }
+        logResult(costSum);
+
+        log.debug("11");
+        // dp[i][j]表示当前选取到第 i 行, 每列的选取状况为 jj 时总的最小开销
+        // dp[i][j ∣ k]=Math.min(dp[i][j ∣ k],dp[i−1][k]+costSum[i][j])
+        int[][] dp = new int[m][1 << n];
+        for (int i = 1; i < m; i++) {
+            Arrays.fill(dp[i], Integer.MAX_VALUE);
+        }
+        dp[0] = costSum[0];
+        for (int i = 1; i < m; i++) {
+            for (int j = 1; j < 1 << n; j++) {
+                // 第i行至少要选择一个元素
+                for (int k = 0; k < n; k++) {
+                    dp[i][j | (1 << k)] =
+                            Math.min(dp[i][j | (1 << k)], dp[i - 1][j] + cost.get(i).get(k));
+                }
+                int rest = (1 << n) - 1 - j;
+                // 原本是0的位始终为0，即只遍历没选过的列的所有组合即可
+                for (int k = rest; k >= 1; k = rest & (k - 1)) {
+                    dp[i][j | k] = Math.min(dp[i][j | k], dp[i - 1][j] + costSum[i][k]);
+                }
+            }
+        }
+
+        logResult(dp);
+
+        return dp[m - 1][(1 << n) - 1];
+    }
+
+    @Test
+    public void connectTwoGroups() {
+        List<List<Integer>> cost = new ArrayList<>();
+        cost.add(Arrays.asList(15, 96));
+        cost.add(Arrays.asList(36, 2));
+        logResult(connectTwoGroups(cost));
+    }
 }
