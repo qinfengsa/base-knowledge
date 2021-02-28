@@ -4,6 +4,7 @@ import static com.qinfengsa.structure.util.LogUtils.logResult;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Deque;
 import java.util.HashMap;
@@ -3469,5 +3470,234 @@ public class Array2Test {
                 targetGrid[i][j] = 0;
             }
         }
+    }
+
+    /**
+     * 5690. 最接近目标价格的甜点成本
+     *
+     * <p>你打算做甜点，现在需要购买配料。目前共有 n 种冰激凌基料和 m 种配料可供选购。而制作甜点需要遵循以下几条规则：
+     *
+     * <p>必须选择 一种 冰激凌基料。 可以添加 一种或多种 配料，也可以不添加任何配料。 每种类型的配料 最多两份 。 给你以下三个输入：
+     *
+     * <p>baseCosts ，一个长度为 n 的整数数组，其中每个 baseCosts[i] 表示第 i 种冰激凌基料的价格。 toppingCosts，一个长度为 m
+     * 的整数数组，其中每个 toppingCosts[i] 表示 一份 第 i 种冰激凌配料的价格。 target ，一个整数，表示你制作甜点的目标价格。
+     * 你希望自己做的甜点总成本尽可能接近目标价格 target 。
+     *
+     * <p>返回最接近 target 的甜点成本。如果有多种方案，返回 成本相对较低 的一种。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：baseCosts = [1,7], toppingCosts = [3,4], target = 10 输出：10 解释：考虑下面的方案组合（所有下标均从 0 开始）： -
+     * 选择 1 号基料：成本 7 - 选择 1 份 0 号配料：成本 1 x 3 = 3 - 选择 0 份 1 号配料：成本 0 x 4 = 0 总成本：7 + 3 + 0 = 10 。 示例
+     * 2：
+     *
+     * <p>输入：baseCosts = [2,3], toppingCosts = [4,5,100], target = 18 输出：17 解释：考虑下面的方案组合（所有下标均从 0
+     * 开始）： - 选择 1 号基料：成本 3 - 选择 1 份 0 号配料：成本 1 x 4 = 4 - 选择 2 份 1 号配料：成本 2 x 5 = 10 - 选择 0 份 2
+     * 号配料：成本 0 x 100 = 0 总成本：3 + 4 + 10 + 0 = 17 。不存在总成本为 18 的甜点制作方案。 示例 3：
+     *
+     * <p>输入：baseCosts = [3,10], toppingCosts = [2,5], target = 9 输出：8 解释：可以制作总成本为 8 和 10 的甜点。返回 8
+     * ，因为这是成本更低的方案。 示例 4：
+     *
+     * <p>输入：baseCosts = [10], toppingCosts = [1], target = 1 输出：10 解释：注意，你可以选择不添加任何配料，但你必须选择一种基料。
+     *
+     * <p>提示：
+     *
+     * <p>n == baseCosts.length m == toppingCosts.length 1 <= n, m <= 10 1 <= baseCosts[i],
+     * toppingCosts[i] <= 104 1 <= target <= 104
+     *
+     * @param baseCosts
+     * @param toppingCosts
+     * @param target
+     * @return
+     */
+    public int closestCost(int[] baseCosts, int[] toppingCosts, int target) {
+        int n = baseCosts.length, m = toppingCosts.length;
+
+        Set<Integer> toppingCostSet = new HashSet<>();
+
+        // 每种类型的配料 最多两份  通过dp
+        calToppingCost(0, 0, toppingCosts, toppingCostSet);
+        List<Integer> list = new ArrayList<>(toppingCostSet);
+        Collections.sort(list);
+        logResult(list);
+
+        Arrays.sort(baseCosts);
+        int minDif = Integer.MAX_VALUE, result = baseCosts[0];
+        for (int i = n - 1; i >= 0; i--) {
+
+            if (baseCosts[i] == target) {
+                return target;
+            }
+            int leftCost = target - baseCosts[i];
+            if (toppingCostSet.contains(leftCost)) {
+                return target;
+            }
+            // 二分查找
+            int idx = getIndex(list, leftCost);
+            log.debug("leftCost:{} num:{}", leftCost, list.get(idx));
+            int num = baseCosts[i] + list.get(idx);
+            if (Math.abs(num - target) < minDif) {
+                minDif = Math.abs(num - target);
+                result = num;
+            } else if (Math.abs(num - target) == minDif && num < result) {
+                result = num;
+            }
+            if (idx > 0) {
+                num = baseCosts[i] + list.get(idx - 1);
+                if (Math.abs(num - target) < minDif) {
+                    minDif = Math.abs(num - target);
+                    result = num;
+                } else if (Math.abs(num - target) == minDif && num < result) {
+                    result = num;
+                }
+            }
+        }
+
+        return result;
+    }
+
+    private int getIndex(List<Integer> list, int target) {
+        // 二分查找
+        int left = 0, right = list.size() - 1;
+        while (left < right) {
+            int mid = (left + right) >> 1;
+            if (target > list.get(mid)) {
+                left = mid + 1;
+            } else {
+                right = mid;
+            }
+        }
+        return left;
+    }
+
+    private void calToppingCost(int idx, int cost, int[] toppingCosts, Set<Integer> set) {
+        set.add(cost);
+        if (idx == toppingCosts.length) {
+            return;
+        }
+        calToppingCost(idx + 1, cost, toppingCosts, set);
+        cost += toppingCosts[idx];
+        calToppingCost(idx + 1, cost, toppingCosts, set);
+
+        cost += toppingCosts[idx];
+
+        calToppingCost(idx + 1, cost, toppingCosts, set);
+    }
+
+    @Test
+    public void closestCost() {
+        /*int[] baseCosts = {9801, 8372, 3259, 7563, 9845, 8470, 6701, 5003, 2791, 7363},
+                toppingCosts = {8700};
+        int target = 3234;*/
+
+        int[] baseCosts = {3, 10}, toppingCosts = {2, 5};
+        int target = 9;
+        logResult(closestCost(baseCosts, toppingCosts, target));
+    }
+
+    /**
+     * 5691. 通过最少操作次数使数组的和相等
+     *
+     * <p>给你两个长度可能不等的整数数组 nums1 和 nums2 。两个数组中的所有值都在 1 到 6 之间（包含 1 和 6）。
+     *
+     * <p>每次操作中，你可以选择 任意 数组中的任意一个整数，将它变成 1 到 6 之间 任意 的值（包含 1 和 6）。
+     *
+     * <p>请你返回使 nums1 中所有数的和与 nums2 中所有数的和相等的最少操作次数。如果无法使两个数组的和相等，请返回 -1 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：nums1 = [1,2,3,4,5,6], nums2 = [1,1,2,2,2,2] 输出：3 解释：你可以通过 3 次操作使 nums1 中所有数的和与 nums2
+     * 中所有数的和相等。以下数组下标都从 0 开始。 - 将 nums2[0] 变为 6 。 nums1 = [1,2,3,4,5,6], nums2 = [6,1,2,2,2,2] 。 -
+     * 将 nums1[5] 变为 1 。 nums1 = [1,2,3,4,5,1], nums2 = [6,1,2,2,2,2] 。 - 将 nums1[2] 变为 2 。 nums1 =
+     * [1,2,2,4,5,1], nums2 = [6,1,2,2,2,2] 。 示例 2：
+     *
+     * <p>输入：nums1 = [1,1,1,1,1,1,1], nums2 = [6] 输出：-1 解释：没有办法减少 nums1 的和或者增加 nums2 的和使二者相等。 示例 3：
+     *
+     * <p>输入：nums1 = [6,6], nums2 = [1] 输出：3 解释：你可以通过 3 次操作使 nums1 中所有数的和与 nums2 中所有数的和相等。以下数组下标都从 0
+     * 开始。 - 将 nums1[0] 变为 2 。 nums1 = [2,6], nums2 = [1] 。 - 将 nums1[1] 变为 2 。 nums1 = [2,2], nums2
+     * = [1] 。 - 将 nums2[0] 变为 4 。 nums1 = [2,2], nums2 = [4] 。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= nums1.length, nums2.length <= 105 1 <= nums1[i], nums2[i] <= 6
+     *
+     * @param nums1
+     * @param nums2
+     * @return
+     */
+    public int minOperations2(int[] nums1, int[] nums2) {
+
+        if (nums1.length < nums2.length) {
+            int[] tmp = nums1;
+            nums1 = nums2;
+            nums2 = tmp;
+        }
+        int len1 = nums1.length, len2 = nums2.length;
+        // len1 > len2
+        if (len1 > len2 * 6) {
+            return -1;
+        }
+
+        int count1 = 0, count2 = 0;
+        if (len1 == len2 * 6) {
+            for (int num : nums1) {
+                if (num != 1) {
+                    count1++;
+                }
+            }
+            for (int num : nums2) {
+                if (num != 6) {
+                    count2++;
+                }
+            }
+            return count1 + count2;
+        }
+
+        int sum1 = Arrays.stream(nums1).sum(), sum2 = Arrays.stream(nums2).sum();
+        if (sum1 == sum2) {
+            return 0;
+        }
+        int[] arr1 = new int[6], arr2 = new int[6];
+        for (int num : nums1) {
+            arr1[num - 1]++;
+        }
+        for (int num : nums2) {
+            arr2[num - 1]++;
+        }
+        if (sum1 < sum2) {
+            int[] tmp = arr1;
+            arr1 = arr2;
+            arr2 = tmp;
+        }
+        int result = 0;
+        // 把 sum 大的arr1大元素变成1, 或者把 sum 小的arr2小元素变成6
+        int diffNum = Math.abs(sum1 - sum2);
+        for (int i = 0; i < 5; i++) {
+            if (diffNum == 0) {
+                break;
+            }
+            int num = 5 - i, count = arr2[i] + arr1[5 - i];
+            if (count * num >= diffNum) {
+
+                count = diffNum / num;
+                if (diffNum % num != 0) {
+                    count++;
+                }
+                result += count;
+                diffNum = 0;
+                break;
+            }
+            diffNum -= count * num;
+            result += count;
+        }
+
+        return diffNum == 0 ? result : -1;
+    }
+
+    @Test
+    public void minOperations3() {
+
+        int[] nums1 = {1, 2, 3, 4, 5, 6}, nums2 = {1, 1, 2, 2, 2, 2};
+        logResult(minOperations2(nums1, nums2));
     }
 }
