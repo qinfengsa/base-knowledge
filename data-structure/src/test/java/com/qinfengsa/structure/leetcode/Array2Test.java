@@ -3700,4 +3700,187 @@ public class Array2Test {
         int[] nums1 = {1, 2, 3, 4, 5, 6}, nums2 = {1, 1, 2, 2, 2, 2};
         logResult(minOperations2(nums1, nums2));
     }
+
+    /**
+     * 1345. 跳跃游戏 IV
+     *
+     * <p>给你一个整数数组 arr ，你一开始在数组的第一个元素处（下标为 0）。
+     *
+     * <p>每一步，你可以从下标 i 跳到下标：
+     *
+     * <p>i + 1 满足：i + 1 < arr.length i - 1 满足：i - 1 >= 0 j 满足：arr[i] == arr[j] 且 i != j
+     * 请你返回到达数组最后一个元素的下标处所需的 最少操作次数 。
+     *
+     * <p>注意：任何时候你都不能跳到数组外面。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：arr = [100,-23,-23,404,100,23,23,23,3,404] 输出：3 解释：那你需要跳跃 3 次，下标依次为 0 --> 4 --> 3 --> 9
+     * 。下标 9 为数组的最后一个元素的下标。 示例 2：
+     *
+     * <p>输入：arr = [7] 输出：0 解释：一开始就在最后一个元素处，所以你不需要跳跃。 示例 3：
+     *
+     * <p>输入：arr = [7,6,9,6,9,6,9,7] 输出：1 解释：你可以直接从下标 0 处跳到下标 7 处，也就是数组的最后一个元素处。 示例 4：
+     *
+     * <p>输入：arr = [6,1,9] 输出：2 示例 5：
+     *
+     * <p>输入：arr = [11,22,7,7,7,7,7,7,7,22,13] 输出：3
+     *
+     * <p>提示：
+     *
+     * <p>1 <= arr.length <= 5 * 10^4 -10^8 <= arr[i] <= 10^8
+     *
+     * @param arr
+     * @return
+     */
+    public int minJumps(int[] arr) {
+        int len = arr.length;
+        if (len <= 1) {
+            return 0;
+        }
+        if (len == 2 || arr[0] == arr[len - 1]) {
+            return 1;
+        }
+        Map<Integer, List<Integer>> indexMap = new HashMap<>();
+        int[] dist = new int[len];
+        Arrays.fill(dist, Integer.MAX_VALUE);
+        for (int i = 0; i < len; i++) {
+            int num = arr[i];
+
+            List<Integer> list = indexMap.computeIfAbsent(num, k -> new ArrayList<>());
+            list.add(i);
+        }
+
+        // 广度优先遍历
+        int step = 0;
+        /**/
+        Queue<Integer> queue = new LinkedList<>();
+        queue.offer(len - 1);
+        boolean[] visited = new boolean[len];
+        dist[len - 1] = 0;
+        while (!queue.isEmpty()) {
+            int idx = queue.poll();
+            if (idx > 0 && dist[idx - 1] == Integer.MAX_VALUE) {
+                queue.offer(idx - 1);
+                dist[idx - 1] = dist[idx] + 1;
+            }
+            if (idx < len - 1 && dist[idx + 1] == Integer.MAX_VALUE) {
+                queue.offer(idx + 1);
+                dist[idx + 1] = dist[idx] + 1;
+                if (idx + 1 == len - 1) {
+                    return step + 1;
+                }
+            }
+            if (visited[idx]) {
+                continue;
+            }
+
+            for (int next : indexMap.get(arr[idx])) {
+                if (dist[next] == Integer.MAX_VALUE) {
+                    dist[next] = dist[idx] + 1;
+                    queue.offer(next);
+                    visited[next] = true;
+                }
+            }
+        }
+
+        return dist[0];
+    }
+
+    @Test
+    public void minJumps() {
+        int[] arr = {11, 22, 7, 7, 7, 7, 7, 7, 7, 22, 13};
+        logResult(minJumps(arr));
+    }
+
+    /**
+     * 975. 奇偶跳
+     *
+     * <p>给定一个整数数组 A，你可以从某一起始索引出发，跳跃一定次数。在你跳跃的过程中，第 1、3、5... 次跳跃称为奇数跳跃，而第 2、4、6... 次跳跃称为偶数跳跃。
+     *
+     * <p>你可以按以下方式从索引 i 向后跳转到索引 j（其中 i < j）：
+     *
+     * <p>在进行奇数跳跃时（如，第 1，3，5... 次跳跃），你将会跳到索引 j，使得 A[i] <= A[j]，A[j] 是可能的最小值。如果存在多个这样的索引
+     * j，你只能跳到满足要求的最小索引 j 上。 在进行偶数跳跃时（如，第 2，4，6... 次跳跃），你将会跳到索引 j，使得 A[i] >= A[j]，A[j]
+     * 是可能的最大值。如果存在多个这样的索引 j，你只能跳到满足要求的最小索引 j 上。 （对于某些索引 i，可能无法进行合乎要求的跳跃。） 如果从某一索引开始跳跃一定次数（可能是 0
+     * 次或多次），就可以到达数组的末尾（索引 A.length - 1），那么该索引就会被认为是好的起始索引。
+     *
+     * <p>返回好的起始索引的数量。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：[10,13,12,14,15] 输出：2 解释： 从起始索引 i = 0 出发，我们可以跳到 i = 2，（因为 A[2] 是 A[1]，A[2]，A[3]，A[4]
+     * 中大于或等于 A[0] 的最小值），然后我们就无法继续跳下去了。 从起始索引 i = 1 和 i = 2 出发，我们可以跳到 i = 3，然后我们就无法继续跳下去了。 从起始索引 i =
+     * 3 出发，我们可以跳到 i = 4，到达数组末尾。 从起始索引 i = 4 出发，我们已经到达数组末尾。 总之，我们可以从 2 个不同的起始索引（i = 3, i =
+     * 4）出发，通过一定数量的跳跃到达数组末尾。 示例 2：
+     *
+     * <p>输入：[2,3,1,1,4] 输出：3 解释： 从起始索引 i=0 出发，我们依次可以跳到 i = 1，i = 2，i = 3：
+     *
+     * <p>在我们的第一次跳跃（奇数）中，我们先跳到 i = 1，因为 A[1] 是（A[1]，A[2]，A[3]，A[4]）中大于或等于 A[0] 的最小值。
+     *
+     * <p>在我们的第二次跳跃（偶数）中，我们从 i = 1 跳到 i = 2，因为 A[2] 是（A[2]，A[3]，A[4]）中小于或等于 A[1] 的最大值。A[3] 也是最大的值，但
+     * 2 是一个较小的索引，所以我们只能跳到 i = 2，而不能跳到 i = 3。
+     *
+     * <p>在我们的第三次跳跃（奇数）中，我们从 i = 2 跳到 i = 3，因为 A[3] 是（A[3]，A[4]）中大于或等于 A[2] 的最小值。
+     *
+     * <p>我们不能从 i = 3 跳到 i = 4，所以起始索引 i = 0 不是好的起始索引。
+     *
+     * <p>类似地，我们可以推断： 从起始索引 i = 1 出发， 我们跳到 i = 4，这样我们就到达数组末尾。 从起始索引 i = 2 出发， 我们跳到 i = 3，然后我们就不能再跳了。
+     * 从起始索引 i = 3 出发， 我们跳到 i = 4，这样我们就到达数组末尾。 从起始索引 i = 4 出发，我们已经到达数组末尾。 总之，我们可以从 3 个不同的起始索引（i = 1,
+     * i = 3, i = 4）出发，通过一定数量的跳跃到达数组末尾。 示例 3：
+     *
+     * <p>输入：[5,1,3,4,2] 输出：3 解释： 我们可以从起始索引 1，2，4 出发到达数组末尾。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= A.length <= 20000 0 <= A[i] < 100000
+     *
+     * @param arr
+     * @return
+     */
+    public int oddEvenJumps(int[] arr) {
+        int len = arr.length;
+        // 0 偶数 1 奇数
+        boolean[][] dp = new boolean[len][2];
+        TreeMap<Integer, Integer> treeMap = new TreeMap<>();
+        treeMap.put(arr[len - 1], len - 1);
+        dp[len - 1][0] = dp[len - 1][1] = true;
+        for (int i = len - 2; i >= 0; i--) {
+            int val = arr[i];
+            if (treeMap.containsKey(val)) {
+                int nextIdx = treeMap.get(val);
+                dp[i][0] = dp[nextIdx][1];
+                dp[i][1] = dp[nextIdx][0];
+            } else {
+                // 偶数求比val 小的元素的最大值 最大 A[i] >= A[j]
+                Integer low = treeMap.lowerKey(val);
+                if (Objects.nonNull(low)) {
+                    dp[i][0] = dp[treeMap.get(low)][1];
+                }
+                // 奇数求比val 大的元素的最小值
+                Integer high = treeMap.higherKey(val);
+                if (Objects.nonNull(high)) {
+                    dp[i][1] = dp[treeMap.get(high)][0];
+                }
+            }
+
+            treeMap.put(val, i);
+        }
+        logResult(dp);
+        int result = 0;
+        for (int i = 0; i < len; i++) {
+            // 第一次跳跃
+            if (dp[i][1]) {
+                result++;
+            }
+        }
+
+        return result;
+    }
+
+    @Test
+    public void oddEvenJumps() {
+        int[] arr = {5, 1, 3, 4, 2};
+        logResult(oddEvenJumps(arr));
+    }
 }
