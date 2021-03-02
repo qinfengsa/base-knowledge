@@ -3883,4 +3883,148 @@ public class Array2Test {
         int[] arr = {5, 1, 3, 4, 2};
         logResult(oddEvenJumps(arr));
     }
+
+    /**
+     * 786. 第 K 个最小的素数分数
+     *
+     * <p>给你一个按递增顺序排序的数组 arr 和一个整数 k 。数组 arr 由 1 和若干 素数 组成，且其中所有整数互不相同。
+     *
+     * <p>对于每对满足 0 < i < j < arr.length 的 i 和 j ，可以得到分数 arr[i] / arr[j] 。
+     *
+     * <p>那么第 k 个最小的分数是多少呢? 以长度为 2 的整数数组返回你的答案, 这里 answer[0] == arr[i] 且 answer[1] == arr[j] 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：arr = [1,2,3,5], k = 3 输出：[2,5] 解释：已构造好的分数,排序后如下所示: 1/5, 1/3, 2/5, 1/2, 3/5, 2/3
+     * 很明显第三个最小的分数是 2/5 示例 2：
+     *
+     * <p>输入：arr = [1,7], k = 1 输出：[1,7]
+     *
+     * <p>提示：
+     *
+     * <p>2 <= arr.length <= 1000 1 <= arr[i] <= 3 * 104 arr[0] == 1 arr[i] 是一个 素数 ，i > 0 arr 中的所有数字
+     * 互不相同 ，且按 严格递增 排序 1 <= k <= arr.length * (arr.length - 1) / 2
+     *
+     * @param arr
+     * @param k
+     * @return
+     */
+    public int[] kthSmallestPrimeFraction(int[] arr, int k) {
+        // 构建最小堆  a[0]/ a[1] > b[0] / b[1] => a[0] * b[1] > b[0] * a[1]
+        PriorityQueue<int[]> heap =
+                new PriorityQueue<>((a, b) -> arr[a[0]] * arr[b[1]] - arr[b[0]] * arr[a[1]]);
+        int len = arr.length;
+        for (int i = 1; i < len; i++) {
+            heap.offer(new int[] {0, i});
+        }
+        // 移除K - 1 个最小的元素
+        while (--k > 0) {
+            int[] nums = heap.poll();
+            if (nums[0] + 1 < nums[1]) {
+                heap.offer(new int[] {nums[0] + 1, nums[1]});
+            }
+        }
+        int[] idx = heap.poll();
+        return new int[] {arr[idx[0]], arr[idx[1]]};
+    }
+
+    /**
+     * 782. 变为棋盘
+     *
+     * <p>一个 N x N的 board 仅由 0 和 1 组成 。每次移动，你能任意交换两列或是两行的位置。
+     *
+     * <p>输出将这个矩阵变为 “棋盘” 所需的最小移动次数。“棋盘” 是指任意一格的上下左右四个方向的值均与本身不同的矩阵。如果不存在可行的变换，输出 -1。
+     *
+     * <p>示例: 输入: board = [[0,1,1,0],[0,1,1,0],[1,0,0,1],[1,0,0,1]] 输出: 2 解释: 一种可行的变换方式如下，从左到右：
+     *
+     * <p>0110 1010 1010 0110 --> 1010 --> 0101 1001 0101 1010 1001 0101 0101
+     *
+     * <p>第一次移动交换了第一列和第二列。 第二次移动交换了第二行和第三行。
+     *
+     * <p>输入: board = [[0, 1], [1, 0]] 输出: 0 解释: 注意左上角的格值为0时也是合法的棋盘，如：
+     *
+     * <p>01 10
+     *
+     * <p>也是合法的棋盘.
+     *
+     * <p>输入: board = [[1, 0], [1, 0]] 输出: -1 解释: 任意的变换都不能使这个输入变为合法的棋盘。
+     *
+     * <p>提示：
+     *
+     * <p>board 是方阵，且行列数的范围是[2, 30]。 board[i][j] 将只包含 0或 1。
+     *
+     * @param board
+     * @return
+     */
+    public int movesToChessboard(int[][] board) {
+        N = board.length;
+        // 判断是否 合法, 以第一行为准, 其他行要么与第一行相同, 要么完全 相反 并且 两个 数量相等或相差1
+        Map<Integer, Integer> countMap = new HashMap<>();
+        for (int i = 0; i < N; i++) {
+            int num = 0;
+            for (int j = 0; j < N; j++) {
+                num = (num << 1) + board[i][j];
+            }
+            int count = countMap.getOrDefault(num, 0);
+            countMap.put(num, count + 1);
+        }
+        int count1 = checkCountMap(countMap);
+        if (count1 == -1) {
+            return -1;
+        }
+        countMap.clear();
+        for (int j = 0; j < N; j++) {
+            int num = 0;
+            for (int i = 0; i < N; i++) {
+                num = (num << 1) + board[i][j];
+            }
+            int count = countMap.getOrDefault(num, 0);
+            countMap.put(num, count + 1);
+        }
+        int count2 = checkCountMap(countMap);
+        if (count2 == -1) {
+            return -1;
+        }
+        return count1 + count2;
+    }
+
+    private int checkCountMap(Map<Integer, Integer> countMap) {
+        if (countMap.size() != 2) {
+            return -1;
+        }
+        List<Integer> keys = new ArrayList<>(countMap.keySet());
+        int k1 = keys.get(0), k2 = keys.get(1);
+        int count1 = countMap.get(k1), count2 = countMap.get(k2);
+        if (Math.abs(count1 - count2) > 1) {
+            return -1;
+        }
+        // k1 和 k2 完全相反
+        int total = (1 << N) - 1;
+        if ((k1 ^ k2) != total) {
+            return -1;
+        }
+
+        // 求最小交换次数 分别求 以 1 和 0 开头 需要的交换次数
+        int bitNum = Integer.bitCount(k1 & total);
+        int min = Integer.MAX_VALUE;
+        // 以 0 开头 N 为 偶数 或者
+        if ((N & 1) == 0 || bitNum << 1 < N) {
+            // 0xAAAAAAAA：10101010101010101010101010101010
+            // 找到与正确的1010...相差的位数，则需要交换的次数是一半（/2）
+            min = Math.min(min, Integer.bitCount(k1 ^ 0xAAAAAAAA & total) >> 1);
+        }
+
+        if ((N & 1) == 0 || bitNum << 1 > N) {
+            // 0x55555555：01010101010101010101010101010101
+            // 找到与正确的1010...相差的位数，则需要交换的次数是一半（/2）
+            min = Math.min(min, Integer.bitCount(k1 ^ 0x55555555 & total) >> 1);
+        }
+        return min;
+    }
+
+    @Test
+    public void movesToChessboardTest() {
+        int[][] board = {{1, 1, 0}, {0, 0, 1}, {0, 0, 1}};
+        logResult(movesToChessboard(board));
+    }
 }

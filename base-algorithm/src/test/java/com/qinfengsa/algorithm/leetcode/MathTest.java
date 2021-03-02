@@ -8041,4 +8041,48 @@ public class MathTest {
         int n = 37910271;
         logResult(minimumBoxes(n));
     }
+
+    /**
+     * 780. 到达终点
+     *
+     * <p>从点 (x, y) 可以转换到 (x, x+y) 或者 (x+y, y)。
+     *
+     * <p>给定一个起点 (sx, sy) 和一个终点 (tx, ty)，如果通过一系列的转换可以从起点到达终点，则返回 True ，否则返回 False。
+     *
+     * <p>示例: 输入: sx = 1, sy = 1, tx = 3, ty = 5 输出: True 解释: 可以通过以下一系列转换从起点转换到终点： (1, 1) -> (1, 2)
+     * (1, 2) -> (3, 2) (3, 2) -> (3, 5)
+     *
+     * <p>输入: sx = 1, sy = 1, tx = 2, ty = 2 输出: False
+     *
+     * <p>输入: sx = 1, sy = 1, tx = 1, ty = 1 输出: True
+     *
+     * <p>注意:
+     *
+     * <p>sx, sy, tx, ty 是范围在 [1, 10^9] 的整数。
+     *
+     * @param sx
+     * @param sy
+     * @param tx
+     * @param ty
+     * @return
+     */
+    public boolean reachingPoints(int sx, int sy, int tx, int ty) {
+        if (tx < sx || ty < sy) {
+            return false;
+        }
+        if (tx > ty) {
+            if (sy == ty) {
+                return (tx - sx) % sy == 0;
+            }
+            // ty > sy
+            return reachingPoints(sx, sy, tx % ty, ty);
+        } else if (tx < ty) {
+            if (sx == tx) {
+                return (ty - sy) % sx == 0;
+            }
+            return reachingPoints(sx, sy, tx, ty % tx);
+        }
+
+        return sx == tx && sy == ty;
+    }
 }
