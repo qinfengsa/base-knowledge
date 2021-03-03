@@ -4027,4 +4027,133 @@ public class Array2Test {
         int[][] board = {{1, 1, 0}, {0, 0, 1}, {0, 0, 1}};
         logResult(movesToChessboard(board));
     }
+
+    /**
+     * 798. 得分最高的最小轮调
+     *
+     * <p>给定一个数组 A，我们可以将它按一个非负整数 K 进行轮调，这样可以使数组变为 A[K], A[K+1], A{K+2], ... A[A.length - 1], A[0],
+     * A[1], ..., A[K-1] 的形式。此后，任何值小于或等于其索引的项都可以记作一分。
+     *
+     * <p>例如，如果数组为 [2, 4, 1, 3, 0]，我们按 K = 2 进行轮调后，它将变成 [1, 3, 0, 2, 4]。这将记作 3 分，因为 1 > 0 [no
+     * points], 3 > 1 [no points], 0 <= 2 [one point], 2 <= 3 [one point], 4 <= 4 [one point]。
+     *
+     * <p>在所有可能的轮调中，返回我们所能得到的最高分数对应的轮调索引 K。如果有多个答案，返回满足条件的最小的索引 K。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：[2, 3, 1, 4, 0] 输出：3 解释： 下面列出了每个 K 的得分： K = 0, A = [2,3,1,4,0], score 2 K = 1, A =
+     * [3,1,4,0,2], score 3 K = 2, A = [1,4,0,2,3], score 3 K = 3, A = [4,0,2,3,1], score 4 K = 4, A
+     * = [0,2,3,1,4], score 3 所以我们应当选择 K = 3，得分最高。 示例 2：
+     *
+     * <p>输入：[1, 3, 0, 2, 4] 输出：0 解释： A 无论怎么变化总是有 3 分。 所以我们将选择最小的 K，即 0。
+     *
+     * <p>提示：
+     *
+     * <p>A 的长度最大为 20000。 A[i] 的取值范围是 [0, A.length]。
+     *
+     * @param A
+     * @return
+     */
+    public int bestRotation(int[] A) {
+
+        int len = A.length;
+
+        int[] score = new int[len + 1];
+        for (int i = 0; i < len; i++) {
+            if (A[i] <= i) {
+                // 移动 0 到 i - A[i] 位 分数会 + 1
+                score[0]++;
+                // 移动了i - A[i] + 1位
+                score[i - A[i] + 1]--;
+
+                // 移动 i + 1 到 len 分数会 + 1
+                score[i + 1]++;
+                score[len]--;
+            } else {
+                //  移动 i + 1 到 len - A[i] + i 位 分数会 + 1
+                score[i + 1]++;
+                score[len - A[i] + i + 1]--;
+            }
+        }
+        int bestNum = -len;
+        int idx = 0, sum = 0;
+        for (int i = 0; i < len; i++) {
+            sum += score[i];
+            if (sum > bestNum) {
+                bestNum = sum;
+                idx = i;
+            }
+        }
+
+        return idx;
+    }
+
+    @Test
+    public void bestRotation() {
+        int[] A = {2, 3, 1, 4, 0};
+        logResult(bestRotation(A));
+    }
+
+    /**
+     * 805. 数组的均值分割
+     *
+     * <p>给定的整数数组 A ，我们要将 A数组 中的每个元素移动到 B数组 或者 C数组中。（B数组和C数组在开始的时候都为空）
+     *
+     * <p>返回true ，当且仅当在我们的完成这样的移动后，可使得B数组的平均值和C数组的平均值相等，并且B数组和C数组都不为空。
+     *
+     * <p>示例: 输入: [1,2,3,4,5,6,7,8] 输出: true 解释: 我们可以将数组分割为 [1,4,5,8] 和 [2,3,6,7], 他们的平均值都是4.5。 注意:
+     *
+     * <p>A 数组的长度范围为 [1, 30]. A[i] 的数据范围为 [0, 10000].
+     *
+     * @param A
+     * @return
+     */
+    public boolean splitArraySameAverage(int[] A) {
+        int len = A.length;
+        if (len < 2) {
+            return false;
+        }
+        Arrays.sort(A);
+        int sum = 0;
+        for (int num : A) {
+            sum += num;
+        }
+        this.nums = A;
+        // A 数组的长度范围为 [1, 30]
+        for (int i = 1; i <= len >> 1; i++) {
+            // 子数组的平均数是整个数组的平均数  sum / len == sum[i] / i => sum * i / len == sum[i] 整除
+            if (sum * i % len != 0) {
+                continue;
+            }
+            // 使用深度优先遍历 选择 i 个元素 元素之和 == sum[i] =>  sum * i / len
+            int target = sum * i / len;
+            if (dfsArraySum(0, i, target)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private int[] nums;
+
+    private boolean dfsArraySum(int idx, int count, int target) {
+        if (count == 0) {
+            return target == 0;
+        }
+        if (idx == nums.length) {
+            return false;
+        }
+
+        for (int i = idx; i < nums.length; i++) {
+            if (i > idx && nums[i] == nums[i - 1]) {
+                continue;
+            }
+
+            if (dfsArraySum(i + 1, count - 1, target - nums[i])) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

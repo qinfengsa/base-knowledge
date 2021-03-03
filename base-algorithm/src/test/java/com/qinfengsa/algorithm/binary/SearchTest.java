@@ -2330,4 +2330,61 @@ public class SearchTest {
         }
         return count >= k;
     }
+
+    /**
+     * 793. 阶乘函数后 K 个零
+     *
+     * <p>f(x) 是 x! 末尾是 0 的数量。（回想一下 x! = 1 * 2 * 3 * ... * x，且 0! = 1 ）
+     *
+     * <p>例如， f(3) = 0 ，因为 3! = 6 的末尾没有 0 ；而 f(11) = 2 ，因为 11!= 39916800 末端有 2 个 0 。给定 K，找出多少个非负整数 x
+     * ，能满足 f(x) = K 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：K = 0 输出：5 解释：0!, 1!, 2!, 3!, and 4! 均符合 K = 0 的条件。 示例 2：
+     *
+     * <p>输入：K = 5 输出：0 解释：没有匹配到这样的 x!，符合 K = 5 的条件。
+     *
+     * <p>提示：
+     *
+     * <p>K 是范围在 [0, 10^9] 的整数。
+     *
+     * @param K
+     * @return
+     */
+    public int preimageSizeFZF(int K) {
+        // 二分查找
+        long low = 4L * K, high = 5L * (K + 1);
+
+        while (low < high) {
+            long mid = (low + high) >> 1;
+            long count = trailingZeroes(mid);
+            if (count == K) {
+                return 5;
+            } else if (count < K) {
+                low = mid + 1;
+            } else {
+                high = mid - 1;
+            }
+        }
+
+        return 0;
+    }
+
+    // 阶乘后的0的个数
+    public long trailingZeroes(long n) {
+
+        if (n < 5) {
+            return 0;
+        }
+
+        // 0的个数和5,10 有关
+        long result = 0;
+        while (n > 0) {
+            n = n / 5;
+            result += n;
+        }
+
+        return result;
+    }
 }
