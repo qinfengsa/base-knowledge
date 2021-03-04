@@ -853,4 +853,66 @@ public class String2Test {
         }
         return 0;
     }
+
+    /**
+     * 828. 统计子串中的唯一字符
+     *
+     * <p>我们定义了一个函数 countUniqueChars(s) 来统计字符串 s 中的唯一字符，并返回唯一字符的个数。
+     *
+     * <p>例如：s = "LEETCODE" ，则其中 "L", "T","C","O","D" 都是唯一字符，因为它们只出现一次，所以 countUniqueChars(s) = 5 。
+     *
+     * <p>本题将会给你一个字符串 s ，我们需要返回 countUniqueChars(t) 的总和，其中 t 是 s
+     * 的子字符串。注意，某些子字符串可能是重复的，但你统计时也必须算上这些重复的子字符串（也就是说，你必须统计 s 的所有子字符串中的唯一字符）。
+     *
+     * <p>由于答案可能非常大，请将结果 mod 10 ^ 9 + 7 后再返回。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入: s = "ABC" 输出: 10 解释: 所有可能的子串为："A","B","C","AB","BC" 和 "ABC"。 其中，每一个子串都由独特字符构成。
+     * 所以其长度总和为：1 + 1 + 1 + 2 + 2 + 3 = 10 示例 2：
+     *
+     * <p>输入: s = "ABA" 输出: 8 解释: 除了 countUniqueChars("ABA") = 1 之外，其余与示例 1 相同。 示例 3：
+     *
+     * <p>输入：s = "LEETCODE" 输出：92
+     *
+     * <p>提示：
+     *
+     * <p>0 <= s.length <= 10^4 s 只包含大写英文字符
+     *
+     * @param s
+     * @return
+     */
+    public int uniqueLetterString(String s) {
+
+        int[] letters = new int[26];
+
+        // "LEETCODE"  len=8
+        // 对于字符'L'，在区间[0,7]只出现一次，为答案贡献8(在该区间中,'L'可以存在于8个子串中)
+        // 对于字符'E'，在区间[0,1]只出现一次，为答案贡献2
+        // 对于字符'E'，在区间[2,6]只出现一次，为答案贡献5
+        // 对于字符'T'，在区间[0,7]只出现一次，为答案贡献20 左边 4 右边5
+        // 对于字符'C'，在区间[0,7]只出现一次，为答案贡献20 左边 5 右边4
+        // 对于字符'O'，在区间[0,7]只出现一次，为答案贡献18
+        // 对于字符'D'，在区间[0,7]只出现一次，为答案贡献14
+        // 对于字符'E'，在区间[3,7]只出现一次，为答案贡献5
+        // ans=8+2+5+20+20+18+14+5=92
+        // 以每个字符为中心，向两边扩展到不重复为止
+        int result = 0;
+        char[] chars = s.toCharArray();
+        int n = chars.length;
+        for (int i = 0; i < n; i++) {
+            int left = i - 1, right = i + 1;
+            char c = chars[i];
+            while (left >= 0 && chars[left] != c) {
+                left--;
+            }
+            while (right < n && chars[right] != c) {
+                right++;
+            }
+            result += (i - left) * (right - i) % MOD;
+            result %= MOD;
+        }
+
+        return result;
+    }
 }
