@@ -4241,4 +4241,182 @@ public class Array2Test {
         int source = 1, target = 4;
         logResult(numBusesToDestination(routes, source, target));
     }
+
+    /**
+     * 827. 最大人工岛
+     *
+     * <p>在二维地图上， 0代表海洋， 1代表陆地，我们最多只能将一格 0 海洋变成 1变成陆地。
+     *
+     * <p>进行填海之后，地图上最大的岛屿面积是多少？（上、下、左、右四个方向相连的 1 可形成岛屿）
+     *
+     * <p>示例 1:
+     *
+     * <p>输入: [[1, 0], [0, 1]] 输出: 3 解释: 将一格0变成1，最终连通两个小岛得到面积为 3 的岛屿。 示例 2:
+     *
+     * <p>输入: [[1, 1], [1, 0]] 输出: 4 解释: 将一格0变成1，岛屿的面积扩大为 4。 示例 3:
+     *
+     * <p>输入: [[1, 1], [1, 1]] 输出: 4 解释: 没有0可以让我们变成1，面积依然为 4。 说明:
+     *
+     * <p>1 <= grid.length = grid[0].length <= 50 0 <= grid[i][j] <= 1
+     *
+     * @param grid
+     * @return
+     */
+    public int largestIsland(int[][] grid) {
+        M = grid.length;
+        N = grid[0].length;
+
+        this.grid = grid;
+        List<int[]> list = new LinkedList<>();
+        // 将 grid 使用并查集 分成 几个岛屿
+        // 二维转为一维
+        this.nums = new int[M * N];
+
+        for (int i = 0; i < nums.length; i++) {
+            nums[i] = i;
+        }
+        this.areas = new int[M * N];
+        this.visited = new boolean[M][N];
+        for (int i = 0; i < M; i++) {
+            for (int j = 0; j < N; j++) {
+                if (grid[i][j] == 0) {
+                    list.add(new int[] {i, j});
+                } else if (!visited[i][j]) {
+                    visited[i][j] = true;
+                    areas[i * N + j] = 1;
+                    dfsArea(i, j);
+                }
+            }
+        }
+        if (list.size() <= 1) {
+            return M * N;
+        }
+        log.debug("areas:{}", areas);
+        int maxArea = 0;
+        // 遍历每个0; 使用并查集 分组
+        for (int[] num : list) {
+            int area = 1;
+            Set<Integer> set = new HashSet<>();
+            for (int i = 0; i < 4; i++) {
+                int nextRow = num[0] + DIR_ROW[i], nextCol = num[1] + DIR_COL[i];
+                if (!inArea(nextRow, nextCol, M, N)) {
+                    continue;
+                }
+                if (grid[nextRow][nextCol] == 0) {
+                    continue;
+                }
+
+                int root = findRoot(nextRow * N + nextCol);
+                if (set.contains(root)) {
+                    continue;
+                }
+                set.add(root);
+                area += areas[root];
+            }
+            maxArea = Math.max(maxArea, area);
+        }
+
+        return maxArea;
+    }
+
+    private int[] areas;
+
+    private void dfsArea(int row, int col) {
+
+        int root = findRoot(row * N + col);
+        for (int i = 0; i < 4; i++) {
+            int nextRow = row + DIR_ROW[i], nextCol = col + DIR_COL[i];
+            if (!inArea(nextRow, nextCol, M, N)) {
+                continue;
+            }
+            if (visited[nextRow][nextCol]) {
+                continue;
+            }
+            visited[nextRow][nextCol] = true;
+            if (grid[nextRow][nextCol] == 1) {
+                int nextIdx = nextRow * N + nextCol;
+                nums[nextIdx] = root;
+                areas[root]++;
+                dfsArea(nextRow, nextCol);
+            }
+        }
+    }
+
+    private int findRoot(int idx) {
+        if (nums[idx] != idx) {
+            int root = findRoot(nums[idx]);
+            // 压缩路径
+            nums[idx] = root;
+            return root;
+        }
+        return idx;
+    }
+
+    @Test
+    public void largestIsland() {
+        int[][] grid = {{1, 1, 0}, {0, 0, 1}, {1, 1, 1}};
+        logResult(largestIsland(grid));
+    }
+
+    /**
+     * 847. 访问所有节点的最短路径
+     *
+     * <p>给出 graph 为有 N 个节点（编号为 0, 1, 2, ..., N-1）的无向连通图。
+     *
+     * <p>graph.length = N，且只有节点 i 和 j 连通时，j != i 在列表 graph[i] 中恰好出现一次。
+     *
+     * <p>返回能够访问所有节点的最短路径的长度。你可以在任一节点开始和停止，也可以多次重访节点，并且可以重用边。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：[[1,2,3],[0],[0],[0]] 输出：4 解释：一个可能的路径为 [1,0,2,0,3] 示例 2：
+     *
+     * <p>输入：[[1],[0,2,4],[1,3,4],[2],[1,2]] 输出：4 解释：一个可能的路径为 [0,1,4,2,3]
+     *
+     * <p>提示：
+     *
+     * <p>1 <= graph.length <= 12 0 <= graph[i].length < graph.length
+     *
+     * @param graph
+     * @return
+     */
+    public int shortestPathLength(int[][] graph) {
+        // 动态规划
+        int N = graph.length;
+
+        // 记录访问某个节点时，已经访问过的节点集合(状态)，每个bit表示一个节点
+        // 由于采用的是广度优选搜索，所以走过已经访问过的节点的路径一定是最短的
+        boolean[][] visited = new boolean[N][1 << N];
+        // 记录正在搜索的中间状态
+        // queue中的元素为有两个元素的数组：节点，访问此节点对应的状态
+        Queue<int[]> queue = new LinkedList<>();
+
+        for (int i = 0; i < N; i++) {
+            queue.offer(new int[] {i, 1 << i});
+        }
+        int endState = (1 << N) - 1;
+        int step = 0;
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                int[] nums = queue.poll();
+                int node = nums[0], state = nums[1];
+
+                for (int nextNode : graph[node]) {
+                    int nextState = state | (1 << nextNode);
+                    if (nextState == endState) {
+                        return step + 1;
+                    }
+                    if (visited[nextNode][nextState]) {
+                        continue;
+                    }
+                    visited[nextNode][nextState] = true;
+                    queue.offer(new int[] {nextNode, nextState});
+                }
+            }
+            step++;
+        }
+
+        return 0;
+    }
 }

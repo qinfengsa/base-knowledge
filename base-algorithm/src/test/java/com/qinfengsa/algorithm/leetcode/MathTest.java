@@ -8085,4 +8085,46 @@ public class MathTest {
 
         return sx == tx && sy == ty;
     }
+
+    /**
+     * 829. 连续整数求和
+     *
+     * <p>给定一个正整数 N，试求有多少组连续正整数满足所有数字之和为 N?
+     *
+     * <p>示例 1:
+     *
+     * <p>输入: 5 输出: 2 解释: 5 = 5 = 2 + 3，共有两组连续整数([5],[2,3])求和后为 5。 示例 2:
+     *
+     * <p>输入: 9 输出: 3 解释: 9 = 9 = 4 + 5 = 2 + 3 + 4 示例 3:
+     *
+     * <p>输入: 15 输出: 4 解释: 15 = 15 = 8 + 7 = 4 + 5 + 6 = 1 + 2 + 3 + 4 + 5 说明: 1 <= N <= 10 ^ 9
+     *
+     * @param N
+     * @return
+     */
+    public int consecutiveNumbersSum(int N) {
+        int result = 1;
+        // 连续数求和
+        //  x + 1 ~ x + i  的
+        //  连续数 求和 x * i + (1 + i) * i/ 2 =  N
+        // 只要枚举 i  就可以了 2 * N 能被 i 整除
+        // N - (1 + i) * i/ 2  能被 i 整除
+        int sum = N << 1;
+        for (int i = 2; i * i < sum; i++) {
+            if (sum % i != 0) {
+                continue;
+            }
+            if ((N - (i * (i + 1) >> 1)) % i == 0) {
+                result++;
+            }
+        }
+
+        return result;
+    }
+
+    @Test
+    public void consecutiveNumbersSum() {
+        int N = 5;
+        logResult(consecutiveNumbersSum(N));
+    }
 }
