@@ -8127,4 +8127,60 @@ public class MathTest {
         int N = 5;
         logResult(consecutiveNumbersSum(N));
     }
+
+    /**
+     * 5681. 判断一个数字是否可以表示成三的幂的和
+     *
+     * <p>给你一个整数 n ，如果你可以将 n 表示成若干个不同的三的幂之和，请你返回 true ，否则请返回 false 。
+     *
+     * <p>对于一个整数 y ，如果存在整数 x 满足 y == 3x ，我们称这个整数 y 是三的幂。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：n = 12 输出：true 解释：12 = 31 + 32 示例 2：
+     *
+     * <p>输入：n = 91 输出：true 解释：91 = 30 + 32 + 34 示例 3：
+     *
+     * <p>输入：n = 21 输出：false
+     *
+     * <p>提示：
+     *
+     * <p>1 <= n <= 107
+     *
+     * @param n
+     * @return
+     */
+    public boolean checkPowersOfThree(int n) {
+        if (n == 1) {
+            return true;
+        }
+        if (n == 2) {
+            return false;
+        }
+        if (n == 3) {
+            return true;
+        }
+
+        if (n % 3 == 0) {
+            return checkPowersOfThree(n / 3);
+        } else if ((n - 1) % 3 == 0) {
+            return checkPowersOfThree(n - 1);
+        }
+        return false;
+    }
+
+    @Test
+    public void checkPowersOfThree() {
+        int n = 12;
+        logResult(checkPowersOfThree(n));
+    }
+
+    private boolean checkPowersOfThree(int n, boolean[] dp) {
+        if (n % 3 == 0) {
+            return checkPowersOfThree(n / 3, dp);
+        } else if ((n - 1) % 3 == 0) {
+            return checkPowersOfThree(n - 1, dp);
+        }
+        return false;
+    }
 }

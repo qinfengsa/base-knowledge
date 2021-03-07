@@ -915,4 +915,95 @@ public class String2Test {
 
         return result;
     }
+
+    /**
+     * 5682. 所有子字符串美丽值之和
+     *
+     * <p>一个字符串的 美丽值 定义为：出现频率最高字符与出现频率最低字符的出现次数之差。
+     *
+     * <p>比方说，"abaacc" 的美丽值为 3 - 1 = 2 。 给你一个字符串 s ，请你返回它所有子字符串的 美丽值 之和。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：s = "aabcb" 输出：5 解释：美丽值不为零的字符串包括 ["aab","aabc","aabcb","abcb","bcb"] ，每一个字符串的美丽值都为 1 。
+     * 示例 2：
+     *
+     * <p>输入：s = "aabcbaa" 输出：17
+     *
+     * <p>提示：
+     *
+     * <p>1 <= s.length <= 500 s 只包含小写英文字母。
+     *
+     * @param s
+     * @return
+     */
+    public int beautySum(String s) {
+        // 1 <= s.length <= 500
+
+        int len = s.length();
+        char[] chars = s.toCharArray();
+        int result = 0;
+
+        for (int i = 0; i < len - 2; i++) {
+            int[] letters = new int[26];
+            letters[chars[i] - 'a']++;
+            letters[chars[i + 1] - 'a']++;
+            for (int j = i + 2; j < len; j++) {
+                letters[chars[j] - 'a']++;
+                int max = 0, min = chars.length;
+                for (int num : letters) {
+                    if (num == 0) {
+                        continue;
+                    }
+                    max = Math.max(max, num);
+                    min = Math.min(min, num);
+                }
+                result += max - min;
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * 5697. 检查二进制字符串字段
+     *
+     * <p>给你一个二进制字符串 s ，该字符串 不含前导零 。
+     *
+     * <p>如果 s 最多包含 一个由连续的 '1' 组成的字段 ，返回 true​​​ 。否则，返回 false 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：s = "1001" 输出：false 解释：字符串中的 1 没有形成一个连续字段。 示例 2：
+     *
+     * <p>输入：s = "110" 输出：true
+     *
+     * <p>提示：
+     *
+     * <p>1 <= s.length <= 100 s[i] 为 '0' 或 '1' s[0] 为 '1'
+     *
+     * @param s
+     * @return
+     */
+    public boolean checkOnesSegment(String s) {
+
+        int len = s.length();
+        char[] chars = s.toCharArray();
+
+        // s[0] 为 '1'
+
+        // 找到第一个0的文章
+        int idx = 0;
+        while (idx < len && chars[idx] == '1') {
+            idx++;
+        }
+
+        for (int i = idx; i < len; i++) {
+            if (chars[i] == '1') {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }
