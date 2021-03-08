@@ -4511,5 +4511,52 @@ public class Array2Test {
         return (int) result;
     }
 
-    public void minElements() {}
+    /**
+     * 862. 和至少为 K 的最短子数组
+     *
+     * <p>返回 A 的最短的非空连续子数组的长度，该子数组的和至少为 K 。
+     *
+     * <p>如果没有和至少为 K 的非空子数组，返回 -1 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：A = [1], K = 1 输出：1 示例 2：
+     *
+     * <p>输入：A = [1,2], K = 4 输出：-1 示例 3：
+     *
+     * <p>输入：A = [2,-1,2], K = 3 输出：3
+     *
+     * <p>提示：
+     *
+     * <p>1 <= A.length <= 50000 -10 ^ 5 <= A[i] <= 10 ^ 5 1 <= K <= 10 ^ 9
+     *
+     * @param A
+     * @param K
+     * @return
+     */
+    public int shortestSubarray(int[] A, int K) {
+        // 前缀和
+        int len = A.length;
+        int[] sums = new int[len + 1];
+
+        int min = len + 1;
+        for (int i = 0; i < len; i++) {
+            sums[i + 1] = sums[i] + A[i];
+        }
+        // 维护
+        Deque<Integer> deque = new LinkedList<>();
+        deque.addLast(0);
+
+        for (int i = 1; i <= len; i++) {
+            while (!deque.isEmpty() && sums[i] <= sums[deque.peekLast()]) {
+                deque.pollLast();
+            }
+            while (!deque.isEmpty() && sums[i] - sums[deque.peekFirst()] >= K) {
+                min = Math.min(min, i - deque.pollFirst());
+            }
+            deque.addLast(i);
+        }
+
+        return min <= len ? min : -1;
+    }
 }
