@@ -4559,4 +4559,63 @@ public class Array2Test {
 
         return min <= len ? min : -1;
     }
+
+    /**
+     * 891. 子序列宽度之和
+     *
+     * <p>给定一个整数数组 A ，考虑 A 的所有非空子序列。
+     *
+     * <p>对于任意序列 S ，设 S 的宽度是 S 的最大元素和最小元素的差。
+     *
+     * <p>返回 A 的所有子序列的宽度之和。
+     *
+     * <p>由于答案可能非常大，请返回答案模 10^9+7。
+     *
+     * <p>示例：
+     *
+     * <p>输入：[2,1,3] 输出：6 解释： 子序列为 [1]，[2]，[3]，[2,1]，[2,3]，[1,3]，[2,1,3] 。 相应的宽度是 0，0，0，1，1，2，2 。
+     * 这些宽度之和是 6 。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= A.length <= 20000 1 <= A[i] <= 20000
+     *
+     * @param A
+     * @return
+     */
+    public int sumSubseqWidths(int[] A) {
+        // 排序
+        Arrays.sort(A);
+        int n = A.length;
+        // 选择两个元素 中间取组合
+        // f[0,1] = (A[1] - A[0]) * 2 ^ (1- 0 - 1)
+        // f[0,2] = (A[2] - A[0]) * 2 ^ (2 - 0 - 1)
+        // ...
+        // f[i,j] = (A[j] - A[i]) * 2 ^ (j - i -
+        // ...
+        // f[0,n] = (A[n] - A[0]) * 2 ^ (n - 0 - 1)
+        // 求和
+        // sub[j] = (A[j] - A[0]) * 2 ^ (j - 1) + (A[j] - A[1]) * 2 ^ (j - 2) +
+        // ... +  (A[j] - A[j - 1]) * 2 ^ 0
+        // 表示为 X - Y
+        // X = A[j]  * (2 ^  (j - 1) + 2 ^ (j - 2) + ... + 2^0) => A[j] * (2 ^ j - 1)
+        // Y = A[0] * 2 ^  (j - 1) + A[1] * 2 ^ (j - 2)  + A[j - 1] * 2 ^ 0
+        // Y[j + 1] = Y[j] * 2 + A[j];
+        // X[j + 1] - Y[j + 1] =  A[j + 1] * (2 ^ (j + 1) - 1) -
+
+        long[] subCount = new long[n + 1];
+        subCount[0] = 1;
+        for (int i = 1; i <= n; i++) {
+            subCount[i] = (subCount[i - 1] << 1) % MOD;
+        }
+        long result = 0;
+
+        for (int i = 0; i < n; i++) {
+            int left = i, right = n - i - 1;
+            result += (subCount[left] - subCount[right]) * A[i] % MOD;
+            result %= MOD;
+        }
+
+        return (int) result;
+    }
 }
