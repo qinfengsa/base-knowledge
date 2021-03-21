@@ -4740,4 +4740,251 @@ public class Array2Test {
         int[] coins = {1, 4, 10, 2, 1};
         logResult(getMaximumConsecutive(coins));
     }
+
+    /**
+     * 5709. 最大升序子数组和
+     *
+     * <p>给你一个正整数组成的数组 nums ，返回 nums 中一个 升序 子数组的最大可能元素和。
+     *
+     * <p>子数组是数组中的一个连续数字序列。
+     *
+     * <p>已知子数组 [numsl, numsl+1, ..., numsr-1, numsr] ，若对所有 i（l <= i < r），numsi < numsi+1
+     * 都成立，则称这一子数组为 升序 子数组。注意，大小为 1 的子数组也视作 升序 子数组。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：nums = [10,20,30,5,10,50] 输出：65 解释：[5,10,50] 是元素和最大的升序子数组，最大元素和为 65 。 示例 2：
+     *
+     * <p>输入：nums = [10,20,30,40,50] 输出：150 解释：[10,20,30,40,50] 是元素和最大的升序子数组，最大元素和为 150 。 示例 3：
+     *
+     * <p>输入：nums = [12,17,15,13,10,11,12] 输出：33 解释：[10,11,12] 是元素和最大的升序子数组，最大元素和为 33 。 示例 4：
+     *
+     * <p>输入：nums = [100,10,1] 输出：100
+     *
+     * <p>提示：
+     *
+     * <p>1 <= nums.length <= 100 1 <= nums[i] <= 100
+     *
+     * @param nums
+     * @return
+     */
+    public int maxAscendingSum(int[] nums) {
+        int len = nums.length;
+        int[] dp = new int[len];
+        dp[0] = nums[0];
+        int max = nums[0];
+
+        for (int i = 1; i < len; i++) {
+            if (nums[i] > nums[i - 1]) {
+                dp[i] = dp[i - 1] + nums[i];
+            } else {
+                dp[i] = nums[i];
+            }
+            max = Math.max(max, dp[i]);
+        }
+
+        return max;
+    }
+
+    /**
+     * 5710. 积压订单中的订单总数
+     *
+     * <p>给你一个二维整数数组 orders ，其中每个 orders[i] = [pricei, amounti, orderTypei] 表示有 amounti 笔类型为
+     * orderTypei 、价格为 pricei 的订单。
+     *
+     * <p>订单类型 orderTypei 可以分为两种：
+     *
+     * <p>0 表示这是一批采购订单 buy 1 表示这是一批销售订单 sell 注意，orders[i] 表示一批共计 amounti 笔的独立订单，这些订单的价格和类型相同。对于所有有效的
+     * i ，由 orders[i] 表示的所有订单提交时间均早于 orders[i+1] 表示的所有订单。
+     *
+     * <p>存在由未执行订单组成的 积压订单 。积压订单最初是空的。提交订单时，会发生以下情况：
+     *
+     * <p>如果该订单是一笔采购订单 buy ，则可以查看积压订单中价格 最低 的销售订单 sell 。如果该销售订单 sell 的价格 低于或等于 当前采购订单 buy
+     * 的价格，则匹配并执行这两笔订单，并将销售订单 sell 从积压订单中删除。否则，采购订单 buy 将会添加到积压订单中。 反之亦然，如果该订单是一笔销售订单 sell
+     * ，则可以查看积压订单中价格 最高 的采购订单 buy 。如果该采购订单 buy 的价格 高于或等于 当前销售订单 sell 的价格，则匹配并执行这两笔订单，并将采购订单 buy
+     * 从积压订单中删除。否则，销售订单 sell 将会添加到积压订单中。 输入所有订单后，返回积压订单中的 订单总数 。由于数字可能很大，所以需要返回对 109 + 7 取余的结果。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：orders = [[10,5,0],[15,2,1],[25,1,1],[30,4,0]] 输出：6 解释：输入订单后会发生下述情况： - 提交 5 笔采购订单，价格为
+     * 10 。没有销售订单，所以这 5 笔订单添加到积压订单中。 - 提交 2 笔销售订单，价格为 15 。没有采购订单的价格大于或等于 15 ，所以这 2 笔订单添加到积压订单中。 - 提交
+     * 1 笔销售订单，价格为 25 。没有采购订单的价格大于或等于 25 ，所以这 1 笔订单添加到积压订单中。 - 提交 4 笔采购订单，价格为 30 。前 2 笔采购订单与价格最低（价格为
+     * 15）的 2 笔销售订单匹配，从积压订单中删除这 2 笔销售订单。第 3 笔采购订单与价格最低的 1 笔销售订单匹配，销售订单价格为 25 ，从积压订单中删除这 1
+     * 笔销售订单。积压订单中不存在更多销售订单，所以第 4 笔采购订单需要添加到积压订单中。 最终，积压订单中有 5 笔价格为 10 的采购订单，和 1 笔价格为 30
+     * 的采购订单。所以积压订单中的订单总数为 6 。 示例 2：
+     *
+     * <p>输入：orders = [[7,1000000000,1],[15,3,0],[5,999999995,0],[5,1,1]] 输出：999999984
+     * 解释：输入订单后会发生下述情况： - 提交 109 笔销售订单，价格为 7 。没有采购订单，所以这 109 笔订单添加到积压订单中。 - 提交 3 笔采购订单，价格为 15
+     * 。这些采购订单与价格最低（价格为 7 ）的 3 笔销售订单匹配，从积压订单中删除这 3 笔销售订单。 - 提交 999999995 笔采购订单，价格为 5 。销售订单的最低价为 7
+     * ，所以这 999999995 笔订单添加到积压订单中。 - 提交 1 笔销售订单，价格为 5 。这笔销售订单与价格最高（价格为 5 ）的 1 笔采购订单匹配，从积压订单中删除这 1
+     * 笔采购订单。 最终，积压订单中有 (1000000000-3) 笔价格为 7 的销售订单，和 (999999995-1) 笔价格为 5 的采购订单。所以积压订单中的订单总数为
+     * 1999999991 ，等于 999999984 % (109 + 7) 。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= orders.length <= 105 orders[i].length == 3 1 <= pricei, amounti <= 109 orderTypei 为 0
+     * 或 1
+     *
+     * @param orders
+     * @return
+     */
+    public int getNumberOfBacklogOrders(int[][] orders) {
+        // 优先队列
+        // sell 队列 价格最低
+        PriorityQueue<int[]> sellQuee = new PriorityQueue<>(Comparator.comparingInt(a -> a[0]));
+        // buy 队列 价格最高
+        PriorityQueue<int[]> buyQueue = new PriorityQueue<>((a, b) -> b[0] - a[0]);
+
+        for (int[] order : orders) {
+            int price = order[0];
+            if (order[2] == 0) { // buy
+                // 如果该订单是一笔采购订单 buy ，则可以查看积压订单中价格 最低 的销售订单 sell 。
+                // 如果该销售订单 sell 的价格 低于或等于 当前采购订单 buy 的价格，则匹配并执行这两笔订单，并将销售订单 sell
+                // 从积压订单中删除。否则，采购订单 buy 将会添加到积压订单中。
+                while (!sellQuee.isEmpty() && order[1] > 0 && sellQuee.peek()[0] <= price) {
+                    int[] sellOrder = sellQuee.peek();
+                    if (sellOrder[1] >= order[1]) {
+                        sellOrder[1] -= order[1];
+                        order[1] = 0;
+                    } else {
+                        order[1] -= sellOrder[1];
+                        sellQuee.poll();
+                    }
+                }
+                if (order[1] > 0) {
+                    buyQueue.offer(order);
+                }
+
+            } else {
+                // 如果该订单是一笔销售订单 sell ，则可以查看积压订单中价格 最高 的采购订单 buy 。
+                // 如果该采购订单 buy 的价格 高于或等于 当前销售订单 sell 的价格，则匹配并执行这两笔订单，并将采购订单 buy 从积压订单中删除。
+                // 否则，销售订单 sell 将会添加到积压订单中。
+                while (!buyQueue.isEmpty() && order[1] > 0 && buyQueue.peek()[0] >= price) {
+                    int[] buyOrder = buyQueue.peek();
+                    if (buyOrder[1] >= order[1]) {
+                        buyOrder[1] -= order[1];
+                        order[1] = 0;
+                    } else {
+                        order[1] -= buyOrder[1];
+                        buyQueue.poll();
+                    }
+                }
+
+                if (order[1] > 0) {
+                    sellQuee.offer(order);
+                }
+            }
+        }
+        int result = 0;
+
+        while (!buyQueue.isEmpty()) {
+            int[] order = buyQueue.poll();
+            result += order[1];
+            result %= MOD;
+        }
+        while (!sellQuee.isEmpty()) {
+            int[] order = sellQuee.poll();
+            result += order[1];
+            result %= MOD;
+        }
+
+        return result;
+    }
+
+    @Test
+    public void getNumberOfBacklogOrders() {
+        int[][] orders = {{7, 1000000000, 1}, {15, 3, 0}, {5, 999999995, 0}, {5, 1, 1}};
+
+        logResult(getNumberOfBacklogOrders(orders));
+    }
+
+    /**
+     * 5711. 有界数组中指定下标处的最大值
+     *
+     * <p>给你三个正整数 n、index 和 maxSum 。你需要构造一个同时满足下述所有条件的数组 nums（下标 从 0 开始 计数）：
+     *
+     * <p>nums.length == n nums[i] 是 正整数 ，其中 0 <= i < n abs(nums[i] - nums[i+1]) <= 1 ，其中 0 <= i <
+     * n-1 nums 中所有元素之和不超过 maxSum nums[index] 的值被 最大化 返回你所构造的数组中的 nums[index] 。
+     *
+     * <p>注意：abs(x) 等于 x 的前提是 x >= 0 ；否则，abs(x) 等于 -x 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：n = 4, index = 2, maxSum = 6 输出：2 解释：数组 [1,1,2,1] 和 [1,2,2,1]
+     * 满足所有条件。不存在其他在指定下标处具有更大值的有效数组。 示例 2：
+     *
+     * <p>输入：n = 6, index = 1, maxSum = 10 输出：3
+     *
+     * <p>提示：
+     *
+     * <p>1 <= n <= maxSum <= 109 0 <= index < n
+     *
+     * @param n
+     * @param index
+     * @param maxSum
+     * @return
+     */
+    public int maxValue(int n, int index, int maxSum) {
+
+        // 二分
+        int left = 1, right = maxSum;
+        if (canMakeArr(n, right, index, maxSum)) {
+            return right;
+        }
+        int result = left;
+        while (left < right) {
+            int mid = (left + right) >> 1;
+            if (canMakeArr(n, mid, index, maxSum)) {
+                result = mid;
+                left = mid + 1;
+            } else {
+                right = mid;
+            }
+        }
+
+        return result;
+    }
+
+    private boolean canMakeArr(long n, long num, long index, long maxSum) {
+
+        // nums[i] 是 正整数
+        if (num * n <= maxSum) {
+            return true;
+        }
+        long leftSum = 0L;
+        if (num > index) {
+            leftSum = (num + num - index) * (index + 1) / 2;
+        } else {
+            leftSum = num * (num + 1) / 2;
+            // 剩下的补1
+            leftSum += index - num + 1;
+        }
+        long rightSum = 0;
+        long rightCount = n - index - 1;
+        if (rightCount > 0) {
+            if ((num - 1) > rightCount) {
+                rightSum = (num - 1 + num - rightCount) * rightCount / 2;
+            } else {
+                rightSum = (num - 1) * num / 2;
+                rightSum += rightCount - num + 1;
+            }
+        }
+
+        long sum = leftSum + rightSum;
+
+        return sum <= maxSum;
+    }
+
+    @Test
+    public void maxValue2() {
+        // int n = 3, index = 2, maxSum = 18;
+        // int n = 4, index = 0, maxSum = 4;
+        // int n = 6, index = 1, maxSum = 10;
+        //
+        // 14 3
+        // 0
+        // 815094800
+        int n = 3, index = 0, maxSum = 815094800;
+        logResult(maxValue(n, index, maxSum));
+    }
 }
