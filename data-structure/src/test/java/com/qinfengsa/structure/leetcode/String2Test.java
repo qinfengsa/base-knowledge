@@ -1103,4 +1103,139 @@ public class String2Test {
 
         return second;
     }
+
+    /**
+     * 5713. 字符串中不同整数的数目
+     *
+     * <p>给你一个字符串 word ，该字符串由数字和小写英文字母组成。
+     *
+     * <p>请你用空格替换每个不是数字的字符。例如，"a123bc34d8ef34" 将会变成 " 123 34 8 34"
+     * 。注意，剩下的这些整数间至少要用一个空格隔开："123"、"34"、"8" 和 "34" 。
+     *
+     * <p>返回对 word 完成替换后形成的 不同 整数的数目。
+     *
+     * <p>如果两个整数的 不含前导零 的十进制表示不同，则认为这两个整数也不同。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：word = "a123bc34d8ef34" 输出：3 解释：不同的整数有 "123"、"34" 和 "8" 。注意，"34" 只计数一次。 示例 2：
+     *
+     * <p>输入：word = "leet1234code234" 输出：2
+     *
+     * <p>示例 3：
+     *
+     * <p>输入：word = "a1b01c001" 输出：1 解释："1"、"01" 和 "001" 视为同一个整数的十进制表示，因为在比较十进制值时会忽略前导零的存在。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= word.length <= 1000 word 由数字和小写英文字母组成
+     *
+     * @param word
+     * @return
+     */
+    public int numDifferentIntegers(String word) {
+        Set<Integer> set = new HashSet<>();
+
+        char[] chars = word.toCharArray();
+        int len = chars.length;
+        for (int i = 0; i < len; i++) {
+            while (i < len && !isNumber(chars[i])) {
+                i++;
+            }
+            if (i == chars.length) {
+                continue;
+            }
+
+            int num = 0;
+            while (i < len && isNumber(chars[i])) {
+                num = num * 10 + (chars[i] - '0');
+                i++;
+            }
+            set.add(num);
+        }
+
+        return set.size();
+    }
+
+    private boolean isNumber(char c) {
+        switch (c) {
+            case '0':
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9':
+                return true;
+        }
+        return false;
+    }
+
+    /**
+     * 5714. 替换字符串中的括号内容
+     *
+     * <p>给你一个字符串 s ，它包含一些括号对，每个括号中包含一个 非空 的键。
+     *
+     * <p>比方说，字符串 "(name)is(age)yearsold" 中，有 两个 括号对，分别包含键 "name" 和 "age" 。 你知道许多键对应的值，这些关系由二维字符串数组
+     * knowledge 表示，其中 knowledge[i] = [keyi, valuei] ，表示键 keyi 对应的值为 valuei 。
+     *
+     * <p>你需要替换 所有 的括号对。当你替换一个括号对，且它包含的键为 keyi 时，你需要：
+     *
+     * <p>将 keyi 和括号用对应的值 valuei 替换。 如果从 knowledge 中无法得知某个键对应的值，你需要将 keyi 和括号用问号 "?" 替换（不需要引号）。
+     * knowledge 中每个键最多只会出现一次。s 中不会有嵌套的括号。
+     *
+     * <p>请你返回替换 所有 括号对后的结果字符串。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：s = "(name)is(age)yearsold", knowledge = [["name","bob"],["age","two"]]
+     * 输出："bobistwoyearsold" 解释： 键 "name" 对应的值为 "bob" ，所以将 "(name)" 替换为 "bob" 。 键 "age" 对应的值为 "two"
+     * ，所以将 "(age)" 替换为 "two" 。 示例 2：
+     *
+     * <p>输入：s = "hi(name)", knowledge = [["a","b"]] 输出："hi?" 解释：由于不知道键 "name" 对应的值，所以用 "?" 替换
+     * "(name)" 。 示例 3：
+     *
+     * <p>输入：s = "(a)(a)(a)aaa", knowledge = [["a","yes"]] 输出："yesyesyesaaa" 解释：相同的键在 s 中可能会出现多次。 键
+     * "a" 对应的值为 "yes" ，所以将所有的 "(a)" 替换为 "yes" 。 注意，不在括号里的 "a" 不需要被替换。 示例 4：
+     *
+     * <p>输入：s = "(a)(b)", knowledge = [["a","b"],["b","a"]] 输出："ba"
+     *
+     * <p>提示：
+     *
+     * <p>1 <= s.length <= 105 0 <= knowledge.length <= 105 knowledge[i].length == 2 1 <=
+     * keyi.length, valuei.length <= 10 s 只包含小写英文字母和圆括号 '(' 和 ')' 。 s 中每一个左圆括号 '(' 都有对应的右圆括号 ')' 。 s
+     * 中每对括号内的键都不会为空。 s 中不会有嵌套括号对。 keyi 和 valuei 只包含小写英文字母。 knowledge 中的 keyi 不会重复。
+     *
+     * @param s
+     * @param knowledge
+     * @return
+     */
+    public String evaluate(String s, List<List<String>> knowledge) {
+        Map<String, String> map = new HashMap<>();
+        for (List<String> word : knowledge) {
+            map.put(word.get(0), word.get(1));
+        }
+        StringBuilder sb = new StringBuilder();
+        int len = s.length();
+        char[] chars = s.toCharArray();
+        for (int i = 0; i < len; i++) {
+            char c = chars[i];
+            if (c == '(') {
+                int start = i + 1;
+                while (i < len && chars[i] != ')') {
+                    i++;
+                }
+                String key = s.substring(start, i);
+                String value = map.getOrDefault(key, "?");
+                sb.append(value);
+            } else {
+                sb.append(c);
+            }
+        }
+
+        return sb.toString();
+    }
 }

@@ -8183,4 +8183,113 @@ public class MathTest {
         }
         return false;
     }
+
+    /**
+     * 878. 第 N 个神奇数字
+     *
+     * <p>如果正整数可以被 A 或 B 整除，那么它是神奇的。
+     *
+     * <p>返回第 N 个神奇数字。由于答案可能非常大，返回它模 10^9 + 7 的结果。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：N = 1, A = 2, B = 3 输出：2 示例 2：
+     *
+     * <p>输入：N = 4, A = 2, B = 3 输出：6 示例 3：
+     *
+     * <p>输入：N = 5, A = 2, B = 4 输出：10 示例 4：
+     *
+     * <p>输入：N = 3, A = 6, B = 4 输出：8
+     *
+     * <p>提示：
+     *
+     * <p>1 <= N <= 10^9 2 <= A <= 40000 2 <= B <= 40000
+     *
+     * @param n
+     * @param a
+     * @param b
+     * @return
+     */
+    public int nthMagicalNumber(int n, int a, int b) {
+        // 最小公倍数
+        int num = a / getGcd(a, b) * b;
+        // 按最小公倍数循环 有 minCnt 个元素
+        int minCnt = num / a + num / b - 1;
+
+        int cnt = n / minCnt, leftCnt = n % minCnt;
+        // 最小公倍数 * 循环次数cnt
+        long result = (long) cnt * num % MOD;
+        if (leftCnt == 0) {
+            return (int) result;
+        }
+        // 计算剩下的 leftCnt 个元素
+        int[] heads = new int[] {a, b};
+        for (int i = 0; i < leftCnt - 1; i++) {
+            if (heads[0] <= heads[1]) {
+                heads[0] += a;
+            } else {
+                heads[1] += b;
+            }
+        }
+
+        result += Math.min(heads[0], heads[1]);
+        return (int) (result % MOD);
+    }
+
+    /**
+     * 5715. 还原排列的最少操作步数
+     *
+     * <p>给你一个偶数 n ，已知存在一个长度为 n 的排列 perm ，其中 perm[i] == i （下标 从 0 开始 计数）。
+     *
+     * <p>一步操作中，你将创建一个新数组 arr ，对于每个 i ：
+     *
+     * <p>如果 i % 2 == 0 ，那么 arr[i] = perm[i / 2] 如果 i % 2 == 1 ，那么 arr[i] = perm[n / 2 + (i - 1) /
+     * 2] 然后将 arr 赋值 给 perm 。
+     *
+     * <p>要想使 perm 回到排列初始值，至少需要执行多少步操作？返回最小的 非零 操作步数。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：n = 2 输出：1 解释：最初，perm = [0,1] 第 1 步操作后，perm = [0,1] 所以，仅需执行 1 步操作 示例 2：
+     *
+     * <p>输入：n = 4 输出：2 解释：最初，perm = [0,1,2,3] 第 1 步操作后，perm = [0,2,1,3] 第 2 步操作后，perm = [0,1,2,3]
+     * 所以，仅需执行 2 步操作 示例 3：
+     *
+     * <p>输入：n = 6 输出：4
+     *
+     * <p>提示：
+     *
+     * <p>2 <= n <= 1000 n 是一个偶数
+     *
+     * @param n
+     * @return
+     */
+    public int reinitializePermutation(int n) {
+        if (n == 2) {
+            return 1;
+        }
+        int half = n >> 1;
+        int index = 1 * 2;
+        int result = 1;
+        while (index != 1) {
+            // 左半部分 * 2
+            if (index < half) {
+                // * 2
+                index <<= 1;
+            } else {
+                // 右半部分
+                int num = index - half;
+                index = num * 2 + 1;
+            }
+            result++;
+        }
+
+        return result;
+    }
+
+    @Test
+    public void reinitializePermutation() {
+        int n = 4;
+        logResult(reinitializePermutation(n));
+    }
 }
