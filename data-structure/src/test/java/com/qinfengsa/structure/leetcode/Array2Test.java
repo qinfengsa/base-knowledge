@@ -4987,4 +4987,112 @@ public class Array2Test {
         int n = 3, index = 0, maxSum = 815094800;
         logResult(maxValue(n, index, maxSum));
     }
+
+    /**
+     * 864. 获取所有钥匙的最短路径
+     *
+     * <p>给定一个二维网格 grid。 "." 代表一个空房间， "#" 代表一堵墙， "@" 是起点，（"a", "b", ...）代表钥匙，（"A", "B", ...）代表锁。
+     *
+     * <p>我们从起点开始出发，一次移动是指向四个基本方向之一行走一个单位空间。我们不能在网格外面行走，也无法穿过一堵墙。如果途经一个钥匙，我们就把它捡起来。除非我们手里有对应的钥匙，否则无法通过锁。
+     *
+     * <p>假设 K 为钥匙/锁的个数，且满足 1 <= K <= 6，字母表中的前 K
+     * 个字母在网格中都有自己对应的一个小写和一个大写字母。换言之，每个锁有唯一对应的钥匙，每个钥匙也有唯一对应的锁。另外，代表钥匙和锁的字母互为大小写并按字母顺序排列。
+     *
+     * <p>返回获取所有钥匙所需要的移动的最少次数。如果无法获取所有钥匙，返回 -1 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：["@.a.#","###.#","b.A.B"] 输出：8 示例 2：
+     *
+     * <p>输入：["@..aA","..B#.","....b"] 输出：6
+     *
+     * <p>提示：
+     *
+     * <p>1 <= grid.length <= 30 1 <= grid[0].length <= 30 grid[i][j] 只含有 '.', '#', '@', 'a'-'f' 以及
+     * 'A'-'F' 钥匙的数目范围是 [1, 6]，每个钥匙都对应一个不同的字母，正好打开一个对应的锁。
+     *
+     * @param grid
+     * @return
+     */
+    public int shortestPathAllKeys(String[] grid) {
+        int rows = grid.length, cols = grid[0].length();
+
+        int allKeys = 0;
+
+        int sx = 0, sy = 0;
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                char c = grid[i].charAt(j);
+                if (c == '@') {
+                    sx = i;
+                    sy = j;
+                } else if (c >= 'a' && c <= 'f') {
+                    allKeys |= 1 << (c - 'a');
+                }
+            }
+        }
+        log.debug("allKeys:{}", allKeys);
+        // 广度优先遍历
+        Queue<KeyNode> queue = new LinkedList<>();
+        queue.offer(new KeyNode(sx, sy, 0, 0));
+        boolean[][][] visited = new boolean[rows][cols][64];
+        visited[sx][sy][0] = true;
+        while (!queue.isEmpty()) {
+            KeyNode node = queue.poll();
+            int row = node.row, col = node.col;
+            int keys = node.keys, step = node.step;
+            for (int i = 0; i < 4; i++) {
+                int nextRow = row + DIR_ROW[i], nextCol = col + DIR_COL[i];
+                if (!inArea(nextRow, nextCol, rows, cols)) {
+                    continue;
+                }
+
+                char c = grid[nextRow].charAt(nextCol);
+                if (c == '#') {
+                    continue;
+                }
+
+                if (visited[nextRow][nextCol][keys]) {
+                    continue;
+                }
+
+                if (c >= 'A' && c <= 'F') {
+                    // 查看有没有对应的锁
+                    if ((keys & (1 << (c - 'A'))) == 0) {
+                        continue;
+                    }
+                }
+                log.debug("keys:{}", keys);
+                int tmp = keys;
+                if (c >= 'a' && c <= 'f') {
+                    tmp |= 1 << (c - 'a');
+                }
+                if (tmp == allKeys) {
+                    return step + 1;
+                }
+                visited[nextRow][nextCol][tmp] = true;
+                queue.offer(new KeyNode(nextRow, nextCol, tmp, step + 1));
+            }
+        }
+
+        return -1;
+    }
+
+    static class KeyNode {
+        int row, col;
+        int keys, step;
+
+        KeyNode(int row, int col, int keys, int step) {
+            this.row = row;
+            this.col = col;
+            this.keys = keys;
+            this.step = step;
+        }
+    }
+
+    @Test
+    public void shortestPathAllKeys() {
+        String[] grid = {"@...a", ".###A", "b.BCc"};
+        logResult(shortestPathAllKeys(grid));
+    }
 }

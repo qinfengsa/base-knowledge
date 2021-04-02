@@ -8993,6 +8993,40 @@ public class DynamicPlanTest {
      */
     public int profitableSchemes(int n, int minProfit, int[] group, int[] profit) {
         int len = group.length;
-        return 0;
+        // 背包问题
+        // dp [i][j] = 表示 i个员工 获取 j 利润 的 计划
+        int[][] dp = new int[n + 1][minProfit + 1];
+        dp[0][0] = 1;
+
+        for (int k = 0; k < len; k++) {
+            // 员工数 利润
+            int groupNum = group[k], profitNum = profit[k];
+            for (int i = n; i >= groupNum; i--) {
+                for (int j = minProfit; j >= 0; j--) {
+                    // 达到 j 利润 需要的利润 为 j - profitNum
+                    int lastProfit = Math.max(j - profitNum, 0);
+                    // i - groupNum 个 员工
+                    int lastNum = i - groupNum;
+
+                    dp[i][j] += dp[lastNum][lastProfit];
+                    dp[i][j] %= MOD;
+                }
+            }
+        }
+        logResult(dp);
+        // 所有 利润达到 minProfit 的 计划
+        int result = 0;
+        for (int i = 0; i <= n; i++) {
+            result += dp[i][minProfit];
+            result %= MOD;
+        }
+        return result;
+    }
+
+    @Test
+    public void profitableSchemes() {
+        int n = 10, minProfit = 5;
+        int[] group = {2, 3, 5}, profit = {6, 7, 8};
+        logResult(profitableSchemes(n, minProfit, group, profit));
     }
 }
