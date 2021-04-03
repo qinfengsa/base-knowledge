@@ -1238,4 +1238,125 @@ public class String2Test {
 
         return sb.toString();
     }
+
+    /**
+     * 5705. 判断国际象棋棋盘中一个格子的颜色
+     *
+     * <p>给你一个坐标 coordinates ，它是一个字符串，表示国际象棋棋盘中一个格子的坐标。下图是国际象棋棋盘示意图。
+     *
+     * <p>如果所给格子的颜色是白色，请你返回 true，如果是黑色，请返回 false 。
+     *
+     * <p>给定坐标一定代表国际象棋棋盘上一个存在的格子。坐标第一个字符是字母，第二个字符是数字。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：coordinates = "a1" 输出：false 解释：如上图棋盘所示，"a1" 坐标的格子是黑色的，所以返回 false 。 示例 2：
+     *
+     * <p>输入：coordinates = "h3" 输出：true 解释：如上图棋盘所示，"h3" 坐标的格子是白色的，所以返回 true 。 示例 3：
+     *
+     * <p>输入：coordinates = "c7" 输出：false
+     *
+     * <p>提示：
+     *
+     * <p>coordinates.length == 2 'a' <= coordinates[0] <= 'h' '1' <= coordinates[1] <= '8'
+     *
+     * @param coordinates
+     * @return
+     */
+    public boolean squareIsWhite(String coordinates) {
+        boolean b1 = ((coordinates.charAt(0) - 'a') & 1) == 1;
+        boolean b2 = ((coordinates.charAt(1) - '1') & 1) == 1;
+
+        return b1 != b2;
+    }
+
+    /**
+     * 5706. 句子相似性 III
+     *
+     * <p>一个句子是由一些单词与它们之间的单个空格组成，且句子的开头和结尾没有多余空格。比方说，"Hello World" ，"HELLO" ，"hello world hello
+     * world" 都是句子。每个单词都 只 包含大写和小写英文字母。
+     *
+     * <p>如果两个句子 sentence1 和 sentence2 ，可以通过往其中一个句子插入一个任意的句子（可以是空句子）而得到另一个句子，那么我们称这两个句子是 相似的
+     * 。比方说，sentence1 = "Hello my name is Jane" 且 sentence2 = "Hello Jane" ，我们可以往 sentence2 中
+     * "Hello" 和 "Jane" 之间插入 "my name is" 得到 sentence1 。
+     *
+     * <p>给你两个句子 sentence1 和 sentence2 ，如果 sentence1 和 sentence2 是相似的，请你返回 true ，否则返回 false 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：sentence1 = "My name is Haley", sentence2 = "My Haley" 输出：true 解释：可以往 sentence2 中 "My"
+     * 和 "Haley" 之间插入 "name is" ，得到 sentence1 。 示例 2：
+     *
+     * <p>输入：sentence1 = "of", sentence2 = "A lot of words" 输出：false
+     * 解释：没法往这两个句子中的一个句子只插入一个句子就得到另一个句子。 示例 3：
+     *
+     * <p>输入：sentence1 = "Eating right now", sentence2 = "Eating" 输出：true 解释：可以往 sentence2 的结尾插入
+     * "right now" 得到 sentence1 。 示例 4：
+     *
+     * <p>输入：sentence1 = "Luky", sentence2 = "Lucccky" 输出：false
+     *
+     * <p>提示：
+     *
+     * <p>1 <= sentence1.length, sentence2.length <= 100 sentence1 和 sentence2 都只包含大小写英文字母和空格。
+     * sentence1 和 sentence2 中的单词都只由单个空格隔开。
+     *
+     * @param sentence1
+     * @param sentence2
+     * @return
+     */
+    public boolean areSentencesSimilar(String sentence1, String sentence2) {
+        if (Objects.equals(sentence1, sentence2)) {
+            return true;
+        }
+        String[] arr1 = sentence1.split(" "), arr2 = sentence2.split(" ");
+        int len1 = arr1.length, len2 = arr2.length;
+        if (len1 == len2) {
+            return false;
+        }
+        // 设定 len1 小于 len2
+        if (len1 > len2) {
+            String[] tmpArr = arr1;
+            arr1 = arr2;
+            arr2 = tmpArr;
+            int tmp = len1;
+            len1 = len2;
+            len2 = tmp;
+        }
+        if (!Objects.equals(arr1[0], arr2[0]) && !Objects.equals(arr1[len1 - 1], arr2[len2 - 1])) {
+            return false;
+        }
+        // 首字符相等
+        int start = 0;
+        if (Objects.equals(arr1[0], arr2[0])) {
+            for (; start < len1; start++) {
+                if (!Objects.equals(arr1[start], arr2[start])) {
+                    break;
+                }
+            }
+            if (start == len1) {
+                return true;
+            }
+        }
+        // 尾 相等
+        int end = len1 - 1;
+        if (Objects.equals(arr1[len1 - 1], arr2[len2 - 1])) {
+            for (; end > start; end--) {
+                if (!Objects.equals(arr1[end], arr2[len2 - len1 + end])) {
+                    break;
+                }
+            }
+
+            if (start == end) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    @Test
+    public void areSentencesSimilar() {
+        String sentence1 = "Luky", sentence2 = "Lucccky";
+        logResult(areSentencesSimilar(sentence1, sentence2));
+    }
 }

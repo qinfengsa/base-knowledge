@@ -5095,4 +5095,71 @@ public class Array2Test {
         String[] grid = {"@...a", ".###A", "b.BCc"};
         logResult(shortestPathAllKeys(grid));
     }
+
+    /**
+     * 5708. 统计一个数组中好对子的数目
+     *
+     * <p>给你一个数组 nums ，数组中只包含非负整数。定义 rev(x) 的值为将整数 x 各个数字位反转得到的结果。比方说 rev(123) = 321 ， rev(120) = 21
+     * 。我们称满足下面条件的下标对 (i, j) 是 好的 ：
+     *
+     * <p>0 <= i < j < nums.length nums[i] + rev(nums[j]) == nums[j] + rev(nums[i])
+     * 请你返回好下标对的数目。由于结果可能会很大，请将结果对 109 + 7 取余 后返回。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：nums = [42,11,1,97] 输出：2 解释：两个坐标对为： - (0,3)：42 + rev(97) = 42 + 79 = 121, 97 + rev(42)
+     * = 97 + 24 = 121 。 - (1,2)：11 + rev(1) = 11 + 1 = 12, 1 + rev(11) = 1 + 11 = 12 。 示例 2：
+     *
+     * <p>输入：nums = [13,10,35,24,76] 输出：4
+     *
+     * <p>提示：
+     *
+     * <p>1 <= nums.length <= 105 0 <= nums[i] <= 109
+     *
+     * @param nums
+     * @return
+     */
+    public int countNicePairs(int[] nums) {
+
+        long niceNum = 0L;
+        // 收集所有的 对称数
+        Map<Integer, Long> map = new HashMap<>();
+        for (int num : nums) {
+            int reverseNum = reverse(num);
+            if (num == reverseNum) {
+                niceNum++;
+                continue;
+            }
+            int key = num - reverseNum;
+            long count = map.getOrDefault(key, 0L);
+            map.put(key, count + 1L);
+        }
+        long result = 0L;
+
+        result += niceNum * (niceNum - 1) / 2;
+        result %= MOD;
+        logResult(map);
+        for (Long count : map.values()) {
+            result += count * (count - 1) / 2;
+            result %= MOD;
+        }
+
+        return (int) result;
+    }
+
+    private int reverse(int num) {
+        int result = 0;
+        while (num > 0) {
+            result = result * 10 + num % 10;
+            num /= 10;
+        }
+
+        return result;
+    }
+
+    @Test
+    public void countNicePairs() {
+        int[] nums = {13, 10, 35, 24, 76, 345, 406};
+        logResult(countNicePairs(nums));
+    }
 }
