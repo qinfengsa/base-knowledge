@@ -5162,4 +5162,146 @@ public class Array2Test {
         int[] nums = {13, 10, 35, 24, 76, 345, 406};
         logResult(countNicePairs(nums));
     }
+
+    /**
+     * 5723. 查找用户活跃分钟数
+     *
+     * <p>给你用户在 LeetCode 的操作日志，和一个整数 k 。日志用一个二维整数数组 logs 表示，其中每个 logs[i] = [IDi, timei] 表示 ID 为 IDi
+     * 的用户在 timei 分钟时执行了某个操作。
+     *
+     * <p>多个用户 可以同时执行操作，单个用户可以在同一分钟内执行 多个操作 。
+     *
+     * <p>指定用户的 用户活跃分钟数（user active minutes，UAM） 定义为用户对 LeetCode 执行操作的 唯一分钟数 。
+     * 即使一分钟内执行多个操作，也只能按一分钟计数。
+     *
+     * <p>请你统计用户活跃分钟数的分布情况，统计结果是一个长度为 k 且 下标从 1 开始计数 的数组 answer ，对于每个 j（1 <= j <= k），answer[j] 表示
+     * 用户活跃分钟数 等于 j 的用户数。
+     *
+     * <p>返回上面描述的答案数组 answer 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：logs = [[0,5],[1,2],[0,2],[0,5],[1,3]], k = 5 输出：[0,2,0,0,0] 解释： ID=0 的用户执行操作的分钟分别是：5
+     * 、2 和 5 。因此，该用户的用户活跃分钟数为 2（分钟 5 只计数一次） ID=1 的用户执行操作的分钟分别是：2 和 3 。因此，该用户的用户活跃分钟数为 2 2
+     * 个用户的用户活跃分钟数都是 2 ，answer[2] 为 2 ，其余 answer[j] 的值都是 0 示例 2：
+     *
+     * <p>输入：logs = [[1,1],[2,2],[2,3]], k = 4 输出：[1,1,0,0] 解释： ID=1 的用户仅在分钟 1
+     * 执行单个操作。因此，该用户的用户活跃分钟数为 1 ID=2 的用户执行操作的分钟分别是：2 和 3 。因此，该用户的用户活跃分钟数为 2 1 个用户的用户活跃分钟数是 1 ，1
+     * 个用户的用户活跃分钟数是 2 因此，answer[1] = 1 ，answer[2] = 1 ，其余的值都是 0
+     *
+     * <p>提示：
+     *
+     * <p>1 <= logs.length <= 104 0 <= IDi <= 109 1 <= timei <= 105 k 的取值范围是 [用户的最大用户活跃分钟数, 105]
+     *
+     * @param logs
+     * @param k
+     * @return
+     */
+    public int[] findingUsersActiveMinutes(int[][] logs, int k) {
+        int[] result = new int[k];
+        Map<Integer, Set<Integer>> userMap = new HashMap<>();
+        for (int[] log : logs) {
+            int id = log[0], min = log[1];
+            Set<Integer> set = userMap.computeIfAbsent(id, key -> new HashSet<>());
+            set.add(min);
+        }
+        for (Set<Integer> set : userMap.values()) {
+            if (set.size() <= k && set.size() > 0) {
+                result[set.size() - 1]++;
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * 5724. 绝对差值和
+     *
+     * <p>给你两个正整数数组 nums1 和 nums2 ，数组的长度都是 n 。
+     *
+     * <p>数组 nums1 和 nums2 的 绝对差值和 定义为所有 |nums1[i] - nums2[i]|（0 <= i < n）的 总和（下标从 0 开始）。
+     *
+     * <p>你可以选用 nums1 中的 任意一个 元素来替换 nums1 中的 至多 一个元素，以 最小化 绝对差值和。
+     *
+     * <p>在替换数组 nums1 中最多一个元素 之后 ，返回最小绝对差值和。因为答案可能很大，所以需要对 109 + 7 取余 后返回。
+     *
+     * <p>|x| 定义为：
+     *
+     * <p>如果 x >= 0 ，值为 x ，或者 如果 x <= 0 ，值为 -x
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：nums1 = [1,7,5], nums2 = [2,3,5] 输出：3 解释：有两种可能的最优方案： - 将第二个元素替换为第一个元素：[1,7,5] =>
+     * [1,1,5] ，或者 - 将第二个元素替换为第三个元素：[1,7,5] => [1,5,5] 两种方案的绝对差值和都是 |1-2| + (|1-3| 或者 |5-3|) + |5-5|
+     * = 3 示例 2：
+     *
+     * <p>输入：nums1 = [2,4,6,8,10], nums2 = [2,4,6,8,10] 输出：0 解释：nums1 和 nums2 相等，所以不用替换元素。绝对差值和为 0
+     * 示例 3：
+     *
+     * <p>输入：nums1 = [1,10,4,4,2,7], nums2 = [9,3,5,1,7,4] 输出：20 解释：将第一个元素替换为第二个元素：[1,10,4,4,2,7] =>
+     * [10,10,4,4,2,7] 绝对差值和为 |10-9| + |10-3| + |4-5| + |4-1| + |2-7| + |7-4| = 20
+     *
+     * <p>提示：
+     *
+     * <p>n == nums1.length n == nums2.length 1 <= n <= 105 1 <= nums1[i], nums2[i] <= 105
+     *
+     * @param nums1
+     * @param nums2
+     * @return
+     */
+    public int minAbsoluteSumDiff(int[] nums1, int[] nums2) {
+        long result = 0L;
+        int n = nums1.length;
+        int[] nums = Arrays.copyOf(nums1, n);
+        Arrays.sort(nums);
+        int max = 0;
+        log.debug("nums:{} ", nums);
+        for (int i = 0; i < n; i++) {
+            int num1 = nums1[i], num2 = nums2[i];
+            if (num1 == num2) {
+                continue;
+            }
+            int abs = Math.abs(num1 - num2);
+            result += abs;
+
+            // 用二分 在 nums 中找到 最接近num2 的数
+            int idx = getIndex(nums, num2);
+            log.debug("idx:{} ", idx);
+            int abs1 = Math.abs(nums[idx] - num2);
+            if (abs1 < abs) {
+                max = Math.max(max, abs - abs1);
+            }
+
+            if (idx > 0) {
+                int abs2 = Math.abs(nums[idx - 1] - num2);
+                if (abs2 < abs) {
+                    max = Math.max(max, abs - abs2);
+                }
+            }
+        }
+        log.debug("max:{}", max);
+        result -= max;
+        result %= MOD;
+        return (int) result;
+    }
+
+    private int getIndex(int[] nums, int target) {
+        // 二分查找
+        int left = 0, right = nums.length - 1;
+        while (left < right) {
+            int mid = (left + right) >> 1;
+            if (target > nums[mid]) {
+                left = mid + 1;
+            } else {
+                right = mid;
+            }
+        }
+        return left;
+    }
+
+    @Test
+    public void minAbsoluteSumDiff() {
+        int[] nums1 = {1, 10, 4, 4, 2, 7}, nums2 = {9, 3, 5, 1, 7, 4};
+        logResult(minAbsoluteSumDiff(nums1, nums2));
+    }
 }
