@@ -3222,4 +3222,83 @@ public class BackTest {
 
         return score;
     }
+
+    /**
+     * 854. 相似度为 K 的字符串
+     *
+     * <p>如果可以通过将 A 中的两个小写字母精确地交换位置 K 次得到与 B 相等的字符串，我们称字符串 A 和 B 的相似度为 K（K 为非负整数）。
+     *
+     * <p>给定两个字母异位词 A 和 B ，返回 A 和 B 的相似度 K 的最小值。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：A = "ab", B = "ba" 输出：1 示例 2：
+     *
+     * <p>输入：A = "abc", B = "bca" 输出：2 示例 3：
+     *
+     * <p>输入：A = "abac", B = "baca" 输出：2 示例 4：
+     *
+     * <p>输入：A = "aabc", B = "abca" 输出：2
+     *
+     * <p>提示：
+     *
+     * <p>1 <= A.length == B.length <= 20 A 和 B 只包含集合 {'a', 'b', 'c', 'd', 'e', 'f'} 中的小写字母。
+     *
+     * @param s1
+     * @param s2
+     * @return
+     */
+    public int kSimilarity(String s1, String s2) {
+        if (Objects.equals(s1, s2)) {
+            return 0;
+        }
+
+        minResult = Integer.MAX_VALUE;
+        char[] chars1 = s1.toCharArray(), chars2 = s2.toCharArray();
+        backSimilarity(chars1, chars2, 0, 0);
+        return minResult;
+    }
+
+    private int minResult;
+
+    private void backSimilarity(char[] chars1, char[] chars2, int count, int idx) {
+        if (count >= minResult) {
+            return;
+        }
+        int len = chars1.length;
+        if (idx == len - 1) {
+            minResult = Math.min(minResult, count);
+            return;
+        }
+
+        int i = idx;
+        while (i < len && chars1[i] == chars2[i]) {
+            i++;
+        }
+        if (i == len) {
+            minResult = Math.min(minResult, count);
+            return;
+        }
+        char c = chars1[i];
+        for (int j = i + 1; j < len; j++) {
+            if (chars2[j] == c) {
+                swap(chars2, i, j);
+                backSimilarity(chars1, chars2, count + 1, i + 1);
+                swap(chars2, i, j);
+            }
+        }
+    }
+
+    private void swap(char[] chars, int i, int j) {
+        char tmp = chars[i];
+        chars[i] = chars[j];
+        chars[j] = tmp;
+    }
+
+    @Test
+    public void kSimilarity() {
+
+        String A = "abac", B = "baca";
+        logResult(kSimilarity(A, B));
+    }
 }
