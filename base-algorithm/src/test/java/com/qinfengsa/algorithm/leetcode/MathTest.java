@@ -8350,4 +8350,132 @@ public class MathTest {
 
         return 0;
     }
+
+    /**
+     * 906. 超级回文数
+     *
+     * <p>如果一个正整数自身是回文数，而且它也是一个回文数的平方，那么我们称这个数为超级回文数。
+     *
+     * <p>现在，给定两个正整数 L 和 R （以字符串形式表示），返回包含在范围 [L, R] 中的超级回文数的数目。
+     *
+     * <p>示例：
+     *
+     * <p>输入：L = "4", R = "1000" 输出：4 解释： 4，9，121，以及 484 是超级回文数。 注意 676 不是一个超级回文数： 26 * 26 = 676，但是
+     * 26 不是回文数。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= len(L) <= 18 1 <= len(R) <= 18 L 和 R 是表示 [1, 10^18) 范围的整数的字符串。 int(L) <= int(R)
+     *
+     * @param left
+     * @param right
+     * @return
+     */
+    public int superpalindromesInRange(String left, String right) {
+        // 所有 位数字的平方和 不能超过9 121 => 1 + 4 + 1  6
+        // 212 => 4 + 1 + 4 9
+        int result = 0, maxLen = (right.length() >> 1) + 1, minLen = (left.length() >> 1);
+        long min = Long.valueOf(left), max = Long.valueOf(right);
+        // List<String>[数字位数][数字的平方和]
+        List<String>[][] nums = new ArrayList[10][10];
+        // 1位
+        nums[1][1] = new ArrayList<String>();
+        nums[1][1].add("1");
+        nums[1][4] = new ArrayList<String>();
+        nums[1][4].add("2");
+        nums[1][9] = new ArrayList<String>();
+        nums[1][9].add("3");
+        // 2位
+        nums[2][2] = new ArrayList<String>();
+        nums[2][2].add("11");
+        nums[2][8] = new ArrayList<String>();
+        nums[2][8].add("22");
+
+        for (int i = 3; i <= maxLen; i++) {
+            // 两种可能
+            // 1 首尾都是1
+            char[] chars = new char[i];
+            Arrays.fill(chars, '0');
+            chars[0] = '1';
+            chars[i - 1] = '1';
+            nums[i][2] = new ArrayList<>();
+            nums[i][2].add(new String(chars));
+
+            int idx = 0;
+            for (int k = i - 2; k > 0; k -= 2) {
+                idx++;
+                // 平方和是 2 + j
+                for (int j = 1; j <= 7; j++) {
+
+                    if (Objects.isNull(nums[k][j]) || nums[k][j].isEmpty()) {
+                        continue;
+                    }
+                    int bitNum = 2 + j;
+                    for (String str : nums[k][j]) {
+                        chars = new char[i];
+                        Arrays.fill(chars, '0');
+                        chars[0] = '1';
+                        chars[i - 1] = '1';
+                        System.arraycopy(str.toCharArray(), 0, chars, idx, k);
+                        if (Objects.isNull(nums[i][bitNum])) {
+                            nums[i][bitNum] = new ArrayList<>();
+                        }
+                        nums[i][bitNum].add(new String(chars));
+                    }
+                }
+            }
+
+            // 2 首尾都是2
+            chars = new char[i];
+            Arrays.fill(chars, '0');
+            chars[0] = '2';
+            chars[i - 1] = '2';
+            if (Objects.isNull(nums[i][8])) {
+                nums[i][8] = new ArrayList<>();
+            }
+            nums[i][8].add(new String(chars));
+            idx = 0;
+            for (int k = i - 2; k > 0; k -= 2) {
+                idx++;
+                // 平方和是 8 + 1
+                if (Objects.isNull(nums[k][1]) || nums[k][1].isEmpty()) {
+                    continue;
+                }
+                for (String str : nums[k][1]) {
+                    chars = new char[i];
+                    Arrays.fill(chars, '0');
+                    chars[0] = '2';
+                    chars[i - 1] = '2';
+                    System.arraycopy(str.toCharArray(), 0, chars, idx, k);
+                    if (Objects.isNull(nums[i][9])) {
+                        nums[i][9] = new ArrayList<>();
+                    }
+                    nums[i][9].add(new String(chars));
+                }
+            }
+        }
+        for (int i = minLen; i <= maxLen; i++) {
+            for (int j = 1; j <= 9; j++) {
+                if (Objects.isNull(nums[i][j]) || nums[i][j].isEmpty()) {
+                    continue;
+                }
+                for (String str : nums[i][j]) {
+                    long num = Long.valueOf(str);
+                    long squareNum = num * num;
+                    if (squareNum >= min && squareNum <= max) {
+                        log.debug("num:{}", squareNum);
+                        result++;
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    @Test
+    public void superpalindromesInRange() {
+        String L = "38455498359", R = "999999999999999999";
+        logResult(superpalindromesInRange(L, R));
+    }
 }

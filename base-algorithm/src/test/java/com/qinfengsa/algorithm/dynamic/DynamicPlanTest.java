@@ -9134,4 +9134,75 @@ public class DynamicPlanTest {
         }
         return result;
     }
+
+    /**
+     * 1799. N 次操作后的最大分数和
+     *
+     * <p>给你 nums ，它是一个大小为 2 * n 的正整数数组。你必须对这个数组执行 n 次操作。
+     *
+     * <p>在第 i 次操作时（操作编号从 1 开始），你需要：
+     *
+     * <p>选择两个元素 x 和 y 。 获得分数 i * gcd(x, y) 。 将 x 和 y 从 nums 中删除。 请你返回 n 次操作后你能获得的分数和最大为多少。
+     *
+     * <p>函数 gcd(x, y) 是 x 和 y 的最大公约数。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：nums = [1,2] 输出：1 解释：最优操作是： (1 * gcd(1, 2)) = 1 示例 2：
+     *
+     * <p>输入：nums = [3,4,6,8] 输出：11 解释：最优操作是： (1 * gcd(3, 6)) + (2 * gcd(4, 8)) = 3 + 8 = 11 示例 3：
+     *
+     * <p>输入：nums = [1,2,3,4,5,6] 输出：14 解释：最优操作是： (1 * gcd(1, 5)) + (2 * gcd(2, 4)) + (3 * gcd(3,
+     * 6)) = 1 + 4 + 9 = 14
+     *
+     * <p>提示：
+     *
+     * <p>1 <= n <= 7 nums.length == 2 * n 1 <= nums[i] <= 106
+     *
+     * @param nums
+     * @return
+     */
+    public int maxScore(int[] nums) {
+        int len = nums.length;
+        int[] dp = new int[1 << len];
+        int[][] gcdNums = new int[len][len];
+
+        for (int i = 0; i < len; i++) {
+            for (int j = i + 1; j < len; j++) {
+                gcdNums[i][j] = getGcd(nums[i], nums[j]);
+            }
+        }
+
+        for (int i = 0; i < 1 << len; i++) {
+            int bitCount = Integer.bitCount(i);
+            if ((bitCount & 1) == 1) {
+                // 不能为奇数
+                continue;
+            }
+            // 操作编号 分数
+            int score = bitCount >> 1;
+            for (int j = 0; j < len; j++) {
+                for (int k = j + 1; k < len; k++) {
+                    int curStatus = (1 << j) | (1 << k);
+                    if ((curStatus & i) == curStatus) {
+                        dp[i] = Math.max(dp[i], dp[i ^ curStatus] + gcdNums[j][k] * score);
+                    }
+                }
+            }
+        }
+
+        return dp[(1 << len) - 1];
+    }
+
+    // 最大公约数
+    public static int getGcd(int a, int b) {
+        int max, min;
+        max = Math.max(a, b);
+        min = Math.min(a, b);
+
+        if (max % min != 0) {
+            return getGcd(min, max % min);
+        }
+        return min;
+    }
 }
