@@ -18,6 +18,7 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
@@ -5455,5 +5456,140 @@ public class Array2Test {
         }
 
         return (count1 & 1) == 1 ? -1 : 1;
+    }
+
+    /**
+     * 220. 存在重复元素 III
+     *
+     * <p>给你一个整数数组 nums 和两个整数 k 和 t 。请你判断是否存在两个下标 i 和 j，使得 abs(nums[i] - nums[j]) <= t ，同时又满足 abs(i
+     * - j) <= k 。
+     *
+     * <p>如果存在则返回 true，不存在返回 false。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：nums = [1,2,3,1], k = 3, t = 0 输出：true 示例 2：
+     *
+     * <p>输入：nums = [1,0,1,1], k = 1, t = 2 输出：true 示例 3：
+     *
+     * <p>输入：nums = [1,5,9,1,5,9], k = 2, t = 3 输出：false
+     *
+     * <p>提示：
+     *
+     * <p>0 <= nums.length <= 2 * 104 -231 <= nums[i] <= 231 - 1 0 <= k <= 104 0 <= t <= 231 - 1
+     *
+     * @param nums
+     * @param k
+     * @param t
+     * @return
+     */
+    public boolean containsNearbyAlmostDuplicate(int[] nums, int k, int t) {
+
+        int len = nums.length;
+        if (len == 0) {
+            return false;
+        }
+        if (len == 1 && k > 0) {
+            return false;
+        }
+
+        int n = nums.length;
+        TreeSet<Long> set = new TreeSet<Long>();
+        for (int i = 0; i < n; i++) {
+            Long ceiling = set.ceiling((long) nums[i] - (long) t);
+            if (ceiling != null && ceiling <= (long) nums[i] + (long) t) {
+                return true;
+            }
+            set.add((long) nums[i]);
+            if (i >= k) {
+                set.remove((long) nums[i - k]);
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 5717. 最少操作使数组递增
+     *
+     * <p>给你一个整数数组 nums （下标从 0 开始）。每一次操作中，你可以选择数组中一个元素，并将它增加 1 。
+     *
+     * <p>比方说，如果 nums = [1,2,3] ，你可以选择增加 nums[1] 得到 nums = [1,3,3] 。 请你返回使 nums 严格递增 的 最少 操作次数。
+     *
+     * <p>我们称数组 nums 是 严格递增的 ，当它满足对于所有的 0 <= i < nums.length - 1 都有 nums[i] < nums[i+1] 。一个长度为 1
+     * 的数组是严格递增的一种特殊情况。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：nums = [1,1,1] 输出：3 解释：你可以进行如下操作： 1) 增加 nums[2] ，数组变为 [1,1,2] 。 2) 增加 nums[1] ，数组变为
+     * [1,2,2] 。 3) 增加 nums[2] ，数组变为 [1,2,3] 。 示例 2：
+     *
+     * <p>输入：nums = [1,5,2,4,1] 输出：14 示例 3：
+     *
+     * <p>输入：nums = [8] 输出：0
+     *
+     * <p>提示：
+     *
+     * <p>1 <= nums.length <= 5000 1 <= nums[i] <= 104
+     *
+     * @param nums
+     * @return
+     */
+    public int minOperations(int[] nums) {
+        int result = 0;
+        int len = nums.length;
+
+        for (int i = 1; i < len; i++) {
+            if (nums[i] > nums[i - 1]) {
+                continue;
+            }
+            result += nums[i - 1] + 1 - nums[i];
+            nums[i] = nums[i - 1] + 1;
+        }
+        return result;
+    }
+
+    /**
+     * 5719. 每个查询的最大异或值
+     *
+     * <p>给你一个 有序 数组 nums ，它由 n 个非负整数组成，同时给你一个整数 maximumBit 。你需要执行以下查询 n 次：
+     *
+     * <p>找到一个非负整数 k < 2maximumBit ，使得 nums[0] XOR nums[1] XOR ... XOR nums[nums.length-1] XOR k 的结果
+     * 最大化 。k 是第 i 个查询的答案。 从当前数组 nums 删除 最后 一个元素。 请你返回一个数组 answer ，其中 answer[i]是第 i 个查询的结果。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：nums = [0,1,1,3], maximumBit = 2 输出：[0,3,2,3] 解释：查询的答案如下： 第一个查询：nums = [0,1,1,3]，k =
+     * 0，因为 0 XOR 1 XOR 1 XOR 3 XOR 0 = 3 。 第二个查询：nums = [0,1,1]，k = 3，因为 0 XOR 1 XOR 1 XOR 3 = 3 。
+     * 第三个查询：nums = [0,1]，k = 2，因为 0 XOR 1 XOR 2 = 3 。 第四个查询：nums = [0]，k = 3，因为 0 XOR 3 = 3 。 示例 2：
+     *
+     * <p>输入：nums = [2,3,4,7], maximumBit = 3 输出：[5,2,6,5] 解释：查询的答案如下： 第一个查询：nums = [2,3,4,7]，k =
+     * 5，因为 2 XOR 3 XOR 4 XOR 7 XOR 5 = 7。 第二个查询：nums = [2,3,4]，k = 2，因为 2 XOR 3 XOR 4 XOR 2 = 7 。
+     * 第三个查询：nums = [2,3]，k = 6，因为 2 XOR 3 XOR 6 = 7 。 第四个查询：nums = [2]，k = 5，因为 2 XOR 5 = 7 。 示例 3：
+     *
+     * <p>输入：nums = [0,1,2,2,5,7], maximumBit = 3 输出：[4,3,6,4,6,7]
+     *
+     * <p>提示：
+     *
+     * <p>nums.length == n 1 <= n <= 105 1 <= maximumBit <= 20 0 <= nums[i] < 2maximumBit nums​​​
+     * 中的数字已经按 升序 排好序。
+     *
+     * @param nums
+     * @param maximumBit
+     * @return
+     */
+    public int[] getMaximumXor(int[] nums, int maximumBit) {
+        int len = nums.length;
+        int[] result = new int[len];
+
+        for (int i = 1; i < len; i++) {
+            nums[i] ^= nums[i - 1];
+        }
+        int max = (1 << maximumBit) - 1;
+        for (int i = 0; i < len; i++) {
+            int num = nums[len - 1 - i];
+            result[i] = max ^ num;
+        }
+
+        return result;
     }
 }
