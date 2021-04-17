@@ -6508,4 +6508,79 @@ public class TreeTest {
 
         return rightNum;
     }
+
+    /**
+     * LCP 34. 二叉树染色
+     *
+     * <p>小扣有一个根结点为 root 的二叉树模型，初始所有结点均为白色，可以用蓝色染料给模型结点染色，模型的每个结点有一个 val
+     * 价值。小扣出于美观考虑，希望最后二叉树上每个蓝色相连部分的结点个数不能超过 k 个，求所有染成蓝色的结点价值总和最大是多少？
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：root = [5,2,3,4], k = 2
+     *
+     * <p>输出：12
+     *
+     * <p>解释：结点 5、3、4 染成蓝色，获得最大的价值 5+3+4=12 image.png
+     *
+     * <p>示例 2：
+     *
+     * <p>输入：root = [4,1,3,9,null,null,2], k = 2
+     *
+     * <p>输出：16
+     *
+     * <p>解释：结点 4、3、9 染成蓝色，获得最大的价值 4+3+9=16 image.png
+     *
+     * <p>提示：
+     *
+     * <p>1 <= k <= 10 1 <= val <= 10000 1 <= 结点数量 <= 10000
+     *
+     * @param root
+     * @param k
+     * @return
+     */
+    public int maxValue(TreeNode root, int k) {
+        // 定义一维数组 dp[k+1]：
+        // dp[i] 表示 每个节点的状态，i 表示染了几个节点，i=0 表示没有染色，i>0 表示染色 。
+        //
+        // 定义状态转移方程：
+        // 当前节点为root，dp逻辑为（详见注释）：
+        //
+        // root不染色，那么只要返回 dp[0]，其值为左、右子树染色或不染色的最大值之和
+        // root染色，那么就分左子树染色 j 个，右子树染色 i - 1 - j 个时，加上 root.val 的和。
+        // 注意：j 需要从 0 取到 i - 1，也就是包含 l[0] 和 r[0]。因为 l[0] 也包含左子树染了j个节点的情况，因为左子树的下一层子节点可能染了j个节点。
+        //
+        // dp[i] = Math.max(dp[i], root.val + l[j] + r[i - 1 - j]);
+        int[] dp = getTreeDp(root, k);
+        int result = Integer.MIN_VALUE;
+
+        for (int i = 0; i <= k; i++) {
+            result = Math.max(result, dp[i]);
+        }
+
+        return result;
+    }
+
+    private int[] getTreeDp(TreeNode root, int k) {
+        int[] dp = new int[k + 1];
+        if (Objects.isNull(root)) {
+            return dp;
+        }
+        int[] leftDp = getTreeDp(root.left, k);
+        int[] rightDp = getTreeDp(root.right, k);
+        int maxL = Integer.MIN_VALUE, maxR = Integer.MIN_VALUE;
+        for (int i = 0; i <= k; i++) {
+            maxL = Math.max(maxL, leftDp[i]);
+            maxR = Math.max(maxR, rightDp[i]);
+        }
+        dp[0] = maxL + maxR;
+        // 染色 root
+        for (int i = 1; i <= k; i++) {
+            for (int j = 0; j < i; j++) {
+                //  需要染色 i - 1 个点，左子树 j 个，右子树 i-1-j 个
+                dp[i] = Math.max(dp[i], root.val + leftDp[j] + rightDp[i - j - 1]);
+            }
+        }
+        return dp;
+    }
 }
