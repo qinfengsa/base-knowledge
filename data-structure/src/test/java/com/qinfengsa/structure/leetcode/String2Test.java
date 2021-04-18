@@ -1400,4 +1400,39 @@ public class String2Test {
 
         return sb.toString();
     }
+
+    /**
+     * 5734. 判断句子是否为全字母句
+     *
+     * <p>全字母句 指包含英语字母表中每个字母至少一次的句子。
+     *
+     * <p>给你一个仅由小写英文字母组成的字符串 sentence ，请你判断 sentence 是否为 全字母句 。
+     *
+     * <p>如果是，返回 true ；否则，返回 false 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：sentence = "thequickbrownfoxjumpsoverthelazydog" 输出：true 解释：sentence 包含英语字母表中每个字母至少一次。
+     * 示例 2：
+     *
+     * <p>输入：sentence = "leetcode" 输出：false
+     *
+     * <p>提示：
+     *
+     * <p>1 <= sentence.length <= 1000 sentence 由小写英语字母组成
+     *
+     * @param sentence
+     * @return
+     */
+    public boolean checkIfPangram(String sentence) {
+        int end = (1 << 26) - 1;
+        int num = 0;
+        for (char c : sentence.toCharArray()) {
+            num |= 1 << (c - 'a');
+            if (num == end) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
