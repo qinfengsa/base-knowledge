@@ -3313,4 +3313,141 @@ public class GraphTest {
 
         return status[1][2][0];
     }
+
+    /**
+     * 1766. 互质树
+     *
+     * <p>给你一个 n 个节点的树（也就是一个无环连通无向图），节点编号从 0 到 n - 1 ，且恰好有 n - 1 条边，每个节点有一个值。树的 根节点 为 0 号点。
+     *
+     * <p>给你一个整数数组 nums 和一个二维数组 edges 来表示这棵树。nums[i] 表示第 i 个点的值，edges[j] = [uj, vj] 表示节点 uj 和节点 vj
+     * 在树中有一条边。
+     *
+     * <p>当 gcd(x, y) == 1 ，我们称两个数 x 和 y 是 互质的 ，其中 gcd(x, y) 是 x 和 y 的 最大公约数 。
+     *
+     * <p>从节点 i 到 根 最短路径上的点都是节点 i 的祖先节点。一个节点 不是 它自己的祖先节点。
+     *
+     * <p>请你返回一个大小为 n 的数组 ans ，其中 ans[i]是离节点 i 最近的祖先节点且满足 nums[i] 和 nums[ans[i]] 是 互质的
+     * ，如果不存在这样的祖先节点，ans[i] 为 -1 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：nums = [2,3,3,2], edges = [[0,1],[1,2],[1,3]] 输出：[-1,0,0,1] 解释：上图中，每个节点的值在括号中表示。 - 节点 0
+     * 没有互质祖先。 - 节点 1 只有一个祖先节点 0 。它们的值是互质的（gcd(2,3) == 1）。 - 节点 2 有两个祖先节点，分别是节点 1 和节点 0 。节点 1
+     * 的值与它的值不是互质的（gcd(3,3) == 3）但节点 0 的值是互质的(gcd(2,3) == 1)，所以节点 0 是最近的符合要求的祖先节点。 - 节点 3
+     * 有两个祖先节点，分别是节点 1 和节点 0 。它与节点 1 互质（gcd(3,2) == 1），所以节点 1 是离它最近的符合要求的祖先节点。 示例 2：
+     *
+     * <p>输入：nums = [5,6,10,2,3,6,15], edges = [[0,1],[0,2],[1,3],[1,4],[2,5],[2,6]]
+     * 输出：[-1,0,-1,0,0,0,-1]
+     *
+     * <p>提示：
+     *
+     * <p>nums.length == n 1 <= nums[i] <= 50 1 <= n <= 105 edges.length == n - 1 edges[j].length ==
+     * 2 0 <= uj, vj < n uj != vj
+     *
+     * @param nums
+     * @param edges
+     * @return
+     */
+    public int[] getCoprimes(int[] nums, int[][] edges) {
+        int len = nums.length;
+        result = new int[len];
+        Arrays.fill(result, -1);
+        if (len == 1) {
+            return result;
+        }
+        // 互质数字典
+        coprimeList = new List[51];
+        for (int i = 1; i <= 50; i++) {
+            coprimeList[i] = new ArrayList<>();
+            for (int j = 1; j <= 50; j++) {
+                if (getGcd(i, j) == 1) {
+                    coprimeList[i].add(j);
+                }
+            }
+        }
+
+        graph = new HashMap<>();
+        for (int[] edge : edges) {
+            List<Integer> list1 = graph.computeIfAbsent(edge[0], k -> new ArrayList<>());
+            list1.add(edge[1]);
+            List<Integer> list2 = graph.computeIfAbsent(edge[1], k -> new ArrayList<>());
+            list2.add(edge[0]);
+        }
+
+        num2Index = new int[51];
+        Arrays.fill(num2Index, -1);
+
+        // 深度
+        depths = new int[len];
+        dfsCoprimes(nums, 0, -1);
+        // log.debug("depth:{}", depths);
+        return result;
+    }
+    // 记录 所有元素的 互质 元素
+    List<Integer>[] coprimeList;
+    // 邻接表
+    Map<Integer, List<Integer>> graph;
+    // depths[idx]   idx 元素 的深度
+    // num2Index[num] 值为 num 的 元素 所在位置（用来确定 当前 节点互质的节点）
+    int[] result, depths, num2Index;
+
+    private void dfsCoprimes(int[] nums, int node, int root) {
+        int num = nums[node];
+        // 寻找 num 所有 互质的元素
+        for (int copNum : coprimeList[num]) {
+            if (num2Index[copNum] == -1) {
+                continue;
+            }
+            // idx 互质数 copNum 所在index
+            int idx = num2Index[copNum];
+            // result[node] node 节点 的 最近的 互质节点
+            // idx 的 深度更深
+            if (result[node] == -1 || depths[result[node]] < depths[idx]) {
+                result[node] = idx;
+            }
+        }
+
+        int tmp = num2Index[num];
+        // num 的 最近元素指向 当前 node
+        num2Index[num] = node;
+
+        for (int next : graph.get(node)) {
+            if (next == root) {
+                continue;
+            }
+            depths[next] = depths[node] + 1;
+            dfsCoprimes(nums, next, node);
+        }
+        num2Index[num] = tmp;
+    }
+
+    // 最大公约数
+    public static int getGcd(int a, int b) {
+        int max, min;
+        max = Math.max(a, b);
+        min = Math.min(a, b);
+
+        if (max % min != 0) {
+            return getGcd(min, max % min);
+        }
+        return min;
+    }
+
+    @Test
+    public void getCoprimes() {
+        int[] nums = {
+            9, 16, 30, 23, 33, 35, 9, 47, 39, 46, 16, 38, 5, 49, 21, 44, 17, 1, 6, 37, 49, 15, 23,
+            46, 38, 9, 27, 3, 24, 1, 14, 17, 12, 23, 43, 38, 12, 4, 8, 17, 11, 18, 26, 22, 49, 14, 9
+        };
+        int[][] edges = {
+            {17, 0}, {30, 17}, {41, 30}, {10, 30}, {13, 10}, {7, 13}, {6, 7}, {45, 10}, {2, 10},
+            {14, 2}, {40, 14}, {28, 40}, {29, 40}, {8, 29}, {15, 29}, {26, 15}, {23, 40}, {19, 23},
+            {34, 19}, {18, 23}, {42, 18}, {5, 42}, {32, 5}, {16, 32}, {35, 14}, {25, 35}, {43, 25},
+            {3, 43}, {36, 25}, {38, 36}, {27, 38}, {24, 36}, {31, 24}, {11, 31}, {39, 24}, {12, 39},
+            {20, 12}, {22, 12}, {21, 39}, {1, 21}, {33, 1}, {37, 1}, {44, 37}, {9, 44}, {46, 2},
+            {4, 46}
+        };
+        int[] result = getCoprimes(nums, edges);
+        log.debug("result:{}", result);
+    }
 }
