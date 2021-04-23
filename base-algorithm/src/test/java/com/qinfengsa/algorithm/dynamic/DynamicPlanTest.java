@@ -2049,73 +2049,44 @@ public class DynamicPlanTest {
      */
     public List<Integer> largestDivisibleSubset(int[] nums) {
         if (nums.length == 0) {
-            return new LinkedList<>();
+            return new ArrayList<>();
         }
         Arrays.sort(nums);
         int[] dp = new int[nums.length];
-        dp[0] = 1;
+        Arrays.fill(dp, 1);
+        int maxIndex = 0, maxSize = 1;
         for (int i = 1; i < nums.length; i++) {
-            int max = 0;
             for (int j = 0; j < i; j++) {
-                if (nums[i] % nums[j] == 0 && dp[j] > max) {
-                    max = dp[j];
+                if (nums[i] % nums[j] == 0) {
+                    dp[i] = Math.max(dp[i], dp[j] + 1);
                 }
             }
-            dp[i] = max + 1;
-        }
-        int maxIndex = 0, maxSize = 0;
-        for (int i = 0; i < nums.length; i++) {
-
             if (dp[i] > maxSize) {
                 maxIndex = i;
                 maxSize = dp[i];
             }
         }
-        List<Integer> result = new ArrayList<>();
-        for (int i = maxIndex; i >= 0; i--) {
 
+        List<Integer> result = new ArrayList<>();
+        if (maxSize == 1) {
+            result.add(nums[0]);
+            return result;
+        }
+        for (int i = maxIndex; i >= 0; i--) {
             if (nums[maxIndex] % nums[i] == 0 && dp[i] == maxSize) {
                 maxSize--;
                 result.add(nums[i]);
+                maxIndex = i;
             }
         }
         Collections.reverse(result);
         return result;
+    }
 
-        /*List<Integer>[] subsetList = new List[nums.length];
-
-        List<Integer> result = null;
-
-        subsetList[0] = new LinkedList<>();
-        subsetList[0].add(nums[0]);
-
-
-        for (int i = 1; i < nums.length; i++) {
-            int max = 0,maxIndex = -1;
-            for (int j = 0; j < i; j++) {
-                if (nums[i] % nums[j] == 0 && subsetList[j].size() > max) {
-                    maxIndex = j;
-                    max = subsetList[j].size();
-                }
-            }
-            if (maxIndex == -1) {
-                subsetList[i] = new LinkedList<>();
-            } else {
-                subsetList[i] = new LinkedList<>(subsetList[maxIndex]);
-            }
-            subsetList[i].add(nums[i]);
-        }
-        int maxSize = 0;
-
-        for (List<Integer> subset : subsetList) {
-
-            if (subset.size() > maxSize) {
-                result = subset;
-                maxSize = subset.size();
-            }
-        }
-
-        return result;*/
+    @Test
+    public void largestDivisibleSubset() {
+        int[] nums = {2, 3, 8, 9, 27};
+        logResult(largestDivisibleSubset(nums));
     }
 
     @Test
@@ -9342,5 +9313,97 @@ public class DynamicPlanTest {
     public void longestPalindrome() {
         String word1 = "aa", word2 = "bb";
         logResult(longestPalindrome(word1, word2));
+    }
+
+    /**
+     * 1787. 使所有区间的异或结果为零
+     *
+     * <p>给你一个整数数组 nums 和一个整数 k 。区间 [left, right]（left <= right）的 异或结果 是对下标位于 left 和 right（包括 left 和
+     * right ）之间所有元素进行 XOR 运算的结果：nums[left] XOR nums[left+1] XOR ... XOR nums[right] 。
+     *
+     * <p>返回数组中 要更改的最小元素数 ，以使所有长度为 k 的区间异或结果等于零。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：nums = [1,2,0,3,0], k = 1 输出：3 解释：将数组 [1,2,0,3,0] 修改为 [0,0,0,0,0] 示例 2：
+     *
+     * <p>输入：nums = [3,4,5,2,1,7,3,4,7], k = 3 输出：3 解释：将数组 [3,4,5,2,1,7,3,4,7] 修改为
+     * [3,4,7,3,4,7,3,4,7] 示例 3：
+     *
+     * <p>输入：nums = [1,2,4,1,2,5,1,2,6], k = 3 输出：3 解释：将数组[1,2,4,1,2,5,1,2,6] 修改为
+     * [1,2,3,1,2,3,1,2,3]
+     *
+     * <p>提示：
+     *
+     * <p>1 <= k <= nums.length <= 2000 0 <= nums[i] < 2^10
+     *
+     * @param nums
+     * @param k
+     * @return
+     */
+    public int minChanges(int[] nums, int k) {
+        int result = 0;
+        if (k == 1) {
+            return (int) Arrays.stream(nums).filter(num -> num > 0).count();
+        }
+        int len = nums.length;
+        // 分成 k 组 每一组  取出 每一组的众数
+        List<Map<Integer, Integer>> list = new ArrayList<>();
+
+        int[] maxCounts = new int[k], sums = new int[k];
+        for (int i = 0; i < k; i++) {
+            Map<Integer, Integer> countMap = new HashMap<>();
+
+            int maxCount = 0, sum = 0;
+            for (int j = i; j < len; j += k) {
+                int count = countMap.getOrDefault(nums[j], 0);
+                countMap.put(nums[j], count + 1);
+                sum++;
+                maxCount = Math.max(maxCount, count);
+            }
+            maxCounts[i] = maxCount;
+            sums[i] = sum;
+            list.add(countMap);
+        }
+        // 排序
+        int[] maxCountsTmp = Arrays.copyOf(maxCounts, k);
+        Arrays.sort(maxCountsTmp);
+        // 贪心结果
+        int greedyResult = len - Arrays.stream(maxCountsTmp).sum() + maxCountsTmp[0];
+
+        // 动态规划
+        int[] dp = new int[1 << 10];
+        Arrays.fill(dp, Integer.MAX_VALUE);
+        dp[0] = 0;
+        for (int i = 0; i < k; i++) {
+            // 1 修改 所有元素
+            int[] dpTmp = new int[1 << 10];
+            int min = Arrays.stream(dp).min().getAsInt();
+            Arrays.fill(dpTmp, min + sums[i]);
+
+            // 2 修改 集合中存在的元素
+            Map<Integer, Integer> countMap = list.get(i);
+            for (int j = 0; j < 1 << 10; j++) {
+                if (dp[j] == Integer.MAX_VALUE) {
+                    continue;
+                }
+                for (Map.Entry<Integer, Integer> entry : countMap.entrySet()) {
+                    int key = entry.getKey(), val = entry.getValue();
+                    int next = key ^ j;
+                    dpTmp[next] = Math.min(dpTmp[next], dp[j] + sums[i] - val);
+                }
+            }
+
+            dp = dpTmp;
+        }
+
+        return Math.min(dp[0], greedyResult);
+    }
+
+    @Test
+    public void minChanges() {
+        int[] nums = {1, 2, 4, 1, 2, 5, 1, 2, 6};
+        int k = 3;
+        logResult(minChanges(nums, k));
     }
 }
