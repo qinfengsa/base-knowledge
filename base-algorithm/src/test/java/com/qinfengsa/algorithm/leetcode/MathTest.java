@@ -8650,4 +8650,112 @@ public class MathTest {
 
         return result;
     }
+
+    /**
+     * 927. 三等分
+     *
+     * <p>给定一个由 0 和 1 组成的数组 A，将数组分成 3 个非空的部分，使得所有这些部分表示相同的二进制值。
+     *
+     * <p>如果可以做到，请返回任何 [i, j]，其中 i+1 < j，这样一来：
+     *
+     * <p>A[0], A[1], ..., A[i] 组成第一部分； A[i+1], A[i+2], ..., A[j-1] 作为第二部分； A[j], A[j+1], ...,
+     * A[A.length - 1] 是第三部分。 这三个部分所表示的二进制值相等。 如果无法做到，就返回 [-1, -1]。
+     *
+     * <p>注意，在考虑每个部分所表示的二进制时，应当将其看作一个整体。例如，[1,1,0] 表示十进制中的 6，而不会是 3。此外，前导零也是被允许的，所以 [0,1,1] 和 [1,1]
+     * 表示相同的值。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：[1,0,1,0,1] 输出：[0,3] 示例 2：
+     *
+     * <p>输出：[1,1,0,1,1] 输出：[-1,-1]
+     *
+     * <p>提示：
+     *
+     * <p>3 <= A.length <= 30000 A[i] == 0 或 A[i] == 1
+     *
+     * @param arr
+     * @return
+     */
+    public int[] threeEqualParts(int[] arr) {
+        // 1的个数必须是3的整数倍
+        int len = arr.length;
+        int[] sums = new int[len];
+        sums[0] = arr[0];
+        for (int i = 1; i < len; i++) {
+            sums[i] = sums[i - 1] + arr[i];
+        }
+        int sum = sums[len - 1];
+        if (sum % 3 != 0) {
+            return new int[] {-1, -1};
+        }
+
+        if (sum == 0) {
+            return new int[] {0, len - 1};
+        }
+        // 由于三部分的二进制数相同，因此三部分的1的个数必然相同；
+        // 由于三部分的二进制数相同，因此三部分的后缀0的个数必然相同，因此只需要知道第三部分的后缀0，就可以知道前两部分的后缀0的个数；
+        // 由于三部分的二进制数相同，因此三部分从尾部开始比较必然相同，由于三部分1的个数相同，最后剩下的未比较的部分必然是0；
+        int lastZeroCnt = 0;
+        for (int i = len - 1; i >= 0; i--) {
+            if (arr[i] == 0) {
+                lastZeroCnt++;
+            } else {
+                break;
+            }
+        }
+        // int idx1 = lowerBound(sums, sum / 3 + 1), idx2 = lowerBound(sums, sum / 3 * 2 + 1);
+        int start1 = 0;
+        while (start1 < len && arr[start1] == 0) {
+            start1++;
+        }
+        int idx2 = lowerBound(sums, sum / 3 + 1), idx3 = lowerBound(sums, sum / 3 * 2 + 1);
+        int start2 = idx2, start3 = idx3;
+
+        while (start3 < len) {
+            if (start1 >= idx2 || start2 >= idx3) {
+                return new int[] {-1, -1};
+            }
+            if (arr[start1] == arr[start2] && arr[start1] == arr[start3]) {
+                start1++;
+                start2++;
+                start3++;
+            } else {
+                return new int[] {-1, -1};
+            }
+        }
+
+        /* int end1 = idx1, end2 = idx2 - 1, end3 = len - 1;
+        while (end1 >= 0 && end2 > idx1 && end3 >= idx2) {
+            if (arr[end1] == arr[end2] && arr[end1] == arr[end3]) {
+                end1--;
+                end2--;
+                end3--;
+            } else {
+                return new int[] {-1, -1};
+            }
+        }*/
+
+        return new int[] {start1 - 1, start2};
+    }
+
+    private int lowerBound(int[] nums, int target) {
+        int left = 0, right = nums.length - 1;
+        while (left < right) {
+            int mid = (left + right) >> 1;
+            if (nums[mid] < target) {
+                left = mid + 1;
+            } else {
+                right = mid;
+            }
+        }
+        return left;
+    }
+
+    @Test
+    public void threeEqualParts() {
+        // 1,1,0,0,1
+        int[] arrs = {1, 1, 0, 1, 1};
+        logResult(threeEqualParts(arrs));
+    }
 }

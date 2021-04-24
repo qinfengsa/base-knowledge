@@ -9406,4 +9406,100 @@ public class DynamicPlanTest {
         int k = 3;
         logResult(minChanges(nums, k));
     }
+
+    /**
+     * 920. 播放列表的数量
+     *
+     * <p>你的音乐播放器里有 N 首不同的歌，在旅途中，你的旅伴想要听 L 首歌（不一定不同，即，允许歌曲重复）。请你为她按如下规则创建一个播放列表：
+     *
+     * <p>每首歌至少播放一次。 一首歌只有在其他 K 首歌播放完之后才能再次播放。 返回可以满足要求的播放列表的数量。由于答案可能非常大，请返回它模 10^9 + 7 的结果。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：N = 3, L = 3, K = 1 输出：6 解释：有 6 种可能的播放列表。[1, 2, 3]，[1, 3, 2]，[2, 1, 3]，[2, 3, 1]，[3, 1,
+     * 2]，[3, 2, 1]. 示例 2：
+     *
+     * <p>输入：N = 2, L = 3, K = 0 输出：6 解释：有 6 种可能的播放列表。[1, 1, 2]，[1, 2, 1]，[2, 1, 1]，[2, 2, 1]，[2, 1,
+     * 2]，[1, 2, 2] 示例 3：
+     *
+     * <p>输入：N = 2, L = 3, K = 1 输出：2 解释：有 2 种可能的播放列表。[1, 2, 1]，[2, 1, 2]
+     *
+     * <p>提示：
+     *
+     * <p>0 <= K < N <= L <= 100
+     *
+     * @param N
+     * @param L
+     * @param K
+     * @return
+     */
+    public int numMusicPlaylists(int N, int L, int K) {
+        // 令 dp[i][j] 为播放列表长度为 i 包含恰好 j 首不同歌曲的数量。我们需要计算 dp[L][N]
+        long[][] dp = new long[L + 1][N + 1];
+        dp[0][0] = 1L;
+        for (int i = 1; i <= L; i++) {
+            for (int j = 1; j <= N; j++) {
+                // 第 i 首歌曲
+                // 1 随机从剩下的 N - j + 1 选择
+                dp[i][j] += dp[i - 1][j - 1] * (N - j + 1);
+                // 2 从之前的歌曲中取一个重复的
+                dp[i][j] += dp[i - 1][j] * Math.max(j - K, 0);
+                dp[i][j] %= MOD;
+            }
+        }
+
+        return (int) dp[L][N];
+    }
+
+    /**
+     * 956. 最高的广告牌
+     *
+     * <p>你正在安装一个广告牌，并希望它高度最大。这块广告牌将有两个钢制支架，两边各一个。每个钢支架的高度必须相等。
+     *
+     * <p>你有一堆可以焊接在一起的钢筋 rods。举个例子，如果钢筋的长度为 1、2 和 3，则可以将它们焊接在一起形成长度为 6 的支架。
+     *
+     * <p>返回广告牌的最大可能安装高度。如果没法安装广告牌，请返回 0。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：[1,2,3,6] 输出：6 解释：我们有两个不相交的子集 {1,2,3} 和 {6}，它们具有相同的和 sum = 6。 示例 2：
+     *
+     * <p>输入：[1,2,3,4,5,6] 输出：10 解释：我们有两个不相交的子集 {2,3,5} 和 {4,6}，它们具有相同的和 sum = 10。 示例 3：
+     *
+     * <p>输入：[1,2] 输出：0 解释：没法安装广告牌，所以返回 0。
+     *
+     * <p>提示：
+     *
+     * <p>0 <= rods.length <= 20 1 <= rods[i] <= 1000 钢筋的长度总和最多为 5000
+     *
+     * @param rods
+     * @return
+     */
+    public int tallestBillboard(int[] rods) {
+        // dp[n][i]  表示前n根管子（这里的n根管子可用可不用），当组成左右高度差为i的情况时，左、右的最大公共高度是多少
+        int len = rods.length;
+        if (len == 0) {
+            return 0;
+        }
+        int sum = Arrays.stream(rods).sum();
+        int[] dp = new int[sum + 1];
+        Arrays.fill(dp, -1);
+        dp[0] = 0;
+        for (int height : rods) {
+            int[] dpTemp = Arrays.copyOf(dp, dp.length);
+            for (int i = 0; i <= sum - height; i++) {
+
+                // 不存在高度差为 i 的 组合
+                if (dpTemp[i] < 0) {
+                    continue;
+                }
+                // 高度差 i + height
+                dp[i + height] = Math.max(dp[i + height], dpTemp[i]);
+                // 高度差 abs(i - height)
+                int sub = Math.abs(i - height);
+                dp[sub] = Math.max(dp[sub], dpTemp[i] + Math.min(i, height));
+            }
+        }
+        return dp[0];
+    }
 }

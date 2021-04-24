@@ -5751,4 +5751,221 @@ public class Array2Test {
             return processingTime;
         }
     }
+
+    /**
+     * 1728. 猫和老鼠 II
+     *
+     * <p>一只猫和一只老鼠在玩一个叫做猫和老鼠的游戏。
+     *
+     * <p>它们所处的环境设定是一个 rows x cols 的方格 grid ，其中每个格子可能是一堵墙、一块地板、一位玩家（猫或者老鼠）或者食物。
+     *
+     * <p>玩家由字符 'C' （代表猫）和 'M' （代表老鼠）表示。 地板由字符 '.' 表示，玩家可以通过这个格子。 墙用字符 '#' 表示，玩家不能通过这个格子。 食物用字符 'F'
+     * 表示，玩家可以通过这个格子。 字符 'C' ， 'M' 和 'F' 在 grid 中都只会出现一次。 猫和老鼠按照如下规则移动：
+     *
+     * <p>老鼠 先移动 ，然后两名玩家轮流移动。 每一次操作时，猫和老鼠可以跳到上下左右四个方向之一的格子，他们不能跳过墙也不能跳出 grid 。 catJump 和 mouseJump
+     * 是猫和老鼠分别跳一次能到达的最远距离，它们也可以跳小于最大距离的长度。 它们可以停留在原地。 老鼠可以跳跃过猫的位置。 游戏有 4 种方式会结束：
+     *
+     * <p>如果猫跟老鼠处在相同的位置，那么猫获胜。 如果猫先到达食物，那么猫获胜。 如果老鼠先到达食物，那么老鼠获胜。 如果老鼠不能在 1000 次操作以内到达食物，那么猫获胜。 给你
+     * rows x cols 的矩阵 grid 和两个整数 catJump 和 mouseJump ，双方都采取最优策略，如果老鼠获胜，那么请你返回 true ，否则返回 false 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：grid = ["####F","#C...","M...."], catJump = 1, mouseJump = 2 输出：true
+     * 解释：猫无法抓到老鼠，也没法比老鼠先到达食物。 示例 2：
+     *
+     * <p>输入：grid = ["M.C...F"], catJump = 1, mouseJump = 4 输出：true 示例 3：
+     *
+     * <p>输入：grid = ["M.C...F"], catJump = 1, mouseJump = 3 输出：false 示例 4：
+     *
+     * <p>输入：grid = ["C...#","...#F","....#","M...."], catJump = 2, mouseJump = 5 输出：false 示例 5：
+     *
+     * <p>输入：grid = [".M...","..#..","#..#.","C#.#.","...#F"], catJump = 3, mouseJump = 1 输出：true
+     *
+     * <p>提示：
+     *
+     * <p>rows == grid.length cols = grid[i].length 1 <= rows, cols <= 8 grid[i][j] 只包含字符 'C' ，'M'
+     * ，'F' ，'.' 和 '#' 。 grid 中只包含一个 'C' ，'M' 和 'F' 。 1 <= catJump, mouseJump <= 8
+     *
+     * @param grid
+     * @param catJump
+     * @param mouseJump
+     * @return
+     */
+    public boolean canMouseWin(String[] grid, int catJump, int mouseJump) {
+
+        // 位置
+        this.rows = grid.length;
+        this.cols = grid[0].length();
+        gameGrid = new char[rows][cols];
+
+        status = new int[rows][cols][rows][cols][2];
+        degree = new int[rows][cols][rows][cols][2];
+        int cx = 0, cy = 0, mx = 0, my = 0, fx = 0, fy = 0;
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                char c = grid[i].charAt(j);
+                gameGrid[i][j] = c;
+                if (c == 'C') {
+                    cx = i;
+                    cy = j;
+                } else if (c == 'M') {
+                    mx = i;
+                    my = j;
+                } else if (c == 'F') {
+                    fx = i;
+                    fy = j;
+                }
+            }
+        }
+
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (gameGrid[i][j] == '#') {
+                    continue;
+                }
+                for (int k = 0; k < rows; k++) {
+                    for (int l = 0; l < cols; l++) {
+                        if (gameGrid[k][l] == '#') {
+                            continue;
+                        }
+                        degree[i][j][k][l][0] = getNeighbors(k, l, mouseJump).size();
+                        degree[i][j][k][l][1] = getNeighbors(i, j, catJump).size();
+                    }
+                }
+            }
+        }
+
+        // 从终止态出发
+        Queue<Node> queue = new LinkedList<>();
+        // 猫鼠重合
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (gameGrid[i][j] == '#' || gameGrid[i][j] == 'F') {
+                    continue;
+                }
+                status[i][j][i][j][0] = -1;
+                status[i][j][i][j][1] = 1;
+                queue.offer(new Node(i, j, i, j, false));
+                queue.offer(new Node(i, j, i, j, true));
+            }
+        }
+        // 到达食物
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (gameGrid[i][j] == '#' || gameGrid[i][j] == 'F') {
+                    continue;
+                }
+                // 猫到达食物，到老鼠走
+                status[fx][fy][i][j][0] = -1;
+                // 老鼠到达食物，到猫走
+                status[i][j][fx][fy][1] = -1;
+                queue.offer(new Node(fx, fy, i, j, false));
+                queue.offer(new Node(i, j, fx, fy, true));
+            }
+        }
+
+        while (!queue.isEmpty()) {
+            Node node = queue.poll();
+            if (node.catTurn) {
+                // 猫回合
+                List<int[]> mouseNeighbors = getNeighbors(node.mouseX, node.mouseY, mouseJump);
+                // 老鼠移动
+
+                for (int[] preMousePosition : mouseNeighbors) {
+
+                    // 之前状态(top.catX, top.catY, mouseX, mouseY, previousTurn)
+
+                    int mouseX = preMousePosition[0];
+                    int mouseY = preMousePosition[1];
+                    // 之前状态(top.catX, top.catY, mouseX, mouseY, previousTurn)
+                    if (status[node.catX][node.catY][mouseX][mouseY][0] != 0) {
+                        continue;
+                    }
+                    if (status[node.catX][node.catY][node.mouseX][node.mouseY][1] == -1) {
+                        // 现在状态是必败，则所有邻居都是必胜
+                        status[node.catX][node.catY][mouseX][mouseY][0] = 1;
+                        queue.offer(new Node(node.catX, node.catY, mouseX, mouseY, false));
+                    } else {
+                        // 现在状态是必胜
+                        degree[node.catX][node.catY][mouseX][mouseY][0]--;
+                        if (degree[node.catX][node.catY][mouseX][mouseY][0] == 0) {
+                            // 如果某个节点所有邻居都是必胜态，那它就是必败态
+                            status[node.catX][node.catY][mouseX][mouseY][0] = -1;
+                            queue.add(new Node(node.catX, node.catY, mouseX, mouseY, false));
+                        }
+                    }
+                }
+
+            } else {
+                // 现在状态(top.catX, top.catY, top.mouseX, top.mouseY, top.isCatTurn)
+                List<int[]> catNeighbors = getNeighbors(node.catX, node.catY, catJump);
+                for (int[] preCatPosition : catNeighbors) {
+                    int catX = preCatPosition[0];
+                    int catY = preCatPosition[1];
+                    // 之前状态（catX, catY, top.mouseX, top.mouseY, previousTurn)
+                    if (status[catX][catY][node.mouseX][node.mouseY][1] != 0) {
+                        continue;
+                    }
+                    if (status[node.catX][node.catY][node.mouseX][node.mouseY][0] == -1) {
+                        // 现在状态是必败，则所有邻居都是必胜
+                        status[catX][catY][node.mouseX][node.mouseY][1] = 1;
+                        queue.offer(new Node(catX, catY, node.mouseX, node.mouseY, true));
+                    } else {
+                        // 现在状态是必胜
+                        degree[catX][catY][node.mouseX][node.mouseY][1]--;
+                        if (degree[catX][catY][node.mouseX][node.mouseY][1] == 0) {
+                            // 如果某个节点所有邻居都是必胜态，那它就是必败态
+                            status[catX][catY][node.mouseX][node.mouseY][1] = -1;
+                            queue.offer(new Node(catX, catY, node.mouseX, node.mouseY, true));
+                        }
+                    }
+                }
+            }
+        }
+
+        return status[cx][cy][mx][my][0] == 1;
+    }
+
+    // status =[cat_x][cat_y][mouse_x][mouse_y][is_cat_round] = 如果当前玩家必胜那么为 1，否则为 -1
+    int[][][][][] status;
+    // 统计每个状态的入度，用于拓扑排序
+    int[][][][][] degree;
+
+    char[][] gameGrid;
+
+    int rows, cols;
+
+    static class Node {
+        int catX, catY, mouseX, mouseY;
+        boolean catTurn;
+
+        Node(int catX, int catY, int mouseX, int mouseY, boolean catTurn) {
+            this.catX = catX;
+            this.catY = catY;
+            this.mouseX = mouseX;
+            this.mouseY = mouseY;
+            this.catTurn = catTurn;
+        }
+    }
+
+    private List<int[]> getNeighbors(int row, int col, int jump) {
+        List<int[]> result = new ArrayList<>();
+        result.add(new int[] {row, col});
+
+        for (int i = 0; i < 4; i++) {
+
+            for (int step = 1; step <= jump; step++) {
+                int nextRow = row + step * DIR_ROW[i], nextCol = col + step * DIR_COL[i];
+                if (!inArea(nextRow, nextCol, rows, cols)) {
+                    continue;
+                }
+                if (gameGrid[nextRow][nextCol] == '#') {
+                    break;
+                }
+                result.add(new int[] {nextRow, nextCol});
+            }
+        }
+
+        return result;
+    }
 }
