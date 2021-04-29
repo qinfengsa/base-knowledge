@@ -17,6 +17,7 @@ import java.util.Objects;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
@@ -3542,5 +3543,232 @@ public class GraphTest {
         int[] queries = {1, 2, 3, 4, 5};
         int[] result = countPairs(n, edges, queries);
         log.debug("result :{}", result);
+    }
+
+    /**
+     * 924. 尽量减少恶意软件的传播
+     *
+     * <p>在节点网络中，只有当 graph[i][j] = 1 时，每个节点 i 能够直接连接到另一个节点 j。
+     *
+     * <p>一些节点 initial
+     * 最初被恶意软件感染。只要两个节点直接连接，且其中至少一个节点受到恶意软件的感染，那么两个节点都将被恶意软件感染。这种恶意软件的传播将继续，直到没有更多的节点可以被这种方式感染。
+     *
+     * <p>假设 M(initial) 是在恶意软件停止传播之后，整个网络中感染恶意软件的最终节点数。
+     *
+     * <p>我们可以从初始列表中删除一个节点。如果移除这一节点将最小化 M(initial)， 则返回该节点。如果有多个节点满足条件，就返回索引最小的节点。
+     *
+     * <p>请注意，如果某个节点已从受感染节点的列表 initial 中删除，它以后可能仍然因恶意软件传播而受到感染。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：graph = [[1,1,0],[1,1,0],[0,0,1]], initial = [0,1] 输出：0 示例 2：
+     *
+     * <p>输入：graph = [[1,0,0],[0,1,0],[0,0,1]], initial = [0,2] 输出：0 示例 3：
+     *
+     * <p>输入：graph = [[1,1,1],[1,1,1],[1,1,1]], initial = [1,2] 输出：1
+     *
+     * <p>提示：
+     *
+     * <p>1 < graph.length = graph[0].length <= 300 0 <= graph[i][j] == graph[j][i] <= 1 graph[i][i]
+     * == 1 1 <= initial.length < graph.length 0 <= initial[i] < graph.length
+     *
+     * @param graph
+     * @param initial
+     * @return
+     */
+    public int minMalwareSpread(int[][] graph, int[] initial) {
+
+        // 并查集
+        int len = graph.length;
+        Malware malware = new Malware(len);
+        for (int i = 0; i < len; i++) {
+            for (int j = i + 1; j < len; j++) {
+                if (graph[i][j] != 1) {
+                    continue;
+                }
+                malware.union(i, j);
+            }
+        }
+        int[] initialCounts = new int[len];
+        Arrays.sort(initial);
+        for (int num : initial) {
+            initialCounts[malware.findParent(num)]++;
+        }
+        int result = -1, maxSize = -1;
+
+        for (int num : initial) {
+            int root = malware.findParent(num);
+            if (initialCounts[root] != 1) {
+                continue;
+            }
+            int rootSize = malware.sizeNum(root);
+            if (rootSize > maxSize) {
+                maxSize = rootSize;
+                result = num;
+            }
+        }
+        if (result == -1) {
+            result = initial[0];
+        }
+
+        return result;
+    }
+
+    @Test
+    public void minMalwareSpread() {
+
+        int[][] graph = {
+            {1, 0, 0, 0, 0, 0, 0, 0, 1},
+            {0, 1, 0, 1, 0, 0, 0, 0, 0},
+            {0, 0, 1, 1, 0, 1, 0, 0, 0},
+            {0, 1, 1, 1, 1, 0, 1, 0, 0},
+            {0, 0, 0, 1, 1, 1, 0, 0, 0},
+            {0, 0, 1, 0, 1, 1, 0, 0, 0},
+            {0, 0, 0, 1, 0, 0, 1, 1, 0},
+            {0, 0, 0, 0, 0, 0, 1, 1, 1},
+            {1, 0, 0, 0, 0, 0, 0, 1, 1}
+        };
+
+        int[] initial = {3, 7};
+        logResult(minMalwareSpreadII(graph, initial));
+    }
+
+    /**
+     * 928. 尽量减少恶意软件的传播 II
+     *
+     * <p>(这个问题与 尽量减少恶意软件的传播 是一样的，不同之处用粗体表示。)
+     *
+     * <p>在节点网络中，只有当 graph[i][j] = 1 时，每个节点 i 能够直接连接到另一个节点 j。
+     *
+     * <p>一些节点 initial
+     * 最初被恶意软件感染。只要两个节点直接连接，且其中至少一个节点受到恶意软件的感染，那么两个节点都将被恶意软件感染。这种恶意软件的传播将继续，直到没有更多的节点可以被这种方式感染。
+     *
+     * <p>假设 M(initial) 是在恶意软件停止传播之后，整个网络中感染恶意软件的最终节点数。
+     *
+     * <p>我们可以从初始列表中删除一个节点，并完全移除该节点以及从该节点到任何其他节点的任何连接。如果移除这一节点将最小化 M(initial)，
+     * 则返回该节点。如果有多个节点满足条件，就返回索引最小的节点。
+     *
+     * <p>示例 1：
+     *
+     * <p>输出：graph = [[1,1,0],[1,1,0],[0,0,1]], initial = [0,1] 输入：0 示例 2：
+     *
+     * <p>输入：graph = [[1,1,0],[1,1,1],[0,1,1]], initial = [0,1] 输出：1 示例 3：
+     *
+     * <p>输入：graph = [[1,1,0,0],[1,1,1,0],[0,1,1,1],[0,0,1,1]], initial = [0,1] 输出：1
+     *
+     * <p>提示：
+     *
+     * <p>1 < graph.length = graph[0].length <= 300 0 <= graph[i][j] == graph[j][i] <= 1 graph[i][i]
+     * = 1 1 <= initial.length < graph.length 0 <= initial[i] < graph.length
+     *
+     * @param graph
+     * @param initial
+     * @return
+     */
+    public int minMalwareSpreadII(int[][] graph, int[] initial) {
+        // 并查集
+        // 采用逆向思维并结合本题的背景，将问题由删除一个感染节点能减少多个节点受到感染转换成添加一个感染节点会增加多少个被感染节点
+        int len = graph.length;
+        Arrays.sort(initial);
+        int result = initial[0], maxSize = -1;
+        Malware malware = new Malware(len);
+        Set<Integer> initialSet = Arrays.stream(initial).boxed().collect(Collectors.toSet());
+        // 对正常节点构建并查集
+        for (int i = 0; i < len; i++) {
+            if (initialSet.contains(i)) {
+                continue;
+            }
+            for (int j = i + 1; j < len; j++) {
+                if (initialSet.contains(j)) {
+                    continue;
+                }
+                if (graph[i][j] == 0) {
+                    continue;
+                }
+                malware.union(j, i);
+            }
+        }
+        // 所有感染源
+        int[] initialRoots = new int[len];
+        Arrays.fill(initialRoots, -1);
+        for (int num : initial) {
+            for (int j = 0; j < len; j++) {
+                if (initialSet.contains(j)) {
+                    continue;
+                }
+                if (graph[num][j] == 0) {
+                    continue;
+                }
+                int root = malware.findParent(j);
+                if (initialRoots[root] == -2 || initialRoots[root] == num) {
+                    continue;
+                }
+                if (initialRoots[root] == -1) {
+                    // root 感染源 -> num
+                    initialRoots[root] = num;
+                } else {
+                    // root 存在多个感染源
+                    initialRoots[root] = -2;
+                }
+            }
+        }
+        int[] initialCounts = new int[len];
+
+        for (int i = 0; i < len; i++) {
+            // 节点的感染源
+            int initialRoot = initialRoots[i];
+            if (initialRoot < 0) {
+                // 不存在 或者 有多个
+                continue;
+            }
+            // initialRoot 感染源 所能感染的 数量（去掉多感染源的点）
+            initialCounts[initialRoot] += malware.sizeNum(i);
+        }
+
+        for (int num : initial) {
+            if (initialCounts[num] > maxSize) {
+                maxSize = initialCounts[num];
+                result = num;
+            }
+        }
+
+        return result;
+    }
+
+    static class Malware {
+        private final int[] parents;
+
+        private final int[] sizeNums;
+
+        Malware(int n) {
+            parents = new int[n];
+            sizeNums = new int[n];
+            for (int i = 0; i < n; i++) {
+                parents[i] = i;
+                sizeNums[i] = 1;
+            }
+        }
+
+        void union(int child, int parent) {
+            child = findParent(child);
+            parent = findParent(parent);
+            if (child == parent) {
+                return;
+            }
+            parents[child] = parent;
+            sizeNums[parent] += sizeNums[child];
+        }
+
+        int findParent(int child) {
+            int parent = parents[child];
+            if (parent != child) {
+                return parents[child] = findParent(parent);
+            }
+            return child;
+        }
+
+        int sizeNum(int child) {
+            return sizeNums[findParent(child)];
+        }
     }
 }

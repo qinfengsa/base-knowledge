@@ -9502,4 +9502,114 @@ public class DynamicPlanTest {
         }
         return dp[0];
     }
+
+    /**
+     * 943. 最短超级串
+     *
+     * <p>给定一个字符串数组 words，找到以 words 中每个字符串作为子字符串的最短字符串。如果有多个有效最短字符串满足题目条件，返回其中 任意一个 即可。
+     *
+     * <p>我们可以假设 words 中没有字符串是 words 中另一个字符串的子字符串。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：words = ["alex","loves","leetcode"] 输出："alexlovesleetcode" 解释："alex"，"loves"，"leetcode"
+     * 的所有排列都会被接受。 示例 2：
+     *
+     * <p>输入：words = ["catg","ctaagt","gcta","ttca","atgcatc"] 输出："gctaagttcatgcatc"
+     *
+     * <p>提示：
+     *
+     * <p>1 <= words.length <= 12 1 <= words[i].length <= 20 words[i] 由小写英文字母组成 words 中的所有字符串 互不相同
+     *
+     * @param words
+     * @return
+     */
+    public String shortestSuperstring(String[] words) {
+        int len = words.length;
+        // 重复 长度
+        int[][] repeatLens = new int[len][len];
+
+        for (int i = 0; i < len; i++) {
+            for (int j = 0; j < len; j++) {
+                if (i == j) {
+                    continue;
+                }
+                int l = Math.min(words[i].length(), words[j].length());
+                for (int k = l; k >= 0; k--) {
+                    // 重复长度
+                    if (words[i].endsWith(words[j].substring(0, k))) {
+                        repeatLens[i][j] = k;
+                        break;
+                    }
+                }
+            }
+        }
+
+        // 使用动态规划计算出所有的 dp(mask, i)，并记录每个状态从哪个状态转移得来，记为 parent
+        int[][] dp = new int[1 << len][len];
+        int[][] parent = new int[1 << len][len];
+        for (int mask = 1; mask < 1 << len; mask++) {
+            Arrays.fill(parent[mask], -1);
+            for (int j = 0; j < len; j++) {
+                if ((mask & (1 << j)) == 0) {
+                    continue;
+                }
+                int parentMask = mask ^ (1 << j);
+                if (parentMask == 0) {
+                    continue;
+                }
+                for (int i = 0; i < len; i++) {
+                    if ((parentMask & (1 << i)) == 0) {
+                        continue;
+                    }
+                    int val = dp[parentMask][i] + repeatLens[i][j];
+                    if (val > dp[mask][j]) {
+                        dp[mask][j] = val;
+                        parent[mask][j] = i;
+                    }
+                }
+            }
+        }
+
+        int[] perm = new int[len];
+        boolean[] seen = new boolean[len];
+        int t = 0;
+        int mask = (1 << len) - 1;
+
+        int p = 0;
+        for (int j = 0; j < len; ++j) {
+            if (dp[(1 << len) - 1][j] > dp[(1 << len) - 1][p]) {
+                p = j;
+            }
+        }
+
+        while (p != -1) {
+            perm[t++] = p;
+            seen[p] = true;
+            int p2 = parent[mask][p];
+            mask ^= 1 << p;
+            p = p2;
+        }
+
+        // Reverse perm
+        for (int i = 0; i < t / 2; ++i) {
+            int v = perm[i];
+            perm[i] = perm[t - 1 - i];
+            perm[t - 1 - i] = v;
+        }
+
+        for (int i = 0; i < len; ++i) {
+            if (!seen[i]) {
+                perm[t++] = i;
+            }
+        }
+
+        StringBuilder sb = new StringBuilder(words[perm[0]]);
+        for (int i = 1; i < len; ++i) {
+            int overlap = repeatLens[perm[i - 1]][perm[i]];
+            sb.append(words[perm[i]].substring(overlap));
+        }
+
+        return sb.toString();
+    }
 }
