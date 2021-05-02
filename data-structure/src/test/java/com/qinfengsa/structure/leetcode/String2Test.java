@@ -1563,4 +1563,175 @@ public class String2Test {
         String s = "a1c1e1";
         logResult(replaceDigits(s));
     }
+
+    /**
+     * 5747. 将字符串拆分为递减的连续值
+     *
+     * <p>给你一个仅由数字组成的字符串 s 。
+     *
+     * <p>请你判断能否将 s 拆分成两个或者多个 非空子字符串 ，使子字符串的 数值 按 降序 排列，且每两个 相邻子字符串 的数值之 差 等于 1 。
+     *
+     * <p>例如，字符串 s = "0090089" 可以拆分成 ["0090", "089"] ，数值为 [90,89] 。这些数值满足按降序排列，且相邻值相差 1 ，这种拆分方法可行。
+     * 另一个例子中，字符串 s = "001" 可以拆分成 ["0", "01"]、["00", "1"] 或 ["0", "0", "1"]
+     * 。然而，所有这些拆分方法都不可行，因为对应数值分别是 [0,1]、[0,1] 和 [0,0,1] ，都不满足按降序排列的要求。 如果可以按要求拆分 s ，返回 true ；否则，返回
+     * false 。
+     *
+     * <p>子字符串 是字符串中的一个连续字符序列。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：s = "1234" 输出：false 解释：不存在拆分 s 的可行方法。 示例 2：
+     *
+     * <p>输入：s = "050043" 输出：true 解释：s 可以拆分为 ["05", "004", "3"] ，对应数值为 [5,4,3] 。 满足按降序排列，且相邻值相差 1 。
+     * 示例 3：
+     *
+     * <p>输入：s = "9080701" 输出：false 解释：不存在拆分 s 的可行方法。 示例 4：
+     *
+     * <p>输入：s = "10009998" 输出：true 解释：s 可以拆分为 ["100", "099", "98"] ，对应数值为 [100,99,98] 。
+     * 满足按降序排列，且相邻值相差 1 。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= s.length <= 20 s 仅由数字组成
+     *
+     * @param s
+     * @return
+     */
+    public boolean splitString(String s) {
+        // 回溯
+        chars = s.toCharArray();
+        return backSplitString(0, -1, 0);
+    }
+
+    private char[] chars;
+
+    private boolean backSplitString(int idx, long lastNum, int count) {
+        if (idx == chars.length && count != 1) {
+            return true;
+        }
+        if (lastNum < -1) {
+            return false;
+        }
+        long num = 0;
+        for (int i = idx; i < chars.length; i++) {
+            char c = chars[i];
+            num = num * 10 + (c - '0');
+            if (lastNum == -1) {
+                if (backSplitString(i + 1, num, count + 1)) {
+                    return true;
+                }
+            } else if (num == lastNum - 1) {
+                if (backSplitString(i + 1, num, count + 1)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    @Test
+    public void splitString() {
+        String s = "0090087";
+        logResult(splitString(s));
+    }
+
+    /**
+     * 5749. 邻位交换的最小次数
+     *
+     * <p>给你一个表示大整数的字符串 num ，和一个整数 k 。
+     *
+     * <p>如果某个整数是 num 中各位数字的一个 排列 且它的 值大于 num ，则称这个整数为 妙数 。可能存在很多妙数，但是只需要关注 值最小 的那些。
+     *
+     * <p>例如，num = "5489355142" ： 第 1 个最小妙数是 "5489355214" 第 2 个最小妙数是 "5489355241" 第 3 个最小妙数是
+     * "5489355412" 第 4 个最小妙数是 "5489355421" 返回要得到第 k 个 最小妙数 需要对 num 执行的 相邻位数字交换的最小次数 。
+     *
+     * <p>测试用例是按存在第 k 个最小妙数而生成的。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：num = "5489355142", k = 4 输出：2 解释：第 4 个最小妙数是 "5489355421" ，要想得到这个数字： - 交换下标 7 和下标 8
+     * 对应的位："5489355142" -> "5489355412" - 交换下标 8 和下标 9 对应的位："5489355412" -> "5489355421" 示例 2：
+     *
+     * <p>输入：num = "11112", k = 4 输出：4 解释：第 4 个最小妙数是 "21111" ，要想得到这个数字： - 交换下标 3 和下标 4 对应的位："11112"
+     * -> "11121" - 交换下标 2 和下标 3 对应的位："11121" -> "11211" - 交换下标 1 和下标 2 对应的位："11211" -> "12111" -
+     * 交换下标 0 和下标 1 对应的位："12111" -> "21111" 示例 3：
+     *
+     * <p>输入：num = "00123", k = 1 输出：1 解释：第 1 个最小妙数是 "00132" ，要想得到这个数字： - 交换下标 3 和下标 4 对应的位："00123"
+     * -> "00132"
+     *
+     * <p>提示：
+     *
+     * <p>2 <= num.length <= 1000 1 <= k <= 1000 num 仅由数字组成
+     *
+     * @param num
+     * @param k
+     * @return
+     */
+    public int getMinSwaps(String num, int k) {
+        char[] chars = num.toCharArray();
+        for (int i = 0; i < k; i++) {
+            chars = nextGreaterElement(chars);
+        }
+        logResult(new String(chars));
+        char[] start = num.toCharArray();
+        int result = 0;
+        for (int i = 0; i < num.length(); i++) {
+            if (start[i] == chars[i]) {
+                continue;
+            }
+            // 开始交换
+            int nextIdx = i + 1;
+            while (start[nextIdx] != chars[i]) {
+                nextIdx++;
+            }
+            while (i != nextIdx) {
+                // 交换
+                swap(start, nextIdx - 1, nextIdx);
+                nextIdx--;
+                result++;
+            }
+        }
+
+        return result;
+    }
+
+    @Test
+    public void getMinSwaps() {
+        String num = "00123";
+        int k = 4;
+        logResult(getMinSwaps(num, k));
+    }
+
+    // 下一个妙数
+    public char[] nextGreaterElement(char[] chars) {
+
+        // 1 从后往前,找到第一个递增（从后往前递增,从前往后递减）
+        // 2 然后 获取前一位数字a, 如果前一位是0或不存在,返回-1
+        // 3 在 后面的数字中找到比a大的最小值, 放到a的位置
+        // 4 对后面的数字排序,(逆序即可)
+        int index = -1;
+        for (int i = chars.length - 2; i >= 0; i--) {
+            if (chars[i] < chars[i + 1]) {
+                index = i;
+                break;
+            }
+        }
+        int left = index + 1, right = chars.length - 1;
+        while (left < right) {
+            swap(chars, left++, right--);
+        }
+        for (int i = index + 1; i < chars.length; i++) {
+            if (chars[i] > chars[index]) {
+                swap(chars, index, i);
+                break;
+            }
+        }
+        return chars;
+    }
+
+    private void swap(char[] chars, int i, int j) {
+        char tmp = chars[i];
+        chars[i] = chars[j];
+        chars[j] = tmp;
+    }
 }
