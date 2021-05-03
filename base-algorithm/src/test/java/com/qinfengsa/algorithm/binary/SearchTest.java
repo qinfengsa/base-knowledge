@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TreeSet;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
@@ -2386,5 +2387,205 @@ public class SearchTest {
         }
 
         return result;
+    }
+
+    /**
+     * 1847. 最近的房间
+     *
+     * <p>一个酒店里有 n 个房间，这些房间用二维整数数组 rooms 表示，其中 rooms[i] = [roomIdi, sizei] 表示有一个房间号为 roomIdi
+     * 的房间且它的面积为 sizei 。每一个房间号 roomIdi 保证是 独一无二 的。
+     *
+     * <p>同时给你 k 个查询，用二维数组 queries 表示，其中 queries[j] = [preferredj, minSizej] 。第 j 个查询的答案是满足如下条件的房间
+     * id ：
+     *
+     * <p>房间的面积 至少 为 minSizej ，且 abs(id - preferredj) 的值 最小 ，其中 abs(x) 是 x 的绝对值。 如果差的绝对值有 相等 的，选择 最小
+     * 的 id 。如果 没有满足条件的房间 ，答案为 -1 。
+     *
+     * <p>请你返回长度为 k 的数组 answer ，其中 answer[j] 为第 j 个查询的结果。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：rooms = [[2,2],[1,2],[3,2]], queries = [[3,1],[3,3],[5,2]] 输出：[3,-1,3] 解释：查询的答案如下： 查询
+     * [3,1] ：房间 3 的面积为 2 ，大于等于 1 ，且号码是最接近 3 的，为 abs(3 - 3) = 0 ，所以答案为 3 。 查询 [3,3] ：没有房间的面积至少为 3
+     * ，所以答案为 -1 。 查询 [5,2] ：房间 3 的面积为 2 ，大于等于 2 ，且号码是最接近 5 的，为 abs(3 - 5) = 2 ，所以答案为 3 。 示例 2：
+     *
+     * <p>输入：rooms = [[1,4],[2,3],[3,5],[4,1],[5,2]], queries = [[2,3],[2,4],[2,5]] 输出：[2,1,3]
+     * 解释：查询的答案如下： 查询 [2,3] ：房间 2 的面积为 3 ，大于等于 3 ，且号码是最接近的，为 abs(2 - 2) = 0 ，所以答案为 2 。 查询 [2,4] ：房间
+     * 1 和 3 的面积都至少为 4 ，答案为 1 因为它房间编号更小。 查询 [2,5] ：房间 3 是唯一面积大于等于 5 的，所以答案为 3 。
+     *
+     * <p>提示：
+     *
+     * <p>n == rooms.length 1 <= n <= 105 k == queries.length 1 <= k <= 104 1 <= roomIdi, preferredj
+     * <= 107 1 <= sizei, minSizej <= 107
+     *
+     * @param rooms
+     * @param queries
+     * @return
+     */
+    public int[] closestRoom(int[][] rooms, int[][] queries) {
+        int len = queries.length;
+
+        // 按 size 从大到小排序
+        Arrays.sort(rooms, (a, b) -> b[1] - a[1]);
+
+        List<QueryNode> queryList = new ArrayList<>();
+        for (int i = 0; i < len; i++) {
+            queryList.add(new QueryNode(i, queries[i][0], queries[i][1]));
+        }
+        // 按 minSize 从大到小排序
+        queryList.sort((a, b) -> b.minSize - a.minSize);
+
+        int[] result = new int[len];
+        Arrays.fill(result, -1);
+        TreeSet<Integer> treeSet = new TreeSet<>();
+        int idx = 0;
+        for (int i = 0; i < len; i++) {
+            QueryNode node = queryList.get(i);
+            int preferred = node.preferred, minSize = node.minSize, id = node.id;
+            while (idx < rooms.length && rooms[idx][1] >= minSize) {
+                treeSet.add(rooms[idx][0]);
+                idx++;
+            }
+            // 二分查找最接近 preferred 的 roomId;
+            Integer floor = treeSet.floor(preferred), ceil = treeSet.ceiling(preferred);
+            if (Objects.nonNull(floor) && Objects.nonNull(ceil)) {
+                result[id] = preferred - floor <= ceil - preferred ? floor : ceil;
+            } else if (Objects.nonNull(floor) || Objects.nonNull(ceil)) {
+                result[id] = Objects.nonNull(floor) ? floor : ceil;
+            }
+        }
+
+        return result;
+    }
+
+    static class QueryNode {
+        int id, preferred, minSize;
+
+        public QueryNode(int id, int preferred, int minSize) {
+            this.id = id;
+            this.minSize = minSize;
+            this.preferred = preferred;
+        }
+    }
+
+    @Test
+    public void closestRoom() {
+        int[][]
+                rooms =
+                        {
+                            {23, 22}, {6, 20}, {15, 6}, {22, 19}, {2, 10}, {21, 4}, {10, 18},
+                            {16, 1}, {12, 7}, {5, 22}
+                        },
+                queries =
+                        {
+                            {12, 5}, {15, 15}, {21, 6}, {15, 1}, {23, 4}, {15, 11}, {1, 24},
+                            {3, 19}, {25, 8}, {18, 6}
+                        };
+
+        int[] result = closestRoom(rooms, queries);
+        log.debug("result:{}", result);
+    }
+
+    /**
+     * 1044. 最长重复子串
+     *
+     * <p>给出一个字符串 S，考虑其所有重复子串（S 的连续子串，出现两次或多次，可能会有重叠）。
+     *
+     * <p>返回任何具有最长可能长度的重复子串。（如果 S 不含重复子串，那么答案为 ""。）
+     *
+     * <p>示例 1：
+     *
+     * <p>输入："banana" 输出："ana" 示例 2：
+     *
+     * <p>输入："abcd" 输出：""
+     *
+     * <p>提示：
+     *
+     * <p>2 <= S.length <= 10^5 S 由小写英文字母组成。
+     *
+     * @param s
+     * @return
+     */
+    public String longestDupSubstring(String s) {
+        int len = s.length();
+        chars = s.toCharArray();
+        hashs = new long[len + 1];
+        hashLens = new long[len + 1];
+        hashLens[0] = 1L;
+        for (int i = 0; i < len; i++) {
+            int num = s.charAt(i) - 'a';
+            hashs[i + 1] = (hashs[i] * LETTER_SIZE + num) % MOD;
+            hashLens[i + 1] = (hashLens[i] * LETTER_SIZE) % MOD;
+        }
+        // 用二分查找找到合适的长度
+        int left = 1, right = len;
+        int start = -1, resultlen = 0;
+        while (left < right) {
+            int subLen = (left + right) >> 1;
+            int idx = getDuplicatedIndex(subLen);
+            if (idx != -1) {
+                start = idx;
+                left = subLen + 1;
+                resultlen = subLen;
+            } else {
+                right = subLen;
+            }
+        }
+        if (start == -1) {
+            return "";
+        }
+
+        return s.substring(start, start + resultlen);
+    }
+
+    private long[] hashs, hashLens;
+
+    private char[] chars;
+
+    static final int MOD = 1000000007;
+
+    static final int LETTER_SIZE = 26;
+
+    private long getHash(int left, int right) {
+        return ((hashs[right] - hashs[left] * hashLens[right - left]) % MOD + MOD) % MOD;
+    }
+
+    private int getDuplicatedIndex(int subLen) {
+        //  hash 算法
+
+        Map<Long, List<Integer>> map = new HashMap<>();
+        for (int i = 0; i + subLen <= chars.length; i++) {
+
+            long hash = getHash(i, i + subLen);
+
+            if (map.containsKey(hash)) {
+                List<Integer> idxList = map.get(hash);
+                for (int idx : idxList) {
+                    if (hasDuplicated(idx, i, subLen)) {
+                        return idx;
+                    }
+                }
+                idxList.add(i);
+            } else {
+                map.computeIfAbsent(hash, k -> new ArrayList<>()).add(i);
+            }
+        }
+
+        return -1;
+    }
+
+    private boolean hasDuplicated(int idx1, int idx2, int subLen) {
+        for (int i = 0; i < subLen; i++) {
+            if (chars[idx1 + i] != chars[idx2 + i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Test
+    public void longestDupSubstring() {
+        String s = "banana";
+        logResult(longestDupSubstring(s));
     }
 }
