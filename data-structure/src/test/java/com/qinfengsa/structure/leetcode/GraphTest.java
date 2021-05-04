@@ -3771,4 +3771,89 @@ public class GraphTest {
             return sizeNums[findParent(child)];
         }
     }
+
+    /**
+     * 996. 正方形数组的数目
+     *
+     * <p>给定一个非负整数数组 A，如果该数组每对相邻元素之和是一个完全平方数，则称这一数组为正方形数组。
+     *
+     * <p>返回 A 的正方形排列的数目。两个排列 A1 和 A2 不同的充要条件是存在某个索引 i，使得 A1[i] != A2[i]。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：[1,17,8] 输出：2 解释： [1,8,17] 和 [17,8,1] 都是有效的排列。 示例 2：
+     *
+     * <p>输入：[2,2,2] 输出：1
+     *
+     * <p>提示：
+     *
+     * <p>1 <= A.length <= 12 0 <= A[i] <= 1e9
+     *
+     * @param A
+     * @return
+     */
+    public int numSquarefulPerms(int[] A) {
+        // 1 <= A.length <= 12 使用位运算
+        int len = A.length;
+        if (len == 1) {
+            return 0;
+        }
+        // 构建邻接表
+        graphSetMap = new HashMap<>();
+        // 元素 -> 剩余个数
+        countMap = new HashMap<>();
+        for (int num : A) {
+            graphSetMap.put(num, new HashSet<>());
+            int count = countMap.getOrDefault(num, 0);
+            countMap.put(num, count + 1);
+        }
+        intResult = 0;
+        for (int i = 0; i < len; i++) {
+            for (int j = i + 1; j < len; j++) {
+                if (isSquare(A[i] + A[j])) {
+                    graphSetMap.get(A[i]).add(A[j]);
+                    graphSetMap.get(A[j]).add(A[i]);
+                }
+            }
+            if (graphSetMap.get(A[i]).isEmpty()) {
+                return 0;
+            }
+        }
+        for (int key : graphSetMap.keySet()) {
+            dfsNumSquare(key, len);
+        }
+
+        return intResult;
+    }
+
+    private int intResult;
+
+    private Map<Integer, Integer> countMap;
+
+    private Map<Integer, Set<Integer>> graphSetMap;
+
+    /**
+     * @param key 上一个节点
+     * @param remain 剩余节点数
+     */
+    private void dfsNumSquare(int key, int remain) {
+        int count = countMap.getOrDefault(key, 0);
+        if (count == 0) {
+            return;
+        }
+        if (remain == 1) {
+            intResult++;
+            return;
+        }
+        countMap.put(key, count - 1);
+        for (int nextKey : graphSetMap.get(key)) {
+            dfsNumSquare(nextKey, remain - 1);
+        }
+        countMap.put(key, count);
+    }
+
+    private boolean isSquare(int num) {
+        int r = (int) Math.sqrt(num);
+        return r * r == num;
+    }
 }
