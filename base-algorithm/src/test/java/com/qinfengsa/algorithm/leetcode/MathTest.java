@@ -2364,6 +2364,9 @@ public class MathTest {
         long max, min;
         max = Math.max(a, b);
         min = Math.min(a, b);
+        if (min == 0L) {
+            return max;
+        }
 
         if (max % min != 0) {
             return getGcd(min, max % min);
@@ -8789,5 +8792,114 @@ public class MathTest {
         }
 
         return result;
+    }
+
+    /**
+     * 972. 相等的有理数
+     *
+     * <p>给定两个字符串 S 和 T，每个字符串代表一个非负有理数，只有当它们表示相同的数字时才返回 true；否则，返回 false。字符串中可以使用括号来表示有理数的重复部分。
+     *
+     * <p>通常，有理数最多可以用三个部分来表示：整数部分 <IntegerPart>、小数非重复部分 <NonRepeatingPart> 和小数重复部分
+     * <(><RepeatingPart><)>。数字可以用以下三种方法之一来表示：
+     *
+     * <p><IntegerPart>（例：0，12，123） <IntegerPart><.><NonRepeatingPart> （例：0.5，2.12，2.0001）
+     * <IntegerPart><.><NonRepeatingPart><(><RepeatingPart><)>（例：0.1(6)，0.9(9)，0.00(1212)）
+     * 十进制展开的重复部分通常在一对圆括号内表示。例如：
+     *
+     * <p>1 / 6 = 0.16666666... = 0.1(6) = 0.1666(6) = 0.166(66)
+     *
+     * <p>0.1(6) 或 0.1666(6) 或 0.166(66) 都是 1 / 6 的正确表示形式。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：S = "0.(52)", T = "0.5(25)" 输出：true 解释：因为 "0.(52)" 代表 0.52525252...，而 "0.5(25)" 代表
+     * 0.52525252525.....，则这两个字符串表示相同的数字。 示例 2：
+     *
+     * <p>输入：S = "0.1666(6)", T = "0.166(66)" 输出：true 示例 3：
+     *
+     * <p>输入：S = "0.9(9)", T = "1." 输出：true 解释： "0.9(9)" 代表 0.999999999... 永远重复，等于 1 。[有关说明，请参阅此链接]
+     * "1." 表示数字 1，其格式正确：(IntegerPart) = "1" 且 (NonRepeatingPart) = "" 。
+     *
+     * <p>提示：
+     *
+     * <p>每个部分仅由数字组成。 整数部分 <IntegerPart> 不会以 2 个或更多的零开头。（对每个部分的数字没有其他限制）。 1 <= <IntegerPart>.length
+     * <= 4 0 <= <NonRepeatingPart>.length <= 4 1 <= <RepeatingPart>.length <= 4
+     *
+     * @param s
+     * @param t
+     * @return
+     */
+    public boolean isRationalEqual(String s, String t) {
+
+        return Objects.equals(convert(s), convert(t));
+    }
+
+    private Fraction convert(String s) {
+        Fraction result = new Fraction(0, 1);
+        int idx = 0;
+        long preD = 1L;
+        for (String part : s.split("[.()]")) {
+            int size = part.length();
+            idx++;
+            if (size == 0) {
+                continue;
+            }
+            long num = Long.parseLong(part);
+            // 整数部分
+            if (idx == 1) {
+                result.add(new Fraction(num, 1));
+            } else if (idx == 2) {
+                // 循环前的小数部分
+                for (int i = 0; i < size; i++) {
+                    preD *= 10L;
+                }
+                result.add(new Fraction(num, preD));
+            } else {
+                // 循环的小数部分
+                long d = 1L;
+                for (int i = 0; i < size; i++) {
+                    d *= 10L;
+                }
+                result.add(new Fraction(num, preD * (d - 1)));
+            }
+        }
+
+        return result;
+    }
+
+    static class Fraction {
+        // 分子 分母
+        long n, d;
+
+        Fraction(long n, long d) {
+            if (n == 0L) {
+                this.n = 0L;
+                this.d = 1L;
+            } else {
+                long gcd = getGcd(n, d);
+                this.n = n / gcd;
+                this.d = d / gcd;
+            }
+        }
+
+        void add(Fraction other) {
+            long numerator = this.n * other.d + this.d * other.n;
+            long denominator = this.d * other.d;
+            long gcd = getGcd(numerator, denominator);
+            this.n = numerator / gcd;
+            this.d = denominator / gcd;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            Fraction other = (Fraction) obj;
+            return this.n == other.n && this.d == other.d;
+        }
+    }
+
+    @Test
+    public void isRationalEqual() {
+        String S = "0.9(9)", T = "1.";
+        logResult(isRationalEqual(S, T));
     }
 }
