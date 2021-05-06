@@ -9774,4 +9774,148 @@ public class DynamicPlanTest {
 
         return result;
     }
+
+    /**
+     * 1000. 合并石头的最低成本
+     *
+     * <p>有 N 堆石头排成一排，第 i 堆中有 stones[i] 块石头。
+     *
+     * <p>每次移动（move）需要将连续的 K 堆石头合并为一堆，而这个移动的成本为这 K 堆石头的总数。
+     *
+     * <p>找出把所有石头合并成一堆的最低成本。如果不可能，返回 -1 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：stones = [3,2,4,1], K = 2 输出：20 解释： 从 [3, 2, 4, 1] 开始。 合并 [3, 2]，成本为 5，剩下 [5, 4, 1]。 合并
+     * [4, 1]，成本为 5，剩下 [5, 5]。 合并 [5, 5]，成本为 10，剩下 [10]。 总成本 20，这是可能的最小值。 示例 2：
+     *
+     * <p>输入：stones = [3,2,4,1], K = 3 输出：-1 解释：任何合并操作后，都会剩下 2 堆，我们无法再进行合并。所以这项任务是不可能完成的。. 示例 3：
+     *
+     * <p>输入：stones = [3,5,1,2,6], K = 3 输出：25 解释： 从 [3, 5, 1, 2, 6] 开始。 合并 [5, 1, 2]，成本为 8，剩下 [3,
+     * 8, 6]。 合并 [3, 8, 6]，成本为 17，剩下 [17]。 总成本 25，这是可能的最小值。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= stones.length <= 30 2 <= K <= 30 1 <= stones[i] <= 100
+     *
+     * @param stones
+     * @param K
+     * @return
+     */
+    public int mergeStones(int[] stones, int K) {
+        int N = stones.length;
+        if ((N - 1) % (K - 1) != 0) {
+            return -1;
+        }
+        // 前缀和
+        int[] sums = new int[N + 1];
+        int[][] dp = new int[N][N];
+        for (int i = 0; i < N; i++) {
+            sums[i + 1] = sums[i] + stones[i];
+            // dp[i][i] = stones[i];
+        }
+
+        // 枚举区间长度
+        for (int len = K; len <= N; len++) {
+            // 枚举起点
+            for (int i = 0; i + len - 1 < N; i++) {
+                // 终点 j
+                int j = i + len - 1;
+                dp[i][j] = Integer.MAX_VALUE;
+                // 枚举分界点
+                for (int k = i; k < j; k += (K - 1)) {
+                    dp[i][j] = Math.min(dp[i][j], dp[i][k] + dp[k + 1][j]);
+                }
+                if ((j - i) % (K - 1) == 0) {
+                    dp[i][j] += sums[j + 1] - sums[i];
+                }
+            }
+        }
+        logResult(dp);
+        return dp[0][N - 1];
+    }
+
+    @Test
+    public void mergeStones() {
+        int[] stones = {3, 5, 1, 2, 6};
+        int K = 3;
+        logResult(mergeStones(stones, K));
+    }
+
+    /**
+     * 1012. 至少有 1 位重复的数字
+     *
+     * <p>给定正整数 N，返回小于等于 N 且具有至少 1 位重复数字的正整数的个数。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：20 输出：1 解释：具有至少 1 位重复数字的正数（<= 20）只有 11 。 示例 2：
+     *
+     * <p>输入：100 输出：10 解释：具有至少 1 位重复数字的正数（<= 100）有 11，22，33，44，55，66，77，88，99 和 100 。 示例 3：
+     *
+     * <p>输入：1000 输出：262
+     *
+     * <p>提示：
+     *
+     * <p>1 <= N <= 10^9
+     *
+     * @param N
+     * @return
+     */
+    public int numDupDigitsAtMostN(int N) {
+        if (N <= 10) {
+            return 0;
+        }
+        // 逆向思维 具有至少 1 位重复数字的正数 = 所有数 - 不重复的数
+        nums = new int[10];
+        int idx = 0;
+        while (N > 0) {
+            nums[idx++] = N % 10;
+            N /= 10;
+        }
+
+        dp = new int[1 << 10][idx];
+        for (int i = 0; i < 1 << 10; i++) {
+            Arrays.fill(dp[i], -1);
+        }
+
+        return N + 1 - dfs(idx - 1, 0, 1);
+    }
+
+    private int[][] dp;
+    private int[] nums;
+
+    public int dfs(int pos, int mask, int limit) {
+        // 递归返回条件0
+        if (pos == -1) {
+            return 1;
+        }
+
+        // 加入记忆化 (优化)
+        if (dp[mask][pos] != -1 && limit == 0) {
+            return dp[mask][pos];
+        }
+
+        int up = limit == 1 ? nums[pos] : 9;
+
+        int res = 0;
+        for (int i = 0; i <= up; i++) {
+            // 首先当前位的状态没有出现过
+            // （本体计算的是不满足 至少两次的所有情况 逆向思维）
+            if ((mask & (1 << i)) == 0) {
+                // 关键是理解下面 if - else
+                if (i == 0 && mask == 0) { // 001的情况
+                    res += dfs(pos - 1, mask, 0);
+                } else {
+                    res += dfs(pos - 1, mask | (1 << i), (limit == 1 && i == nums[pos]) ? 1 : 0);
+                }
+            }
+        }
+
+        if (limit == 0) {
+            dp[mask][pos] = res;
+        }
+
+        return res;
+    }
 }
