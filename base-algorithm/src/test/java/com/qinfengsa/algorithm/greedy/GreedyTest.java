@@ -9,12 +9,14 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.PriorityQueue;
 import java.util.Queue;
+import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
@@ -3148,5 +3150,130 @@ public class GreedyTest {
             }
         }
         return result;
+    }
+
+    /**
+     * 936. 戳印序列
+     *
+     * <p>你想要用小写字母组成一个目标字符串 target。
+     *
+     * <p>开始的时候，序列由 target.length 个 '?' 记号组成。而你有一个小写字母印章 stamp。
+     *
+     * <p>在每个回合，你可以将印章放在序列上，并将序列中的每个字母替换为印章上的相应字母。你最多可以进行 10 * target.length 个回合。
+     *
+     * <p>举个例子，如果初始序列为 "?????"，而你的印章 stamp 是 "abc"，那么在第一回合，你可以得到
+     * "abc??"、"?abc?"、"??abc"。（请注意，印章必须完全包含在序列的边界内才能盖下去。）
+     *
+     * <p>如果可以印出序列，那么返回一个数组，该数组由每个回合中被印下的最左边字母的索引组成。如果不能印出序列，就返回一个空数组。
+     *
+     * <p>例如，如果序列是 "ababc"，印章是 "abc"，那么我们就可以返回与操作 "?????" -> "abc??" -> "ababc" 相对应的答案 [0, 2]；
+     *
+     * <p>另外，如果可以印出序列，那么需要保证可以在 10 * target.length 个回合内完成。任何超过此数字的答案将不被接受。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：stamp = "abc", target = "ababc" 输出：[0,2] （[1,0,2] 以及其他一些可能的结果也将作为答案被接受） 示例 2：
+     *
+     * <p>输入：stamp = "abca", target = "aabcaca" 输出：[3,0,1]
+     *
+     * <p>提示：
+     *
+     * <p>1 <= stamp.length <= target.length <= 1000 stamp 和 target 只包含小写字母。
+     *
+     * @param stamp
+     * @param target
+     * @return
+     */
+    public int[] movesToStamp(String stamp, String target) {
+        char[] chars = target.toCharArray();
+        // 印章必须完全包含在序列的边界内才能盖下去
+        int len1 = stamp.length(), len2 = target.length();
+        if (len1 == len2) {
+            return Objects.equals(stamp, target) ? new int[] {0} : new int[0];
+        }
+        if (stamp.charAt(0) != target.charAt(0)
+                || stamp.charAt(len1 - 1) != target.charAt(len2 - 1)) {
+            return new int[0];
+        }
+        if (!target.contains(stamp)) {
+            return new int[0];
+        }
+        List<StampNode> nodeList = new ArrayList<>();
+        List<Integer> list = new ArrayList<>();
+        Queue<Integer> queue = new LinkedList<>();
+        for (int i = 0; i <= len2 - len1; i++) {
+            Set<Integer> match = new HashSet<>(), todo = new HashSet<>();
+            for (int j = 0; j < len1; j++) {
+                if (chars[i + j] == stamp.charAt(j)) {
+                    match.add(i + j);
+                } else {
+                    todo.add(i + j);
+                }
+            }
+            nodeList.add(new StampNode(match, todo));
+            // 完全匹配
+            if (todo.isEmpty()) {
+                list.add(i);
+                for (int j = 0; j < len1; j++) {
+                    chars[i + j] = '?';
+                    queue.offer(i + j);
+                }
+            }
+        }
+
+        while (!queue.isEmpty()) {
+            // 匹配索引
+            int idx = queue.poll();
+            // 左边匹配
+            for (int i = Math.max(0, idx - len1 + 1); i <= Math.min(len2 - len1, idx); i++) {
+                // 节点
+                StampNode node = nodeList.get(i);
+                // 没有 匹配项 不需要匹配
+                if (!node.todo.contains(idx)) {
+                    continue;
+                }
+                node.todo.remove(idx);
+                if (node.todo.isEmpty()) {
+                    list.add(i);
+
+                    for (int m : node.match) {
+                        if (chars[m] != '?') {
+                            chars[m] = '?';
+                            queue.offer(m);
+                        }
+                    }
+                }
+            }
+        }
+
+        for (char c : chars) {
+            if (c != '?') {
+                return new int[0];
+            }
+        }
+
+        // 倒推法
+
+        int[] result = new int[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            result[list.size() - i - 1] = list.get(i);
+        }
+        return result;
+    }
+
+    static class StampNode {
+        private final Set<Integer> match, todo;
+
+        StampNode(Set<Integer> match, Set<Integer> todo) {
+            this.match = match;
+            this.todo = todo;
+        }
+    }
+
+    @Test
+    public void movesToStamp() {
+        String stamp = "abca", target = "aabcaca";
+        int[] result = movesToStamp(stamp, target);
+        log.debug("result:{}", result);
     }
 }

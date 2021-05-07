@@ -8902,4 +8902,90 @@ public class MathTest {
         String S = "0.9(9)", T = "1.";
         logResult(isRationalEqual(S, T));
     }
+
+    /**
+     * 952. 按公因数计算最大组件大小
+     *
+     * <p>给定一个由不同正整数的组成的非空数组 A，考虑下面的图：
+     *
+     * <p>有 A.length 个节点，按从 A[0] 到 A[A.length - 1] 标记； 只有当 A[i] 和 A[j] 共用一个大于 1 的公因数时，A[i] 和 A[j]
+     * 之间才有一条边。 返回图中最大连通组件的大小。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：[4,6,15,35] 输出：4
+     *
+     * <p>示例 2：
+     *
+     * <p>输入：[20,50,9,63] 输出：2
+     *
+     * <p>示例 3：
+     *
+     * <p>输入：[2,3,6,7,4,12,21,39] 输出：8
+     *
+     * <p>提示：
+     *
+     * <p>1 <= A.length <= 20000 1 <= A[i] <= 100000
+     *
+     * @param A
+     * @return
+     */
+    public int largestComponentSize(int[] A) {
+
+        int maxVal = 0;
+        for (int num : A) {
+            maxVal = Math.max(maxVal, num);
+        }
+
+        Dsu dsu = new Dsu(maxVal + 1);
+        // 并查集
+        for (int num : A) {
+
+            for (int i = 2; i * i <= num; i++) {
+                if (num % i != 0) {
+                    continue;
+                }
+                dsu.union(i, num);
+                dsu.union(num / i, num);
+            }
+        }
+        int result = 0;
+        int[] counts = new int[maxVal + 1];
+        for (int num : A) {
+            int root = dsu.findParent(num);
+            counts[root]++;
+            result = Math.max(result, counts[root]);
+        }
+
+        return result;
+    }
+
+    static class Dsu {
+
+        private final int[] parent;
+
+        Dsu(int n) {
+            this.parent = new int[n];
+            for (int i = 0; i < n; ++i) {
+                parent[i] = i;
+            }
+        }
+
+        int findParent(int num) {
+            if (num != parent[num]) {
+                parent[num] = findParent(parent[num]);
+            }
+            return parent[num];
+        }
+
+        void union(int x, int y) {
+            parent[findParent(x)] = findParent(y);
+        }
+    }
+
+    @Test
+    public void largestComponentSize() {
+        int[] A = {2, 3, 6, 7, 4, 12, 21, 39};
+        logResult(largestComponentSize(A));
+    }
 }
