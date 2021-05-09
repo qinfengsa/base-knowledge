@@ -6317,4 +6317,190 @@ public class Array2Test {
         }
         grid[row][col] = 0;
     }
+
+    /**
+     * 5750. 人口最多的年份
+     *
+     * <p>给你一个二维整数数组 logs ，其中每个 logs[i] = [birthi, deathi] 表示第 i 个人的出生和死亡年份。
+     *
+     * <p>年份 x 的 人口 定义为这一年期间活着的人的数目。第 i 个人被计入年份 x 的人口需要满足：x 在闭区间 [birthi, deathi - 1]
+     * 内。注意，人不应当计入他们死亡当年的人口中。
+     *
+     * <p>返回 人口最多 且 最早 的年份。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：logs = [[1993,1999],[2000,2010]] 输出：1993 解释：人口最多为 1 ，而 1993 是人口为 1 的最早年份。 示例 2：
+     *
+     * <p>输入：logs = [[1950,1961],[1960,1971],[1970,1981]] 输出：1960 解释： 人口最多为 2 ，分别出现在 1960 和 1970 。
+     * 其中最早年份是 1960 。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= logs.length <= 100 1950 <= birthi < deathi <= 2050
+     *
+     * @param logs
+     * @return
+     */
+    public int maximumPopulation(int[][] logs) {
+        int[] ages = new int[101];
+
+        for (int[] log : logs) {
+            ages[log[0] - 1950]++;
+            ages[log[1] - 1950]--;
+        }
+        int max = 0, idx = -1;
+        int num = 0;
+        for (int i = 0; i < 101; i++) {
+            num += ages[i];
+            if (num > max) {
+                max = num;
+                idx = i;
+            }
+        }
+
+        return 1950 + idx;
+    }
+
+    /**
+     * 5751. 下标对中的最大距离
+     *
+     * <p>给你两个 非递增 的整数数组 nums1 和 nums2，数组下标均 从 0 开始 计数。
+     *
+     * <p>下标对 (i, j) 中 0 <= i < nums1.length 且 0 <= j < nums2.length 。如果该下标对同时满足 i <= j 且 nums1[i]
+     * <= nums2[j] ，则称之为 有效 下标对，该下标对的 距离 为 j - i 。
+     *
+     * <p>返回所有 有效 下标对 (i, j) 中的 最大距离 。如果不存在有效下标对，返回 0 。
+     *
+     * <p>一个数组 arr ，如果每个 1 <= i < arr.length 均有 arr[i-1] >= arr[i] 成立，那么该数组是一个 非递增 数组。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：nums1 = [55,30,5,4,2], nums2 = [100,20,10,10,5] 输出：2 解释：有效下标对是 (0,0), (2,2), (2,3),
+     * (2,4), (3,3), (3,4) 和 (4,4) 。 最大距离是 2 ，对应下标对 (2,4) 。 示例 2：
+     *
+     * <p>输入：nums1 = [2,2,2], nums2 = [10,10,1] 输出：1 解释：有效下标对是 (0,0), (0,1) 和 (1,1) 。 最大距离是 1 ，对应下标对
+     * (0,1) 。 示例 3：
+     *
+     * <p>输入：nums1 = [30,29,19,5], nums2 = [25,25,25,25,25] 输出：2 解释：有效下标对是 (2,2), (2,3), (2,4),
+     * (3,3) 和 (3,4) 。 最大距离是 2 ，对应下标对 (2,4) 。 示例 4：
+     *
+     * <p>输入：nums1 = [5,4], nums2 = [3,2] 输出：0 解释：不存在有效下标对，所以返回 0 。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= nums1.length <= 105 1 <= nums2.length <= 105 1 <= nums1[i], nums2[j] <= 105 nums1 和
+     * nums2 都是 非递增 数组
+     *
+     * @param nums1
+     * @param nums2
+     * @return
+     */
+    public int maxDistance(int[] nums1, int[] nums2) {
+        int max = 0;
+
+        int idx = 0;
+
+        for (int i = 0; i < nums1.length; i++) {
+            int num = nums1[i];
+            // 二分
+            int left = idx, right = nums2.length;
+            while (left < right) {
+                int mid = (left + right) >> 1;
+                if (nums2[mid] >= num) {
+                    left = mid + 1;
+                    idx = mid;
+                } else {
+                    right = mid;
+                }
+            }
+            max = Math.max(idx - i, max);
+        }
+
+        return max;
+    }
+
+    @Test
+    public void maxDistance() {
+        int[] nums1 = {5, 4}, nums2 = {3, 2};
+        logResult(maxDistance(nums1, nums2));
+    }
+
+    /**
+     * 5752. 子数组最小乘积的最大值
+     *
+     * <p>一个数组的 最小乘积 定义为这个数组中 最小值 乘以 数组的 和 。
+     *
+     * <p>比方说，数组 [3,2,5] （最小值是 2）的最小乘积为 2 * (3+2+5) = 2 * 10 = 20 。 给你一个正整数数组 nums ，请你返回 nums 任意
+     * 非空子数组 的最小乘积 的 最大值 。由于答案可能很大，请你返回答案对 109 + 7 取余 的结果。
+     *
+     * <p>请注意，最小乘积的最大值考虑的是取余操作 之前 的结果。题目保证最小乘积的最大值在 不取余 的情况下可以用 64 位有符号整数 保存。
+     *
+     * <p>子数组 定义为一个数组的 连续 部分。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：nums = [1,2,3,2] 输出：14 解释：最小乘积的最大值由子数组 [2,3,2] （最小值是 2）得到。 2 * (2+3+2) = 2 * 7 = 14 。
+     * 示例 2：
+     *
+     * <p>输入：nums = [2,3,3,1,2] 输出：18 解释：最小乘积的最大值由子数组 [3,3] （最小值是 3）得到。 3 * (3+3) = 3 * 6 = 18 。 示例
+     * 3：
+     *
+     * <p>输入：nums = [3,1,5,6,4,2] 输出：60 解释：最小乘积的最大值由子数组 [5,6,4] （最小值是 4）得到。 4 * (5+6+4) = 4 * 15 =
+     * 60 。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= nums.length <= 105 1 <= nums[i] <= 107
+     *
+     * @param nums
+     * @return
+     */
+    public int maxSumMinProduct(int[] nums) {
+
+        int len = nums.length, min = Integer.MAX_VALUE;
+        long[] sums = new long[len + 1];
+
+        for (int i = 0; i < len; i++) {
+            sums[i + 1] = sums[i] + nums[i];
+            min = Math.min(min, nums[i]);
+        }
+        log.debug("nums:{}", nums);
+        log.debug("sums:{}", sums);
+        long maxResult = min * sums[len];
+
+        // 最小值 的左右边界
+        int[] leftIdxs = new int[len], rightIdxs = new int[len];
+        Arrays.fill(rightIdxs, len - 1);
+        // 用栈 记录 最小 num 所在 idx
+        Deque<Integer> stack = new LinkedList<>();
+
+        for (int i = 0; i < len; i++) {
+            int num = nums[i];
+            while (!stack.isEmpty() && num <= nums[stack.peek()]) {
+                // num 更小
+                rightIdxs[stack.pop()] = i - 1;
+            }
+
+            if (!stack.isEmpty()) {
+                leftIdxs[i] = stack.peek() + 1;
+            }
+
+            stack.push(i);
+        }
+
+        // num > peek() 入栈
+        for (int i = 0; i < len; i++) {
+            long sum = sums[rightIdxs[i] + 1] - sums[leftIdxs[i]];
+            maxResult = Math.max(maxResult, sum * nums[i]);
+        }
+
+        return (int) (maxResult % MOD);
+    }
+
+    @Test
+    public void maxSumMinProduct() {
+        int[] nums = {2, 5, 4, 2, 4, 5, 3, 1, 2, 4};
+        logResult(maxSumMinProduct(nums));
+    }
 }
