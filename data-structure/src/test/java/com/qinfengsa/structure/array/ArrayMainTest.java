@@ -21,4 +21,11 @@ public class ArrayMainTest {
         int[][] tasks = {{1, 3, 2}, {2, 5, 3}, {5, 6, 2}};
         logResult(main.processTasks(tasks));
     }
+
+    @Test
+    public void shortestPath() {
+        int[][] grid = {{0, 1, 1}, {1, 1, 1}, {1, 0, 0}};
+        int k = 1;
+        logResult(main.shortestPath(grid, k));
+    }
 }

@@ -2,6 +2,7 @@ package com.qinfengsa.algorithm.dynamic;
 
 import static com.qinfengsa.algorithm.util.LogUtils.logResult;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -135,5 +136,137 @@ public class DynamicProgrammingMain {
         logResult(dp);
 
         return false;
+    }
+
+    /**
+     * 1278. 分割回文串 III
+     *
+     * <p>给你一个由小写字母组成的字符串 s，和一个整数 k。
+     *
+     * <p>请你按下面的要求分割字符串：
+     *
+     * <p>首先，你可以将 s 中的部分字符修改为其他的小写英文字母。 接着，你需要把 s 分割成 k 个非空且不相交的子串，并且每个子串都是回文串。
+     * 请返回以这种方式分割字符串所需修改的最少字符数。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：s = "abc", k = 2 输出：1 解释：你可以把字符串分割成 "ab" 和 "c"，并修改 "ab" 中的 1 个字符，将它变成回文串。 示例 2：
+     *
+     * <p>输入：s = "aabbc", k = 3 输出：0 解释：你可以把字符串分割成 "aa"、"bb" 和 "c"，它们都是回文串。 示例 3：
+     *
+     * <p>输入：s = "leetcode", k = 8 输出：0
+     *
+     * <p>提示：
+     *
+     * <p>1 <= k <= s.length <= 100 s 中只含有小写英文字母。
+     *
+     * @param s
+     * @param k
+     * @return
+     */
+    public int palindromePartition(String s, int k) {
+        int len = s.length();
+        if (len == k) {
+            return 0;
+        }
+        char[] chars = s.toCharArray();
+        if (k == 1) {
+            return cost(chars, 0, len - 1);
+        }
+        // dp[i][j] 表示对于字符串 S 的前 i 个字符，将它分割成 j 个非空且不相交的回文串，最少需要修改的字符数。
+        // 状态转移方程：
+        // dp[i][j] = min(dp[idx][j - 1] + cost(S, idx + 1, i))
+        int[][] dp = new int[len + 1][k + 1];
+        for (int i = 0; i <= len; i++) {
+            Arrays.fill(dp[i], Integer.MAX_VALUE);
+        }
+        dp[0][0] = 0;
+        for (int i = 1; i <= len; i++) {
+            for (int j = 1; j <= Math.min(i, k); j++) {
+                if (j == 1) {
+                    dp[i][j] = cost(chars, 0, i - 1);
+                    continue;
+                }
+                for (int idx = j - 1; idx < i; idx++) {
+                    dp[i][j] = Math.min(dp[i][j], dp[idx][j - 1] + cost(chars, idx, i - 1));
+                }
+            }
+        }
+        logResult(dp);
+
+        return dp[len][k];
+    }
+
+    /**
+     * 从 start 到 end 转换为 回文字符串需要的 修改的字符数
+     *
+     * @param chars
+     * @param start
+     * @param end
+     * @return
+     */
+    private int cost(char[] chars, int start, int end) {
+        int result = 0;
+
+        while (start < end) {
+            if (chars[start++] != chars[end--]) {
+                result++;
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * 1289. 下降路径最小和 II
+     *
+     * <p>给你一个整数方阵 arr ，定义「非零偏移下降路径」为：从 arr 数组中的每一行选择一个数字，且按顺序选出来的数字中，相邻数字不在原数组的同一列。
+     *
+     * <p>请你返回非零偏移下降路径数字和的最小值。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：arr = [[1,2,3],[4,5,6],[7,8,9]] 输出：13 解释： 所有非零偏移下降路径包括： [1,5,9], [1,5,7], [1,6,7],
+     * [1,6,8], [2,4,8], [2,4,9], [2,6,7], [2,6,8], [3,4,8], [3,4,9], [3,5,7], [3,5,9] 下降路径中数字和最小的是
+     * [1,5,7] ，所以答案是 13 。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= arr.length == arr[i].length <= 200 -99 <= arr[i][j] <= 99
+     *
+     * @param arr
+     * @return
+     */
+    public int minFallingPathSum(int[][] arr) {
+        int rows = arr.length, cols = arr[0].length;
+
+        int[] dp = Arrays.copyOf(arr[0], cols);
+
+        for (int i = 1; i < rows; i++) {
+            // 找到最小和第二小的 之和idx
+            int minIdx = 0, secondIdx = -1;
+            for (int j = 1; j < cols; j++) {
+                if (dp[j] < dp[minIdx]) {
+                    secondIdx = minIdx;
+                    minIdx = j;
+                } else if (secondIdx == -1 || dp[j] < dp[secondIdx]) {
+                    secondIdx = j;
+                }
+            }
+            int[] tmpDp = new int[cols];
+            for (int j = 0; j < cols; j++) {
+                if (j == minIdx) {
+                    tmpDp[j] = arr[i][j] + dp[secondIdx];
+                } else {
+                    tmpDp[j] = arr[i][j] + dp[minIdx];
+                }
+            }
+            dp = tmpDp;
+        }
+        int result = Integer.MAX_VALUE;
+        for (int i = 0; i < cols; i++) {
+            result = Math.min(result, dp[i]);
+        }
+        return result;
     }
 }

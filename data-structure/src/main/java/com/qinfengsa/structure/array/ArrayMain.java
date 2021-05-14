@@ -2,7 +2,9 @@ package com.qinfengsa.structure.array;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -135,6 +137,92 @@ public class ArrayMain {
         @Override
         public String toString() {
             return "Segment{" + "start=" + start + ", end=" + end + ", prevTime=" + prevTime + '}';
+        }
+    }
+
+    int n, m;
+
+    static int[] DIR_ROW = {1, 0, -1, 0};
+    static int[] DIR_COL = {0, 1, 0, -1};
+
+    private boolean inArea(int row, int col, int rows, int cols) {
+        return row >= 0 && row < rows && col >= 0 && col < cols;
+    }
+
+    /**
+     * 1293. 网格中的最短路径
+     *
+     * <p>给你一个 m * n 的网格，其中每个单元格不是 0（空）就是 1（障碍物）。每一步，您都可以在空白单元格中上、下、左、右移动。
+     *
+     * <p>如果您 最多 可以消除 k 个障碍物，请找出从左上角 (0, 0) 到右下角 (m-1, n-1) 的最短路径，并返回通过该路径所需的步数。如果找不到这样的路径，则返回 -1。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入： grid = [[0,0,0], [1,1,0], [0,0,0], [0,1,1], [0,0,0]], k = 1 输出：6 解释： 不消除任何障碍的最短路径是 10。
+     * 消除位置 (3,2) 处的障碍后，最短路径是 6 。该路径是 (0,0) -> (0,1) -> (0,2) -> (1,2) -> (2,2) -> (3,2) -> (4,2).
+     *
+     * <p>示例 2：
+     *
+     * <p>输入： grid = [[0,1,1], [1,1,1], [1,0,0]], k = 1 输出：-1 解释： 我们至少需要消除两个障碍才能找到这样的路径。
+     *
+     * <p>提示：
+     *
+     * <p>grid.length == m grid[0].length == n 1 <= m, n <= 40 1 <= k <= m*n grid[i][j] == 0 or 1
+     * grid[0][0] == grid[m-1][n-1] == 0
+     *
+     * @param grid
+     * @param k
+     * @return
+     */
+    public int shortestPath(int[][] grid, int k) {
+        int m = grid.length, n = grid[0].length;
+        Queue<ShortestPathNode> queue = new LinkedList<>();
+        int step = 0;
+
+        queue.offer(new ShortestPathNode(0, 0, 0));
+
+        boolean[][][] visited = new boolean[m][n][k + 1];
+        visited[0][0][0] = true;
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                ShortestPathNode node = queue.poll();
+                int row = node.row, col = node.col, removeNum = node.removeNum;
+                if (row == m - 1 && col == n - 1) {
+                    return step;
+                }
+
+                for (int j = 0; j < 4; j++) {
+                    int nextRow = row + DIR_ROW[j], nextCol = col + DIR_COL[j];
+                    if (!inArea(nextRow, nextCol, m, n)) {
+                        continue;
+                    }
+
+                    if (grid[nextRow][nextCol] == 0 && !visited[nextRow][nextCol][removeNum]) {
+                        queue.offer(new ShortestPathNode(nextRow, nextCol, removeNum));
+                        visited[nextRow][nextCol][removeNum] = true;
+                    } else if (grid[nextRow][nextCol] == 1
+                            && removeNum < k
+                            && !visited[nextRow][nextCol][removeNum + 1]) {
+                        queue.offer(new ShortestPathNode(nextRow, nextCol, removeNum + 1));
+                        visited[nextRow][nextCol][removeNum + 1] = true;
+                    }
+                }
+            }
+
+            step++;
+        }
+
+        return -1;
+    }
+
+    static class ShortestPathNode {
+        int row, col, removeNum;
+
+        public ShortestPathNode(int row, int col, int removeNum) {
+            this.row = row;
+            this.col = col;
+            this.removeNum = removeNum;
         }
     }
 }

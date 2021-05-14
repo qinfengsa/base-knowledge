@@ -22,76 +22,24 @@ public class DynamicProgrammingMainTest {
     @Test
     public void escapeMaze() {
         List<List<String>> maze = new ArrayList<>();
-        /*maze.add(Arrays.asList(".#.", "#.."));
+        maze.add(Arrays.asList(".#.", "#.."));
         maze.add(Arrays.asList("...", ".#."));
         maze.add(Arrays.asList(".##", ".#."));
-        maze.add(Arrays.asList("..#", ".#."));*/
-        /* maze.add(Arrays.asList("...", "...", "..."));
-        maze.add(Arrays.asList(".##", "###", "##."));
+        maze.add(Arrays.asList("..#", ".#."));
 
-        maze.add(Arrays.asList(".##", "###", "##."));
-        maze.add(Arrays.asList(".##", "###", "##."));
-        maze.add(Arrays.asList(".##", "###", "##."));
-        maze.add(Arrays.asList(".##", "###", "##."));
-        maze.add(Arrays.asList(".##", "###", "##."));*/
-
-        /*maze.add(Arrays.asList("....###.", "###.#.##", ".##..##."));
-        maze.add(Arrays.asList(".#####..", "##.####.", "##.####."));
-        maze.add(Arrays.asList("....####", "###..###", "##..##.."));
-        maze.add(Arrays.asList(".####...", "######.#", "###.##.."));
-        maze.add(Arrays.asList("..###.##", "########", "#######."));
-        maze.add(Arrays.asList("...##.##", "###.####", ".#.#.#.."));
-        maze.add(Arrays.asList(".######.", "#.#.....", "#.#.#.#."));
-        maze.add(Arrays.asList(".###.##.", "##.#####", "###.##.."));
-        maze.add(Arrays.asList("..#.####", "#####.##", "##.###.."));
-        maze.add(Arrays.asList(".#.###.#", ".#######", "#####.#."));
-        maze.add(Arrays.asList(".######.", "####....", ".##..##."));
-        maze.add(Arrays.asList(".###.#..", "###.#.#.", "#####.#."));
-        maze.add(Arrays.asList(".###.###", "###.####", "....###."));
-        maze.add(Arrays.asList(".###.##.", "########", "#####.#."));
-        maze.add(Arrays.asList(".###.###", "##.####.", ".###...."));
-        maze.add(Arrays.asList(".#.#.##.", ".##.####", "#####.#."));
-        maze.add(Arrays.asList("..#.####", "#.##....", "####...."));
-        maze.add(Arrays.asList("..#.##.#", "#.##..#.", "###.###."));
-        maze.add(Arrays.asList("..##.#.#", ".##.#..#", ".####..."));
-        maze.add(Arrays.asList(".##..##.", "########", "#####.#."));
-        maze.add(Arrays.asList(".####.##", "#.#...##", "#.##..#."));
-        maze.add(Arrays.asList("..#.####", "######.#", "###.###."));
-        maze.add(Arrays.asList(".#..#..#", "###..##.", "#..#...."));*/
-
-        maze.add(Arrays.asList(".##..####", ".#######."));
-        maze.add(Arrays.asList("..######.", "########."));
-        maze.add(Arrays.asList(".#####.##", ".#######."));
-        maze.add(Arrays.asList(".#..###.#", "########."));
-        maze.add(Arrays.asList(".########", "########."));
-        maze.add(Arrays.asList(".######.#", "####.###."));
-        maze.add(Arrays.asList(".#####.##", "#####.#.."));
-        maze.add(Arrays.asList(".##.####.", "##.#####."));
-        maze.add(Arrays.asList(".########", "#####.##."));
-        maze.add(Arrays.asList(".#.######", "#.##.###."));
-        maze.add(Arrays.asList(".########", "###.#.#.."));
-        maze.add(Arrays.asList(".########", "########."));
-        maze.add(Arrays.asList(".####.##.", "##.##...."));
-        maze.add(Arrays.asList(".#######.", "###.#.##."));
-        maze.add(Arrays.asList(".####.###", "###.####."));
-        maze.add(Arrays.asList(".######.#", "##.####.."));
-        maze.add(Arrays.asList(".##.#####", "##.###.#."));
-        maze.add(Arrays.asList(".####.###", "##.#####."));
-        maze.add(Arrays.asList(".##.##..#", ".#.#####."));
-        maze.add(Arrays.asList(".###.####", "##.#..##."));
-        maze.add(Arrays.asList(".####.#.#", "##.#####."));
-        maze.add(Arrays.asList(".####.###", "####.###."));
-        maze.add(Arrays.asList(".########", "#######.."));
-        maze.add(Arrays.asList(".#####.##", "#.######."));
-        maze.add(Arrays.asList(".########", "###..#.#."));
-        maze.add(Arrays.asList(".####.#.#", "###..##.."));
-        maze.add(Arrays.asList(".######.#", "########."));
-        maze.add(Arrays.asList(".########", "##.#####."));
-        maze.add(Arrays.asList(".########", "..######."));
-        maze.add(Arrays.asList(".#####..#", "#######.."));
-        maze.add(Arrays.asList(".#.######", ".#######."));
-        maze.add(Arrays.asList(".###.#.#.", ".##..#.#."));
-        maze.add(Arrays.asList(".#.##.###", "####.##.."));
         logResult(main.escapeMaze(maze));
+    }
+
+    @Test
+    public void palindromePartition() {
+        String s = "aabbc";
+        int k = 3;
+        logResult(main.palindromePartition(s, k));
+    }
+
+    @Test
+    public void minFallingPathSum() {
+        int[][] arr = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+        logResult(main.minFallingPathSum(arr));
     }
 }
