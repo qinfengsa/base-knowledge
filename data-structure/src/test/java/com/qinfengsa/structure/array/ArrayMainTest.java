@@ -28,4 +28,20 @@ public class ArrayMainTest {
         int k = 1;
         logResult(main.shortestPath(grid, k));
     }
+
+    @Test
+    public void rotateTheBox() {
+        char[][] box = {
+            {'#', '#', '*', '.', '*', '.'},
+            {'#', '#', '#', '*', '.', '.'},
+            {'#', '#', '#', '.', '#', '.'}
+        };
+        logResult(main.rotateTheBox(box));
+    }
+
+    @Test
+    public void sumOfFlooredPairs() {
+        int[] nums = {7, 7, 7, 7, 7, 7, 7};
+        logResult(main.sumOfFlooredPairs(nums));
+    }
 }
