@@ -40,8 +40,8 @@ public class ArrayMainTest {
     }
 
     @Test
-    public void sumOfFlooredPairs() {
-        int[] nums = {7, 7, 7, 7, 7, 7, 7};
-        logResult(main.sumOfFlooredPairs(nums));
+    public void subsetXORSum() {
+        int[] nums = {3, 4, 5, 6, 7, 8};
+        logResult(main.subsetXORSum(nums));
     }
 }
