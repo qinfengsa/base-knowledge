@@ -42,4 +42,11 @@ public class DynamicProgrammingMainTest {
         int[][] arr = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
         logResult(main.minFallingPathSum(arr));
     }
+
+    @Test
+    public void pathsWithMaxScore() {
+        List<String> board = Arrays.asList("E23", "2X2", "12S");
+        int[] result = main.pathsWithMaxScore(board);
+        log.debug("result:{}", result);
+    }
 }

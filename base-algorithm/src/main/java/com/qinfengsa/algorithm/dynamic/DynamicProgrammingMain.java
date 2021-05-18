@@ -269,4 +269,102 @@ public class DynamicProgrammingMain {
         }
         return result;
     }
+
+    static int MOD = 1_000_000_007;
+
+    /**
+     * 1301. 最大得分的路径数目
+     *
+     * <p>给你一个正方形字符数组 board ，你从数组最右下方的字符 'S' 出发。
+     *
+     * <p>你的目标是到达数组最左上角的字符 'E' ，数组剩余的部分为数字字符 1, 2, ..., 9 或者障碍
+     * 'X'。在每一步移动中，你可以向上、向左或者左上方移动，可以移动的前提是到达的格子没有障碍。
+     *
+     * <p>一条路径的 「得分」 定义为：路径上所有数字的和。
+     *
+     * <p>请你返回一个列表，包含两个整数：第一个整数是 「得分」 的最大值，第二个整数是得到最大得分的方案数，请把结果对 10^9 + 7 取余。
+     *
+     * <p>如果没有任何路径可以到达终点，请返回 [0, 0] 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：board = ["E23","2X2","12S"] 输出：[7,1] 示例 2：
+     *
+     * <p>输入：board = ["E12","1X1","21S"] 输出：[4,2] 示例 3：
+     *
+     * <p>输入：board = ["E11","XXX","11S"] 输出：[0,0]
+     *
+     * <p>提示：
+     *
+     * <p>2 <= board.length == board[i].length <= 100
+     *
+     * @param board
+     * @return
+     */
+    public int[] pathsWithMaxScore(List<String> board) {
+        int rows = board.size(), cols = board.get(0).length();
+        // 0 表示 最大分数， 1 表示 最大分数的
+        int[][][] dp = new int[rows][cols][2];
+
+        dp[rows - 1][cols - 1][0] = 0;
+        dp[rows - 1][cols - 1][1] = 1;
+
+        for (int i = rows - 2; i >= 0; i--) {
+            char c = board.get(i).charAt(cols - 1);
+            if (c == 'X') {
+                break;
+            }
+            dp[i][cols - 1][0] = dp[i + 1][cols - 1][0] + (c - '0');
+            dp[i][cols - 1][1] = dp[i + 1][cols - 1][1];
+        }
+        for (int j = cols - 2; j >= 0; j--) {
+            char c = board.get(rows - 1).charAt(j);
+            if (c == 'X') {
+                break;
+            }
+            dp[rows - 1][j][0] = dp[rows - 1][j + 1][0] + (c - '0');
+            dp[rows - 1][j][1] = dp[rows - 1][j + 1][1];
+        }
+
+        for (int i = rows - 2; i >= 0; i--) {
+            for (int j = cols - 2; j >= 0; j--) {
+                char c = board.get(i).charAt(j);
+                if (c == 'X') {
+                    continue;
+                }
+                int num = c == 'E' ? 0 : c - '0';
+
+                // 右边
+                if (dp[i][j + 1][1] > 0) {
+                    dp[i][j][0] = dp[i][j + 1][0] + num;
+                    dp[i][j][1] = dp[i][j + 1][1];
+                    dp[i][j][1] %= MOD;
+                }
+                // 下边
+                if (dp[i + 1][j][1] > 0) {
+                    int result = dp[i + 1][j][0] + num;
+                    if (result > dp[i][j][0]) {
+                        dp[i][j][0] = dp[i + 1][j][0] + num;
+                        dp[i][j][1] = dp[i + 1][j][1];
+                    } else if (result == dp[i][j][0]) {
+                        dp[i][j][1] += dp[i + 1][j][1];
+                    }
+                    dp[i][j][1] %= MOD;
+                }
+                // 右下
+                if (dp[i + 1][j + 1][1] > 0) {
+                    int result = dp[i + 1][j + 1][0] + num;
+                    if (result > dp[i][j][0]) {
+                        dp[i][j][0] = dp[i + 1][j + 1][0] + num;
+                        dp[i][j][1] = dp[i + 1][j + 1][1];
+                    } else if (result == dp[i][j][0]) {
+                        dp[i][j][1] += dp[i + 1][j + 1][1];
+                    }
+                    dp[i][j][1] %= MOD;
+                }
+            }
+        }
+        logResult(dp);
+        return dp[0][0];
+    }
 }
