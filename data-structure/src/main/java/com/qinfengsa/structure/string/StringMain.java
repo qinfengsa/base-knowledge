@@ -1,6 +1,8 @@
 package com.qinfengsa.structure.string;
 
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -123,5 +125,84 @@ public class StringMain {
             return result1 >> 1;
         }
         return -1;
+    }
+
+    /**
+     * 1316. 不同的循环子字符串
+     *
+     * <p>给你一个字符串 text ，请你返回满足下述条件的 不同 非空子字符串的数目：
+     *
+     * <p>可以写成某个字符串与其自身相连接的形式（即，可以写为 a + a，其中 a 是某个字符串）。 例如，abcabc 就是 abc 和它自身连接形成的。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：text = "abcabcabc" 输出：3 解释：3 个子字符串分别为 "abcabc"，"bcabca" 和 "cabcab" 。 示例 2：
+     *
+     * <p>输入：text = "leetcodeleetcode" 输出：2 解释：2 个子字符串为 "ee" 和 "leetcodeleetcode" 。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= text.length <= 2000 text 只包含小写英文字母。
+     *
+     * @param text
+     * @return
+     */
+    public int distinctEchoSubstrings(String text) {
+        // 字符串hash
+        int len = text.length();
+        hashs = new long[len + 1];
+        hashLens = new long[len + 1];
+        hashLens[0] = 1L;
+        for (int i = 0; i < len; i++) {
+            int num = text.charAt(i) - 'a';
+            hashs[i + 1] = (hashs[i] * LETTER_SIZE + num) % MOD;
+            hashLens[i + 1] = (hashLens[i] * LETTER_SIZE) % MOD;
+        }
+        log.debug("hash:{}", hashs);
+        Set<Long> strHashSet = new HashSet<>();
+        Set<String> strSet = new HashSet<>();
+        int result = 0;
+        for (int i = 0; i < len; i++) {
+            for (int j = i + 1; j < len; j++) {
+                // 长度
+                int l = j - i;
+                // 后面的字符串 短于前面的字符串
+                if (j + l > len) {
+                    continue;
+                }
+                long leftHash = getHash(i, j);
+                String leftStr = text.substring(i, j);
+                if (strHashSet.contains(leftHash) && strSet.contains(leftStr)) {
+                    continue;
+                }
+                long rightHash = getHash(j, j + l);
+                if (leftHash != rightHash) {
+                    continue;
+                }
+                log.debug("i:{} j:{} j+l:{}", i, j, j + l);
+
+                String rightStr = text.substring(j, j + l);
+                log.debug("left:{} right:{}", leftStr, rightStr);
+                if (!Objects.equals(leftStr, rightStr)) {
+                    continue;
+                }
+
+                result++;
+                strHashSet.add(leftHash);
+                strSet.add(leftStr);
+            }
+        }
+
+        return result;
+    }
+
+    private long[] hashs, hashLens;
+
+    static final int MOD = 1000000007;
+
+    static final int LETTER_SIZE = 26;
+
+    private long getHash(int left, int right) {
+        return ((hashs[right] - hashs[left] * hashLens[right - left]) % MOD + MOD) % MOD;
     }
 }

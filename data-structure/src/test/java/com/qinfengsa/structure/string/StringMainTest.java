@@ -21,4 +21,10 @@ public class StringMainTest {
         String s = "010";
         logResult(main.minSwaps(s));
     }
+
+    @Test
+    public void distinctEchoSubstrings() {
+        String text = "aaaaaaaaaa";
+        logResult(main.distinctEchoSubstrings(text));
+    }
 }

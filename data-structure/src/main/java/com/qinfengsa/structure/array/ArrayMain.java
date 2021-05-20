@@ -429,4 +429,83 @@ public class ArrayMain {
 
         return result;
     }
+
+    /**
+     * 1284. 转化为全零矩阵的最少反转次数
+     *
+     * <p>给你一个 m x n 的二进制矩阵 mat。
+     *
+     * <p>每一步，你可以选择一个单元格并将它反转（反转表示 0 变 1 ，1 变 0 ）。如果存在和它相邻的单元格，那么这些相邻的单元格也会被反转。（注：相邻的两个单元格共享同一条边。）
+     *
+     * <p>请你返回将矩阵 mat 转化为全零矩阵的最少反转次数，如果无法转化为全零矩阵，请返回 -1 。
+     *
+     * <p>二进制矩阵的每一个格子要么是 0 要么是 1 。
+     *
+     * <p>全零矩阵是所有格子都为 0 的矩阵。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：mat = [[0,0],[0,1]] 输出：3 解释：一个可能的解是反转 (1, 0)，然后 (0, 1) ，最后是 (1, 1) 。 示例 2：
+     *
+     * <p>输入：mat = [[0]] 输出：0 解释：给出的矩阵是全零矩阵，所以你不需要改变它。 示例 3：
+     *
+     * <p>输入：mat = [[1,1,1],[1,0,1],[0,0,0]] 输出：6 示例 4：
+     *
+     * <p>输入：mat = [[1,0,0],[1,0,0]] 输出：-1 解释：该矩阵无法转变成全零矩阵
+     *
+     * <p>提示：
+     *
+     * <p>m == mat.length n == mat[0].length 1 <= m <= 3 1 <= n <= 3 mat[i][j] 是 0 或 1 。
+     *
+     * @param s
+     * @return
+     */
+    public int minFlips(int[][] mat) {
+        // 对于每个单元格来说，它只有两种状态：被反转 or 不被反转。 遍历 N 个单元格
+        m = mat.length;
+        n = mat[0].length;
+        // 深度优先遍历
+        intResult = Integer.MAX_VALUE;
+        int num = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (mat[i][j] == 0) {
+                    continue;
+                }
+                num |= 1 << (i * n + j);
+            }
+        }
+        log.debug("num:{}", num);
+        dfsMinFlips(num, 0, 0);
+        return intResult == Integer.MAX_VALUE ? -1 : intResult;
+    }
+
+    private int intResult;
+
+    private void dfsMinFlips(int num, int pos, int result) {
+        if (pos == m * n) {
+            if (num == 0) {
+                intResult = Math.min(intResult, result);
+            }
+            return;
+        }
+        // 不翻转
+        dfsMinFlips(num, pos + 1, result);
+        // 翻转
+        int row = pos / n, col = pos % n;
+        dfsMinFlips(getNextNum(num, row, col), pos + 1, result + 1);
+    }
+
+    private int getNextNum(int num, int row, int col) {
+        int[] dirRow = {1, 0, 0, -1, 0};
+        int[] dirCol = {0, 1, 0, 0, -1};
+        for (int i = 0; i < 5; i++) {
+            int nextRow = row + dirRow[i], nextCol = col + dirCol[i];
+            if (!inArea(nextRow, nextCol, m, n)) {
+                continue;
+            }
+            num ^= 1 << (nextRow * n + nextCol);
+        }
+        return num;
+    }
 }
