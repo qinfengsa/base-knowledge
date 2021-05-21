@@ -49,4 +49,10 @@ public class DynamicProgrammingMainTest {
         int[] result = main.pathsWithMaxScore(board);
         log.debug("result:{}", result);
     }
+
+    @Test
+    public void minInsertions() {
+        String s = "nn";
+        logResult(main.minInsertions(s));
+    }
 }
