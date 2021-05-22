@@ -44,4 +44,10 @@ public class ArrayMainTest {
         int[] nums = {3, 4, 5, 6, 7, 8};
         logResult(main.subsetXORSum(nums));
     }
+
+    @Test
+    public void minFlips() {
+        int[][] mat = {{0}};
+        logResult(main.minFlips(mat));
+    }
 }
