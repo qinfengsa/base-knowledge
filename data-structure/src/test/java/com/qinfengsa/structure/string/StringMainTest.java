@@ -27,4 +27,11 @@ public class StringMainTest {
         String text = "aaaaaaaaaa";
         logResult(main.distinctEchoSubstrings(text));
     }
+
+    @Test
+    public void canReach() {
+        String s = "01101110";
+        int minJump = 2, maxJump = 3;
+        logResult(main.canReach(s, minJump, maxJump));
+    }
 }

@@ -3,6 +3,7 @@ package com.qinfengsa.structure.string;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TreeSet;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -204,5 +205,104 @@ public class StringMain {
 
     private long getHash(int left, int right) {
         return ((hashs[right] - hashs[left] * hashLens[right - left]) % MOD + MOD) % MOD;
+    }
+
+    /**
+     * 5763. 哪种连续子字符串更长
+     *
+     * <p>给你一个二进制字符串 s 。如果字符串中由 1 组成的 最长 连续子字符串 严格长于 由 0 组成的 最长 连续子字符串，返回 true ；否则，返回 false 。
+     *
+     * <p>例如，s = "110100010" 中，由 1 组成的最长连续子字符串的长度是 2 ，由 0 组成的最长连续子字符串的长度是 3 。 注意，如果字符串中不存在 0 ，此时认为由
+     * 0 组成的最长连续子字符串的长度是 0 。字符串中不存在 1 的情况也适用此规则。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：s = "1101" 输出：true 解释： 由 1 组成的最长连续子字符串的长度是 2："1101" 由 0 组成的最长连续子字符串的长度是 1："1101" 由 1
+     * 组成的子字符串更长，故返回 true 。 示例 2：
+     *
+     * <p>输入：s = "111000" 输出：false 解释： 由 1 组成的最长连续子字符串的长度是 3："111000" 由 0 组成的最长连续子字符串的长度是 3："111000"
+     * 由 1 组成的子字符串不比由 0 组成的子字符串长，故返回 false 。 示例 3：
+     *
+     * <p>输入：s = "110100010" 输出：false 解释： 由 1 组成的最长连续子字符串的长度是 2："110100010" 由 0 组成的最长连续子字符串的长度是
+     * 3："110100010" 由 1 组成的子字符串不比由 0 组成的子字符串长，故返回 false 。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= s.length <= 100 s[i] 不是 '0' 就是 '1'
+     *
+     * @param s
+     * @return
+     */
+    public boolean checkZeroOnes(String s) {
+        int oneLen = 0, zeroLen = 0;
+        int maxOneLen = 0, maxZeroLen = 0;
+
+        for (char c : s.toCharArray()) {
+            if (c == '0') {
+                oneLen = 0;
+                zeroLen++;
+            } else {
+                zeroLen = 0;
+                oneLen++;
+            }
+            maxOneLen = Math.max(maxOneLen, oneLen);
+            maxZeroLen = Math.max(maxZeroLen, zeroLen);
+        }
+
+        return maxOneLen > maxZeroLen;
+    }
+
+    /**
+     * 5765. 跳跃游戏 VII
+     *
+     * <p>给你一个下标从 0 开始的二进制字符串 s 和两个整数 minJump 和 maxJump 。一开始，你在下标 0 处，且该位置的值一定为 '0'
+     * 。当同时满足如下条件时，你可以从下标 i 移动到下标 j 处：
+     *
+     * <p>i + minJump <= j <= min(i + maxJump, s.length - 1) 且 s[j] == '0'. 如果你可以到达 s 的下标 s.length -
+     * 1 处，请你返回 true ，否则返回 false 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：s = "011010", minJump = 2, maxJump = 3 输出：true 解释： 第一步，从下标 0 移动到下标 3 。 第二步，从下标 3 移动到下标
+     * 5 。 示例 2：
+     *
+     * <p>输入：s = "01101110", minJump = 2, maxJump = 3 输出：false
+     *
+     * <p>提示：
+     *
+     * <p>2 <= s.length <= 105 s[i] 要么是 '0' ，要么是 '1' s[0] == '0' 1 <= minJump <= maxJump < s.length
+     *
+     * @param s
+     * @param minJump
+     * @param maxJump
+     * @return
+     */
+    public boolean canReach(String s, int minJump, int maxJump) {
+        int len = s.length();
+        if (s.charAt(len - 1) == '1') {
+            return false;
+        }
+        TreeSet<Integer> zeroSet = new TreeSet<>();
+        int last = 0;
+        zeroSet.add(0);
+        for (int i = 1; i < len; i++) {
+            if (s.charAt(i) == '1') {
+                continue;
+            }
+            // 超出 最大跳跃距离
+            if (i - last > maxJump) {
+                return false;
+            }
+
+            int left = i - maxJump, right = i - minJump;
+
+            Set<Integer> set = zeroSet.subSet(left, right + 1);
+            if (set.isEmpty()) {
+                continue;
+            }
+            zeroSet.add(i);
+            last = i;
+        }
+        return last == len - 1;
     }
 }

@@ -50,4 +50,11 @@ public class ArrayMainTest {
         int[][] mat = {{0}};
         logResult(main.minFlips(mat));
     }
+
+    @Test
+    public void minSpeedOnTime() {
+        int[] dist = {1, 3, 2};
+        double hour = 1.9;
+        logResult(main.minSpeedOnTime(dist, hour));
+    }
 }
