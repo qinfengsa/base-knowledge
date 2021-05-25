@@ -55,4 +55,21 @@ public class DynamicProgrammingMainTest {
         String s = "nn";
         logResult(main.minInsertions(s));
     }
+
+    @Test
+    public void minDifficulty() {
+        int[] jobDifficulty = {6, 5, 4, 3, 2, 1};
+        int d = 2;
+        logResult(main.minDifficulty(jobDifficulty, d));
+    }
+
+    @Test
+    public void maxStudents() {
+        char[][] seats = {
+            {'#', '.', '#', '#', '.', '#'},
+            {'.', '#', '#', '#', '#', '.'},
+            {'#', '.', '#', '#', '.', '#'}
+        };
+        logResult(main.maxStudents(seats));
+    }
 }

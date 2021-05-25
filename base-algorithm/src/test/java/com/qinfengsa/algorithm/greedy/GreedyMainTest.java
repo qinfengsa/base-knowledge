@@ -22,4 +22,10 @@ public class GreedyMainTest {
         int[] ranges = {3, 4, 1, 1, 0, 0};
         logResult(main.minTaps(n, ranges));
     }
+
+    @Test
+    public void isPossible() {
+        int[] target = {9, 3, 5};
+        logResult(main.isPossible(target));
+    }
 }

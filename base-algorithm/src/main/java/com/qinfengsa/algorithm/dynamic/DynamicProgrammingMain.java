@@ -4,6 +4,7 @@ import static com.qinfengsa.algorithm.util.LogUtils.logResult;
 
 import java.util.Arrays;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 动态规划
@@ -11,6 +12,7 @@ import java.util.List;
  * @author qinfengsa
  * @date 2021/5/7 13:24
  */
+@Slf4j
 public class DynamicProgrammingMain {
 
     int n, m;
@@ -497,5 +499,175 @@ public class DynamicProgrammingMain {
         int x1 = num1 / 6, y1 = num1 % 6;
         int x2 = num2 / 6, y2 = num2 % 6;
         return Math.abs(x1 - x2) + Math.abs(y1 - y2);
+    }
+
+    /**
+     * 1335. 工作计划的最低难度
+     *
+     * <p>你需要制定一份 d 天的工作计划表。工作之间存在依赖，要想执行第 i 项工作，你必须完成全部 j 项工作（ 0 <= j < i）。
+     *
+     * <p>你每天 至少 需要完成一项任务。工作计划的总难度是这 d 天每一天的难度之和，而一天的工作难度是当天应该完成工作的最大难度。
+     *
+     * <p>给你一个整数数组 jobDifficulty 和一个整数 d，分别代表工作难度和需要计划的天数。第 i 项工作的难度是 jobDifficulty[i]。
+     *
+     * <p>返回整个工作计划的 最小难度 。如果无法制定工作计划，则返回 -1 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：jobDifficulty = [6,5,4,3,2,1], d = 2 输出：7 解释：第一天，您可以完成前 5 项工作，总难度 = 6.
+     * 第二天，您可以完成最后一项工作，总难度 = 1. 计划表的难度 = 6 + 1 = 7
+     *
+     * <p>示例 2： 输入：jobDifficulty = [9,9,9], d = 4 输出：-1
+     *
+     * <p>解释：就算你每天完成一项工作，仍然有一天是空闲的，你无法制定一份能够满足既定工作时间的计划表。
+     *
+     * <p>示例 3： 输入：jobDifficulty = [1,1,1], d = 3 输出：3 解释：工作计划为每天一项工作，总难度为 3 。
+     *
+     * <p>示例 4： 输入：jobDifficulty = [7,1,7,1,7,1], d = 3 输出：15
+     *
+     * <p>示例 5： 输入：jobDifficulty = [11,111,22,222,33,333,44,444], d = 6 输出：843
+     *
+     * <p>提示：
+     *
+     * <p>1 <= jobDifficulty.length <= 300 0 <= jobDifficulty[i] <= 1000 1 <= d <= 10
+     *
+     * @param jobDifficulty
+     * @param d
+     * @return
+     */
+    public int minDifficulty(int[] jobDifficulty, int d) {
+        int len = jobDifficulty.length;
+        if (len < d) {
+            return -1;
+        }
+        // dp[i][j] 表示 第 i 项工作 j 天完成 最小难度
+        // dp[i][j] = Min(dp[k][j - 1] + max[k + 1][i])
+        int[][] dp = new int[len][d];
+
+        for (int i = 0; i < len; i++) {
+            Arrays.fill(dp[i], Integer.MAX_VALUE >> 1);
+        }
+
+        //  第一天 完成前 i 项的任务
+        int max = 0;
+        for (int i = 0; i < len - d + 1; i++) {
+            max = Math.max(max, jobDifficulty[i]);
+            dp[i][0] = max;
+        }
+        // dp 从第二天开始
+        for (int j = 1; j < d; j++) {
+            for (int i = j; i < len; i++) {
+
+                max = 0;
+                //  前一天 （j - 1）完成 k 项任务 第 k + 1 项任务 j 天完成
+                for (int k = i - 1; k >= 0; k--) {
+                    max = Math.max(max, jobDifficulty[k + 1]);
+                    dp[i][j] = Math.min(dp[i][j], dp[k][j - 1] + max);
+                }
+            }
+        }
+        logResult(dp);
+
+        return dp[len - 1][d - 1];
+    }
+
+    /**
+     * 1349. 参加考试的最大学生数
+     *
+     * <p>给你一个 m * n 的矩阵 seats 表示教室中的座位分布。如果座位是坏的（不可用），就用 '#' 表示；否则，用 '.' 表示。
+     *
+     * <p>学生可以看到左侧、右侧、左上、右上这四个方向上紧邻他的学生的答卷，但是看不到直接坐在他前面或者后面的学生的答卷。请你计算并返回该考场可以容纳的一起参加考试且无法作弊的最大学生人数。
+     *
+     * <p>学生必须坐在状况良好的座位上。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：seats = [["#",".","#","#",".","#"], [".","#","#","#","#","."],
+     * ["#",".","#","#",".","#"]] 输出：4 解释：教师可以让 4 个学生坐在可用的座位上，这样他们就无法在考试中作弊。
+     *
+     * <p>示例 2：
+     *
+     * <p>输入：seats = [[".","#"], ["#","#"], ["#","."], ["#","#"], [".","#"]] 输出：3 解释：让所有学生坐在可用的座位上。
+     *
+     * <p>示例 3：
+     *
+     * <p>输入：seats = [["#",".",".",".","#"], [".","#",".","#","."], [".",".","#",".","."],
+     * [".","#",".","#","."], ["#",".",".",".","#"]] 输出：10 解释：让学生坐在第 1、3 和 5 列的可用座位上。
+     *
+     * <p>提示：
+     *
+     * <p>seats 只包含字符 '.' 和'#'
+     *
+     * <p>m == seats.length n == seats[i].length 1 <= m <= 8 1 <= n <= 8
+     *
+     * @param seats
+     * @return
+     */
+    public int maxStudents(char[][] seats) {
+        int m = seats.length, n = seats[0].length;
+        // 总共 m 行, 每 行 2^n 中可能性
+        int stateNum = 1 << n;
+        int[][] dp = new int[m][stateNum];
+        // m 行的座位状态
+        int[] rowState = new int[m];
+        for (int i = 0; i < m; i++) {
+            int state = 0;
+            for (int j = 0; j < n; j++) {
+                if (seats[i][j] == '#') {
+                    continue;
+                }
+                state |= 1 << j;
+            }
+            rowState[i] = state;
+        }
+        log.debug("rowState:{}", rowState);
+
+        for (int i = 0; i < m; i++) {
+            Arrays.fill(dp[i], -1);
+        }
+
+        // 第一行
+        for (int j = 0; j < stateNum; j++) {
+            // 判断 能否 坐下  (j & rowState[0]) == j
+            // 且 左右没人 (j & j >> 1) == 0
+            if ((j & rowState[0]) == j && (j & j >> 1) == 0) {
+                dp[0][j] = Integer.bitCount(j);
+            }
+        }
+
+        for (int i = 1; i < m; i++) {
+            // 第i行
+            for (int j = 0; j < stateNum; j++) {
+
+                if ((j & rowState[i]) != j) {
+                    continue;
+                }
+                if ((j & j >> 1) != 0) {
+                    continue;
+                }
+                int bitCnt = Integer.bitCount(j);
+                // 遍历上一行
+                for (int k = 0; k < stateNum; k++) {
+                    if (dp[i - 1][k] == -1) {
+                        continue;
+                    }
+                    // 判断 左前方 和 右前方
+                    if ((j & (k >> 1)) != 0) {
+                        continue;
+                    }
+                    if ((j & (k << 1)) != 0) {
+                        continue;
+                    }
+                    dp[i][j] = Math.max(dp[i][j], dp[i - 1][k] + bitCnt);
+                }
+            }
+        }
+        logResult(dp);
+        int max = 0;
+        for (int num : dp[m - 1]) {
+            max = Math.max(max, num);
+        }
+
+        return max;
     }
 }
