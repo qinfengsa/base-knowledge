@@ -57,4 +57,10 @@ public class ArrayMainTest {
         double hour = 1.9;
         logResult(main.minSpeedOnTime(dist, hour));
     }
+
+    @Test
+    public void minCost() {
+        int[][] grid = {{1, 1, 1, 1}, {2, 2, 2, 2}, {1, 1, 1, 1}, {2, 2, 2, 2}};
+        logResult(main.minCost(grid));
+    }
 }

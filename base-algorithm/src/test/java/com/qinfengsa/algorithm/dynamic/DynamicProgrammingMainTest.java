@@ -72,4 +72,10 @@ public class DynamicProgrammingMainTest {
         };
         logResult(main.maxStudents(seats));
     }
+
+    @Test
+    public void largestMultipleOfThree() {
+        int[] digits = {8, 6, 7, 1, 0};
+        logResult(main.largestMultipleOfThree(digits));
+    }
 }

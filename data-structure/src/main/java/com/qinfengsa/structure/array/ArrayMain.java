@@ -1,7 +1,10 @@
 package com.qinfengsa.structure.array;
 
+import static com.qinfengsa.structure.util.LogUtils.logResult;
+
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -142,8 +145,9 @@ public class ArrayMain {
 
     int n, m;
 
-    static int[] DIR_ROW = {1, 0, -1, 0};
-    static int[] DIR_COL = {0, 1, 0, -1};
+    // 1 右 2 左 3 下 4 上
+    static int[] DIR_ROW = {0, 0, 1, -1};
+    static int[] DIR_COL = {1, -1, 0, 0};
 
     private boolean inArea(int row, int col, int rows, int cols) {
         return row >= 0 && row < rows && col >= 0 && col < cols;
@@ -583,5 +587,85 @@ public class ArrayMain {
 
         total += (double) dist[dist.length - 1] / (double) speed;
         return total <= hour;
+    }
+
+    /**
+     * 1368. 使网格图至少有一条有效路径的最小代价
+     *
+     * <p>给你一个 m x n 的网格图 grid 。 grid 中每个格子都有一个数字，对应着从该格子出发下一步走的方向。 grid[i][j] 中的数字可能为以下几种情况：
+     *
+     * <p>1 ，下一步往右走，也就是你会从 grid[i][j] 走到 grid[i][j + 1] 2 ，下一步往左走，也就是你会从 grid[i][j] 走到 grid[i][j -
+     * 1] 3 ，下一步往下走，也就是你会从 grid[i][j] 走到 grid[i + 1][j] 4 ，下一步往上走，也就是你会从 grid[i][j] 走到 grid[i -
+     * 1][j] 注意网格图中可能会有 无效数字 ，因为它们可能指向 grid 以外的区域。
+     *
+     * <p>一开始，你会从最左上角的格子 (0,0) 出发。我们定义一条 有效路径 为从格子 (0,0) 出发，每一步都顺着数字对应方向走，最终在最右下角的格子 (m - 1, n - 1)
+     * 结束的路径。有效路径 不需要是最短路径 。
+     *
+     * <p>你可以花费 cost = 1 的代价修改一个格子中的数字，但每个格子中的数字 只能修改一次 。
+     *
+     * <p>请你返回让网格图至少有一条有效路径的最小代价。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：grid = [[1,1,1,1],[2,2,2,2],[1,1,1,1],[2,2,2,2]] 输出：3 解释：你将从点 (0, 0) 出发。 到达 (3, 3)
+     * 的路径为： (0, 0) --> (0, 1) --> (0, 2) --> (0, 3) 花费代价 cost = 1 使方向向下 --> (1, 3) --> (1, 2) -->
+     * (1, 1) --> (1, 0) 花费代价 cost = 1 使方向向下 --> (2, 0) --> (2, 1) --> (2, 2) --> (2, 3) 花费代价 cost =
+     * 1 使方向向下 --> (3, 3) 总花费为 cost = 3. 示例 2：
+     *
+     * <p>输入：grid = [[1,1,3],[3,2,2],[1,1,4]] 输出：0 解释：不修改任何数字你就可以从 (0, 0) 到达 (2, 2) 。 示例 3：
+     *
+     * <p>输入：grid = [[1,2],[4,3]] 输出：1 示例 4：
+     *
+     * <p>输入：grid = [[2,2,2],[2,2,2]] 输出：3 示例 5：
+     *
+     * <p>输入：grid = [[4]] 输出：0
+     *
+     * <p>提示：
+     *
+     * <p>m == grid.length n == grid[i].length 1 <= m, n <= 100
+     *
+     * @param grid
+     * @return
+     */
+    public int minCost(int[][] grid) {
+        int m = grid.length, n = grid[0].length;
+        int[][] dist = new int[m][n];
+        boolean[][] visited = new boolean[m][n];
+        for (int i = 0; i < m; i++) {
+            Arrays.fill(dist[i], Integer.MAX_VALUE >> 1);
+        }
+        dist[0][0] = 0;
+        Deque<int[]> queue = new LinkedList<>();
+        queue.offerLast(new int[] {0, 0});
+
+        while (!queue.isEmpty()) {
+            int[] nums = queue.pollFirst();
+            int row = nums[0], col = nums[1];
+            if (visited[row][col]) {
+                continue;
+            }
+            visited[row][col] = true;
+            for (int i = 0; i < 4; i++) {
+                int nextRow = row + DIR_ROW[i], nextCol = col + DIR_COL[i];
+                if (!inArea(nextRow, nextCol, m, n)) {
+                    continue;
+                }
+                // grid[row][col] 上一节点的方向
+                boolean flag = grid[row][col] == i + 1;
+                int newDist = dist[row][col] + (flag ? 0 : 1);
+                if (newDist < dist[nextRow][nextCol]) {
+                    dist[nextRow][nextCol] = newDist;
+                    // 没有改变方向
+                    if (flag) {
+                        queue.offerFirst(new int[] {nextRow, nextCol});
+                    } else {
+                        queue.offerLast(new int[] {nextRow, nextCol});
+                    }
+                }
+            }
+        }
+        logResult(dist);
+
+        return dist[m - 1][n - 1];
     }
 }

@@ -670,4 +670,89 @@ public class DynamicProgrammingMain {
 
         return max;
     }
+
+    /**
+     * 1363. 形成三的最大倍数
+     *
+     * <p>给你一个整数数组 digits，你可以通过按任意顺序连接其中某些数字来形成 3 的倍数，请你返回所能得到的最大的 3 的倍数。
+     *
+     * <p>由于答案可能不在整数数据类型范围内，请以字符串形式返回答案。
+     *
+     * <p>如果无法得到答案，请返回一个空字符串。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：digits = [8,1,9] 输出："981" 示例 2：
+     *
+     * <p>输入：digits = [8,6,7,1,0] 输出："8760" 示例 3：
+     *
+     * <p>输入：digits = [1] 输出："" 示例 4：
+     *
+     * <p>输入：digits = [0,0,0,0,0,0] 输出："0"
+     *
+     * <p>提示：
+     *
+     * <p>1 <= digits.length <= 10^4 0 <= digits[i] <= 9 返回的结果不应包含不必要的前导零。
+     *
+     * @param digits
+     * @return
+     */
+    public String largestMultipleOfThree(int[] digits) {
+        int sum = 0;
+        int[] buckets = new int[10];
+        for (int num : digits) {
+            sum += num;
+            buckets[num]++;
+        }
+        int rm = sum % 3;
+        int cnt1 = buckets[1] + buckets[4] + buckets[7],
+                cnt2 = buckets[2] + buckets[5] + buckets[8];
+        int rm1 = 0, rm2 = 0;
+        if (rm == 1) {
+            if (cnt1 > 0) {
+                rm1 = 1;
+            } else {
+                rm2 = 2;
+            }
+        } else if (rm == 2) {
+            if (cnt2 > 0) {
+                rm2 = 1;
+            } else {
+                rm1 = 2;
+            }
+        }
+        int[] mod1 = {1, 4, 7};
+        int[] mod2 = {2, 5, 8};
+        for (int i = 0; i < rm1; i++) {
+            for (int m : mod1) {
+                if (buckets[m] > 0) {
+                    buckets[m]--;
+                    break;
+                }
+            }
+        }
+        for (int i = 0; i < rm2; i++) {
+            for (int m : mod2) {
+                if (buckets[m] > 0) {
+                    buckets[m]--;
+                    break;
+                }
+            }
+        }
+
+        StringBuilder sb = new StringBuilder();
+        for (int i = 9; i >= 0; i--) {
+            if (buckets[i] == 0) {
+                continue;
+            }
+            for (int j = 0; j < buckets[i]; j++) {
+                sb.append(i);
+            }
+        }
+        if (sb.length() > 0 && sb.charAt(0) == '0') {
+            return "0";
+        }
+
+        return sb.toString();
+    }
 }
