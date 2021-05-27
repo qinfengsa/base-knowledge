@@ -1,6 +1,8 @@
 package com.qinfengsa.algorithm.greedy;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.PriorityQueue;
 import lombok.extern.slf4j.Slf4j;
 
@@ -139,5 +141,75 @@ public class GreedyMain {
         }
 
         return true;
+    }
+
+    /**
+     * 1383. 最大的团队表现值
+     *
+     * <p>公司有编号为 1 到 n 的 n 个工程师，给你两个数组 speed 和 efficiency ，其中 speed[i] 和 efficiency[i] 分别代表第 i
+     * 位工程师的速度和效率。请你返回由最多 k 个工程师组成的 最大团队表现值 ，由于答案可能很大，请你返回结果对 10^9 + 7 取余后的结果。
+     *
+     * <p>团队表现值 的定义为：一个团队中「所有工程师速度的和」乘以他们「效率值中的最小值」。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：n = 6, speed = [2,10,3,1,5,8], efficiency = [5,4,3,9,7,2], k = 2 输出：60 解释： 我们选择工程师
+     * 2（speed=10 且 efficiency=4）和工程师 5（speed=5 且 efficiency=7）。他们的团队表现值为 performance = (10 + 5) *
+     * min(4, 7) = 60 。 示例 2：
+     *
+     * <p>输入：n = 6, speed = [2,10,3,1,5,8], efficiency = [5,4,3,9,7,2], k = 3 输出：68 解释：
+     * 此示例与第一个示例相同，除了 k = 3 。我们可以选择工程师 1 ，工程师 2 和工程师 5 得到最大的团队表现值。表现值为 performance = (2 + 10 + 5) *
+     * min(5, 4, 7) = 68 。 示例 3：
+     *
+     * <p>输入：n = 6, speed = [2,10,3,1,5,8], efficiency = [5,4,3,9,7,2], k = 4 输出：72
+     *
+     * <p>提示：
+     *
+     * <p>1 <= n <= 10^5 speed.length == n efficiency.length == n 1 <= speed[i] <= 10^5 1 <=
+     * efficiency[i] <= 10^8 1 <= k <= n
+     *
+     * @param n
+     * @param speed
+     * @param efficiency
+     * @param k
+     * @return
+     */
+    public int maxPerformance(int n, int[] speed, int[] efficiency, int k) {
+        // 枚举
+        List<Engineer> list = new ArrayList<>();
+
+        for (int i = 0; i < n; i++) {
+            list.add(new Engineer(speed[i], efficiency[i]));
+        }
+        // 按 效率 从高到低排序
+        list.sort((a, b) -> b.efficiency - a.efficiency);
+
+        // 构建 最小 堆 记录 speed
+        PriorityQueue<Integer> heap = new PriorityQueue<>();
+        long result = 0, speedSum = 0;
+        for (int i = 0; i < n; i++) {
+            if (heap.size() == k) {
+                speedSum -= heap.poll();
+            }
+            Engineer eg = list.get(i);
+            int sp = eg.speed, ef = eg.efficiency;
+            speedSum += sp;
+            heap.offer(sp);
+
+            result = Math.max(result, speedSum * ef);
+        }
+
+        return (int) (result % MOD);
+    }
+
+    static int MOD = 1_000_000_007;
+
+    static class Engineer {
+        int speed, efficiency;
+
+        public Engineer(int speed, int efficiency) {
+            this.speed = speed;
+            this.efficiency = efficiency;
+        }
     }
 }

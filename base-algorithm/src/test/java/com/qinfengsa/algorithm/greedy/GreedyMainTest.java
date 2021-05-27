@@ -28,4 +28,11 @@ public class GreedyMainTest {
         int[] target = {9, 3, 5};
         logResult(main.isPossible(target));
     }
+
+    @Test
+    public void maxPerformance() {
+        int n = 3, k = 2;
+        int[] speed = {2, 8, 2}, efficiency = {2, 7, 1};
+        logResult(main.maxPerformance(n, speed, efficiency, k));
+    }
 }
