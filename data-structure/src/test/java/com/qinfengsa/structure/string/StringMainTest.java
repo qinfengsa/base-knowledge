@@ -34,4 +34,10 @@ public class StringMainTest {
         int minJump = 2, maxJump = 3;
         logResult(main.canReach(s, minJump, maxJump));
     }
+
+    @Test
+    public void longestPrefix() {
+        String s = "level";
+        logResult(main.longestPrefix(s));
+    }
 }

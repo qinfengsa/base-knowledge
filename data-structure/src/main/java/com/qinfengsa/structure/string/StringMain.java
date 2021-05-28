@@ -1,5 +1,6 @@
 package com.qinfengsa.structure.string;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -304,5 +305,52 @@ public class StringMain {
             last = i;
         }
         return last == len - 1;
+    }
+
+    /**
+     * 1392. 最长快乐前缀
+     *
+     * <p>「快乐前缀」是在原字符串中既是 非空 前缀也是后缀（不包括原字符串自身）的字符串。
+     *
+     * <p>给你一个字符串 s，请你返回它的 最长快乐前缀。
+     *
+     * <p>如果不存在满足题意的前缀，则返回一个空字符串。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：s = "level" 输出："l" 解释：不包括 s 自己，一共有 4 个前缀（"l", "le", "lev", "leve"）和 4 个后缀（"l", "el",
+     * "vel", "evel"）。最长的既是前缀也是后缀的字符串是 "l" 。 示例 2：
+     *
+     * <p>输入：s = "ababab" 输出："abab" 解释："abab" 是最长的既是前缀也是后缀的字符串。题目允许前后缀在原字符串中重叠。 示例 3：
+     *
+     * <p>输入：s = "leetcodeleet" 输出："leet" 示例 4：
+     *
+     * <p>输入：s = "a" 输出：""
+     *
+     * <p>提示：
+     *
+     * <p>1 <= s.length <= 10^5 s 只含有小写英文字母
+     *
+     * @param s
+     * @return
+     */
+    public String longestPrefix(String s) {
+        int len = s.length();
+        int[] next = new int[len];
+        Arrays.fill(next, -1);
+        // 通过next记录 字符串自身的信息
+        // 与自身做匹配，匹配自身重复的部分
+        for (int i = 1; i < len; i++) {
+            int j = next[i - 1]; // 求前面一位匹配到的位置
+            while (j >= 0 && s.charAt(i) != s.charAt(j + 1)) {
+                j = next[j]; // 递推计算
+            }
+            if (s.charAt(i) == s.charAt(j + 1)) {
+                next[i] = j + 1;
+            }
+        }
+        log.debug("next:{}", next);
+
+        return s.substring(0, next[len - 1] + 1);
     }
 }

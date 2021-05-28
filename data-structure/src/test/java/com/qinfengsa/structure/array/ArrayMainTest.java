@@ -63,4 +63,10 @@ public class ArrayMainTest {
         int[][] grid = {{1, 1, 1, 1}, {2, 2, 2, 2}, {1, 1, 1, 1}, {2, 2, 2, 2}};
         logResult(main.minCost(grid));
     }
+
+    @Test
+    public void maxSatisfaction() {
+        int[] satisfaction = {-2, 5, -1, 0, 3, -3};
+        logResult(main.maxSatisfaction(satisfaction));
+    }
 }
