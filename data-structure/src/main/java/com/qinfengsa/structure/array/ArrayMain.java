@@ -716,4 +716,162 @@ public class ArrayMain {
 
         return result;
     }
+
+    /**
+     * 5755. 数组中最大数对和的最小值
+     *
+     * <p>题目难度Medium 一个数对 (a,b) 的 数对和 等于 a + b 。最大数对和 是一个数对数组中最大的 数对和 。
+     *
+     * <p>比方说，如果我们有数对 (1,5) ，(2,3) 和 (4,4)，最大数对和 为 max(1+5, 2+3, 4+4) = max(6, 5, 8) = 8 。 给你一个长度为
+     * 偶数 n 的数组 nums ，请你将 nums 中的元素分成 n / 2 个数对，使得：
+     *
+     * <p>nums 中每个元素 恰好 在 一个 数对中，且 最大数对和 的值 最小 。 请你在最优数对划分的方案下，返回最小的 最大数对和 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：nums = [3,5,2,3] 输出：7 解释：数组中的元素可以分为数对 (3,3) 和 (5,2) 。 最大数对和为 max(3+3, 5+2) = max(6, 7)
+     * = 7 。 示例 2：
+     *
+     * <p>输入：nums = [3,5,4,2,4,6] 输出：8 解释：数组中的元素可以分为数对 (3,5)，(4,4) 和 (6,2) 。 最大数对和为 max(3+5, 4+4,
+     * 6+2) = max(8, 8, 8) = 8 。
+     *
+     * <p>提示：
+     *
+     * <p>n == nums.length 2 <= n <= 105 n 是 偶数 。 1 <= nums[i] <= 105
+     *
+     * @param nums
+     * @return
+     */
+    public int minPairSum(int[] nums) {
+        int n = nums.length;
+        Arrays.sort(nums);
+        int max = 0;
+        for (int i = 0; i < n >> 1; i++) {
+            int num = nums[i] + nums[n - i - 1];
+            max = Math.max(max, num);
+        }
+
+        return max;
+    }
+
+    /**
+     * 5757. 矩阵中最大的三个菱形和
+     *
+     * <p>给你一个 m x n 的整数矩阵 grid 。
+     *
+     * <p>菱形和 指的是 grid 中一个正菱形 边界
+     * 上的元素之和。本题中的菱形必须为正方形旋转45度，且四个角都在一个格子当中。下图是四个可行的菱形，每个菱形和应该包含的格子都用了相应颜色标注在图中。
+     *
+     * <p>注意，菱形可以是一个面积为 0 的区域，如上图中右下角的紫色菱形所示。
+     *
+     * <p>请你按照 降序 返回 grid 中三个最大的 互不相同的菱形和 。如果不同的和少于三个，则将它们全部返回。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：grid = [[3,4,5,1,3],[3,3,4,2,3],[20,30,200,40,10],[1,5,5,4,1],[4,3,2,2,5]]
+     * 输出：[228,216,211] 解释：最大的三个菱形和如上图所示。 - 蓝色：20 + 3 + 200 + 5 = 228 - 红色：200 + 2 + 10 + 4 = 216 -
+     * 绿色：5 + 200 + 4 + 2 = 211 示例 2：
+     *
+     * <p>输入：grid = [[1,2,3],[4,5,6],[7,8,9]] 输出：[20,9,8] 解释：最大的三个菱形和如上图所示。 - 蓝色：4 + 2 + 6 + 8 = 20
+     * - 红色：9 （右下角红色的面积为 0 的菱形） - 绿色：8 （下方中央面积为 0 的菱形） 示例 3：
+     *
+     * <p>输入：grid = [[7,7,7]] 输出：[7] 解释：所有三个可能的菱形和都相同，所以返回 [7] 。
+     *
+     * <p>提示：
+     *
+     * <p>m == grid.length n == grid[i].length 1 <= m, n <= 100 1 <= grid[i][j] <= 105
+     *
+     * @param grid
+     * @return
+     */
+    public int[] getBiggestThree(int[][] grid) {
+        int m = grid.length, n = grid[0].length;
+
+        int[][] leftSum = new int[m][n], rightSum = new int[m][n];
+        int max0 = 0, max1 = 0, max2 = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] >= max0) {
+                    if (grid[i][j] > max0) {
+                        max2 = max1;
+                        max1 = max0;
+                        max0 = grid[i][j];
+                    }
+
+                } else if (grid[i][j] >= max1) {
+                    if (grid[i][j] > max1) {
+                        max2 = max1;
+                        max1 = grid[i][j];
+                    }
+
+                } else if (grid[i][j] > max2) {
+                    max2 = grid[i][j];
+                }
+
+                if (i == 0 || j == 0) {
+                    leftSum[i][j] = grid[i][j];
+                } else {
+                    leftSum[i][j] = leftSum[i - 1][j - 1] + grid[i][j];
+                }
+            }
+        }
+        for (int i = 0; i < m; i++) {
+            for (int j = n - 1; j >= 0; j--) {
+                if (i == 0 || j == n - 1) {
+                    rightSum[i][j] = grid[i][j];
+                } else {
+                    rightSum[i][j] = rightSum[i - 1][j + 1] + grid[i][j];
+                }
+            }
+        }
+        logResult(leftSum);
+
+        logResult(rightSum);
+
+        for (int l = 3; l <= Math.min(m, n); l += 2) {
+            // 最上方 坐标
+            for (int i = 0; i <= m - l; i++) {
+                int half = l >> 1;
+                for (int j = half; j < n - half; j++) {
+                    int leftR = i + half, leftC = j - half;
+                    int rightR = i + half, rightC = j + half;
+                    int downR = i + l - 1, downC = j;
+                    // 计算 面积
+                    int sum =
+                            leftSum[rightR][rightC]
+                                    - leftSum[i][j]
+                                    + rightSum[leftR][leftC]
+                                    - rightSum[i][j]
+                                    + leftSum[downR][downC]
+                                    - leftSum[leftR][leftC]
+                                    + rightSum[downR][downC]
+                                    - rightSum[rightR][rightC]
+                                    + grid[i][j]
+                                    - grid[downR][downC];
+                    if (sum >= max0) {
+                        if (sum > max0) {
+                            max2 = max1;
+                            max1 = max0;
+                            max0 = sum;
+                        }
+                    } else if (sum >= max1) {
+                        if (sum > max1) {
+                            max2 = max1;
+                            max1 = sum;
+                        }
+                    } else if (sum > max2) {
+                        max2 = sum;
+                    }
+                }
+            }
+        }
+        log.debug("max0,max1,max2 {} {} {}", max0, max1, max2);
+        if (max1 == 0) {
+            return new int[] {max0};
+        } else if (max2 == 0) {
+            return new int[] {max0, max1};
+        }
+
+        return new int[] {max0, max1, max2};
+    }
 }

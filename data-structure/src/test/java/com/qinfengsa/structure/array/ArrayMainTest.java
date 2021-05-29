@@ -69,4 +69,17 @@ public class ArrayMainTest {
         int[] satisfaction = {-2, 5, -1, 0, 3, -3};
         logResult(main.maxSatisfaction(satisfaction));
     }
+
+    @Test
+    public void getBiggestThree() {
+        int[][] grid = {
+            {3, 4, 5, 1, 3},
+            {3, 3, 4, 2, 3},
+            {20, 30, 200, 40, 10},
+            {1, 5, 5, 4, 1},
+            {4, 3, 2, 2, 5}
+        };
+        int[] result = main.getBiggestThree(grid);
+        log.debug("result:{}", result);
+    }
 }
