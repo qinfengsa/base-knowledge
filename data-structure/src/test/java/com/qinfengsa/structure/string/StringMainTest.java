@@ -40,4 +40,13 @@ public class StringMainTest {
         String s = "level";
         logResult(main.longestPrefix(s));
     }
+
+    @Test
+    public void maxValue() {
+        /*"-132"
+        3*/
+        String n = "469975787943862651173569913153377";
+        int x = 3;
+        logResult(main.maxValue(n, x));
+    }
 }

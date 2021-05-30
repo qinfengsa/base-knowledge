@@ -394,4 +394,113 @@ public class StringMain {
 
         return result;
     }
+
+    /**
+     * 5772. 检查某单词是否等于两单词之和
+     *
+     * <p>字母的 字母值 取决于字母在字母表中的位置，从 0 开始 计数。即，'a' -> 0、'b' -> 1、'c' -> 2，以此类推。
+     *
+     * <p>对某个由小写字母组成的字符串 s 而言，其 数值 就等于将 s 中每个字母的 字母值 按顺序 连接 并 转换 成对应整数。
+     *
+     * <p>例如，s = "acb" ，依次连接每个字母的字母值可以得到 "021" ，转换为整数得到 21 。 给你三个字符串 firstWord、secondWord 和
+     * targetWord ，每个字符串都由从 'a' 到 'j' （含 'a' 和 'j' ）的小写英文字母组成。
+     *
+     * <p>如果 firstWord 和 secondWord 的 数值之和 等于 targetWord 的数值，返回 true ；否则，返回 false 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：firstWord = "acb", secondWord = "cba", targetWord = "cdb" 输出：true 解释： firstWord 的数值为
+     * "acb" -> "021" -> 21 secondWord 的数值为 "cba" -> "210" -> 210 targetWord 的数值为 "cdb" -> "231" ->
+     * 231 由于 21 + 210 == 231 ，返回 true 示例 2：
+     *
+     * <p>输入：firstWord = "aaa", secondWord = "a", targetWord = "aab" 输出：false 解释： firstWord 的数值为
+     * "aaa" -> "000" -> 0 secondWord 的数值为 "a" -> "0" -> 0 targetWord 的数值为 "aab" -> "001" -> 1 由于 0
+     * + 0 != 1 ，返回 false 示例 3：
+     *
+     * <p>输入：firstWord = "aaa", secondWord = "a", targetWord = "aaaa" 输出：true 解释： firstWord 的数值为
+     * "aaa" -> "000" -> 0 secondWord 的数值为 "a" -> "0" -> 0 targetWord 的数值为 "aaaa" -> "0000" -> 0 由于
+     * 0 + 0 == 0 ，返回 true
+     *
+     * <p>提示：
+     *
+     * <p>1 <= firstWord.length, secondWord.length, targetWord.length <= 8 firstWord、secondWord 和
+     * targetWord 仅由从 'a' 到 'j' （含 'a' 和 'j' ）的小写英文字母组成。
+     *
+     * @param firstWord
+     * @param secondWord
+     * @param targetWord
+     * @return
+     */
+    public boolean isSumEqual(String firstWord, String secondWord, String targetWord) {
+        int num1 = 0, num2 = 0, num0 = 0;
+        for (char c : firstWord.toCharArray()) {
+            num1 = num1 * 10 + (c - 'a');
+        }
+        for (char c : secondWord.toCharArray()) {
+            num2 = num2 * 10 + (c - 'a');
+        }
+
+        for (char c : targetWord.toCharArray()) {
+            num0 = num0 * 10 + (c - 'a');
+        }
+
+        return num1 + num2 == num0;
+    }
+
+    /**
+     * 5773. 插入后的最大值
+     *
+     * <p>给你一个非常大的整数 n 和一个整数数字 x ，大整数 n 用一个字符串表示。n 中每一位数字和数字 x 都处于闭区间 [1, 9] 中，且 n 可能表示一个 负数 。
+     *
+     * <p>你打算通过在 n 的十进制表示的任意位置插入 x 来 最大化 n 的 数值 。但 不能 在负号的左边插入 x 。
+     *
+     * <p>例如，如果 n = 73 且 x = 6 ，那么最佳方案是将 6 插入 7 和 3 之间，使 n = 763 。 如果 n = -55 且 x = 2 ，那么最佳方案是将 2
+     * 插在第一个 5 之前，使 n = -255 。 返回插入操作后，用字符串表示的 n 的最大值。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：n = "99", x = 9 输出："999" 解释：不管在哪里插入 9 ，结果都是相同的。 示例 2：
+     *
+     * <p>输入：n = "-13", x = 2 输出："-123" 解释：向 n 中插入 x 可以得到 -213、-123 或者 -132 ，三者中最大的是 -123 。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= n.length <= 105 1 <= x <= 9 n 中每一位的数字都在闭区间 [1, 9] 中。 n 代表一个有效的整数。 当 n 表示负数时，将会以字符 '-'
+     * 开始。
+     *
+     * @param n
+     * @param x
+     * @return
+     */
+    public String maxValue(String n, int x) {
+        StringBuilder sb = new StringBuilder();
+        int len = n.length();
+        char c = n.charAt(0);
+        // 负数 从后往前找第一个比x大的字符
+
+        if (c == '-') {
+            /*int idx = len - 1;
+            // 负数 从后往前找第一个比x大的字符
+            // 负数 从后往前找第一个比x大的字符
+            while (idx > 0 && (n.charAt(idx) - '0') < x) {
+                idx--;
+            }
+            sb.append(n.substring(0, idx)).append(x).append(n.substring(idx));*/
+            int idx = 1;
+            while (idx < len && (n.charAt(idx) - '0') <= x) {
+                idx++;
+            }
+            sb.append(n.substring(0, idx)).append(x).append(n.substring(idx));
+
+        } else {
+            int idx = 0;
+            // 正数 找第一个比x小的字符
+            while (idx < len && (n.charAt(idx) - '0') >= x) {
+                idx++;
+            }
+            sb.append(n.substring(0, idx)).append(x).append(n.substring(idx));
+        }
+
+        return sb.toString();
+    }
 }

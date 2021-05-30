@@ -82,4 +82,12 @@ public class ArrayMainTest {
         int[] result = main.getBiggestThree(grid);
         log.debug("result:{}", result);
     }
+
+    @Test
+    public void assignTasks() {
+        int[] servers = {3, 3, 2}, tasks = {1, 2, 3, 2, 1, 2};
+        // int[] servers = {10, 63, 95, 16, 85, 57, 83, 95, 6, 29, 71}, tasks = {70, 31, 83, 15, 32,
+        // 67, 98, 65, 56, 48, 38, 90, 5};
+        log.debug("result:{}", main.assignTasks(servers, tasks));
+    }
 }
