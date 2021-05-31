@@ -78,4 +78,18 @@ public class DynamicProgrammingMainTest {
         int[] digits = {8, 6, 7, 1, 0};
         logResult(main.largestMultipleOfThree(digits));
     }
+
+    @Test
+    public void numberOfArrays() {
+        String s = "1234567890";
+        int k = 90;
+        logResult(main.numberOfArrays(s, k));
+    }
+
+    @Test
+    public void numOfArrays() {
+        // int n = 50, m = 100, k = 25;
+        int n = 2, m = 3, k = 1;
+        logResult(main.numOfArrays(n, m, k));
+    }
 }
