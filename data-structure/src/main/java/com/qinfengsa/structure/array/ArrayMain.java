@@ -4,11 +4,14 @@ import static com.qinfengsa.structure.util.LogUtils.logResult;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Deque;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
+import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -969,17 +972,87 @@ public class ArrayMain {
         }
     }
 
-    static class TaskNode {
-        // 下表 服务器 时间
-        int idx, server, runTime;
-        long time;
-        boolean end = false;
+    /**
+     * 1439. 有序矩阵中的第 k 个最小数组和
+     *
+     * <p>给你一个 m * n 的矩阵 mat，以及一个整数 k ，矩阵中的每一行都以非递减的顺序排列。
+     *
+     * <p>你可以从每一行中选出 1 个元素形成一个数组。返回所有可能数组中的第 k 个 最小 数组和。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：mat = [[1,3,11],[2,4,6]], k = 5 输出：7 解释：从每一行中选出一个元素，前 k 个和最小的数组分别是： [1,2], [1,4],
+     * [3,2], [3,4], [1,6]。其中第 5 个的和是 7 。 示例 2：
+     *
+     * <p>输入：mat = [[1,3,11],[2,4,6]], k = 9 输出：17 示例 3：
+     *
+     * <p>输入：mat = [[1,10,10],[1,4,5],[2,3,6]], k = 7 输出：9 解释：从每一行中选出一个元素，前 k 个和最小的数组分别是： [1,1,2],
+     * [1,1,3], [1,4,2], [1,4,3], [1,1,6], [1,5,2], [1,5,3]。其中第 7 个的和是 9 。 示例 4：
+     *
+     * <p>输入：mat = [[1,1,10],[2,2,9]], k = 7 输出：12
+     *
+     * <p>提示：
+     *
+     * <p>m == mat.length n == mat.length[i] 1 <= m, n <= 40 1 <= k <= min(200, n ^ m) 1 <=
+     * mat[i][j] <= 5000 mat[i] 是一个非递减数组
+     *
+     * @param mat
+     * @param k
+     * @return
+     */
+    public int kthSmallest(int[][] mat, int k) {
+        int m = mat.length, n = mat[0].length;
+        int min = 0;
+        for (int[] nums : mat) {
+            min += nums[0];
+        }
+        if (k == 1) {
+            return min;
+        }
+        int[][] subNums = new int[m][n];
+        for (int i = 0; i < m; i++) {
+            for (int j = 1; j < n; j++) {
+                subNums[i][j] = mat[i][j] - mat[i][j - 1];
+            }
+        }
+        logResult(subNums);
+        PriorityQueue<ArrayNode> heap = new PriorityQueue<>(Comparator.comparingInt(a -> a.sum));
+        int[] initNums = new int[m];
+        heap.offer(new ArrayNode(initNums, min));
 
-        public TaskNode(int idx, int server, long time, int rumTime) {
-            this.idx = idx;
-            this.server = server;
-            this.time = time;
-            this.runTime = rumTime;
+        Set<String> visit = new HashSet<>();
+        visit.add(Arrays.toString(initNums));
+
+        for (int idx = 1; idx < k; idx++) {
+            ArrayNode node = heap.poll();
+            // 下一个节点
+            int[] preIdx = node.preIdx;
+            for (int i = 0; i < m; i++) {
+                if (preIdx[i] == n - 1) {
+                    continue;
+                }
+                int[] tmp = preIdx.clone();
+                tmp[i]++;
+                String hash = Arrays.toString(tmp);
+                if (visit.contains(hash)) {
+                    continue;
+                }
+                visit.add(hash);
+                int num = node.sum + subNums[i][tmp[i]];
+                heap.offer(new ArrayNode(tmp, num));
+            }
+        }
+
+        return heap.peek().sum;
+    }
+
+    static class ArrayNode {
+        int[] preIdx;
+        int sum;
+
+        public ArrayNode(int[] preIdx, int sum) {
+            this.preIdx = preIdx;
+            this.sum = sum;
         }
     }
 }

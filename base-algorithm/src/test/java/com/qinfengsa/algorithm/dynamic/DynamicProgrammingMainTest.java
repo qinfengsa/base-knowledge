@@ -92,4 +92,21 @@ public class DynamicProgrammingMainTest {
         int n = 2, m = 3, k = 1;
         logResult(main.numOfArrays(n, m, k));
     }
+
+    @Test
+    public void constrainedSubsetSum() {
+        int[] nums = {10, -2, -10, -5, 20};
+        int k = 2;
+        logResult(main.constrainedSubsetSum(nums, k));
+    }
+
+    @Test
+    public void numberWays() {
+        List<List<Integer>> hats = new ArrayList<>();
+        // [[3,4],[4,5],[5]]
+        hats.add(Arrays.asList(3, 4));
+        hats.add(Arrays.asList(4, 5));
+        hats.add(Arrays.asList(5));
+        logResult(main.numberWays(hats));
+    }
 }

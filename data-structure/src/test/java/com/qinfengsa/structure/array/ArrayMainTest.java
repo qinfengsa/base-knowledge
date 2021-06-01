@@ -90,4 +90,11 @@ public class ArrayMainTest {
         // 67, 98, 65, 56, 48, 38, 90, 5};
         log.debug("result:{}", main.assignTasks(servers, tasks));
     }
+
+    @Test
+    public void kthSmallest() {
+        int[][] mat = {{1, 1, 10}, {2, 2, 9}};
+        int k = 7;
+        logResult(main.kthSmallest(mat, k));
+    }
 }
