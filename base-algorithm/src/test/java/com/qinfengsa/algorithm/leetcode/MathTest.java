@@ -7931,10 +7931,9 @@ public class MathTest {
         int len = queries.length;
         boolean[] result = new boolean[len];
         long[] candySum = new long[candiesCount.length + 1];
-        int sum = 0;
+
         for (int i = 0; i < candiesCount.length; i++) {
-            sum += candiesCount[i];
-            candySum[i + 1] = sum;
+            candySum[i + 1] = candySum[i] + candiesCount[i];
         }
 
         for (int i = 0; i < len; i++) {

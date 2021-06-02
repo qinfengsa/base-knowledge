@@ -109,4 +109,18 @@ public class DynamicProgrammingMainTest {
         hats.add(Arrays.asList(5));
         logResult(main.numberWays(hats));
     }
+
+    @Test
+    public void cherryPickup() {
+        int[][] grid = {
+            {0, 8, 7, 10, 9, 10, 0, 9, 6},
+            {8, 7, 10, 8, 7, 4, 9, 6, 10},
+            {8, 1, 1, 5, 1, 5, 5, 1, 2},
+            {9, 4, 10, 8, 8, 1, 9, 5, 0},
+            {4, 3, 6, 10, 9, 2, 4, 8, 10},
+            {7, 3, 2, 8, 3, 3, 5, 9, 8},
+            {1, 2, 6, 5, 6, 2, 0, 10, 0}
+        };
+        logResult(main.cherryPickup(grid));
+    }
 }

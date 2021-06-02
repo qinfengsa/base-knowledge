@@ -1133,4 +1133,179 @@ public class DynamicProgrammingMain {
 
         return dp[state - 1];
     }
+
+    /**
+     * 1444. 切披萨的方案数
+     *
+     * <p>给你一个 rows x cols 大小的矩形披萨和一个整数 k ，矩形包含两种字符： 'A' （表示苹果）和 '.' （表示空白格子）。你需要切披萨 k-1 次，得到 k
+     * 块披萨并送给别人。
+     *
+     * <p>切披萨的每一刀，先要选择是向垂直还是水平方向切，再在矩形的边界上选一个切的位置，将披萨一分为二。如果垂直地切披萨，那么需要把左边的部分送给一个人，如果水平地切，那么需要把上面的部分送给一个人。在切完最后一刀后，需要把剩下来的一块送给最后一个人。
+     *
+     * <p>请你返回确保每一块披萨包含 至少 一个苹果的切披萨方案数。由于答案可能是个很大的数字，请你返回它对 10^9 + 7 取余的结果。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：pizza = ["A..","AAA","..."], k = 3 输出：3 解释：上图展示了三种切披萨的方案。注意每一块披萨都至少包含一个苹果。 示例 2：
+     *
+     * <p>输入：pizza = ["A..","AA.","..."], k = 3 输出：1 示例 3：
+     *
+     * <p>输入：pizza = ["A..","A..","..."], k = 1 输出：1
+     *
+     * <p>提示：
+     *
+     * <p>1 <= rows, cols <= 50 rows == pizza.length cols == pizza[i].length 1 <= k <= 10 pizza
+     * 只包含字符 'A' 和 '.' 。
+     *
+     * @param pizza
+     * @param k
+     * @return
+     */
+    public int ways(String[] pizza, int k) {
+        int rows = pizza.length, cols = pizza[0].length();
+
+        //  左上角在i行j列 剩余的苹果
+        int[][] apples = new int[rows + 1][cols + 1];
+        for (int i = rows - 1; i >= 0; i--) {
+            for (int j = cols - 1; j >= 0; j--) {
+                apples[i][j] = apples[i + 1][j] + apples[i][j + 1] - apples[i + 1][j + 1];
+                if (pizza[i].charAt(j) == 'A') {
+                    apples[i][j]++;
+                }
+            }
+        }
+        // dp[i][j][k] 表示 剩余 左上角 i行j列 然后 切了k次
+        int[][][] dp = new int[rows][cols][k];
+
+        dp[0][0][0] = 1;
+        // 切了n次
+        for (int n = 1; n < k; n++) {
+            for (int i = 0; i < rows; i++) {
+                for (int j = 0; j < cols; j++) {
+                    // 剩余苹果数量为 0
+                    if (apples[i][j] == 0) {
+                        continue;
+                    }
+                    // 剩余 左上角 i行j列
+                    int count = 0;
+
+                    // 横切 枚举 上一个 i1 切的是 i1 ~ i
+                    for (int i1 = 0; i1 < i; i1++) {
+                        // 横切的苹果数量
+                        int num = apples[i1][j] - apples[i][j];
+                        if (num == 0) {
+                            continue;
+                        }
+                        count += dp[i1][j][n - 1];
+                        count %= MOD;
+                    }
+
+                    // 竖切
+                    for (int j1 = 0; j1 < j; j1++) {
+                        // 竖切的苹果数量
+                        int num = apples[i][j1] - apples[i][j];
+                        if (num == 0) {
+                            continue;
+                        }
+                        count += dp[i][j1][n - 1];
+                        count %= MOD;
+                    }
+
+                    dp[i][j][n] = count;
+                }
+            }
+        }
+        int result = 0;
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                result += dp[i][j][k - 1];
+                result %= MOD;
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * 1463. 摘樱桃 II
+     *
+     * <p>给你一个 rows x cols 的矩阵 grid 来表示一块樱桃地。 grid 中每个格子的数字表示你能获得的樱桃数目。
+     *
+     * <p>你有两个机器人帮你收集樱桃，机器人 1 从左上角格子 (0,0) 出发，机器人 2 从右上角格子 (0, cols-1) 出发。
+     *
+     * <p>请你按照如下规则，返回两个机器人能收集的最多樱桃数目：
+     *
+     * <p>从格子 (i,j) 出发，机器人可以移动到格子 (i+1, j-1)，(i+1, j) 或者 (i+1, j+1) 。
+     * 当一个机器人经过某个格子时，它会把该格子内所有的樱桃都摘走，然后这个位置会变成空格子，即没有樱桃的格子。 当两个机器人同时到达同一个格子时，它们中只有一个可以摘到樱桃。
+     * 两个机器人在任意时刻都不能移动到 grid 外面。 两个机器人最后都要到达 grid 最底下一行。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：grid = [[3,1,1],[2,5,1],[1,5,5],[2,1,1]] 输出：24 解释：机器人 1 和机器人 2 的路径在上图中分别用绿色和蓝色表示。 机器人 1
+     * 摘的樱桃数目为 (3 + 2 + 5 + 2) = 12 。 机器人 2 摘的樱桃数目为 (1 + 5 + 5 + 1) = 12 。 樱桃总数为： 12 + 12 = 24 。 示例
+     * 2：
+     *
+     * <p>输入：grid =
+     * [[1,0,0,0,0,0,1],[2,0,0,0,0,3,0],[2,0,9,0,0,0,0],[0,3,0,5,4,0,0],[1,0,2,3,0,0,6]] 输出：28
+     * 解释：机器人 1 和机器人 2 的路径在上图中分别用绿色和蓝色表示。 机器人 1 摘的樱桃数目为 (1 + 9 + 5 + 2) = 17 。 机器人 2 摘的樱桃数目为 (1 + 3
+     * + 4 + 3) = 11 。 樱桃总数为： 17 + 11 = 28 。 示例 3：
+     *
+     * <p>输入：grid = [[1,0,0,3],[0,0,0,3],[0,0,3,3],[9,0,3,3]] 输出：22 示例 4：
+     *
+     * <p>输入：grid = [[1,1],[1,1]] 输出：4
+     *
+     * <p>提示：
+     *
+     * <p>rows == grid.length cols == grid[i].length 2 <= rows, cols <= 70 0 <= grid[i][j] <= 100
+     *
+     * @param grid
+     * @return
+     */
+    public int cherryPickup(int[][] grid) {
+        int rows = grid.length, cols = grid[0].length;
+        // dp[i][j1][j2] 表示第一个机器人从 (0, 0)走到 (i,j1)，第二个机器人从 (0, n-1)走到 (i, j2)最多能收集的樱桃数目
+        int[][][] dp = new int[rows][cols][cols];
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                Arrays.fill(dp[i][j], -1);
+            }
+        }
+
+        dp[0][0][cols - 1] = grid[0][0] + grid[0][cols - 1];
+
+        for (int i = 1; i < rows; i++) {
+            for (int j1 = 0; j1 < cols; j1++) {
+                for (int j2 = j1 + 1; j2 < cols; j2++) {
+                    // 枚举上一行
+                    for (int lj1 = Math.max(j1 - 1, 0); lj1 <= Math.min(j1 + 1, cols - 1); lj1++) {
+
+                        for (int lj2 = Math.max(j2 - 1, 0);
+                                lj2 <= Math.min(j2 + 1, cols - 1);
+                                lj2++) {
+                            if (dp[i - 1][lj1][lj2] == -1) {
+                                continue;
+                            }
+
+                            dp[i][j1][j2] =
+                                    Math.max(
+                                            dp[i][j1][j2],
+                                            dp[i - 1][lj1][lj2]
+                                                    + (j1 == j2
+                                                            ? grid[i][j1]
+                                                            : (grid[i][j1] + grid[i][j2])));
+                        }
+                    }
+                }
+            }
+        }
+        logResult(dp);
+        int result = 0;
+        for (int j1 = 0; j1 < cols; j1++) {
+            for (int j2 = j1 + 1; j2 < cols; j2++) {
+                result = Math.max(result, dp[rows - 1][j1][j2]);
+            }
+        }
+
+        return result;
+    }
 }

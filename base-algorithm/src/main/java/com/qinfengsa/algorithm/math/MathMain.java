@@ -1,5 +1,7 @@
 package com.qinfengsa.algorithm.math;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.TreeSet;
 import lombok.extern.slf4j.Slf4j;
 
@@ -237,4 +239,96 @@ public class MathMain {
     }
 
     static final int MOD = 1000000007;
+
+    /**
+     * 1453. 圆形靶内的最大飞镖数量
+     *
+     * <p>墙壁上挂着一个圆形的飞镖靶。现在请你蒙着眼睛向靶上投掷飞镖。
+     *
+     * <p>投掷到墙上的飞镖用二维平面上的点坐标数组表示。飞镖靶的半径为 r 。
+     *
+     * <p>请返回能够落在 任意 半径为 r 的圆形靶内或靶上的最大飞镖数。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：points = [[-2,0],[2,0],[0,2],[0,-2]], r = 2 输出：4 解释：如果圆形的飞镖靶的圆心为 (0,0) ，半径为 2
+     * ，所有的飞镖都落在靶上，此时落在靶上的飞镖数最大，值为 4 。 示例 2：
+     *
+     * <p>输入：points = [[-3,0],[3,0],[2,6],[5,4],[0,9],[7,8]], r = 5 输出：5 解释：如果圆形的飞镖靶的圆心为 (0,4) ，半径为
+     * 5 ，则除了 (7,8) 之外的飞镖都落在靶上，此时落在靶上的飞镖数最大，值为 5 。 示例 3：
+     *
+     * <p>输入：points = [[-2,0],[2,0],[0,2],[0,-2]], r = 1 输出：1 示例 4：
+     *
+     * <p>输入：points = [[1,2],[3,5],[1,-1],[2,3],[4,1],[1,3]], r = 2 输出：4
+     *
+     * <p>提示：
+     *
+     * <p>1 <= points.length <= 100 points[i].length == 2 -10^4 <= points[i][0], points[i][1] <=
+     * 10^4 1 <= r <= 5000
+     *
+     * @param points
+     * @param r
+     * @return
+     */
+    public int numPoints(int[][] points, int r) {
+        int len = points.length;
+        if (len == 1) {
+            return 1;
+        }
+        int result = 1;
+
+        for (int i = 0; i < len; i++) {
+            for (int j = i + 1; j < len; j++) {
+                double x1 = points[i][0], y1 = points[i][1], x2 = points[j][0], y2 = points[j][1];
+                double d = Math.sqrt(getDistance(x1, x2, y1, y2));
+                if (d > 2 * r) {
+                    continue;
+                }
+                // 中点
+                double midX = (x1 + x2) / 2.0, midY = (y1 + y2) / 2.0;
+                // 计算 圆心
+                List<double[]> centerList = new ArrayList<>();
+                double x, y;
+                if (d == 2 * r) { // 圆心在中点
+                    centerList.add(new double[] {midX, midY});
+                } else {
+                    // 上下两个圆心
+                    double h = Math.sqrt(r * r - (d / 2.0) * (d / 2.0));
+                    if (x1 == x2) {
+                        // 竖线
+                        centerList.add(new double[] {midX + h, midY});
+                        centerList.add(new double[] {midX - h, midY});
+                    } else if (y1 == y2) {
+                        // 横线
+                        centerList.add(new double[] {midX, midY + h});
+                        centerList.add(new double[] {midX, midY - h});
+                    } else {
+
+                        // i j 连线斜率   (y2 - y1) / (x2 - x1)
+                        // 中线斜率a 垂直 于 连线斜率b  a*b = -1  (y - midY) / (x - midX)
+
+                        double cx1 = midX + (y1 - y2) / d * h, cx2 = midX + (y2 - y1) / d * h;
+                        double cy1 = midY + (x2 - x1) / d * h, cy2 = midY + (x1 - x2) / d * h;
+                        centerList.add(new double[] {cx1, cy1});
+                        centerList.add(new double[] {cx2, cy2});
+                    }
+                }
+                for (double[] p : centerList) {
+                    int count = 0;
+                    for (int[] point : points) {
+                        if (getDistance(p[0], point[0], p[1], point[1]) - r * r <= 0.00001) {
+                            count++;
+                        }
+                    }
+                    result = Math.max(result, count);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    private double getDistance(double x1, double x2, double y1, double y2) {
+        return (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2);
+    }
 }

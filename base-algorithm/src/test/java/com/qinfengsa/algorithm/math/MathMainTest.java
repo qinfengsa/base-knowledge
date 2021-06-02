@@ -21,4 +21,11 @@ public class MathMainTest {
         int[] nums = {2, 3, 1, 5, 4};
         logResult(main.maxValueAfterReverse(nums));
     }
+
+    @Test
+    public void numPoints() {
+        int[][] points = {{4, -4}, {-2, 0}, {0, 2}, {-3, 1}, {2, 3}, {2, 4}, {1, 1}};
+        int r = 3;
+        logResult(main.numPoints(points, r));
+    }
 }
