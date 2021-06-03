@@ -123,4 +123,11 @@ public class DynamicProgrammingMainTest {
         };
         logResult(main.cherryPickup(grid));
     }
+
+    @Test
+    public void minDistance() {
+        int[] houses = {7, 4, 6, 1};
+        int k = 1;
+        logResult(main.minDistance(houses, k));
+    }
 }

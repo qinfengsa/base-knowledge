@@ -1308,4 +1308,82 @@ public class DynamicProgrammingMain {
 
         return result;
     }
+
+    /**
+     * 1478. 安排邮筒
+     *
+     * <p>给你一个房屋数组houses 和一个整数 k ，其中 houses[i] 是第 i 栋房子在一条街上的位置，现需要在这条街上安排 k 个邮筒。
+     *
+     * <p>请你返回每栋房子与离它最近的邮筒之间的距离的 最小 总和。
+     *
+     * <p>答案保证在 32 位有符号整数范围以内。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：houses = [1,4,8,10,20], k = 3 输出：5 解释：将邮筒分别安放在位置 3， 9 和 20 处。 每个房子到最近邮筒的距离和为 |3-1| +
+     * |4-3| + |9-8| + |10-9| + |20-20| = 5 。 示例 2：
+     *
+     * <p>输入：houses = [2,3,5,12,18], k = 2 输出：9 解释：将邮筒分别安放在位置 3 和 14 处。 每个房子到最近邮筒距离和为 |2-3| + |3-3|
+     * + |5-3| + |12-14| + |18-14| = 9 。 示例 3：
+     *
+     * <p>输入：houses = [7,4,6,1], k = 1 输出：8 示例 4：
+     *
+     * <p>输入：houses = [3,6,14,10], k = 4 输出：0
+     *
+     * <p>提示：
+     *
+     * <p>n == houses.length 1 <= n <= 100 1 <= houses[i] <= 10^4 1 <= k <= n 数组 houses 中的整数互不相同。
+     *
+     * @param houses
+     * @param k
+     * @return
+     */
+    public int minDistance(int[] houses, int k) {
+        int n = houses.length;
+        if (k == n) {
+            return 0;
+        }
+        Arrays.sort(houses);
+        if (k == 1) {
+            return cost(houses, 0, n - 1);
+        }
+        int[][] costNums = new int[n][n];
+
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                costNums[i][j] = cost(houses, i, j);
+            }
+        }
+
+        // 动态规划
+        // dp[i][j] 表示 前 i 个房子 安排 j 个 邮筒
+        int[][] dp = new int[n][k];
+
+        for (int i = 0; i < n; i++) {
+            dp[i][0] = costNums[0][i];
+        }
+
+        for (int j = 1; j < k; j++) {
+            for (int i = j; i < n; i++) {
+                int min = Integer.MAX_VALUE;
+                // 枚举 前一个 房子的位置
+                for (int last = 0; last < i; last++) {
+                    min = Math.min(min, dp[last][j - 1] + costNums[last + 1][i]);
+                }
+                dp[i][j] = min;
+            }
+        }
+        logResult(dp);
+        return dp[n - 1][k - 1];
+    }
+
+    private int cost(int[] houses, int start, int end) {
+        int result = 0;
+        while (start < end) {
+            result += houses[end] - houses[start];
+            start++;
+            end--;
+        }
+        return result;
+    }
 }
