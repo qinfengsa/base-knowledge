@@ -97,4 +97,11 @@ public class ArrayMainTest {
         int k = 7;
         logResult(main.kthSmallest(mat, k));
     }
+
+    @Test
+    public void busiestServers() {
+        int k = 3;
+        int[] arrival = {1, 2, 3, 4, 5}, load = {5, 2, 3, 3, 3};
+        logResult(main.busiestServers(k, arrival, load));
+    }
 }

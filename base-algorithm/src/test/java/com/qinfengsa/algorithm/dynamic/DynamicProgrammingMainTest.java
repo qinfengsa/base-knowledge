@@ -130,4 +130,11 @@ public class DynamicProgrammingMainTest {
         int k = 1;
         logResult(main.minDistance(houses, k));
     }
+
+    @Test
+    public void maximumRequests() {
+        int n = 5;
+        int[][] requests = {{0, 1}, {1, 0}, {0, 1}, {1, 2}, {2, 0}, {3, 4}};
+        logResult(main.maximumRequests(n, requests));
+    }
 }
