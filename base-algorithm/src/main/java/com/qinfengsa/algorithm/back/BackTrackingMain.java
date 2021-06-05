@@ -1,5 +1,6 @@
 package com.qinfengsa.algorithm.back;
 
+import com.qinfengsa.algorithm.util.CompUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -160,8 +161,7 @@ public class BackTrackingMain {
         }
         this.n = N >> 1;
         // 计算组合数
-        compNum = new long[N + 1][N + 1];
-        initComp(N);
+        compNum = CompUtils.initComp(N);
 
         this.balls = balls;
         // 计算总的组合数 从 N 个元素中随机取n个 C(N, n);
@@ -206,23 +206,6 @@ public class BackTrackingMain {
                     leftColor + (i == 0 ? 0 : 1),
                     rightColor + (i == balls[idx] ? 0 : 1),
                     comp * compNum[ballNum][i]);
-        }
-    }
-
-    /**
-     * 初始化组合数
-     *
-     * @param n
-     */
-    private void initComp(int n) {
-        for (int i = 0; i <= n; i++) {
-            for (int j = 0; j <= i; j++) {
-                if (j == 0) {
-                    compNum[i][j] = 1;
-                } else {
-                    compNum[i][j] = compNum[i - 1][j] + compNum[i - 1][j - 1];
-                }
-            }
         }
     }
 }

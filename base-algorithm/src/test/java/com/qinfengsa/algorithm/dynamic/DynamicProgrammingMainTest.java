@@ -137,4 +137,11 @@ public class DynamicProgrammingMainTest {
         int[][] requests = {{0, 1}, {1, 0}, {0, 1}, {1, 2}, {2, 0}, {3, 4}};
         logResult(main.maximumRequests(n, requests));
     }
+
+    @Test
+    public void numWays() {
+        String[] words = {"abba", "baab"};
+        String target = "bab";
+        logResult(main.numWays(words, target));
+    }
 }

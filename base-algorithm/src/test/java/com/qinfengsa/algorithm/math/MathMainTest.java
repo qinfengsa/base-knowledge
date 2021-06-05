@@ -28,4 +28,11 @@ public class MathMainTest {
         int r = 3;
         logResult(main.numPoints(points, r));
     }
+
+    @Test
+    public void kthSmallestPath() {
+        int[] destination = {2, 3};
+        int k = 3;
+        logResult(main.kthSmallestPath(destination, k));
+    }
 }
