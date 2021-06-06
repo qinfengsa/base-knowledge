@@ -104,4 +104,10 @@ public class ArrayMainTest {
         int[] arrival = {1, 2, 3, 4, 5}, load = {5, 2, 3, 3, 3};
         logResult(main.busiestServers(k, arrival, load));
     }
+
+    @Test
+    public void findRotation() {
+        int[][] mat = {{0, 0}, {1, 1}}, target = {{0, 1}, {1, 0}};
+        logResult(main.findRotation(mat, target));
+    }
 }

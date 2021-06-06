@@ -49,4 +49,10 @@ public class StringMainTest {
         int x = 3;
         logResult(main.maxValue(n, x));
     }
+
+    @Test
+    public void minFlips() {
+        String s = "11100";
+        logResult(main.minFlips(s));
+    }
 }

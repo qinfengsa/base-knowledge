@@ -1221,4 +1221,144 @@ public class ArrayMain {
             this.time = time;
         }
     }
+
+    /**
+     * 5776. 判断矩阵经轮转后是否一致
+     *
+     * <p>给你两个大小为 n x n 的二进制矩阵 mat 和 target 。现 以 90 度顺时针轮转 矩阵 mat 中的元素 若干次 ，如果能够使 mat 与 target 一致，返回
+     * true ；否则，返回 false 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：mat = [[0,1],[1,0]], target = [[1,0],[0,1]] 输出：true 解释：顺时针轮转 90 度一次可以使 mat 和 target 一致。
+     * 示例 2：
+     *
+     * <p>输入：mat = [[0,1],[1,1]], target = [[1,0],[0,1]] 输出：false 解释：无法通过轮转矩阵中的元素使 equal 与 target
+     * 一致。 示例 3：
+     *
+     * <p>输入：mat = [[0,0,0],[0,1,0],[1,1,1]], target = [[1,1,1],[0,1,0],[0,0,0]] 输出：true 解释：顺时针轮转 90
+     * 度两次可以使 mat 和 target 一致。
+     *
+     * <p>提示：
+     *
+     * <p>n == mat.length == target.length n == mat[i].length == target[i].length 1 <= n <= 10
+     * mat[i][j] 和 target[i][j] 不是 0 就是 1
+     *
+     * @param mat
+     * @param target
+     * @return
+     */
+    public boolean findRotation(int[][] mat, int[][] target) {
+        int n = mat.length;
+        if (n == 1) {
+            return mat[0][0] == target[0][0];
+        }
+        String[] matRow = new String[n], matCol = new String[n];
+        for (int i = 0; i < n; i++) {
+            StringBuilder strRow = new StringBuilder(), strCol = new StringBuilder();
+            for (int j = 0; j < n; j++) {
+                strRow.append(mat[i][j]);
+                strCol.append(mat[j][i]);
+            }
+            matRow[i] = strRow.toString();
+            matCol[i] = strCol.toString();
+        }
+        log.debug("matRow:{}", matRow.toString());
+        log.debug("matCol:{}", matCol);
+        String[] targetRow = new String[n];
+        for (int i = 0; i < n; i++) {
+            StringBuilder strRow = new StringBuilder();
+            for (int j = 0; j < n; j++) {
+                strRow.append(target[i][j]);
+            }
+            targetRow[i] = strRow.toString();
+        }
+        log.debug("matCol:{}", matCol);
+        // 完全相同
+        boolean flag = true;
+        for (int i = 0; i < n; i++) {
+            if (!Objects.equals(matRow[i], targetRow[i])) {
+                flag = false;
+                break;
+            }
+        }
+        if (flag) {
+            return true;
+        }
+        // 90度
+        flag = true;
+        for (int i = 0; i < n; i++) {
+            if (!Objects.equals(new StringBuilder(matCol[i]).reverse().toString(), targetRow[i])) {
+                flag = false;
+                break;
+            }
+        }
+        if (flag) {
+            return true;
+        }
+
+        // 180
+        flag = true;
+        for (int i = 0; i < n; i++) {
+            if (!Objects.equals(
+                    new StringBuilder(matRow[n - 1 - i]).reverse().toString(), targetRow[i])) {
+                flag = false;
+                break;
+            }
+        }
+        if (flag) {
+            return true;
+        }
+        // 270
+        flag = true;
+        for (int i = 0; i < n; i++) {
+            if (!Objects.equals(matCol[n - 1 - i], targetRow[i])) {
+                flag = false;
+                break;
+            }
+        }
+        return flag;
+    }
+
+    /**
+     * 5777. 使数组元素相等的减少操作次数
+     *
+     * <p>给你一个整数数组 nums ，你的目标是令 nums 中的所有元素相等。完成一次减少操作需要遵照下面的几个步骤：
+     *
+     * <p>找出 nums 中的 最大 值。记这个值为 largest 并取其下标 i （下标从 0 开始计数）。如果有多个元素都是最大值，则取最小的 i 。 找出 nums 中的 下一个最大
+     * 值，这个值 严格小于 largest ，记为 nextLargest 。 将 nums[i] 减少到 nextLargest 。 返回使 nums 中的所有元素相等的操作次数。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：nums = [5,1,3] 输出：3 解释：需要 3 次操作使 nums 中的所有元素相等： 1. largest = 5 下标为 0 。nextLargest = 3
+     * 。将 nums[0] 减少到 3 。nums = [3,1,3] 。 2. largest = 3 下标为 0 。nextLargest = 1 。将 nums[0] 减少到 1
+     * 。nums = [1,1,3] 。 3. largest = 3 下标为 2 。nextLargest = 1 。将 nums[2] 减少到 1 。nums = [1,1,1] 。 示例
+     * 2：
+     *
+     * <p>输入：nums = [1,1,1] 输出：0 解释：nums 中的所有元素已经是相等的。 示例 3：
+     *
+     * <p>输入：nums = [1,1,2,2,3] 输出：4 解释：需要 4 次操作使 nums 中的所有元素相等： 1. largest = 3 下标为 4 。nextLargest =
+     * 2 。将 nums[4] 减少到 2 。nums = [1,1,2,2,2] 。 2. largest = 2 下标为 2 。nextLargest = 1 。将 nums[2] 减少到
+     * 1 。nums = [1,1,1,2,2] 。 3. largest = 2 下标为 3 。nextLargest = 1 。将 nums[3] 减少到 1 。nums =
+     * [1,1,1,1,2] 。 4. largest = 2 下标为 4 。nextLargest = 1 。将 nums[4] 减少到 1 。nums = [1,1,1,1,1] 。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= nums.length <= 5 * 104 1 <= nums[i] <= 5 * 104
+     *
+     * @param nums
+     * @return
+     */
+    public int reductionOperations(int[] nums) {
+        Arrays.sort(nums);
+        int result = 0, num = 0;
+
+        for (int i = 1; i < nums.length; i++) {
+            if (nums[i] > nums[i - 1]) {
+                num++;
+            }
+            result += num;
+        }
+        return result;
+    }
 }
