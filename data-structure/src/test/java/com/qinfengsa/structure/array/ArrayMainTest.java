@@ -110,4 +110,32 @@ public class ArrayMainTest {
         int[][] mat = {{0, 0}, {1, 1}}, target = {{0, 1}, {1, 0}};
         logResult(main.findRotation(mat, target));
     }
+
+    @Test
+    public void countSubgraphsForEachDiameter() {
+        int n = 3;
+        int[][] edges = {{1, 2}, {2, 3}};
+        log.debug("result:{}", main.countSubgraphsForEachDiameter(n, edges));
+    }
+
+    @Test
+    public void areConnected() {
+        int n = 5, threshold = 1;
+        int[][] queries = {{4, 5}, {4, 5}, {3, 2}, {2, 3}, {3, 4}};
+        logResult(main.areConnected(n, threshold, queries));
+    }
+
+    @Test
+    public void matrixRankTransform() {
+        int[][] matrix = {
+            {-2, -35, -32, -5, -30, 33, -12},
+            {7, 2, -43, 4, -49, 14, 17},
+            {4, 23, -6, -15, -24, -17, 6},
+            {-47, 20, 39, -26, 9, -44, 39},
+            {-50, -47, 44, 43, -22, 33, -36},
+            {-13, 34, 49, 24, 23, -2, -35},
+            {-40, 43, -22, -19, -4, 23, -18}
+        };
+        logResult(main.matrixRankTransform(matrix));
+    }
 }

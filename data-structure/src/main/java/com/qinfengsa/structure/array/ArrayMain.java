@@ -2,6 +2,7 @@ package com.qinfengsa.structure.array;
 
 import static com.qinfengsa.structure.util.LogUtils.logResult;
 
+import com.qinfengsa.structure.dsu.Dsu;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -1360,5 +1361,254 @@ public class ArrayMain {
             result += num;
         }
         return result;
+    }
+
+    /**
+     * 1617. 统计子树中城市之间最大距离
+     *
+     * <p>给你 n 个城市，编号为从 1 到 n 。同时给你一个大小为 n-1 的数组 edges ，其中 edges[i] = [ui, vi] 表示城市 ui 和 vi
+     * 之间有一条双向边。题目保证任意城市之间只有唯一的一条路径。换句话说，所有城市形成了一棵 树 。
+     *
+     * <p>一棵 子树 是城市的一个子集，且子集中任意城市之间可以通过子集中的其他城市和边到达。两个子树被认为不一样的条件是至少有一个城市在其中一棵子树中存在，但在另一棵子树中不存在。
+     *
+     * <p>对于 d 从 1 到 n-1 ，请你找到城市间 最大距离 恰好为 d 的所有子树数目。
+     *
+     * <p>请你返回一个大小为 n-1 的数组，其中第 d 个元素（下标从 1 开始）是城市间 最大距离 恰好等于 d 的子树数目。
+     *
+     * <p>请注意，两个城市间距离定义为它们之间需要经过的边的数目。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：n = 4, edges = [[1,2],[2,3],[2,4]] 输出：[3,4,0] 解释： 子树 {1,2}, {2,3} 和 {2,4} 最大距离都是 1 。 子树
+     * {1,2,3}, {1,2,4}, {2,3,4} 和 {1,2,3,4} 最大距离都为 2 。 不存在城市间最大距离为 3 的子树。 示例 2：
+     *
+     * <p>输入：n = 2, edges = [[1,2]] 输出：[1] 示例 3：
+     *
+     * <p>输入：n = 3, edges = [[1,2],[2,3]] 输出：[2,1]
+     *
+     * <p>提示：
+     *
+     * <p>2 <= n <= 15 edges.length == n-1 edges[i].length == 2 1 <= ui, vi <= n 题目保证 (ui, vi)
+     * 所表示的边互不相同。
+     *
+     * @param n
+     * @param edges
+     * @return
+     */
+    public int[] countSubgraphsForEachDiameter(int n, int[][] edges) {
+        int[][] dist = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            Arrays.fill(dist[i], n);
+            dist[i][i] = 0;
+        }
+        int state = 1 << n;
+        for (int[] edge : edges) {
+            int from = edge[0] - 1, to = edge[1] - 1;
+            dist[from][to] = 1;
+            dist[to][from] = 1;
+        }
+        // 求两个点的最小距离
+        for (int k = 0; k < n; k++) {
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    dist[i][j] = Math.min(dist[i][j], dist[i][k] + dist[j][k]);
+                }
+            }
+        }
+        logResult(dist);
+        int[] result = new int[n - 1];
+        for (int i = 1; i < state; i++) {
+            // 枚举所有子树
+            if ((i & (i - 1)) == 0) {
+                // 只有一个节点
+                continue;
+            }
+            int d = getSubgraphsDist(i, n, dist);
+            if (d != 0) {
+                result[d - 1]++;
+            }
+        }
+
+        return result;
+    }
+
+    private int getSubgraphsDist(int state, int n, int[][] dist) {
+        int max = 0, edgeNum = 0, city = 0;
+        for (int i = 0; i < n; i++) {
+            if ((state & (1 << i)) == 0) {
+                continue;
+            }
+            city++;
+            for (int j = i + 1; j < n; j++) {
+                if ((state & (1 << j)) == 0) {
+                    continue;
+                }
+                max = Math.max(max, dist[i][j]);
+                edgeNum += dist[i][j] == 1 ? 1 : 0;
+            }
+        }
+        return edgeNum + 1 == city ? max : 0;
+    }
+
+    /**
+     * 1627. 带阈值的图连通性
+     *
+     * <p>有 n 座城市，编号从 1 到 n 。编号为 x 和 y 的两座城市直接连通的前提是： x 和 y 的公因数中，至少有一个 严格大于 某个阈值 threshold
+     * 。更正式地说，如果存在整数 z ，且满足以下所有条件，则编号 x 和 y 的城市之间有一条道路：
+     *
+     * <p>x % z == 0 y % z == 0 z > threshold 给你两个整数 n 和 threshold ，以及一个待查询数组，请你判断每个查询 queries[i] =
+     * [ai, bi] 指向的城市 ai 和 bi 是否连通（即，它们之间是否存在一条路径）。
+     *
+     * <p>返回数组 answer ，其中answer.length == queries.length 。如果第 i 个查询中指向的城市 ai 和 bi 连通，则 answer[i] 为
+     * true ；如果不连通，则 answer[i] 为 false 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：n = 6, threshold = 2, queries = [[1,4],[2,5],[3,6]] 输出：[false,false,true] 解释：每个数的因数如下：
+     * 1: 1 2: 1, 2 3: 1, 3 4: 1, 2, 4 5: 1, 5 6: 1, 2, 3, 6 所有大于阈值的的因数已经加粗标识，只有城市 3 和 6 共享公约数 3
+     * ，因此结果是： [1,4] 1 与 4 不连通 [2,5] 2 与 5 不连通 [3,6] 3 与 6 连通，存在路径 3--6 示例 2：
+     *
+     * <p>输入：n = 6, threshold = 0, queries = [[4,5],[3,4],[3,2],[2,6],[1,3]]
+     * 输出：[true,true,true,true,true] 解释：每个数的因数与上一个例子相同。但是，由于阈值为 0 ，所有的因数都大于阈值。因为所有的数字共享公因数 1
+     * ，所以所有的城市都互相连通。 示例 3：
+     *
+     * <p>输入：n = 5, threshold = 1, queries = [[4,5],[4,5],[3,2],[2,3],[3,4]]
+     * 输出：[false,false,false,false,false] 解释：只有城市 2 和 4 共享的公约数 2 严格大于阈值 1 ，所以只有这两座城市是连通的。 注意，同一对节点
+     * [x, y] 可以有多个查询，并且查询 [x，y] 等同于查询 [y，x] 。
+     *
+     * <p>提示：
+     *
+     * <p>2 <= n <= 104 0 <= threshold <= n 1 <= queries.length <= 105 queries[i].length == 2 1 <=
+     * ai, bi <= cities ai != bi
+     *
+     * @param n
+     * @param threshold
+     * @param queries
+     * @return
+     */
+    public List<Boolean> areConnected(int n, int threshold, int[][] queries) {
+        int len = queries.length;
+        List<Boolean> result = new ArrayList<>();
+        if (threshold == 0) {
+            for (int i = 0; i < len; i++) {
+                result.add(true);
+            }
+            return result;
+        }
+        // 并查集 cong threshold 开始
+        this.dsu = new Dsu(n + 1);
+        for (int i = threshold + 1; i <= n; i++) {
+
+            int t = 2;
+            while (i * t <= n) {
+
+                dsu.union(i, i * t);
+                t++;
+            }
+        }
+        for (int[] query : queries) {
+            int num1 = query[0], num2 = query[1];
+            result.add(dsu.isConnected(num1, num2));
+        }
+
+        return result;
+    }
+
+    /**
+     * 1632. 矩阵转换后的秩
+     *
+     * <p>给你一个 m x n 的矩阵 matrix ，请你返回一个新的矩阵 answer ，其中 answer[row][col] 是 matrix[row][col] 的秩。
+     *
+     * <p>每个元素的 秩 是一个整数，表示这个元素相对于其他元素的大小关系，它按照如下规则计算：
+     *
+     * <p>秩是从 1 开始的一个整数。 如果两个元素 p 和 q 在 同一行 或者 同一列 ，那么： 如果 p < q ，那么 rank(p) < rank(q) 如果 p == q ，那么
+     * rank(p) == rank(q) 如果 p > q ，那么 rank(p) > rank(q) 秩 需要越 小 越好。 题目保证按照上面规则 answer 数组是唯一的。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：matrix = [[1,2],[3,4]] 输出：[[1,2],[2,3]] 解释： matrix[0][0] 的秩为 1 ，因为它是所在行和列的最小整数。
+     * matrix[0][1] 的秩为 2 ，因为 matrix[0][1] > matrix[0][0] 且 matrix[0][0] 的秩为 1 。 matrix[1][0] 的秩为 2
+     * ，因为 matrix[1][0] > matrix[0][0] 且 matrix[0][0] 的秩为 1 。 matrix[1][1] 的秩为 3 ，因为 matrix[1][1] >
+     * matrix[0][1]， matrix[1][1] > matrix[1][0] 且 matrix[0][1] 和 matrix[1][0] 的秩都为 2 。 示例 2：
+     *
+     * <p>输入：matrix = [[7,7],[7,7]] 输出：[[1,1],[1,1]] 示例 3：
+     *
+     * <p>输入：matrix = [[20,-21,14],[-19,4,19],[22,-47,24],[-19,4,19]]
+     * 输出：[[4,2,3],[1,3,4],[5,1,6],[1,3,4]] 示例 4：
+     *
+     * <p>输入：matrix = [[7,3,6],[1,4,5],[9,8,2]] 输出：[[5,1,4],[1,2,3],[6,3,1]]
+     *
+     * <p>提示：
+     *
+     * <p>m == matrix.length n == matrix[i].length 1 <= m, n <= 500 -109 <= matrix[row][col] <= 109
+     *
+     * @param matrix
+     * @return
+     */
+    public int[][] matrixRankTransform(int[][] matrix) {
+        this.matrix = matrix;
+        this.m = matrix.length;
+        this.n = matrix[0].length;
+        int[][] result = new int[m][n];
+        Integer[] indexs = new Integer[m * n];
+        for (int i = 0; i < m * n; i++) {
+            indexs[i] = i;
+        }
+        Arrays.sort(
+                indexs,
+                (a, b) -> {
+                    int row1 = a / n, col1 = a % n, row2 = b / n, col2 = b % n;
+                    return matrix[row1][col1] - matrix[row2][col2];
+                });
+        log.debug("indexs:{}", Arrays.toString(indexs));
+        // 每行的最小列  每行的最小行
+        int[] minRowIndex = new int[m], minColIndex = new int[n];
+        Arrays.fill(minColIndex, -1);
+        Arrays.fill(minRowIndex, -1);
+        this.indexValues = new int[m * n];
+        this.dsu = new Dsu(m * n);
+        for (int idx : indexs) {
+            int row = idx / n, col = idx % n;
+            int val = 1;
+            // 判断当前 行
+            if (minRowIndex[row] != -1) {
+                val = getVal(row, minRowIndex[row], idx, val);
+            }
+            // 判断当前 列
+            if (minColIndex[col] != -1) {
+                val = getVal(minColIndex[col], col, idx, val);
+            }
+            minRowIndex[row] = col;
+            minColIndex[col] = row;
+            indexValues[dsu.findParent(idx)] = val;
+        }
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                int idx = i * n + j;
+                result[i][j] = indexValues[dsu.findParent(idx)];
+            }
+        }
+
+        return result;
+    }
+
+    private int[][] matrix;
+
+    private int[] indexValues;
+
+    private Dsu dsu;
+
+    private int getVal(int preRow, int preCol, int idx, int val) {
+        int row = idx / n, col = idx % n;
+        int preIdx = preRow * n + preCol;
+        int preVal = indexValues[dsu.findParent(preIdx)];
+
+        if (matrix[preRow][preCol] == matrix[row][col]) {
+            dsu.union(idx, preIdx);
+            val = Math.max(val, preVal);
+        } else {
+            val = Math.max(val, preVal + 1);
+        }
+        return val;
     }
 }
