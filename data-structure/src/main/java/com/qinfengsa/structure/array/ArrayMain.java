@@ -2,6 +2,7 @@ package com.qinfengsa.structure.array;
 
 import static com.qinfengsa.structure.util.LogUtils.logResult;
 
+import com.qinfengsa.structure.bit.BIT;
 import com.qinfengsa.structure.dsu.Dsu;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1610,5 +1611,103 @@ public class ArrayMain {
             val = Math.max(val, preVal + 1);
         }
         return val;
+    }
+
+    /**
+     * 1649. 通过指令创建有序数组
+     *
+     * <p>给你一个整数数组 instructions ，你需要根据 instructions 中的元素创建一个有序数组。一开始你有一个空的数组 nums ，你需要 从左到右 遍历
+     * instructions 中的元素，将它们依次插入 nums 数组中。每一次插入操作的 代价 是以下两者的 较小值 ：
+     *
+     * <p>nums 中 严格小于 instructions[i] 的数字数目。 nums 中 严格大于 instructions[i] 的数字数目。 比方说，如果要将 3 插入到 nums
+     * = [1,2,3,5] ，那么插入操作的 代价 为 min(2, 1) (元素 1 和 2 小于 3 ，元素 5 大于 3 ），插入后 nums 变成 [1,2,3,3,5] 。
+     *
+     * <p>请你返回将 instructions 中所有元素依次插入 nums 后的 总最小代价 。由于答案会很大，请将它对 109 + 7 取余 后返回。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：instructions = [1,5,6,2] 输出：1 解释：一开始 nums = [] 。 插入 1 ，代价为 min(0, 0) = 0 ，现在 nums = [1]
+     * 。 插入 5 ，代价为 min(1, 0) = 0 ，现在 nums = [1,5] 。 插入 6 ，代价为 min(2, 0) = 0 ，现在 nums = [1,5,6] 。 插入
+     * 2 ，代价为 min(1, 2) = 1 ，现在 nums = [1,2,5,6] 。 总代价为 0 + 0 + 0 + 1 = 1 。 示例 2:
+     *
+     * <p>输入：instructions = [1,2,3,6,5,4] 输出：3 解释：一开始 nums = [] 。 插入 1 ，代价为 min(0, 0) = 0 ，现在 nums =
+     * [1] 。 插入 2 ，代价为 min(1, 0) = 0 ，现在 nums = [1,2] 。 插入 3 ，代价为 min(2, 0) = 0 ，现在 nums = [1,2,3] 。
+     * 插入 6 ，代价为 min(3, 0) = 0 ，现在 nums = [1,2,3,6] 。 插入 5 ，代价为 min(3, 1) = 1 ，现在 nums = [1,2,3,5,6]
+     * 。 插入 4 ，代价为 min(3, 2) = 2 ，现在 nums = [1,2,3,4,5,6] 。 总代价为 0 + 0 + 0 + 0 + 1 + 2 = 3 。 示例 3：
+     *
+     * <p>输入：instructions = [1,3,3,3,2,4,2,1,2] 输出：4 解释：一开始 nums = [] 。 插入 1 ，代价为 min(0, 0) = 0 ，现在
+     * nums = [1] 。 插入 3 ，代价为 min(1, 0) = 0 ，现在 nums = [1,3] 。 插入 3 ，代价为 min(1, 0) = 0 ，现在 nums =
+     * [1,3,3] 。 插入 3 ，代价为 min(1, 0) = 0 ，现在 nums = [1,3,3,3] 。 插入 2 ，代价为 min(1, 3) = 1 ，现在 nums =
+     * [1,2,3,3,3] 。 插入 4 ，代价为 min(5, 0) = 0 ，现在 nums = [1,2,3,3,3,4] 。 ​​​​​插入 2 ，代价为 min(1, 4) = 1
+     * ，现在 nums = [1,2,2,3,3,3,4] 。 插入 1 ，代价为 min(0, 6) = 0 ，现在 nums = [1,1,2,2,3,3,3,4] 。 插入 2 ，代价为
+     * min(2, 4) = 2 ，现在 nums = [1,1,2,2,2,3,3,3,4] 。 总代价为 0 + 0 + 0 + 0 + 1 + 0 + 1 + 0 + 2 = 4 。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= instructions.length <= 105 1 <= instructions[i] <= 105
+     *
+     * @param instructions
+     * @return
+     */
+    public int createSortedArray(int[] instructions) {
+        long result = 0L;
+        int max = Arrays.stream(instructions).max().orElse(-1);
+        BIT bit = new BIT(max);
+        int count = 0;
+        for (int num : instructions) {
+            int left = bit.getSum(num - 1);
+            int numCount = bit.getSum(num);
+            result += Math.min(left, count - numCount);
+            bit.update(num, 1);
+            count++;
+        }
+        return (int) (result % MOD);
+    }
+
+    static final int MOD = 1_000_000_007;
+
+    /**
+     * 1675. 数组的最小偏移量
+     *
+     * <p>给你一个由 n 个正整数组成的数组 nums 。
+     *
+     * <p>你可以对数组的任意元素执行任意次数的两类操作：
+     *
+     * <p>如果元素是 偶数 ，除以 2 例如，如果数组是 [1,2,3,4] ，那么你可以对最后一个元素执行此操作，使其变成 [1,2,3,2] 如果元素是 奇数 ，乘上 2
+     * 例如，如果数组是 [1,2,3,4] ，那么你可以对第一个元素执行此操作，使其变成 [2,2,3,4] 数组的 偏移量 是数组中任意两个元素之间的 最大差值 。
+     *
+     * <p>返回数组在执行某些操作之后可以拥有的 最小偏移量 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：nums = [1,2,3,4] 输出：1 解释：你可以将数组转换为 [1,2,3,2]，然后转换成 [2,2,3,2]，偏移量是 3 - 2 = 1 示例 2：
+     *
+     * <p>输入：nums = [4,1,5,20,3] 输出：3 解释：两次操作后，你可以将数组转换为 [4,2,5,5,3]，偏移量是 5 - 2 = 3 示例 3：
+     *
+     * <p>输入：nums = [2,10,8] 输出：3
+     *
+     * <p>提示：
+     *
+     * <p>n == nums.length 2 <= n <= 105 1 <= nums[i] <= 109
+     *
+     * @param nums
+     * @return
+     */
+    public int minimumDeviation(int[] nums) {
+        int n = nums.length;
+        TreeSet<Integer> treeSet = new TreeSet<>();
+        for (int num : nums) {
+            treeSet.add((num & 1) == 0 ? num : num << 1);
+        }
+        int result = treeSet.last() - treeSet.first();
+        int max = treeSet.last();
+        while (result > 0 && (max & 1) == 0) {
+            treeSet.remove(max);
+            treeSet.add(max >> 1);
+            max = treeSet.last();
+            result = Math.min(result, max - treeSet.first());
+        }
+
+        return result;
     }
 }

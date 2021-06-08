@@ -138,4 +138,10 @@ public class ArrayMainTest {
         };
         logResult(main.matrixRankTransform(matrix));
     }
+
+    @Test
+    public void createSortedArray() {
+        int[] instructions = {1, 3, 3, 3, 2, 4, 2, 1, 2};
+        logResult(main.createSortedArray(instructions));
+    }
 }

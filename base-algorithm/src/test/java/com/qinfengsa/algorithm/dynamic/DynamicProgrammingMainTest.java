@@ -144,4 +144,10 @@ public class DynamicProgrammingMainTest {
         String target = "bab";
         logResult(main.numWays(words, target));
     }
+
+    @Test
+    public void canDistribute() {
+        int[] nums = {1, 1, 1, 1, 1}, quantity = {2, 3};
+        logResult(main.canDistribute(nums, quantity));
+    }
 }
