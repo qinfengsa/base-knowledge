@@ -150,4 +150,16 @@ public class DynamicProgrammingMainTest {
         int[] nums = {1, 1, 1, 1, 1}, quantity = {2, 3};
         logResult(main.canDistribute(nums, quantity));
     }
+
+    @Test
+    public void maxHeight() {
+        int[][] cuboids = {{50, 45, 20}, {95, 37, 53}, {45, 23, 12}};
+        logResult(main.maxHeight(cuboids));
+    }
+
+    @Test
+    public void getMaxGridHappiness() {
+        int m = 2, n = 2, introvertsCount = 4, extrovertsCount = 0;
+        logResult(main.getMaxGridHappiness(m, n, introvertsCount, extrovertsCount));
+    }
 }

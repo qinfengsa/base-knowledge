@@ -1633,4 +1633,179 @@ public class DynamicProgrammingMain {
 
         return dp[numIdx][maxState - 1];
     }
+
+    /**
+     * 1659. 最大化网格幸福感
+     *
+     * <p>给你四个整数 m、n、introvertsCount 和 extrovertsCount 。有一个 m x n 网格，和两种类型的人：内向的人和外向的人。总共有
+     * introvertsCount 个内向的人和 extrovertsCount 个外向的人。
+     *
+     * <p>请你决定网格中应当居住多少人，并为每个人分配一个网格单元。 注意，不必 让所有人都生活在网格中。
+     *
+     * <p>每个人的 幸福感 计算如下：
+     *
+     * <p>内向的人 开始 时有 120 个幸福感，但每存在一个邻居（内向的或外向的）他都会 失去 30 个幸福感。 外向的人 开始 时有 40
+     * 个幸福感，每存在一个邻居（内向的或外向的）他都会 得到 20 个幸福感。 邻居是指居住在一个人所在单元的上、下、左、右四个直接相邻的单元中的其他人。
+     *
+     * <p>网格幸福感 是每个人幸福感的 总和 。 返回 最大可能的网格幸福感 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：m = 2, n = 3, introvertsCount = 1, extrovertsCount = 2 输出：240 解释：假设网格坐标 (row, column) 从
+     * 1 开始编号。 将内向的人放置在单元 (1,1) ，将外向的人放置在单元 (1,3) 和 (2,3) 。 - 位于 (1,1) 的内向的人的幸福感：120（初始幸福感）- (0 *
+     * 30)（0 位邻居）= 120 - 位于 (1,3) 的外向的人的幸福感：40（初始幸福感）+ (1 * 20)（1 位邻居）= 60 - 位于 (2,3)
+     * 的外向的人的幸福感：40（初始幸福感）+ (1 * 20)（1 位邻居）= 60 网格幸福感为：120 + 60 + 60 = 240
+     * 上图展示该示例对应网格中每个人的幸福感。内向的人在浅绿色单元中，而外向的人在浅紫色单元中。 示例 2：
+     *
+     * <p>输入：m = 3, n = 1, introvertsCount = 2, extrovertsCount = 1 输出：260 解释：将内向的人放置在单元 (1,1) 和
+     * (3,1) ，将外向的人放置在单元 (2,1) 。 - 位于 (1,1) 的内向的人的幸福感：120（初始幸福感）- (1 * 30)（1 位邻居）= 90 - 位于 (2,1)
+     * 的外向的人的幸福感：40（初始幸福感）+ (2 * 20)（2 位邻居）= 80 - 位于 (3,1) 的内向的人的幸福感：120（初始幸福感）- (1 * 30)（1 位邻居）= 90
+     * 网格幸福感为 90 + 80 + 90 = 260 示例 3：
+     *
+     * <p>输入：m = 2, n = 2, introvertsCount = 4, extrovertsCount = 0 输出：240
+     *
+     * <p>提示：
+     *
+     * <p>1 <= m, n <= 5 0 <= introvertsCount, extrovertsCount <= min(m * n, 6)
+     *
+     * @param m
+     * @param n
+     * @param introvertsCount
+     * @param extrovertsCount
+     * @return
+     */
+    public int getMaxGridHappiness(int m, int n, int introvertsCount, int extrovertsCount) {
+
+        this.m = m;
+        this.n = n;
+        // 按行进行dp 每行最大state 3 ^ n
+        int maxState = 1;
+
+        for (int i = 0; i < n; i++) {
+            maxState *= 3;
+        }
+        this.mod = maxState / 3;
+        // dp[m n] [in][ex][lastState]。 表示：现在在 m, n 行，还有 in 个内向的人和 ex 个外向的人没有安排；
+        // 同时，之前 n 个格子的安排方式是 lastState
+        // lastState 当前位置 前 n 个 位置的状态  左边 是 最后一个3  上边是第1个3
+        this.dp = new int[m * n][introvertsCount + 1][extrovertsCount + 1][maxState];
+
+        return dfsGridHappiness(0, introvertsCount, extrovertsCount, 0);
+    }
+
+    private int[][][][] dp;
+
+    private int mod;
+
+    private int dfsGridHappiness(int idx, int in, int ex, int lastState) {
+        if (idx == m * n) {
+            return 0;
+        }
+        if (dp[idx][in][ex][lastState] != 0) {
+            return dp[idx][in][ex][lastState];
+        }
+        int row = idx / n, col = idx % n;
+        int upState = lastState / mod, leftState = lastState % 3;
+
+        int curState = (lastState % mod) * 3;
+        // 不安排人
+        int result = dfsGridHappiness(idx + 1, in, ex, curState);
+        // 安排内向的人
+        if (in > 0) {
+            int score = 120;
+            if (row > 0 && upState != 0) {
+                score -= 30;
+                // 上方是 内向的人 -30 外向的人 +20
+                score += upState == 1 ? -30 : 20;
+            }
+            if (col > 0 && leftState != 0) {
+                score -= 30;
+                // 上方是 内向的人 -30 外向的人 +20
+                score += leftState == 1 ? -30 : 20;
+            }
+            result = Math.max(result, score + dfsGridHappiness(idx + 1, in - 1, ex, curState + 1));
+        }
+
+        // 安排外向的人
+        if (ex > 0) {
+            int score = 40;
+            if (row > 0 && upState != 0) {
+                score += 20;
+                // 上方是 内向的人 -30 外向的人 +20
+                score += upState == 1 ? -30 : 20;
+            }
+            if (col > 0 && leftState != 0) {
+                score += 20;
+                // 上方是 内向的人 -30 外向的人 +20
+                score += leftState == 1 ? -30 : 20;
+            }
+            result = Math.max(result, score + dfsGridHappiness(idx + 1, in, ex - 1, curState + 2));
+        }
+
+        return dp[idx][in][ex][lastState] = result;
+    }
+
+    /**
+     * 1691. 堆叠长方体的最大高度
+     *
+     * <p>给你 n 个长方体 cuboids ，其中第 i 个长方体的长宽高表示为 cuboids[i] = [widthi, lengthi, heighti]（下标从 0 开始）。请你从
+     * cuboids 选出一个 子集 ，并将它们堆叠起来。
+     *
+     * <p>如果 widthi <= widthj 且 lengthi <= lengthj 且 heighti <= heightj ，你就可以将长方体 i 堆叠在长方体 j
+     * 上。你可以通过旋转把长方体的长宽高重新排列，以将它放在另一个长方体上。
+     *
+     * <p>返回 堆叠长方体 cuboids 可以得到的 最大高度 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：cuboids = [[50,45,20],[95,37,53],[45,23,12]] 输出：190 解释： 第 1 个长方体放在底部，53x37 的一面朝下，高度为 95
+     * 。 第 0 个长方体放在中间，45x20 的一面朝下，高度为 50 。 第 2 个长方体放在上面，23x12 的一面朝下，高度为 45 。 总高度是 95 + 50 + 45 = 190
+     * 。 示例 2：
+     *
+     * <p>输入：cuboids = [[38,25,45],[76,35,3]] 输出：76 解释： 无法将任何长方体放在另一个上面。 选择第 1 个长方体然后旋转它，使 35x3
+     * 的一面朝下，其高度为 76 。 示例 3：
+     *
+     * <p>输入：cuboids = [[7,11,17],[7,17,11],[11,7,17],[11,17,7],[17,7,11],[17,11,7]] 输出：102 解释：
+     * 重新排列长方体后，可以看到所有长方体的尺寸都相同。 你可以把 11x7 的一面朝下，这样它们的高度就是 17 。 堆叠长方体的最大高度为 6 * 17 = 102 。
+     *
+     * <p>提示：
+     *
+     * <p>n == cuboids.length 1 <= n <= 100 1 <= widthi, lengthi, heighti <= 100
+     *
+     * @param cuboids
+     * @return
+     */
+    public int maxHeight(int[][] cuboids) {
+        for (int[] cuboid : cuboids) {
+            Arrays.sort(cuboid);
+        }
+        Arrays.sort(
+                cuboids,
+                (a, b) -> {
+                    if (a[0] != b[0]) {
+                        return Integer.compare(a[0], b[0]);
+                    } else if (a[1] != b[1]) {
+                        return Integer.compare(a[1], b[1]);
+                    }
+                    return Integer.compare(a[2], b[2]);
+                });
+
+        int len = cuboids.length, result = 0;
+        int[] dp = new int[len];
+
+        for (int i = 0; i < len; i++) {
+            int height = 0;
+            for (int j = 0; j < i; j++) {
+                if (cuboids[i][2] >= cuboids[j][2] && cuboids[i][1] >= cuboids[j][1]) {
+                    height = Math.max(height, dp[j]);
+                }
+            }
+            height += cuboids[i][2];
+            dp[i] = height;
+            result = Math.max(result, height);
+        }
+        log.debug("dp:{}", dp);
+
+        return result;
+    }
 }

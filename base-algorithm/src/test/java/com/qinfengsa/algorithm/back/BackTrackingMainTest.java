@@ -21,4 +21,11 @@ public class BackTrackingMainTest {
         int[] balls = {6, 6, 6, 6, 6, 6};
         logResult(main.getProbability(balls));
     }
+
+    @Test
+    public void minimumIncompatibility() {
+        int[] nums = {6, 3, 8, 1, 3, 1, 2, 2};
+        int k = 4;
+        logResult(main.minimumIncompatibility(nums, k));
+    }
 }
