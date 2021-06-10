@@ -55,7 +55,7 @@ public class Fancy {
      * @param n
      * @return
      */
-    public long myPow(long x, int n) {
+    public static long myPow(long x, int n) {
         if (n == 0 && x != 0) {
             return 1;
         }

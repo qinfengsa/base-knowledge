@@ -162,4 +162,11 @@ public class DynamicProgrammingMainTest {
         int m = 2, n = 2, introvertsCount = 4, extrovertsCount = 0;
         logResult(main.getMaxGridHappiness(m, n, introvertsCount, extrovertsCount));
     }
+
+    @Test
+    public void boxDelivering() {
+        int[][] boxes = {{2, 4}, {2, 5}, {3, 1}, {3, 2}, {3, 7}, {3, 1}, {4, 4}, {1, 3}, {5, 2}};
+        int portsCount = 5, maxBoxes = 5, maxWeight = 7;
+        logResult(main.boxDelivering(boxes, portsCount, maxBoxes, maxWeight));
+    }
 }
