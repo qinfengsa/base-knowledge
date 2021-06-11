@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -1886,5 +1887,85 @@ public class DynamicProgrammingMain {
         }
         log.debug("dp:{}", dp);
         return dp[len];
+    }
+
+    /**
+     * 1815. 得到新鲜甜甜圈的最多组数
+     *
+     * <p>有一个甜甜圈商店，每批次都烤 batchSize 个甜甜圈。这个店铺有个规则，就是在烤一批新的甜甜圈时，之前 所有 甜甜圈都必须已经全部销售完毕。给你一个整数 batchSize
+     * 和一个整数数组 groups ，数组中的每个整数都代表一批前来购买甜甜圈的顾客，其中 groups[i] 表示这一批顾客的人数。每一位顾客都恰好只要一个甜甜圈。
+     *
+     * <p>当有一批顾客来到商店时，他们所有人都必须在下一批顾客来之前购买完甜甜圈。如果一批顾客中第一位顾客得到的甜甜圈不是上一组剩下的，那么这一组人都会很开心。
+     *
+     * <p>你可以随意安排每批顾客到来的顺序。请你返回在此前提下，最多 有多少组人会感到开心。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：batchSize = 3, groups = [1,2,3,4,5,6] 输出：4 解释：你可以将这些批次的顾客顺序安排为 [6,2,4,5,1,3] 。那么第
+     * 1，2，4，6 组都会感到开心。 示例 2：
+     *
+     * <p>输入：batchSize = 4, groups = [1,3,2,5,2,2,1,6] 输出：4
+     *
+     * <p>提示：
+     *
+     * <p>1 <= batchSize <= 9 1 <= groups.length <= 30 1 <= groups[i] <= 109
+     *
+     * @param batchSize
+     * @param groups
+     * @return
+     */
+    public int maxHappyGroups(int batchSize, int[] groups) {
+        int len = groups.length;
+        if (batchSize == 1) {
+            return len;
+        }
+        int[] modNums = new int[batchSize];
+        // 求余
+        for (int g : groups) {
+            int mod = g % batchSize;
+            modNums[mod]++;
+        }
+        return modNums[0] + dfsHappyGroups(0, modNums, len - modNums[0]);
+    }
+
+    private static Map<String, Integer> happyGroupCount = new HashMap<>();
+
+    private int dfsHappyGroups(int remainVal, int[] modNums, int remainCount) {
+        if (remainCount == 0) {
+            return 0;
+        }
+        int result = 0;
+        int batchSize = modNums.length;
+        String key = Arrays.toString(modNums) + remainVal;
+        if (Objects.nonNull(happyGroupCount.get(key))) {
+            return happyGroupCount.get(key);
+        }
+
+        if (remainVal == 0) {
+            result++;
+        } else if (remainVal < 0) {
+            remainVal += batchSize;
+        }
+        int max = 0;
+        if (remainVal != 0 && modNums[remainVal] != 0) {
+            modNums[remainVal]--;
+            int dfsResult = dfsHappyGroups(0, modNums, remainCount - 1);
+            modNums[remainVal]++;
+            max = Math.max(max, dfsResult);
+        } else {
+            // 遍历所有余数
+            for (int i = 1; i < batchSize; i++) {
+                if (modNums[i] == 0) {
+                    continue;
+                }
+                modNums[i]--;
+                int dfsResult = dfsHappyGroups(remainVal - i, modNums, remainCount - 1);
+                modNums[i]++;
+                max = Math.max(max, dfsResult);
+            }
+        }
+        result += max;
+        happyGroupCount.put(key, result);
+        return result;
     }
 }
