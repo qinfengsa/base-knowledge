@@ -144,4 +144,19 @@ public class ArrayMainTest {
         int[] instructions = {1, 3, 3, 3, 2, 4, 2, 1, 2};
         logResult(main.createSortedArray(instructions));
     }
+
+    @Test
+    public void isCovered() {
+        int[][] ranges = {
+            {25, 42}, {7, 14}, {2, 32}, {25, 28}, {39, 49}, {1, 50}, {29, 45}, {18, 47}
+        };
+        int left = 15, right = 38;
+        logResult(main.isCovered(ranges, left, right));
+    }
+
+    @Test
+    public void largestMagicSquare() {
+        int[][] grid = {{7, 1, 4, 5, 6}, {2, 5, 1, 6, 4}, {1, 5, 4, 3, 2}, {1, 2, 7, 3, 4}};
+        logResult(main.largestMagicSquare(grid));
+    }
 }
