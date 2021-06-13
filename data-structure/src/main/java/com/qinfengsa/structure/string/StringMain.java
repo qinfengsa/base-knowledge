@@ -551,4 +551,133 @@ public class StringMain {
         }
         return result;
     }
+
+    /**
+     * 5784. 重新分配字符使所有字符串都相等
+     *
+     * <p>给你一个字符串数组 words（下标 从 0 开始 计数）。
+     *
+     * <p>在一步操作中，需先选出两个 不同 下标 i 和 j，其中 words[i] 是一个非空字符串，接着将 words[i] 中的 任一 字符移动到 words[j] 中的 任一
+     * 位置上。
+     *
+     * <p>如果执行任意步操作可以使 words 中的每个字符串都相等，返回 true ；否则，返回 false 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：words = ["abc","aabc","bc"] 输出：true 解释：将 words[1] 中的第一个 'a' 移动到 words[2] 的最前面。 使
+     * words[1] = "abc" 且 words[2] = "abc" 。 所有字符串都等于 "abc" ，所以返回 true 。 示例 2：
+     *
+     * <p>输入：words = ["ab","a"] 输出：false 解释：执行操作无法使所有字符串都相等。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= words.length <= 100 1 <= words[i].length <= 100 words[i] 由小写英文字母组成
+     *
+     * @param words
+     * @return
+     */
+    public boolean makeEqual(String[] words) {
+        int len = words.length;
+        int[] letters = new int[26];
+        for (String word : words) {
+            for (char c : word.toCharArray()) {
+                letters[c - 'a']++;
+            }
+        }
+        for (int i = 0; i < 26; i++) {
+            if (letters[i] % len != 0) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * 5786. 可移除字符的最大数目
+     *
+     * <p>给你两个字符串 s 和 p ，其中 p 是 s 的一个 子序列 。同时，给你一个元素 互不相同 且下标 从 0 开始 计数的整数数组 removable ，该数组是 s
+     * 中下标的一个子集（s 的下标也 从 0 开始 计数）。
+     *
+     * <p>请你找出一个整数 k（0 <= k <= removable.length），选出 removable 中的 前 k 个下标，然后从 s 中移除这些下标对应的 k 个字符。整数 k
+     * 需满足：在执行完上述步骤后， p 仍然是 s 的一个 子序列 。更正式的解释是，对于每个 0 <= i < k ，先标记出位于 s[removable[i]]
+     * 的字符，接着移除所有标记过的字符，然后检查 p 是否仍然是 s 的一个子序列。
+     *
+     * <p>返回你可以找出的 最大 k ，满足在移除字符后 p 仍然是 s 的一个子序列。
+     *
+     * <p>字符串的一个 子序列 是一个由原字符串生成的新字符串，生成过程中可能会移除原字符串中的一些字符（也可能不移除）但不改变剩余字符之间的相对顺序。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：s = "abcacb", p = "ab", removable = [3,1,0] 输出：2 解释：在移除下标 3 和 1 对应的字符后，"abcacb" 变成
+     * "accb" 。 "ab" 是 "accb" 的一个子序列。 如果移除下标 3、1 和 0 对应的字符后，"abcacb" 变成 "ccb" ，那么 "ab" 就不再是 s
+     * 的一个子序列。 因此，最大的 k 是 2 。 示例 2：
+     *
+     * <p>输入：s = "abcbddddd", p = "abcd", removable = [3,2,1,4,5,6] 输出：1 解释：在移除下标 3
+     * 对应的字符后，"abcbddddd" 变成 "abcddddd" 。 "abcd" 是 "abcddddd" 的一个子序列。 示例 3：
+     *
+     * <p>输入：s = "abcab", p = "abc", removable = [0,1,2,3,4] 输出：0 解释：如果移除数组 removable 的第一个下标，"abc"
+     * 就不再是 s 的一个子序列。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= p.length <= s.length <= 105 0 <= removable.length < s.length 0 <= removable[i] <
+     * s.length p 是 s 的一个 子字符串 s 和 p 都由小写英文字母组成 removable 中的元素 互不相同
+     *
+     * @param s
+     * @param p
+     * @param removable
+     * @return
+     */
+    public int maximumRemovals(String s, String p, int[] removable) {
+        // 二分
+        int len = removable.length;
+        if (len == 0) {
+            return 0;
+        }
+        this.s = s;
+        this.p = p;
+        this.removable = removable;
+        if (canRemove(len)) {
+            return len;
+        }
+        int left = 0, right = len;
+        int result = 0;
+
+        while (left < right) {
+            int mid = (left + right) >> 1;
+            if (canRemove(mid)) {
+                result = mid;
+                left = mid + 1;
+            } else {
+                right = mid;
+            }
+        }
+        return result;
+    }
+
+    private String s, p;
+
+    private int[] removable;
+
+    private boolean canRemove(int k) {
+        Set<Integer> set = new HashSet<>();
+        for (int i = 0; i < k; i++) {
+            set.add(removable[i]);
+        }
+        int idx = 0;
+        for (int i = 0; i < s.length(); i++) {
+            if (idx == p.length()) {
+                break;
+            }
+            if (set.contains(i)) {
+                continue;
+            }
+            if (s.charAt(i) == p.charAt(idx)) {
+                idx++;
+            }
+        }
+
+        return idx == p.length();
+    }
 }

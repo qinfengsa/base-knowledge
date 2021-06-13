@@ -55,4 +55,11 @@ public class StringMainTest {
         String s = "11100";
         logResult(main.minFlips(s));
     }
+
+    @Test
+    public void maximumRemovals() {
+        String s = "abcab", p = "abc";
+        int[] removable = {0, 1, 2, 3, 4};
+        logResult(main.maximumRemovals(s, p, removable));
+    }
 }
