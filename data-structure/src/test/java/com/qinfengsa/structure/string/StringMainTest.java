@@ -62,4 +62,11 @@ public class StringMainTest {
         int[] removable = {0, 1, 2, 3, 4};
         logResult(main.maximumRemovals(s, p, removable));
     }
+
+    @Test
+    public void minInteger() {
+        String num = "9438957234785635408";
+        int k = 23;
+        logResult(main.minInteger(num, k));
+    }
 }

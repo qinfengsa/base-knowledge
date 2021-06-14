@@ -35,4 +35,10 @@ public class MathMainTest {
         int k = 3;
         logResult(main.kthSmallestPath(destination, k));
     }
+
+    @Test
+    public void getMinDistSum() {
+        int[][] positions = {{0, 1}, {1, 0}, {1, 2}, {2, 1}};
+        logResult(main.getMinDistSum(positions));
+    }
 }

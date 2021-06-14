@@ -1968,4 +1968,176 @@ public class DynamicProgrammingMain {
         happyGroupCount.put(key, result);
         return result;
     }
+
+    /**
+     * 1397. 找到所有好字符串
+     *
+     * <p>给你两个长度为 n 的字符串 s1 和 s2 ，以及一个字符串 evil 。请你返回 好字符串 的数目。
+     *
+     * <p>好字符串 的定义为：它的长度为 n ，字典序大于等于 s1 ，字典序小于等于 s2 ，且不包含 evil 为子字符串。
+     *
+     * <p>由于答案可能很大，请你返回答案对 10^9 + 7 取余的结果。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：n = 2, s1 = "aa", s2 = "da", evil = "b" 输出：51 解释：总共有 25 个以 'a'
+     * 开头的好字符串："aa"，"ac"，"ad"，...，"az"。还有 25 个以 'c' 开头的好字符串："ca"，"cc"，"cd"，...，"cz"。最后，还有一个以 'd'
+     * 开头的好字符串："da"。 示例 2：
+     *
+     * <p>输入：n = 8, s1 = "leetcode", s2 = "leetgoes", evil = "leet" 输出：0 解释：所有字典序大于等于 s1 且小于等于 s2
+     * 的字符串都以 evil 字符串 "leet" 开头。所以没有好字符串。 示例 3：
+     *
+     * <p>输入：n = 2, s1 = "gx", s2 = "gz", evil = "x" 输出：2
+     *
+     * <p>提示：
+     *
+     * <p>s1.length == n s2.length == n s1 <= s2 1 <= n <= 500 1 <= evil.length <= 50
+     * 所有字符串都只包含小写英文字母。
+     *
+     * @param n
+     * @param s1
+     * @param s2
+     * @param evil
+     * @return
+     */
+    public int findGoodStrings(int n, String s1, String s2, String evil) {
+        int m = evil.length();
+        // 0表示s1和s2都有限制，1表s1有限制， 2表示s2有限制， 3表示s1和s2无限制
+        int[][][] dp = new int[n + 1][m + 1][4];
+
+        for (int j = 0; j < m; j++) {
+            dp[n][j][0] = 1;
+            dp[n][j][1] = 1;
+
+            dp[n][j][2] = 1;
+            dp[n][j][3] = 1;
+        }
+        this.prefix = getPrefix(evil);
+        for (int i = n - 1; i >= 0; i--) {
+            char c1 = s1.charAt(i), c2 = s2.charAt(i);
+            for (int j = 0; j < m; j++) {
+                // s1和s2都有限制
+                for (char c = c1; c <= c2; c++) {
+                    int nextState;
+                    if (c == c1 && c == c2) {
+                        nextState = 0;
+                    } else if (c == c1) {
+                        nextState = 1;
+                    } else if (c == c2) {
+                        nextState = 2;
+                    } else {
+                        nextState = 3;
+                    }
+                    dp[i][j][0] += dp[i + 1][getNext(evil, c, j)][nextState];
+                    dp[i][j][0] %= MOD;
+                }
+                // s1有限制
+                for (char c = c1; c <= 'z'; c++) {
+                    int nextState = c == c1 ? 1 : 3;
+                    dp[i][j][1] += dp[i + 1][getNext(evil, c, j)][nextState];
+                    dp[i][j][1] %= MOD;
+                }
+
+                // s2有限制
+                for (char c = 'a'; c <= c2; c++) {
+                    int nextState = c == c2 ? 2 : 3;
+                    dp[i][j][2] += dp[i + 1][getNext(evil, c, j)][nextState];
+                    dp[i][j][2] %= MOD;
+                }
+
+                // s1和s2无限制
+                for (char c = 'a'; c <= 'z'; c++) {
+                    int nextState = 3;
+                    dp[i][j][3] += dp[i + 1][getNext(evil, c, j)][nextState];
+                    dp[i][j][3] %= MOD;
+                }
+            }
+        }
+
+        return dp[0][0][0];
+    }
+
+    private int[] getPrefix(String evil) {
+        int len = evil.length();
+        int[] prefix = new int[len];
+
+        int j = 0; // len of match string 表示匹配的长度
+        for (int i = 1; i < len; i++) {
+            while (j > 0 && evil.charAt(i) != evil.charAt(j)) {
+                j = prefix[j - 1];
+            }
+            if (evil.charAt(i) == evil.charAt(j)) {
+                j++;
+            }
+            prefix[i] = j;
+        }
+        return prefix;
+    }
+
+    private int getNext(String evil, char c, int j) {
+        while (j > 0 && c != evil.charAt(j)) {
+            j = prefix[j - 1];
+        }
+        if (c == evil.charAt(j)) {
+            j++;
+        }
+        return j;
+    }
+
+    int[] prefix;
+
+    public int findGoodStrings2(int n, String s1, String s2, String evil) {
+        int mod = (int) 1e9 + 7;
+        int m = evil.length();
+        int[][][] dp =
+                new int[n + 1][4][m + 1]; // 第二维度中， 0表示s1和s2都有限制，1表s1有限制， 2表示s2有限制， 3表示s1和s2无限制；
+        // 第三维度表示前面已经匹配的evil的长度
+        // 初始化
+        for (int i = 0; i < m; i++) {
+            dp[n][0][i] = 1;
+            dp[n][1][i] = 1;
+            dp[n][2][i] = 1;
+            dp[n][3][i] = 1;
+        }
+        char[] p = evil.toCharArray();
+        this.prefix = getPrefix(evil); // O(n)，计算前缀数组
+        for (int i = n - 1; i >= 0; i--) {
+            for (int j = 0; j < m; j++) {
+                // handle 0
+                for (char k = s1.charAt(i); k <= s2.charAt(i); k++) {
+                    int state = 0;
+                    if (k == s1.charAt(i) && k == s2.charAt(i)) {
+                        state = 0;
+                    } else if (k == s1.charAt(i)) {
+                        state = 1;
+                    } else if (k == s2.charAt(i)) {
+                        state = 2;
+                    } else {
+                        state = 3;
+                    }
+                    dp[i][0][j] += dp[i + 1][state][getNext(evil, k, j)];
+                    dp[i][0][j] %= mod;
+                }
+                // handle 1
+                for (char k = s1.charAt(i); k <= 'z'; k++) {
+                    int state = k == s1.charAt(i) ? 1 : 3;
+                    dp[i][1][j] += dp[i + 1][state][getNext(evil, k, j)];
+                    dp[i][1][j] %= mod;
+                }
+                // handle 2
+                for (char k = 'a'; k <= s2.charAt(i); k++) {
+                    int state = k == s2.charAt(i) ? 2 : 3;
+                    dp[i][2][j] += dp[i + 1][state][getNext(evil, k, j)];
+                    dp[i][2][j] %= mod;
+                }
+                // handle 3
+                for (char k = 'a'; k <= 'z'; k++) {
+                    int state = 3;
+                    dp[i][3][j] += dp[i + 1][state][getNext(evil, k, j)];
+                    dp[i][3][j] %= mod;
+                }
+            }
+        }
+        return dp[0][0][0];
+    }
 }

@@ -169,4 +169,11 @@ public class DynamicProgrammingMainTest {
         int portsCount = 5, maxBoxes = 5, maxWeight = 7;
         logResult(main.boxDelivering(boxes, portsCount, maxBoxes, maxWeight));
     }
+
+    @Test
+    public void findGoodStrings() {
+        int n = 3;
+        String s1 = "szc", s2 = "zyi", evil = "p";
+        logResult(main.findGoodStrings(n, s1, s2, evil));
+    }
 }
