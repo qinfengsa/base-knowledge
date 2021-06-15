@@ -41,4 +41,10 @@ public class MathMainTest {
         int[][] positions = {{0, 1}, {1, 0}, {1, 2}, {2, 1}};
         logResult(main.getMinDistSum(positions));
     }
+
+    @Test
+    public void countDifferentSubsequenceGCDs() {
+        int[] nums = {5, 15, 40, 5, 6};
+        logResult(main.countDifferentSubsequenceGCDs(nums));
+    }
 }

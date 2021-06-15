@@ -35,4 +35,11 @@ public class GreedyMainTest {
         int[] speed = {2, 8, 2}, efficiency = {2, 7, 1};
         logResult(main.maxPerformance(n, speed, efficiency, k));
     }
+
+    @Test
+    public void maxBuilding() {
+        int n = 6;
+        int[][] restrictions = {{5, 0}, {6, 0}};
+        logResult(main.maxBuilding(n, restrictions));
+    }
 }

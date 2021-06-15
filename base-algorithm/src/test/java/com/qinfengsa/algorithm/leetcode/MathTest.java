@@ -3,6 +3,7 @@ package com.qinfengsa.algorithm.leetcode;
 import static com.qinfengsa.algorithm.util.LogUtils.logResult;
 
 import com.qinfengsa.algorithm.util.LogUtils;
+import com.qinfengsa.algorithm.util.MathUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -1875,19 +1876,7 @@ public class MathTest {
         // 因此我们只需要找到 x, y 的最大公约数并判断 z 是否是它的倍数即可。
         if (x + y < z) return false;
         if (x == 0 || y == 0) return z == 0 || x + y == z;
-        return z % getGcd(x, y) == 0;
-    }
-
-    // 最大公约数
-    public static int getGcd(int a, int b) {
-        int max, min;
-        max = Math.max(a, b);
-        min = Math.min(a, b);
-
-        if (max % min != 0) {
-            return getGcd(min, max % min);
-        }
-        return min;
+        return z % MathUtils.getGcd(x, y) == 0;
     }
 
     @Test
@@ -2265,7 +2254,7 @@ public class MathTest {
                 gcd = count;
                 continue;
             }
-            gcd = getGcd(gcd, count);
+            gcd = MathUtils.getGcd(gcd, count);
         }
 
         return gcd >= 2;
@@ -2352,26 +2341,11 @@ public class MathTest {
 
     // 最小公倍数
     public static int getLcm(int n1, int n2) {
-        return n1 * n2 / getGcd(n1, n2);
+        return n1 * n2 / MathUtils.getGcd(n1, n2);
     }
 
     public static long getLcm(long n1, long n2) {
-        return n1 * n2 / getGcd(n1, n2);
-    }
-
-    // 最大公约数
-    public static long getGcd(long a, long b) {
-        long max, min;
-        max = Math.max(a, b);
-        min = Math.min(a, b);
-        if (min == 0L) {
-            return max;
-        }
-
-        if (max % min != 0) {
-            return getGcd(min, max % min);
-        }
-        return min;
+        return n1 * n2 / MathUtils.getGcd(n1, n2);
     }
 
     @Test
@@ -4372,7 +4346,7 @@ public class MathTest {
         StringBuilder sb = new StringBuilder();
         for (int i = 1; i < n; i++) {
             for (int j = i + 1; j <= n; j++) {
-                if (getGcd(i, j) != 1) {
+                if (MathUtils.getGcd(i, j) != 1) {
                     continue;
                 }
 
@@ -5423,7 +5397,7 @@ public class MathTest {
             return "0/1";
         }
 
-        int gcd = getGcd(Math.abs(node.numerator), node.denominator);
+        int gcd = MathUtils.getGcd(Math.abs(node.numerator), node.denominator);
 
         sb.append(node.numerator / gcd).append("/").append(node.denominator / gcd);
         return sb.toString();
@@ -5446,7 +5420,7 @@ public class MathTest {
         if (Objects.isNull(node1)) {
             return node2;
         }
-        int gcd = getGcd(node1.denominator, node2.denominator);
+        int gcd = MathUtils.getGcd(node1.denominator, node2.denominator);
 
         int denominator = node1.denominator * node2.denominator / gcd;
 
@@ -6771,7 +6745,7 @@ public class MathTest {
      * @return
      */
     public int mirrorReflection(int p, int q) {
-        int g = getGcd(p, q);
+        int g = MathUtils.getGcd(p, q);
         p /= g;
         p %= 2;
         q /= g;
@@ -7997,7 +7971,7 @@ public class MathTest {
         int num = nums[0];
 
         for (int i = 1; i < nums.length; i++) {
-            num = getGcd(num, nums[i]);
+            num = MathUtils.getGcd(num, nums[i]);
         }
         return num == 1;
     }
@@ -8214,7 +8188,7 @@ public class MathTest {
      */
     public int nthMagicalNumber(int n, int a, int b) {
         // 最小公倍数
-        int num = a / getGcd(a, b) * b;
+        int num = a / MathUtils.getGcd(a, b) * b;
         // 按最小公倍数循环 有 minCnt 个元素
         int minCnt = num / a + num / b - 1;
 
@@ -8875,7 +8849,7 @@ public class MathTest {
                 this.n = 0L;
                 this.d = 1L;
             } else {
-                long gcd = getGcd(n, d);
+                long gcd = MathUtils.getGcd(n, d);
                 this.n = n / gcd;
                 this.d = d / gcd;
             }
@@ -8884,7 +8858,7 @@ public class MathTest {
         void add(Fraction other) {
             long numerator = this.n * other.d + this.d * other.n;
             long denominator = this.d * other.d;
-            long gcd = getGcd(numerator, denominator);
+            long gcd = MathUtils.getGcd(numerator, denominator);
             this.n = numerator / gcd;
             this.d = denominator / gcd;
         }

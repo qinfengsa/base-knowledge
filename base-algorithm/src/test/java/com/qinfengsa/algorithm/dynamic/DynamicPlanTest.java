@@ -2,6 +2,7 @@ package com.qinfengsa.algorithm.dynamic;
 
 import static com.qinfengsa.algorithm.util.LogUtils.logResult;
 
+import com.qinfengsa.algorithm.util.MathUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -9140,7 +9141,7 @@ public class DynamicPlanTest {
 
         for (int i = 0; i < len; i++) {
             for (int j = i + 1; j < len; j++) {
-                gcdNums[i][j] = getGcd(nums[i], nums[j]);
+                gcdNums[i][j] = MathUtils.getGcd(nums[i], nums[j]);
             }
         }
 
@@ -9163,18 +9164,6 @@ public class DynamicPlanTest {
         }
 
         return dp[(1 << len) - 1];
-    }
-
-    // 最大公约数
-    public static int getGcd(int a, int b) {
-        int max, min;
-        max = Math.max(a, b);
-        min = Math.min(a, b);
-
-        if (max % min != 0) {
-            return getGcd(min, max % min);
-        }
-        return min;
     }
 
     /**

@@ -43,8 +43,6 @@ public class StringMainTest {
 
     @Test
     public void maxValue() {
-        /*"-132"
-        3*/
         String n = "469975787943862651173569913153377";
         int x = 3;
         logResult(main.maxValue(n, x));
@@ -68,5 +66,12 @@ public class StringMainTest {
         String num = "9438957234785635408";
         int k = 23;
         logResult(main.minInteger(num, k));
+    }
+
+    @Test
+    public void makeStringSorted() {
+        String s =
+                "mvbuibhaaeylbwvlntycbfegpwsxkxzqrppthmuibecipmuimzbeolrnbxjwkfeuikyadepanwxigievibdrxittluatoiqzlwsczjgtnxqiu";
+        logResult(main.makeStringSorted(s));
     }
 }
