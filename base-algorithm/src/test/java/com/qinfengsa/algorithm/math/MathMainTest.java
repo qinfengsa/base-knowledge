@@ -47,4 +47,10 @@ public class MathMainTest {
         int[] nums = {5, 15, 40, 5, 6};
         logResult(main.countDifferentSubsequenceGCDs(nums));
     }
+
+    @Test
+    public void sumOfFlooredPairs() {
+        int[] nums = {7, 7, 7, 7, 7, 7, 7};
+        logResult(main.sumOfFlooredPairs(nums));
+    }
 }

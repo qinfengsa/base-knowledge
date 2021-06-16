@@ -680,4 +680,58 @@ public class MathMain {
 
         return result;
     }
+
+    /**
+     * 1862. 向下取整数对和
+     *
+     * <p>给你一个整数数组 nums ，请你返回所有下标对 0 <= i, j < nums.length 的 floor(nums[i] / nums[j])
+     * 结果之和。由于答案可能会很大，请你返回答案对109 + 7 取余 的结果。
+     *
+     * <p>函数 floor() 返回输入数字的整数部分。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：nums = [2,5,9] 输出：10 解释： floor(2 / 5) = floor(2 / 9) = floor(5 / 9) = 0 floor(2 / 2) =
+     * floor(5 / 5) = floor(9 / 9) = 1 floor(5 / 2) = 2 floor(9 / 2) = 4 floor(9 / 5) = 1
+     * 我们计算每一个数对商向下取整的结果并求和得到 10 。 示例 2：
+     *
+     * <p>输入：nums = [7,7,7,7,7,7,7] 输出：49
+     *
+     * <p>提示：
+     *
+     * <p>1 <= nums.length <= 105 1 <= nums[i] <= 105
+     *
+     * @param nums
+     * @return
+     */
+    public int sumOfFlooredPairs(int[] nums) {
+        int len = nums.length, maxNum = 0;
+        int[] numCnts = new int[100001];
+        for (int num : nums) {
+            numCnts[num]++;
+            maxNum = Math.max(maxNum, num);
+        }
+        // 前缀和
+        for (int i = 1; i < numCnts.length; i++) {
+            numCnts[i] += numCnts[i - 1];
+        }
+        long result = 0;
+        for (int i = 1; i <= maxNum; i++) {
+            int cnt = numCnts[i] - numCnts[i - 1];
+            // num = i 的个数
+            if (cnt == 0) {
+                continue;
+            }
+            // [i , i * 2 - 1] [i* 2, i * 3 - 1]
+            for (int j = 1; j * i <= maxNum; j++) {
+                int left = i * j - 1, right = Math.min(i * (j + 1) - 1, maxNum);
+                int floorCnt = numCnts[right] - numCnts[left];
+
+                result += (long) floorCnt * j * cnt;
+                result %= MOD;
+            }
+        }
+
+        return (int) result;
+    }
 }
