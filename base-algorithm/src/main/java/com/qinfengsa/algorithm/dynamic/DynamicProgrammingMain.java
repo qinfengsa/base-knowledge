@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Queue;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -2226,6 +2227,144 @@ public class DynamicProgrammingMain {
         for (int i = n - 1; i >= 2; i--) {
             sum -= stones[i];
             result = Math.max(result, sum - result);
+        }
+
+        return result;
+    }
+
+    /**
+     * 1879. 两个数组最小的异或值之和
+     *
+     * <p>给你两个整数数组 nums1 和 nums2 ，它们长度都为 n 。
+     *
+     * <p>两个数组的 异或值之和 为 (nums1[0] XOR nums2[0]) + (nums1[1] XOR nums2[1]) + ... + (nums1[n - 1] XOR
+     * nums2[n - 1]) （下标从 0 开始）。
+     *
+     * <p>比方说，[1,2,3] 和 [3,2,1] 的 异或值之和 等于 (1 XOR 3) + (2 XOR 2) + (3 XOR 1) = 2 + 0 + 2 = 4 。 请你将
+     * nums2 中的元素重新排列，使得 异或值之和 最小 。
+     *
+     * <p>请你返回重新排列之后的 异或值之和 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：nums1 = [1,2], nums2 = [2,3] 输出：2 解释：将 nums2 重新排列得到 [3,2] 。 异或值之和为 (1 XOR 3) + (2 XOR
+     * 2) = 2 + 0 = 2 。 示例 2：
+     *
+     * <p>输入：nums1 = [1,0,3], nums2 = [5,3,4] 输出：8 解释：将 nums2 重新排列得到 [5,4,3] 。 异或值之和为 (1 XOR 5) + (0
+     * XOR 4) + (3 XOR 3) = 4 + 4 + 0 = 8 。
+     *
+     * <p>提示：
+     *
+     * <p>n == nums1.length n == nums2.length 1 <= n <= 14 0 <= nums1[i], nums2[i] <= 107
+     *
+     * @param nums1
+     * @param nums2
+     * @return
+     */
+    public int minimumXORSum(int[] nums1, int[] nums2) {
+        int n = nums1.length;
+        int maxState = 1 << n;
+        // dp[i] nums1  状态 i 的 最小值(i的bit位 时 前 bit 给元素)
+        int[] dp = new int[maxState];
+        Arrays.fill(dp, Integer.MAX_VALUE);
+        dp[0] = 0;
+
+        for (int state = 1; state < maxState; state++) {
+            int bit = Integer.bitCount(state);
+            for (int i = 0; i < n; i++) {
+                if ((state & (1 << i)) == 0) {
+                    continue;
+                }
+                dp[state] = Math.min(dp[state], dp[state ^ (1 << i)] + (nums1[bit - 1] ^ nums2[i]));
+            }
+        }
+        return dp[maxState - 1];
+    }
+
+    /**
+     * 1857. 有向图中最大颜色值
+     *
+     * <p>给你一个 有向图 ，它含有 n 个节点和 m 条边。节点编号从 0 到 n - 1 。
+     *
+     * <p>给你一个字符串 colors ，其中 colors[i] 是小写英文字母，表示图中第 i 个节点的 颜色 （下标从 0 开始）。同时给你一个二维数组 edges ，其中
+     * edges[j] = [aj, bj] 表示从节点 aj 到节点 bj 有一条 有向边 。
+     *
+     * <p>图中一条有效 路径 是一个点序列 x1 -> x2 -> x3 -> ... -> xk ，对于所有 1 <= i < k ，从 xi 到 xi+1 在图中有一条有向边。路径的
+     * 颜色值 是路径中 出现次数最多 颜色的节点数目。
+     *
+     * <p>请你返回给定图中有效路径里面的 最大颜色值 。如果图中含有环，请返回 -1 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：colors = "abaca", edges = [[0,1],[0,2],[2,3],[3,4]] 输出：3 解释：路径 0 -> 2 -> 3 -> 4 含有 3
+     * 个颜色为 "a" 的节点（上图中的红色节点）。 示例 2：
+     *
+     * <p>输入：colors = "a", edges = [[0,0]] 输出：-1 解释：从 0 到 0 有一个环。
+     *
+     * <p>提示：
+     *
+     * <p>n == colors.length m == edges.length 1 <= n <= 105 0 <= m <= 105 colors 只含有小写英文字母。 0 <=
+     * aj, bj < n
+     *
+     * @param colors
+     * @param edges
+     * @return
+     */
+    public int largestPathValue(String colors, int[][] edges) {
+        int n = colors.length(), m = edges.length;
+        // 拓扑排序流程
+        // ①将所有入度为0的点加入队列中
+        // ②每次出队一个入度为0的点，然后将该点删除（意思是将所有与该点相连的边都删掉，即将边另一端对应的点的入度减1），若删除该点后与该点相连的点入度变为了0，则将该点加入队列。
+        // ③重复②过程直到队列中的元素被删完
+        //
+        // 排除有环的情况
+        // 因为只有入度为 0 的点才能入队，故若存在环，环上的点一定无法入队。
+        // 所以只需统计入过队的点数之和是否等于点的总数 nn 即可。
+        int[] degree = new int[n];
+        Map<Integer, List<Integer>> graph = new HashMap<>();
+        for (int[] edge : edges) {
+            degree[edge[1]]++;
+            List<Integer> list = graph.computeIfAbsent(edge[0], k -> new ArrayList<>());
+            list.add(edge[1]);
+        }
+        Queue<Integer> queue = new LinkedList<>();
+        for (int i = 0; i < n; i++) {
+            // 入度为0 作为起点
+            if (degree[i] == 0) {
+                queue.offer(i);
+            }
+        }
+        int count = 0;
+        // dp[i][j] 表示 以 节点 i 结尾 颜色 j 的 出现次数
+        int[][] dp = new int[n][26];
+        while (!queue.isEmpty()) {
+            int node = queue.poll();
+            char c = colors.charAt(node);
+            dp[node][c - 'a']++;
+            count++;
+            List<Integer> list = graph.get(node);
+            if (Objects.isNull(list) || list.isEmpty()) {
+                continue;
+            }
+            for (int next : list) {
+                degree[next]--;
+                // 枚举每个颜色
+                for (int j = 0; j < 26; j++) {
+                    dp[next][j] = Math.max(dp[next][j], dp[node][j]);
+                }
+                if (degree[next] == 0) {
+                    queue.offer(next);
+                }
+            }
+        }
+        if (count != n) {
+            return -1;
+        }
+        int result = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < 26; j++) {
+                result = Math.max(result, dp[i][j]);
+            }
         }
 
         return result;

@@ -1964,4 +1964,77 @@ public class ArrayMain {
 
         return x == target[0] && y == target[1] && z == target[2];
     }
+
+    /**
+     * 1851. 包含每个查询的最小区间
+     *
+     * <p>给你一个二维整数数组 intervals ，其中 intervals[i] = [lefti, righti] 表示第 i 个区间开始于 lefti 、结束于
+     * righti（包含两侧取值，闭区间）。区间的 长度 定义为区间中包含的整数数目，更正式地表达是 righti - lefti + 1 。
+     *
+     * <p>再给你一个整数数组 queries 。第 j 个查询的答案是满足 lefti <= queries[j] <= righti 的 长度最小区间 i 的长度
+     * 。如果不存在这样的区间，那么答案是 -1 。
+     *
+     * <p>以数组形式返回对应查询的所有答案。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：intervals = [[1,4],[2,4],[3,6],[4,4]], queries = [2,3,4,5] 输出：[3,3,1,4] 解释：查询处理如下： -
+     * Query = 2 ：区间 [2,4] 是包含 2 的最小区间，答案为 4 - 2 + 1 = 3 。 - Query = 3 ：区间 [2,4] 是包含 3 的最小区间，答案为 4 -
+     * 2 + 1 = 3 。 - Query = 4 ：区间 [4,4] 是包含 4 的最小区间，答案为 4 - 4 + 1 = 1 。 - Query = 5 ：区间 [3,6] 是包含 5
+     * 的最小区间，答案为 6 - 3 + 1 = 4 。 示例 2：
+     *
+     * <p>输入：intervals = [[2,3],[2,5],[1,8],[20,25]], queries = [2,19,5,22] 输出：[2,-1,4,6] 解释：查询处理如下：
+     * - Query = 2 ：区间 [2,3] 是包含 2 的最小区间，答案为 3 - 2 + 1 = 2 。 - Query = 19：不存在包含 19 的区间，答案为 -1 。 -
+     * Query = 5 ：区间 [2,5] 是包含 5 的最小区间，答案为 5 - 2 + 1 = 4 。 - Query = 22：区间 [20,25] 是包含 22 的最小区间，答案为
+     * 25 - 20 + 1 = 6 。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= intervals.length <= 105 1 <= queries.length <= 105 queries[i].length == 2 1 <= lefti
+     * <= righti <= 107 1 <= queries[j] <= 107
+     *
+     * @param intervals
+     * @param queries
+     * @return
+     */
+    public int[] minInterval(int[][] intervals, int[] queries) {
+        // 从小到大排序
+        Arrays.sort(intervals, Comparator.comparingInt(a -> a[0]));
+        int len = queries.length;
+        List<IntervalNode> list = new ArrayList<>();
+        for (int i = 0; i < len; i++) {
+            list.add(new IntervalNode(i, queries[i]));
+        }
+        list.sort(Comparator.comparingInt(a -> a.query));
+        int[] result = new int[len];
+        Arrays.fill(result, -1);
+        PriorityQueue<int[]> queue = new PriorityQueue<>(Comparator.comparingInt(a -> a[1] - a[0]));
+        int index = 0;
+        for (IntervalNode node : list) {
+
+            while (index < intervals.length && node.query >= intervals[index][0]) {
+                queue.offer(intervals[index]);
+                index++;
+            }
+            //  把区间右边界小于queries[i]的区间删除
+            while (!queue.isEmpty() && queue.peek()[1] < node.query) {
+                queue.poll();
+            }
+            if (!queue.isEmpty()) {
+                int[] interval = queue.peek();
+                result[node.idx] = interval[1] - interval[0] + 1;
+            }
+        }
+
+        return result;
+    }
+
+    static class IntervalNode {
+        private final int idx, query;
+
+        public IntervalNode(int idx, int query) {
+            this.idx = idx;
+            this.query = query;
+        }
+    }
 }

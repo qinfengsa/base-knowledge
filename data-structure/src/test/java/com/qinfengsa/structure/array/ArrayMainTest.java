@@ -166,4 +166,12 @@ public class ArrayMainTest {
         int[] target = {3, 2, 5};
         logResult(main.mergeTriplets(triplets, target));
     }
+
+    @Test
+    public void minInterval() {
+        int[][] intervals = {{2, 3}, {2, 5}, {1, 8}, {20, 25}};
+        int[] queries = {2, 19, 5, 22};
+        int[] result = main.minInterval(intervals, queries);
+        log.debug("result:{}", result);
+    }
 }
