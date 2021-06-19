@@ -53,4 +53,10 @@ public class MathMainTest {
         int[] nums = {7, 7, 7, 7, 7, 7, 7};
         logResult(main.sumOfFlooredPairs(nums));
     }
+
+    @Test
+    public void minRecSize() {
+        int[][] lines = {{2, 3}, {3, 0}, {4, 1}};
+        logResult(main.minRecSize(lines));
+    }
 }

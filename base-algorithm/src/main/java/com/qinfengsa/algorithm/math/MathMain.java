@@ -3,6 +3,8 @@ package com.qinfengsa.algorithm.math;
 import com.qinfengsa.algorithm.util.CompUtils;
 import com.qinfengsa.algorithm.util.MathUtils;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.TreeSet;
 import lombok.extern.slf4j.Slf4j;
@@ -869,4 +871,81 @@ public class MathMain {
             S5 = 32, // 指数e
             S6 = 64, // 指数符号
             S7 = 128; // 有效数字
+
+    /**
+     * LCP 37. 最小矩形面积
+     *
+     * <p>二维平面上有 N 条直线，形式为 y = kx + b，其中 k、b为整数 且 k > 0。所有直线以 [k,b] 的形式存于二维数组 lines
+     * 中，不存在重合的两条直线。两两直线之间可能存在一个交点，最多会有 C_N^2C N 2
+     * 个交点。我们用一个平行于坐标轴的矩形覆盖所有的交点，请问这个矩形最小面积是多少。若直线之间无交点、仅有一个交点或所有交点均在同一条平行坐标轴的直线上，则返回0。
+     *
+     * <p>注意：返回结果是浮点数，与标准答案 绝对误差或相对误差 在 10^-4 以内的结果都被视为正确结果
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：lines = [[2,3],[3,0],[4,1]]
+     *
+     * <p>输出：48.00000
+     *
+     * <p>解释：三条直线的三个交点为 (3, 9) (1, 5) 和 (-1, -3)。最小覆盖矩形左下角为 (-1, -3) 右上角为 (3,9)，面积为 48
+     *
+     * <p>示例 2：
+     *
+     * <p>输入：lines = [[1,1],[2,3]]
+     *
+     * <p>输出：0.00000
+     *
+     * <p>解释：仅有一个交点 (-2，-1）
+     *
+     * <p>限制：
+     *
+     * <p>1 <= lines.length <= 10^5 且 lines[i].length == 2 1 <= lines[0] <= 10000 -10000 <= lines[1]
+     * <= 10000 与标准答案绝对误差或相对误差在 10^-4 以内的结果都被视为正确结果
+     *
+     * @param lines
+     * @return
+     */
+    public double minRecSize(int[][] lines) {
+        int n = lines.length;
+        if (n <= 2) {
+            return 0.0;
+        }
+
+        double maxX = Double.MIN_VALUE, maxY = Double.MIN_VALUE;
+        double minX = Double.MAX_VALUE, minY = Double.MAX_VALUE;
+        // 斜率 k 最大是 10000 计算 相同斜率 的最大最小 b
+        int MAX_B = 10001, MIN_B = -10001;
+        int[] maxB = new int[10001], minB = new int[10001];
+        Arrays.fill(maxB, MIN_B);
+        Arrays.fill(minB, MAX_B);
+        List<Integer> kList = new ArrayList<>();
+        for (int[] line : lines) {
+            int k = line[0], b = line[1];
+            // k 第一次遍历 加入数组
+            if (minB[k] == MAX_B) {
+                kList.add(k);
+            }
+            maxB[k] = Math.max(maxB[k], b);
+            minB[k] = Math.min(minB[k], b);
+        }
+        // 同一个斜率 相互平行或重合
+        if (kList.size() == 1) {
+            return 0.0;
+        }
+        // 遍历k
+        Collections.sort(kList);
+
+        for (int i = 1; i < kList.size(); i++) {
+            int k = kList.get(i), lastK = kList.get(i - 1);
+            int minb = minB[k], maxb = maxB[k];
+            int lastMinb = minB[lastK], lastMaxb = maxB[lastK];
+            double diffk = lastK - k;
+            minX = Math.min(minX, (double) (maxb - lastMinb) / diffk);
+            maxX = Math.max(maxX, (double) (minb - lastMaxb) / diffk);
+            minY = Math.min(minY, (double) (lastK * maxb - k * lastMinb) / diffk);
+            maxY = Math.max(maxY, (double) (lastK * minb - k * lastMaxb) / diffk);
+        }
+
+        return (maxX - minX) * (maxY - minY);
+    }
 }

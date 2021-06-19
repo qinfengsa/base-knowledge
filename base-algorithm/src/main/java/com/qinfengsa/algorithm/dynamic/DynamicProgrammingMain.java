@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Queue;
+import java.util.TreeMap;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -2438,5 +2439,303 @@ public class DynamicProgrammingMain {
         }
 
         return -1;
+    }
+
+    /**
+     * LCP 36. 最多牌组数
+     *
+     * <p>麻将的游戏规则中，共有两种方式凑成「一组牌」：
+     *
+     * <p>顺子：三张牌面数字连续的麻将，例如 [4,5,6] 刻子：三张牌面数字相同的麻将，例如 [10,10,10] 给定若干数字作为麻将牌的数值（记作一维数组 tiles），请返回所给
+     * tiles 最多可组成的牌组数。
+     *
+     * <p>注意：凑成牌组时，每张牌仅能使用一次。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：tiles = [2,2,2,3,4]
+     *
+     * <p>输出：1
+     *
+     * <p>解释：最多可以组合出 [2,2,2] 或者 [2,3,4] 其中一组牌。
+     *
+     * <p>示例 2：
+     *
+     * <p>输入：tiles = [2,2,2,3,4,1,3]
+     *
+     * <p>输出：2
+     *
+     * <p>解释：最多可以组合出 [1,2,3] 与 [2,3,4] 两组牌。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= tiles.length <= 10^5 1 <= tiles[i] <= 10^9
+     *
+     * @param tiles
+     * @return
+     */
+    public int maxGroupNumber(int[] tiles) {
+        TreeMap<Integer, Integer> countMap = new TreeMap<>();
+        for (int num : tiles) {
+            int count = countMap.getOrDefault(num, 0);
+            countMap.put(num, count + 1);
+        }
+        int[][] dp = new int[5][5];
+        for (int i = 0; i < 5; i++) {
+            Arrays.fill(dp[i], -1);
+        }
+        dp[0][0] = 0;
+        int last = 0;
+        for (int num : countMap.navigableKeySet()) {
+            // 如果上一张牌和这张牌没法连起来
+            // 意味着无论之前留几张牌，都无法和tile一起组成顺子，因此，只保留dp[0][0]的情形。
+            if (last != num - 1) {
+                int tmpNum = dp[0][0];
+                for (int i = 0; i < 5; i++) {
+                    Arrays.fill(dp[i], -1);
+                }
+                dp[0][0] = tmpNum;
+            }
+
+            int[][] tmp = new int[5][5];
+            for (int i = 0; i < 5; i++) {
+                Arrays.fill(tmp[i], -1);
+            }
+            int cnt = countMap.getOrDefault(num, 0);
+            for (int cnt2 = 0; cnt2 < 5; cnt2++) { // num - 2 的牌数
+                for (int cnt1 = 0; cnt1 < 5; cnt1++) { // num - 1 的牌数
+                    // 如果之前没有留下这么多张牌
+                    if (dp[cnt2][cnt1] < 0) {
+                        continue;
+                    }
+                    // 顺子的数量 不能超过 cnt1, cnt2, cnt
+                    for (int shunzi = 0; shunzi <= Math.min(cnt, Math.min(cnt1, cnt2)); shunzi++) {
+                        // 对于下一个点数 num + 1  newCnt2(num + 1 - 2) = cnt1 - shunzi
+                        int newCnt2 = cnt1 - shunzi;
+                        // 对于下一个点数 num + 1  newCnt1(num + 1 - 1) = cnt - shunzi
+                        for (int newCnt1 = 0; newCnt1 <= Math.min(4, cnt - shunzi); newCnt1++) {
+                            // 新的牌数
+                            // 1. dp 数组保留的 dp[cnt2][cnt1]
+                            // 2. 顺子数量
+                            // 3. num 生成的 刻子 cnt - 顺子数量 - 为 下一个点数 num + 1 保留的 newCnt1
+                            int newScore = dp[cnt2][cnt1] + shunzi + (cnt - shunzi - newCnt1) / 3;
+                            tmp[newCnt2][newCnt1] = Math.max(tmp[newCnt2][newCnt1], newScore);
+                        }
+                    }
+                }
+            }
+
+            dp = tmp;
+            last = num;
+        }
+        logResult(dp);
+        int result = 0;
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 5; j++) {
+                result = Math.max(result, dp[i][j]);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * LCP 38. 守卫城堡
+     *
+     * <p>城堡守卫游戏的胜利条件为使恶魔无法从出生点到达城堡。游戏地图可视作 2*N 的方格图，记作字符串数组 grid，其中：
+     *
+     * <p>"." 表示恶魔可随意通行的平地； "#" 表示恶魔不可通过的障碍物，玩家可通过在 平地 上设置障碍物，即将 "." 变为 "#" 以阻挡恶魔前进； "S"
+     * 表示恶魔出生点，将有大量的恶魔该点生成，恶魔可向上/向下/向左/向右移动，且无法移动至地图外； "P" 表示瞬移点，移动到 "P" 点的恶魔可被传送至任意一个 "P"
+     * 点，也可选择不传送； "C" 表示城堡。 然而在游戏中用于建造障碍物的金钱是有限的，请返回玩家最少需要放置几个障碍物才能获得胜利。若无论怎样放置障碍物均无法获胜，请返回 -1。
+     *
+     * <p>注意：
+     *
+     * <p>地图上可能有一个或多个出生点 地图上有且只有一个城堡 示例 1
+     *
+     * <p>输入：grid = ["S.C.P#P.", ".....#.S"]
+     *
+     * <p>输出：3
+     *
+     * <p>解释：至少需要放置三个障碍物
+     *
+     * <p>示例 2：
+     *
+     * <p>输入：grid = ["SP#P..P#PC#.S", "..#P..P####.#"]
+     *
+     * <p>输出：-1
+     *
+     * <p>解释：无论怎样修筑障碍物，均无法阻挡最左侧出生的恶魔到达城堡位置 image.png
+     *
+     * <p>示例 3：
+     *
+     * <p>输入：grid = ["SP#.C.#PS", "P.#...#.P"]
+     *
+     * <p>输出：0
+     *
+     * <p>解释：无需放置障碍物即可获得胜利
+     *
+     * <p>示例 4：
+     *
+     * <p>输入：grid = ["CP.#.P.", "...S..S"]
+     *
+     * <p>输出：4
+     *
+     * <p>解释：至少需要放置 4 个障碍物，示意图为放置方法之一
+     *
+     * <p>提示：
+     *
+     * <p>grid.length == 2 2 <= grid[0].length == grid[1].length <= 10^4 grid[i][j] 仅包含字符
+     * "."、"#"、"C"、"P"、"S"
+     *
+     * @param grid
+     * @return
+     */
+    public int guardCastle(String[] grid) {
+        int n = grid[0].length();
+        int result = Integer.MAX_VALUE;
+        // 1 所有的传送门 -> 恶魔
+        char[][] grids = new char[2][n];
+        for (int i = 0; i < 2; i++) {
+            for (int j = 0; j < n; j++) {
+                char c = grid[i].charAt(j);
+                if (c == 'P') {
+                    grids[i][j] = 'S';
+                } else {
+                    grids[i][j] = c;
+                }
+            }
+        }
+        result = Math.min(result, dpGuardCastle(grids));
+        for (int i = 0; i < 2; i++) {
+            for (int j = 0; j < n; j++) {
+                char c = grid[i].charAt(j);
+                if (c == 'P') {
+                    grids[i][j] = 'C';
+                }
+            }
+        }
+        result = Math.min(result, dpGuardCastle(grids));
+        // 2 所有的传送门 -> 城堡
+
+        return result == Integer.MAX_VALUE ? -1 : result;
+    }
+
+    private int dpGuardCastle(char[][] grids) {
+        int n = grids[0].length;
+        // 判断网格中是否有相邻的 恶魔 S 和城堡 C相邻无法分开
+        int result = Integer.MAX_VALUE;
+        for (int j = 0; j < n; j++) {
+            // 上下
+            char up = grids[0][j], down = grids[1][j];
+            if ((up == 'S' && down == 'C') || (up == 'C' && down == 'S')) {
+                return result;
+            }
+            if (j == 0) {
+                continue;
+            }
+            // 第1行左右
+            char left = grids[0][j - 1], right = grids[0][j];
+            if ((left == 'S' && right == 'C') || (left == 'C' && right == 'S')) {
+                return result;
+            }
+            // 第2行左右
+            left = grids[1][j - 1];
+            right = grids[1][j];
+            if ((left == 'S' && right == 'C') || (left == 'C' && right == 'S')) {
+                return result;
+            }
+        }
+
+        // dp[i][s1][s2] 表示 处理到第i列 两个格子状态是s1和 s2 所需的最小操作数
+        // s 0表示空地 1表示 城堡或者之前的城堡可以到达该位置
+        // 2 表示 恶魔或者之前的恶魔可以到达该位置 3表示 障碍物
+        dp3 = new int[n + 1][4][4];
+        int MAX_NUM = n << 1;
+        for (int i = 0; i <= n; i++) {
+            for (int j = 0; j < 4; j++) {
+                Arrays.fill(dp3[i][j], 0xfff);
+            }
+        }
+        dp3[0][0][0] = 0;
+        Map<Character, Integer> stateMap = new HashMap<>();
+        stateMap.put('.', 0);
+        stateMap.put('C', 1);
+        stateMap.put('S', 2);
+        stateMap.put('#', 3);
+        for (int i = 1; i <= n; i++) {
+            char up = grids[0][i - 1], down = grids[1][i - 1];
+            // 当前 的状态
+            int t1 = stateMap.get(up), t2 = stateMap.get(down);
+            for (int s1 = 0; s1 < 4; s1++) {
+                for (int s2 = 0; s2 < 4; s2++) {
+                    // 不加障碍物
+                    updateDpGuardCastle(i, s1, s2, t1, t2, 0);
+                    // 加一个障碍物
+                    if (up == '.') {
+                        updateDpGuardCastle(i, s1, s2, 3, t2, 1);
+                    }
+
+                    if (down == '.') {
+                        updateDpGuardCastle(i, s1, s2, t1, 3, 1);
+                    }
+                    // 加两个障碍物
+                    if (up == '.' && down == '.') {
+                        updateDpGuardCastle(i, s1, s2, 3, 3, 2);
+                    }
+                }
+            }
+        }
+
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                result = Math.min(result, dp3[n][i][j]);
+            }
+        }
+
+        return result;
+    }
+
+    private int[][][] dp3;
+
+    /**
+     * @param i 第 i 列
+     * @param s1 i - 1 列的状态1
+     * @param s2 i - 1 列的状态2
+     * @param t1 第 i 列 本身的状态1
+     * @param t2 第 i 列 本身的状态1
+     * @param count 需要的障碍物数量
+     */
+    private void updateDpGuardCastle(int i, int s1, int s2, int t1, int t2, int count) {
+
+        if (s1 == 1 || s1 == 2) {
+            // s1 和 t1 是 恶魔和城堡
+            if (s1 + t1 == 3) {
+                return;
+            }
+            if (t1 == 0) {
+                t1 = s1;
+            }
+        }
+
+        if (s2 == 1 || s2 == 2) {
+            // s2 和 t2 是 恶魔和城堡
+            if (s2 + t2 == 3) {
+                return;
+            }
+            if (t2 == 0) {
+                t2 = s2;
+            }
+        }
+        // t1 和 t2 分别是 恶魔和城堡
+        if ((t1 == 1 && t2 == 2) || (t1 == 2 && t2 == 1)) {
+            return;
+        }
+        // 判断 t1 t2 相互影响
+        if (t1 == 0 && (t2 == 1 || t2 == 2)) {
+            t1 = t2;
+        }
+        if (t2 == 0 && (t1 == 1 || t1 == 2)) {
+            t2 = t1;
+        }
+        dp3[i][t1][t2] = Math.min(dp3[i][t1][t2], dp3[i - 1][s1][s2] + count);
     }
 }

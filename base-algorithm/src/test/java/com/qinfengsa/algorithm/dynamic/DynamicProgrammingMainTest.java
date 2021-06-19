@@ -176,4 +176,16 @@ public class DynamicProgrammingMainTest {
         String s1 = "szc", s2 = "zyi", evil = "p";
         logResult(main.findGoodStrings(n, s1, s2, evil));
     }
+
+    @Test
+    public void maxGroupNumber() {
+        int[] tiles = {2, 2, 2, 3, 4, 1, 3};
+        logResult(main.maxGroupNumber(tiles));
+    }
+
+    @Test
+    public void guardCastle() {
+        String[] grid = {"S.C.P#P.", ".....#.S"};
+        logResult(main.guardCastle(grid));
+    }
 }
