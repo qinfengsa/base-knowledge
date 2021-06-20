@@ -174,4 +174,26 @@ public class ArrayMainTest {
         int[] result = main.minInterval(intervals, queries);
         log.debug("result:{}", result);
     }
+
+    @Test
+    public void countSubIslands() {
+        int[][]
+                grid1 =
+                        {
+                            {1, 0, 1, 0, 1},
+                            {1, 1, 1, 1, 1},
+                            {0, 0, 0, 0, 0},
+                            {1, 1, 1, 1, 1},
+                            {1, 0, 1, 0, 1}
+                        },
+                grid2 =
+                        {
+                            {0, 0, 0, 0, 0},
+                            {1, 1, 1, 1, 1},
+                            {0, 1, 0, 1, 0},
+                            {0, 1, 0, 1, 0},
+                            {1, 0, 0, 0, 1}
+                        };
+        logResult(main.countSubIslands(grid1, grid2));
+    }
 }

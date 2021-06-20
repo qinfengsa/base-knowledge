@@ -74,4 +74,16 @@ public class StringMainTest {
                 "mvbuibhaaeylbwvlntycbfegpwsxkxzqrppthmuibecipmuimzbeolrnbxjwkfeuikyadepanwxigievibdrxittluatoiqzlwsczjgtnxqiu";
         logResult(main.makeStringSorted(s));
     }
+
+    @Test
+    public void largestOddNumber() {
+        String num = "";
+        logResult(main.largestOddNumber(num));
+    }
+
+    @Test
+    public void numberOfRounds() {
+        String startTime = "04:54", finishTime = "18:51";
+        logResult(main.numberOfRounds(startTime, finishTime));
+    }
 }

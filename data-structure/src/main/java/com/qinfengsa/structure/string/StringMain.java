@@ -822,4 +822,121 @@ public class StringMain {
 
         return (int) result;
     }
+
+    /**
+     * 5788. 字符串中的最大奇数
+     *
+     * <p>给你一个字符串 num ，表示一个大整数。请你在字符串 num 的所有 非空子字符串 中找出 值最大的奇数 ，并以字符串形式返回。如果不存在奇数，则返回一个空字符串 "" 。
+     *
+     * <p>子字符串 是字符串中的一个连续的字符序列。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：num = "52" 输出："5" 解释：非空子字符串仅有 "5"、"2" 和 "52" 。"5" 是其中唯一的奇数。 示例 2：
+     *
+     * <p>输入：num = "4206" 输出："" 解释：在 "4206" 中不存在奇数。 示例 3：
+     *
+     * <p>输入：num = "35427" 输出："35427" 解释："35427" 本身就是一个奇数。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= num.length <= 105 num 仅由数字组成且不含前导零
+     *
+     * @param num
+     * @return
+     */
+    public String largestOddNumber(String num) {
+        int len = num.length();
+        int idx = len - 1;
+        while (idx >= 0) {
+            int a = num.charAt(idx) - '0';
+            if ((a & 1) == 1) {
+                break;
+            }
+            idx--;
+        }
+        return num.substring(0, idx + 1);
+    }
+
+    /**
+     * 5789. 你完成的完整对局数
+     *
+     * <p>一款新的在线电子游戏在近期发布，在该电子游戏中，以 刻钟 为周期规划若干时长为 15 分钟 的游戏对局。这意味着，在 HH:00、HH:15、HH:30 和 HH:45
+     * ，将会开始一个新的对局，其中 HH 用一个从 00 到 23 的整数表示。游戏中使用 24 小时制的时钟 ，所以一天中最早的时间是 00:00 ，最晚的时间是 23:59 。
+     *
+     * <p>给你两个字符串 startTime 和 finishTime ，均符合 "HH:MM" 格式，分别表示你 进入 和 退出 游戏的确切时间，请计算在整个游戏会话期间，你完成的
+     * 完整对局的对局数 。
+     *
+     * <p>例如，如果 startTime = "05:20" 且 finishTime = "05:59" ，这意味着你仅仅完成从 05:30 到 05:45 这一个完整对局。而你没有完成从
+     * 05:15 到 05:30 的完整对局，因为你是在对局开始后进入的游戏；同时，你也没有完成从 05:45 到 06:00 的完整对局，因为你是在对局结束前退出的游戏。 如果
+     * finishTime 早于 startTime ，这表示你玩了个通宵（也就是从 startTime 到午夜，再从午夜到 finishTime）。
+     *
+     * <p>假设你是从 startTime 进入游戏，并在 finishTime 退出游戏，请计算并返回你完成的 完整对局的对局数 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：startTime = "12:01", finishTime = "12:44" 输出：1 解释：你完成了从 12:15 到 12:30 的一个完整对局。 你没有完成从
+     * 12:00 到 12:15 的完整对局，因为你是在对局开始后的 12:01 进入的游戏。 你没有完成从 12:30 到 12:45 的完整对局，因为你是在对局结束前的 12:44
+     * 退出的游戏。 示例 2：
+     *
+     * <p>输入：startTime = "20:00", finishTime = "06:00" 输出：40 解释：你完成了从 20:00 到 00:00 的 16 个完整的对局，以及从
+     * 00:00 到 06:00 的 24 个完整的对局。 16 + 24 = 40 示例 3：
+     *
+     * <p>输入：startTime = "00:00", finishTime = "23:59" 输出：95 解释：除最后一个小时你只完成了 3 个完整对局外，其余每个小时均完成了 4
+     * 场完整对局。
+     *
+     * <p>提示：
+     *
+     * <p>startTime 和 finishTime 的格式为 HH:MM 00 <= HH <= 23 00 <= MM <= 59 startTime 和 finishTime 不相等
+     *
+     * @param startTime
+     * @param finishTime
+     * @return
+     */
+    public int numberOfRounds(String startTime, String finishTime) {
+        int startHour = Integer.parseInt(startTime.substring(0, 2)),
+                startMinute = Integer.parseInt(startTime.substring(3, 5));
+
+        int endHour = Integer.parseInt(finishTime.substring(0, 2)),
+                endMinute = Integer.parseInt(finishTime.substring(3, 5));
+
+        log.debug("start: {}:{}  end {}:{}", startHour, startMinute, endHour, endMinute);
+        int newStartHour = startHour,
+                newStartMin = startMinute,
+                newEndHour = endHour,
+                newEndMin = endMinute;
+        if (newStartMin == 0) {
+        } else if (newStartMin <= 15) {
+            newStartMin = 15;
+        } else if (newStartMin <= 30) {
+            newStartMin = 30;
+        } else if (newStartMin <= 45) {
+            newStartMin = 45;
+        } else if (newStartMin < 60) {
+            newStartMin = 0;
+            newStartHour++;
+        }
+
+        if (newEndMin < 15) {
+            newEndMin = 0;
+        } else if (newEndMin < 30) {
+            newEndMin = 15;
+        } else if (newEndMin < 45) {
+            newEndMin = 30;
+        } else if (newEndMin < 60) {
+            newEndMin = 45;
+        }
+        log.debug("start: {}:{}  end {}:{}", newStartHour, newStartMin, newEndHour, newEndMin);
+        int result = 0;
+        if (startHour > endHour || (startHour == endHour && startMinute >= endMinute)) {
+
+            result += (24 - newStartHour) * 4 - newStartMin / 15;
+
+            result += newEndHour * 4 + newEndMin / 15;
+        } else {
+            result = (newEndHour - newStartHour) * 4 + (newEndMin - newStartMin) / 15;
+        }
+
+        return Math.max(result, 0);
+    }
 }
