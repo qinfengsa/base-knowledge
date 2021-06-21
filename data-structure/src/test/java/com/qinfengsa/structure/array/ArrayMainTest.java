@@ -196,4 +196,11 @@ public class ArrayMainTest {
                         };
         logResult(main.countSubIslands(grid1, grid2));
     }
+
+    @Test
+    public void minWastedSpace() {
+        int[] packages = {3, 5, 8, 10, 11, 12};
+        int[][] boxes = {{12}, {11, 9}, {10, 5, 14}};
+        logResult(main.minWastedSpace(packages, boxes));
+    }
 }
