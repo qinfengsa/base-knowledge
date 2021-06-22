@@ -42,4 +42,10 @@ public class GreedyMainTest {
         int[][] restrictions = {{5, 0}, {6, 0}};
         logResult(main.maxBuilding(n, restrictions));
     }
+
+    @Test
+    public void halfQuestions() {
+        int[] questions = {1, 5, 1, 3, 4, 5, 2, 5, 3, 3, 8, 6};
+        logResult(main.halfQuestions(questions));
+    }
 }

@@ -2196,4 +2196,109 @@ public class ArrayMain {
         }
         return left;
     }
+
+    /**
+     * LCS 03. 主题空间
+     *
+     * <p>「以扣会友」线下活动所在场地由若干主题空间与走廊组成，场地的地图记作由一维字符串型数组 grid，字符串中仅包含 "0"～"5" 这 6 个字符。地图上每一个字符代表面积为 1
+     * 的区域，其中 "0" 表示走廊，其他字符表示主题空间。相同且连续（连续指上、下、左、右四个方向连接）的字符组成同一个主题空间。
+     *
+     * <p>假如整个 grid 区域的外侧均为走廊。请问，不与走廊直接相邻的主题空间的最大面积是多少？如果不存在这样的空间请返回 0。
+     *
+     * <p>示例 1:
+     *
+     * <p>输入：grid = ["110","231","221"]
+     *
+     * <p>输出：1
+     *
+     * <p>解释：4 个主题空间中，只有 1 个不与走廊相邻，面积为 1。 image.png
+     *
+     * <p>示例 2:
+     *
+     * <p>输入：grid = ["11111100000","21243101111","21224101221","11111101111"]
+     *
+     * <p>输出：3
+     *
+     * <p>解释：8 个主题空间中，有 5 个不与走廊相邻，面积分别为 3、1、1、1、2，最大面积为 3。 image.png
+     *
+     * <p>提示：
+     *
+     * <p>1 <= grid.length <= 500 1 <= grid[i].length <= 500 grid[i][j] 仅可能是 "0"～"5"
+     *
+     * @param grid
+     * @return
+     */
+    public int largestArea(String[] grid) {
+        this.m = grid.length;
+        this.n = grid[0].length();
+        int[][] grids = new int[m][n];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                int num = grid[i].charAt(j) - '0';
+                grids[i][j] = num;
+            }
+        }
+        // dfs 把所有的走廊 的 改为 -1
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                int num = grids[i][j];
+                if (num == 0) {
+                    grids[i][j] = -1;
+                    dfsCorridor(grids, i, j, 0);
+                } else if (i == 0 || j == 0 || i == m - 1 || j == n - 1) {
+                    grids[i][j] = -1;
+                    dfsCorridor(grids, i, j, num);
+                }
+            }
+        }
+        logResult(grids);
+        int maxResult = 0;
+        // 遍历剩下的区域
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                int num = grids[i][j];
+                if (num > 0 && num <= 5) {
+                    grids[i][j] += 10;
+                    maxResult = Math.max(maxResult, getArea(grids, i, j, num));
+                }
+            }
+        }
+        return maxResult;
+    }
+
+    private int getArea(int[][] grids, int row, int col, int num) {
+        int result = 1;
+        for (int i = 0; i < 4; i++) {
+            int nextRow = row + DIR_ROW[i], nextCol = col + DIR_COL[i];
+            if (!inArea(nextRow, nextCol, m, n)) {
+                continue;
+            }
+            if (grids[nextRow][nextCol] != num) {
+                continue;
+            }
+            grids[nextRow][nextCol] += 10;
+            result += getArea(grids, nextRow, nextCol, num);
+        }
+        return result;
+    }
+
+    private void dfsCorridor(int[][] grids, int row, int col, int num) {
+        for (int i = 0; i < 4; i++) {
+            int nextRow = row + DIR_ROW[i], nextCol = col + DIR_COL[i];
+            if (!inArea(nextRow, nextCol, m, n)) {
+                continue;
+            }
+            // 如果 num == 0 遍历
+            int nextNum = grids[nextRow][nextCol];
+            if (nextNum > 0) {
+                if (num == 0) {
+                    grids[nextRow][nextCol] = -1;
+                    dfsCorridor(grids, nextRow, nextCol, nextNum);
+                } else if (num == nextNum) {
+                    grids[nextRow][nextCol] = -1;
+                    dfsCorridor(grids, nextRow, nextCol, num);
+                }
+            }
+        }
+    }
 }

@@ -203,4 +203,10 @@ public class ArrayMainTest {
         int[][] boxes = {{12}, {11, 9}, {10, 5, 14}};
         logResult(main.minWastedSpace(packages, boxes));
     }
+
+    @Test
+    public void largestArea() {
+        String[] grid = {"110", "231", "221"};
+        logResult(main.largestArea(grid));
+    }
 }

@@ -59,4 +59,10 @@ public class MathMainTest {
         int[][] lines = {{2, 3}, {3, 0}, {4, 1}};
         logResult(main.minRecSize(lines));
     }
+
+    @Test
+    public void leastMinutes() {
+        int n = 2;
+        logResult(main.leastMinutes(n));
+    }
 }
