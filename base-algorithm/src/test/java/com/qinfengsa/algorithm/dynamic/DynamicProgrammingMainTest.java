@@ -188,4 +188,11 @@ public class DynamicProgrammingMainTest {
         String[] grid = {"S.C.P#P.", ".....#.S"};
         logResult(main.guardCastle(grid));
     }
+
+    @Test
+    public void earliestAndLatest() {
+        int n = 5, firstPlayer = 1, secondPlayer = 5;
+        int[] result = main.earliestAndLatest(n, firstPlayer, secondPlayer);
+        log.debug("result:{}", result);
+    }
 }
