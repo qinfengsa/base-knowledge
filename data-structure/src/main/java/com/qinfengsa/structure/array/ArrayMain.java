@@ -2301,4 +2301,159 @@ public class ArrayMain {
             }
         }
     }
+
+    /**
+     * 1906. 查询差绝对值的最小值
+     *
+     * <p>一个数组 a 的 差绝对值的最小值 定义为：0 <= i < j < a.length 且 a[i] != a[j] 的 |a[i] - a[j]| 的 最小值。如果 a
+     * 中所有元素都 相同 ，那么差绝对值的最小值为 -1 。
+     *
+     * <p>比方说，数组 [5,2,3,7,2] 差绝对值的最小值是 |2 - 3| = 1 。注意答案不为 0 ，因为 a[i] 和 a[j] 必须不相等。 给你一个整数数组 nums
+     * 和查询数组 queries ，其中 queries[i] = [li, ri] 。对于每个查询 i ，计算 子数组 nums[li...ri] 中 差绝对值的最小值 ，子数组
+     * nums[li...ri] 包含 nums 数组（下标从 0 开始）中下标在 li 和 ri 之间的所有元素（包含 li 和 ri 在内）。
+     *
+     * <p>请你返回 ans 数组，其中 ans[i] 是第 i 个查询的答案。
+     *
+     * <p>子数组 是一个数组中连续的一段元素。
+     *
+     * <p>|x| 的值定义为：
+     *
+     * <p>如果 x >= 0 ，那么值为 x 。 如果 x < 0 ，那么值为 -x 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：nums = [1,3,4,8], queries = [[0,1],[1,2],[2,3],[0,3]] 输出：[2,1,4,1] 解释：查询结果如下： -
+     * queries[0] = [0,1]：子数组是 [1,3] ，差绝对值的最小值为 |1-3| = 2 。 - queries[1] = [1,2]：子数组是 [3,4]
+     * ，差绝对值的最小值为 |3-4| = 1 。 - queries[2] = [2,3]：子数组是 [4,8] ，差绝对值的最小值为 |4-8| = 4 。 - queries[3] =
+     * [0,3]：子数组是 [1,3,4,8] ，差的绝对值的最小值为 |3-4| = 1 。 示例 2：
+     *
+     * <p>输入：nums = [4,5,2,2,7,10], queries = [[2,3],[0,2],[0,5],[3,5]] 输出：[-1,1,1,3] 解释：查询结果如下： -
+     * queries[0] = [2,3]：子数组是 [2,2] ，差绝对值的最小值为 -1 ，因为所有元素相等。 - queries[1] = [0,2]：子数组是 [4,5,2]
+     * ，差绝对值的最小值为 |4-5| = 1 。 - queries[2] = [0,5]：子数组是 [4,5,2,2,7,10] ，差绝对值的最小值为 |4-5| = 1 。 -
+     * queries[3] = [3,5]：子数组是 [2,7,10] ，差绝对值的最小值为 |7-10| = 3 。
+     *
+     * <p>提示：
+     *
+     * <p>2 <= nums.length <= 105 1 <= nums[i] <= 100 1 <= queries.length <= 2 * 104 0 <= li < ri <
+     * nums.length
+     *
+     * @param nums
+     * @param queries
+     * @return
+     */
+    public int[] minDifference(int[] nums, int[][] queries) {
+        //  1 <= nums[i] <= 100
+        int len = nums.length;
+        // preNums[i][j] 表示 前 i 个 元素组成的数组 中 数字j 的个数
+        int[][] preNums = new int[len + 1][MAX_NUM + 1];
+        for (int i = 0; i < len; i++) {
+            int num = nums[i];
+            System.arraycopy(preNums[i], 0, preNums[i + 1], 0, MAX_NUM + 1);
+            preNums[i + 1][num]++;
+        }
+        int queryLen = queries.length;
+        int[] result = new int[queryLen];
+
+        for (int i = 0; i < queryLen; i++) {
+            int left = queries[i][0], right = queries[i][1];
+            int last = 0, min = Integer.MAX_VALUE;
+            for (int num = 1; num <= MAX_NUM; num++) {
+                if (preNums[right + 1][num] > preNums[left][num]) {
+                    if (last > 0) {
+                        min = Math.min(min, num - last);
+                    }
+                    last = num;
+                }
+            }
+            result[i] = min == Integer.MAX_VALUE ? -1 : min;
+        }
+
+        return result;
+    }
+
+    static final int MAX_NUM = 100;
+
+    /**
+     * 1901. Find a Peak Element II
+     *
+     * <p>A peak element in a 2D grid is an element that is strictly greater than all of its
+     * adjacent neighbors to the left, right, top, and bottom.
+     *
+     * <p>Given a 0-indexed m x n matrix mat where no two adjacent cells are equal, find any peak
+     * element mat[i][j] and return the length 2 array [i,j].
+     *
+     * <p>You may assume that the entire matrix is surrounded by an outer perimeter with the value
+     * -1 in each cell.
+     *
+     * <p>You must write an algorithm that runs in O(m log(n)) or O(n log(m)) time.
+     *
+     * <p>Example 1:
+     *
+     * <p>Input: mat = [[1,4],[3,2]] Output: [0,1] Explanation: Both 3 and 4 are peak elements so
+     * [1,0] and [0,1] are both acceptable answers. Example 2:
+     *
+     * <p>Input: mat = [[10,20,15],[21,30,14],[7,16,32]] Output: [1,1] Explanation: Both 30 and 32
+     * are peak elements so [1,1] and [2,2] are both acceptable answers.
+     *
+     * <p>Constraints:
+     *
+     * <p>m == mat.length n == mat[i].length 1 <= m, n <= 500 1 <= mat[i][j] <= 105 No two adjacent
+     * cells are equal.
+     *
+     * @param mat
+     * @return
+     */
+    public int[] findPeakGrid(int[][] mat) {
+        // 二维网格中的峰值元素是严格大于其左、右、上、下相邻元素的元素。
+        // 给定一个索引为 0 的m x n矩阵mat，其中没有两个相邻单元相等，求任意峰值元素mat[i][j]并返回长度为2的数组[i，j]。
+        // 您可以假设整个矩阵被每个单元格中值为-1的外周长包围。
+        // 必须编写在O（m log（n））或O（n log（m））时间内运行的算法。
+        this.m = mat.length;
+        this.n = mat[0].length;
+        this.maxCols = new int[n];
+        this.grid = mat;
+        // int up = 0, down = m - 1;
+        int left = 0, right = n - 1;
+        int[] result = new int[2];
+        while (left <= right) {
+            int mid = (left + right) >> 1;
+            int midLeftMax = getColMax(mid - 1), midRightMax = getColMax(mid + 1);
+            int midMax = getColMax(mid);
+            if (midMax >= Math.max(midLeftMax, midRightMax)) {
+
+                for (int i = 0; i < m; i++) {
+                    if (mat[i][mid] == midMax) {
+                        result[0] = i;
+                        break;
+                    }
+                }
+
+                result[1] = mid;
+                return result;
+            } else if (midLeftMax >= Math.max(midMax, midRightMax)) {
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+
+        return result;
+    }
+
+    private int[] maxCols;
+
+    private int getColMax(int col) {
+        if (col < 0 || col >= n) {
+            return -1;
+        }
+        if (maxCols[col] > 0) {
+            return maxCols[col];
+        }
+        int max = 0;
+        for (int i = 0; i < m; i++) {
+            max = Math.max(max, grid[i][col]);
+        }
+        maxCols[col] = max;
+        return max;
+    }
 }

@@ -209,4 +209,19 @@ public class ArrayMainTest {
         String[] grid = {"110", "231", "221"};
         logResult(main.largestArea(grid));
     }
+
+    @Test
+    public void minDifference() {
+        int[] nums = {4, 5, 2, 2, 7, 10};
+        int[][] queries = {{2, 3}, {0, 2}, {0, 5}, {3, 5}};
+        int[] result = main.minDifference(nums, queries);
+        log.debug("result:{}", result);
+    }
+
+    @Test
+    public void findPeakGrid() {
+        int[][] mat = {{10, 20, 15}, {21, 30, 14}, {7, 16, 32}};
+        int[] result = main.findPeakGrid(mat);
+        log.debug("result:{}", result);
+    }
 }

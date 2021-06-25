@@ -195,4 +195,16 @@ public class DynamicProgrammingMainTest {
         int[] result = main.earliestAndLatest(n, firstPlayer, secondPlayer);
         log.debug("result:{}", result);
     }
+
+    @Test
+    public void twoEggDrop() {
+        int n = 100;
+        logResult(main.twoEggDrop(n));
+    }
+
+    @Test
+    public void superEggDrop() {
+        int k = 2, n = 6;
+        logResult(main.superEggDrop(k, n));
+    }
 }
