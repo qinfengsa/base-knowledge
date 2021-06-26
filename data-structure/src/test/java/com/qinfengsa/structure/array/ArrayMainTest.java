@@ -224,4 +224,16 @@ public class ArrayMainTest {
         int[] result = main.findPeakGrid(mat);
         log.debug("result:{}", result);
     }
+
+    @Test
+    public void canBeIncreasing() {
+        int[] nums = {1, 2, 3};
+        logResult(main.canBeIncreasing(nums));
+    }
+
+    @Test
+    public void maxAlternatingSum() {
+        int[] nums = {6, 2, 1, 2, 4, 5};
+        logResult(main.maxAlternatingSum(nums));
+    }
 }

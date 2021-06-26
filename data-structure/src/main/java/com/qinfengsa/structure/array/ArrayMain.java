@@ -2456,4 +2456,102 @@ public class ArrayMain {
         maxCols[col] = max;
         return max;
     }
+
+    /**
+     * 5780. 删除一个元素使数组严格递增
+     *
+     * <p>给你一个下标从 0 开始的整数数组 nums ，如果 恰好 删除 一个 元素后，数组 严格递增 ，那么请你返回 true ，否则返回 false
+     * 。如果数组本身已经是严格递增的，请你也返回 true 。
+     *
+     * <p>数组 nums 是 严格递增 的定义为：对于任意下标的 1 <= i < nums.length 都满足 nums[i - 1] < nums[i] 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：nums = [1,2,10,5,7] 输出：true 解释：从 nums 中删除下标 2 处的 10 ，得到 [1,2,5,7] 。 [1,2,5,7]
+     * 是严格递增的，所以返回 true 。 示例 2：
+     *
+     * <p>输入：nums = [2,3,1,2] 输出：false 解释： [3,1,2] 是删除下标 0 处元素后得到的结果。 [2,1,2] 是删除下标 1 处元素后得到的结果。
+     * [2,3,2] 是删除下标 2 处元素后得到的结果。 [2,3,1] 是删除下标 3 处元素后得到的结果。 没有任何结果数组是严格递增的，所以返回 false 。 示例 3：
+     *
+     * <p>输入：nums = [1,1,1] 输出：false 解释：删除任意元素后的结果都是 [1,1] 。 [1,1] 不是严格递增的，所以返回 false 。 示例 4：
+     *
+     * <p>输入：nums = [1,2,3] 输出：true 解释：[1,2,3] 已经是严格递增的，所以返回 true 。
+     *
+     * <p>提示：
+     *
+     * <p>2 <= nums.length <= 1000 1 <= nums[i] <= 1000
+     *
+     * @param nums
+     * @return
+     */
+    public boolean canBeIncreasing(int[] nums) {
+        int len = nums.length;
+        if (len <= 2) {
+            return true;
+        }
+        // 寻找连续递增子序列
+
+        // 从左向右找最长递增子序列
+        int[] lens = new int[len];
+        Arrays.fill(lens, 1);
+        int maxLen = 0;
+        for (int i = 0; i < len; i++) {
+            int num = nums[i];
+            for (int j = i - 1; j >= Math.max(0, i - 2); j--) {
+                if (num <= nums[j]) {
+                    continue;
+                }
+                lens[i] = Math.max(lens[j] + 1, lens[i]);
+            }
+            maxLen = Math.max(maxLen, lens[i]);
+        }
+        log.debug("lens:{}", lens);
+        return maxLen >= nums.length - 1;
+    }
+
+    /**
+     * 5782. 最大子序列交替和
+     *
+     * <p>一个下标从 0 开始的数组的 交替和 定义为 偶数 下标处元素之 和 减去 奇数 下标处元素之 和 。
+     *
+     * <p>比方说，数组 [4,2,5,3] 的交替和为 (4 + 5) - (2 + 3) = 4 。 给你一个数组 nums ，请你返回 nums 中任意子序列的 最大交替和
+     * （子序列的下标 重新 从 0 开始编号）。
+     *
+     * <p>一个数组的 子序列 是从原数组中删除一些元素后（也可能一个也不删除）剩余元素不改变顺序组成的数组。比方说，[2,7,4] 是 [4,2,3,7,2,1,4]
+     * 的一个子序列（加粗元素），但是 [2,4,2] 不是。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：nums = [4,2,5,3] 输出：7 解释：最优子序列为 [4,2,5] ，交替和为 (4 + 5) - 2 = 7 。 示例 2：
+     *
+     * <p>输入：nums = [5,6,7,8] 输出：8 解释：最优子序列为 [8] ，交替和为 8 。 示例 3：
+     *
+     * <p>输入：nums = [6,2,1,2,4,5] 输出：10 解释：最优子序列为 [6,1,5] ，交替和为 (6 + 5) - 1 = 10 。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= nums.length <= 105 1 <= nums[i] <= 105
+     *
+     * @param nums
+     * @return
+     */
+    public long maxAlternatingSum(int[] nums) {
+        int len = nums.length;
+        long max = 0L;
+        // 奇数结尾 odd 和 偶数 结尾 even
+        long odd = 0L, even = nums[0];
+
+        for (int i = 1; i < len; i++) {
+            int num = nums[i];
+            // 奇数结尾
+            long tmpOdd = Math.max(odd, even - num);
+            // 偶数结尾
+            long tmpEven = Math.max(even, odd + num);
+            odd = tmpOdd;
+            even = tmpEven;
+        }
+        log.debug("odd:{} even:{}", odd, even);
+
+        return Math.max(odd, even);
+    }
 }
