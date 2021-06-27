@@ -2554,4 +2554,106 @@ public class ArrayMain {
 
         return Math.max(odd, even);
     }
+
+    /**
+     * 5797. 两个数对之间的最大乘积差
+     *
+     * <p>两个数对 (a, b) 和 (c, d) 之间的 乘积差 定义为 (a * b) - (c * d) 。
+     *
+     * <p>例如，(5, 6) 和 (2, 7) 之间的乘积差是 (5 * 6) - (2 * 7) = 16 。 给你一个整数数组 nums ，选出四个 不同的 下标 w、x、y 和 z
+     * ，使数对 (nums[w], nums[x]) 和 (nums[y], nums[z]) 之间的 乘积差 取到 最大值 。
+     *
+     * <p>返回以这种方式取得的乘积差中的 最大值 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：nums = [5,6,2,7,4] 输出：34 解释：可以选出下标为 1 和 3 的元素构成第一个数对 (6, 7) 以及下标 2 和 4 构成第二个数对 (2, 4)
+     * 乘积差是 (6 * 7) - (2 * 4) = 34 示例 2：
+     *
+     * <p>输入：nums = [4,2,5,9,7,4,8] 输出：64 解释：可以选出下标为 3 和 6 的元素构成第一个数对 (9, 8) 以及下标 1 和 5 构成第二个数对 (2,
+     * 4) 乘积差是 (9 * 8) - (2 * 4) = 64
+     *
+     * <p>提示：
+     *
+     * <p>4 <= nums.length <= 104 1 <= nums[i] <= 104
+     *
+     * @param nums
+     * @return
+     */
+    public int maxProductDifference(int[] nums) {
+        int min1, min2, max1, max2;
+
+        Arrays.sort(nums);
+        int len = nums.length;
+
+        int result = nums[len - 1] * nums[len - 2] - nums[0] * nums[1];
+
+        return result;
+    }
+
+    /**
+     * 5798. 循环轮转矩阵
+     *
+     * <p>给你一个大小为 m x n 的整数矩阵 grid，其中 m 和 n 都是 偶数 ；另给你一个整数 k 。
+     *
+     * <p>矩阵由若干层组成，如下图所示，每种颜色代表一层：
+     *
+     * <p>矩阵的循环轮转是通过分别循环轮转矩阵中的每一层完成的。在对某一层进行一次循环旋转操作时，层中的每一个元素将会取代其 逆时针 方向的相邻元素。轮转示例如下：
+     *
+     * <p>返回执行 k 次循环轮转操作后的矩阵。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：grid = [[40,10],[30,20]], k = 1 输出：[[10,20],[40,30]] 解释：上图展示了矩阵在执行循环轮转操作时每一步的状态。 示例 2：
+     *
+     * <p>输入：grid = [[1,2,3,4],[5,6,7,8],[9,10,11,12],[13,14,15,16]], k = 2
+     * 输出：[[3,4,8,12],[2,11,10,16],[1,7,6,15],[5,9,13,14]] 解释：上图展示了矩阵在执行循环轮转操作时每一步的状态。
+     *
+     * <p>提示：
+     *
+     * <p>m == grid.length n == grid[i].length 2 <= m, n <= 50 m 和 n 都是 偶数 1 <= grid[i][j] <= 5000 1
+     * <= k <= 109
+     *
+     * @param grid
+     * @param k
+     * @return
+     */
+    public int[][] rotateGrid(int[][] grid, int k) {
+        int m = grid.length, n = grid[0].length;
+
+        int maxCount = Math.min(m, n) >> 1;
+        int[][] result = new int[m][n];
+        for (int i = 0; i < maxCount; i++) {
+            // 计算 每层的元素个数
+            int num = (m + n) * 2 - 4 - 8 * i;
+            int cycle = k % num;
+            // 逆时针
+            int rows = m - 2 * i, cols = n - 2 * i;
+            for (int j = 0; j < num; j++) {
+                int[] idx1 = getGridIndex(j, rows, cols),
+                        idx2 = getGridIndex((j + cycle) % num, rows, cols);
+                int row = i + idx1[0], col = i + idx1[1];
+                int nextRow = i + idx2[0], nextCol = i + idx2[1];
+                result[row][col] = grid[nextRow][nextCol];
+            }
+        }
+
+        return result;
+    }
+
+    private int[] getGridIndex(int idx, int m, int n) {
+        int[] result = new int[2];
+        if (idx < n) {
+            result[1] = idx;
+        } else if (idx < n + m - 1) {
+            result[0] = idx - n + 1;
+            result[1] = n - 1;
+        } else if (idx < 2 * n + m - 3) {
+            result[0] = m - 1;
+            result[1] = 2 * n + m - 3 - idx;
+        } else {
+            result[0] = 2 * n + 2 * m - 4 - idx;
+        }
+        return result;
+    }
 }

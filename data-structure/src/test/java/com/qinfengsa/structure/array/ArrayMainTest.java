@@ -236,4 +236,11 @@ public class ArrayMainTest {
         int[] nums = {6, 2, 1, 2, 4, 5};
         logResult(main.maxAlternatingSum(nums));
     }
+
+    @Test
+    public void rotateGrid() {
+        int[][] grid = {{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}, {13, 14, 15, 16}};
+        int k = 2;
+        logResult(main.rotateGrid(grid, k));
+    }
 }

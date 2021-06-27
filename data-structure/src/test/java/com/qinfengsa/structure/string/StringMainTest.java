@@ -86,4 +86,10 @@ public class StringMainTest {
         String startTime = "04:54", finishTime = "18:51";
         logResult(main.numberOfRounds(startTime, finishTime));
     }
+
+    @Test
+    public void wonderfulSubstrings() {
+        String word = "aabb";
+        logResult(main.wonderfulSubstrings(word));
+    }
 }
