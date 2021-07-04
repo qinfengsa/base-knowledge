@@ -65,4 +65,10 @@ public class MathMainTest {
         int n = 2;
         logResult(main.leastMinutes(n));
     }
+
+    @Test
+    public void countGoodNumbers() {
+        long n = 50;
+        logResult(main.countGoodNumbers(n));
+    }
 }

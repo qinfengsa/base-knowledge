@@ -2529,8 +2529,10 @@ public class StringTest {
         // String[] words = {"fooo","barr","wing","ding","wing"};
         // String s = "wordgoodgoodgoodbestword";
         // String[] words = {"word","good","best","word"};
-        String s = "aaaaaaaa";
-        String[] words = {"aa", "aa", "aa"};
+        String s =
+                "abbaccaaabcabbbccbabbccabbacabcacbbaabbbbbaaabaccaacbccabcbababbbabccabacbbcabbaacaccccbaabcabaabaaaabcaabcacabaa";
+
+        String[] words = {"cac", "aaa", "aba", "aab", "abc"};
         logResult(findSubstring(s, words));
     }
     /**
@@ -2570,18 +2572,18 @@ public class StringTest {
 
         for (int k = 0; k < wordLen; k++) {
             HashMap<String, Integer> hasWords = new HashMap<>();
+            int curLen = 0;
             for (int i = k; i <= len - wordLen; i += wordLen) {
-
                 String word = s.substring(i, i + wordLen);
-                Integer count = allWords.get(word);
-
-                if (count == null) {
+                if (!allWords.containsKey(word)) {
                     // 需要重新匹配
                     hasWords.clear();
+                    curLen = 0;
                     continue;
                 } else {
                     int count1 = hasWords.getOrDefault(word, 0);
                     hasWords.put(word, count1 + 1);
+                    curLen++;
                 }
 
                 // 开始位置
@@ -2592,7 +2594,7 @@ public class StringTest {
                 // 开始单词
                 String startWord = s.substring(start, start + wordLen);
                 // 不包含 直接跳过
-                if (!allWords.containsKey(startWord)) {
+                if (curLen < words.length) {
                     continue;
                 }
                 // 遍历比较allWords和hasWords
@@ -2600,7 +2602,12 @@ public class StringTest {
                     result.add(start);
                 }
                 Integer count2 = hasWords.getOrDefault(startWord, 0);
-                hasWords.put(startWord, count2 - 1);
+
+                if (count2 == 1) {
+                    hasWords.remove(startWord);
+                } else {
+                    hasWords.put(startWord, count2 - 1);
+                }
             }
         }
 

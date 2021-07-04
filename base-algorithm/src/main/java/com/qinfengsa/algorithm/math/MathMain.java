@@ -992,4 +992,74 @@ public class MathMain {
         }
         return result;
     }
+
+    /**
+     * 5802. 统计好数字的数目
+     *
+     * <p>我们称一个数字字符串是 好数字 当它满足（下标从 0 开始）偶数 下标处的数字为 偶数 且 奇数 下标处的数字为 质数 （2，3，5 或 7）。
+     *
+     * <p>比方说，"2582" 是好数字，因为偶数下标处的数字（2 和 8）是偶数且奇数下标处的数字（5 和 2）为质数。但 "3245" 不是 好数字，因为 3 在偶数下标处但不是偶数。
+     * 给你一个整数 n ，请你返回长度为 n 且为好数字的数字字符串 总数 。由于答案可能会很大，请你将它对 109 + 7 取余后返回 。
+     *
+     * <p>一个 数字字符串 是每一位都由 0 到 9 组成的字符串，且可能包含前导 0 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：n = 1 输出：5 解释：长度为 1 的好数字包括 "0"，"2"，"4"，"6"，"8" 。 示例 2：
+     *
+     * <p>输入：n = 4 输出：400 示例 3：
+     *
+     * <p>输入：n = 50 输出：564908303
+     *
+     * <p>提示：
+     *
+     * <p>1 <= n <= 1015
+     *
+     * @param n
+     * @return
+     */
+    public int countGoodNumbers(long n) {
+        if (n == 1L) {
+            return 5;
+        }
+        long result = 1L;
+
+        long half = n >> 1;
+        // 偶数位
+        if ((n & 1) == 0) {
+            // 偶数少一个
+            result *= myPow(5L, half);
+        } else {
+            result *= myPow(5L, half + 1);
+        }
+        result %= MOD;
+        // 奇数位
+        result *= myPow(4L, half);
+        result %= MOD;
+
+        return (int) (result % MOD);
+    }
+
+    public static long myPow(long x, long n) {
+        if (n == 0 && x != 0) {
+            return 1;
+        }
+        if (n == 1L) {
+            return x;
+        }
+        // 判断n 是否为负数
+        long result = 1L;
+
+        for (long i = n; i != 0; i >>= 1) {
+
+            if ((i & 1) == 1) {
+                result *= x;
+                result %= MOD;
+            }
+            x *= x;
+            x %= MOD;
+        }
+
+        return result;
+    }
 }

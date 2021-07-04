@@ -6,7 +6,7 @@ import java.util.LinkedList;
 /**
  * 栈
  *
- * @author wangheng
+ * @author qinfengsa
  * @date 2021/6/22 8:47
  */
 public class StackMain {

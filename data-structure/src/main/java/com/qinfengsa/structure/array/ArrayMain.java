@@ -2656,4 +2656,93 @@ public class ArrayMain {
         }
         return result;
     }
+
+    /**
+     * 5800. 基于排列构建数组
+     *
+     * <p>给你一个 从 0 开始的排列 nums（下标也从 0 开始）。请你构建一个 同样长度 的数组 ans ，其中，对于每个 i（0 <= i < nums.length），都满足
+     * ans[i] = nums[nums[i]] 。返回构建好的数组 ans 。
+     *
+     * <p>从 0 开始的排列 nums 是一个由 0 到 nums.length - 1（0 和 nums.length - 1 也包含在内）的不同整数组成的数组。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：nums = [0,2,1,5,3,4] 输出：[0,1,2,4,5,3] 解释：数组 ans 构建如下： ans = [nums[nums[0]],
+     * nums[nums[1]], nums[nums[2]], nums[nums[3]], nums[nums[4]], nums[nums[5]]] = [nums[0],
+     * nums[2], nums[1], nums[5], nums[3], nums[4]] = [0,1,2,4,5,3] 示例 2：
+     *
+     * <p>输入：nums = [5,0,1,2,3,4] 输出：[4,5,0,1,2,3] 解释：数组 ans 构建如下： ans = [nums[nums[0]],
+     * nums[nums[1]], nums[nums[2]], nums[nums[3]], nums[nums[4]], nums[nums[5]]] = [nums[5],
+     * nums[0], nums[1], nums[2], nums[3], nums[4]] = [4,5,0,1,2,3]
+     *
+     * <p>提示：
+     *
+     * <p>1 <= nums.length <= 1000 0 <= nums[i] < nums.length nums 中的元素 互不相同
+     *
+     * @param nums
+     * @return
+     */
+    public int[] buildArray(int[] nums) {
+        int len = nums.length;
+        int[] result = new int[len];
+
+        for (int i = 0; i < len; i++) {
+            result[i] = nums[nums[i]];
+        }
+
+        return result;
+    }
+
+    /**
+     * 5801. 消灭怪物的最大数量
+     *
+     * <p>你正在玩一款电子游戏，在游戏中你需要保护城市免受怪物侵袭。给你一个 下标从 0 开始 且长度为 n 的整数数组 dist ，其中 dist[i] 是第 i 个怪物与城市的
+     * 初始距离（单位：米）。
+     *
+     * <p>怪物以 恒定 的速度走向城市。给你一个长度为 n 的整数数组 speed 表示每个怪物的速度，其中 speed[i] 是第 i 个怪物的速度（单位：米/分）。
+     *
+     * <p>怪物从 第 0 分钟 时开始移动。你有一把武器，并可以 选择 在每一分钟的开始时使用，包括第 0
+     * 分钟。但是你无法在一分钟的中间使用武器。这种武器威力惊人，一次可以消灭任一还活着的怪物。
+     *
+     * <p>一旦任一怪物到达城市，你就输掉了这场游戏。如果某个怪物 恰 在某一分钟开始时到达城市，这会被视为 输掉 游戏，在你可以使用武器之前，游戏就会结束。
+     *
+     * <p>返回在你输掉游戏前可以消灭的怪物的 最大 数量。如果你可以在所有怪物到达城市前将它们全部消灭，返回 n 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：dist = [1,3,4], speed = [1,1,1] 输出：3 解释： 第 0 分钟开始时，怪物的距离是 [1,3,4]，你消灭了第一个怪物。 第 1
+     * 分钟开始时，怪物的距离是 [X,2,3]，你没有消灭任何怪物。 第 2 分钟开始时，怪物的距离是 [X,1,2]，你消灭了第二个怪物。 第 3 分钟开始时，怪物的距离是
+     * [X,X,1]，你消灭了第三个怪物。 所有 3 个怪物都可以被消灭。 示例 2：
+     *
+     * <p>输入：dist = [1,1,2,3], speed = [1,1,1,1] 输出：1 解释： 第 0 分钟开始时，怪物的距离是 [1,1,2,3]，你消灭了第一个怪物。 第 1
+     * 分钟开始时，怪物的距离是 [X,0,1,2]，你输掉了游戏。 你只能消灭 1 个怪物。 示例 3：
+     *
+     * <p>输入：dist = [3,2,4], speed = [5,3,2] 输出：1 解释： 第 0 分钟开始时，怪物的距离是 [3,2,4]，你消灭了第一个怪物。 第 1
+     * 分钟开始时，怪物的距离是 [X,0,2]，你输掉了游戏。 你只能消灭 1 个怪物。
+     *
+     * <p>提示：
+     *
+     * <p>n == dist.length == speed.length 1 <= n <= 105 1 <= dist[i], speed[i] <= 105
+     *
+     * @param dist
+     * @param speed
+     * @return
+     */
+    public int eliminateMaximum(int[] dist, int[] speed) {
+        int n = dist.length;
+
+        int[] mins = new int[n];
+        for (int i = 0; i < n; ++i) {
+            mins[i] = (dist[i] - 1) / speed[i];
+        }
+        int result = 0;
+        Arrays.sort(mins);
+        for (int i = 0; i < n; ++i) {
+            if (mins[i] < i) {
+                break;
+            }
+            result++;
+        }
+        return result;
+    }
 }

@@ -243,4 +243,12 @@ public class ArrayMainTest {
         int k = 2;
         logResult(main.rotateGrid(grid, k));
     }
+
+    @Test
+    public void eliminateMaximum() {
+        // [4,2,3]
+        // [2,1,1]
+        int[] dist = {1, 3, 4}, speed = {1, 1, 1};
+        logResult(main.eliminateMaximum(dist, speed));
+    }
 }
