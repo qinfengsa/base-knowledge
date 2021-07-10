@@ -251,4 +251,11 @@ public class ArrayMainTest {
         int[] dist = {1, 3, 4}, speed = {1, 1, 1};
         logResult(main.eliminateMaximum(dist, speed));
     }
+
+    @Test
+    public void nearestExit() {
+        char[][] maze = {{'.', '.'}};
+        int[] entrance = {0, 1};
+        logResult(main.nearestExit(maze, entrance));
+    }
 }
