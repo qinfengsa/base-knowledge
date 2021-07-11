@@ -1,5 +1,7 @@
 package com.qinfengsa.structure.string;
 
+import static com.qinfengsa.structure.util.LogUtils.logResult;
+
 import com.qinfengsa.structure.bit.BIT;
 import com.qinfengsa.structure.util.CompUtils;
 import java.util.ArrayList;
@@ -1025,5 +1027,136 @@ public class StringMain {
         }
 
         return result;
+    }
+
+    /**
+     * 5809. 长度为 3 的不同回文子序列
+     *
+     * <p>给你一个字符串 s ，返回 s 中 长度为 3 的不同回文子序列 的个数。
+     *
+     * <p>即便存在多种方法来构建相同的子序列，但相同的子序列只计数一次。
+     *
+     * <p>回文 是正着读和反着读一样的字符串。
+     *
+     * <p>子序列 是由原字符串删除其中部分字符（也可以不删除）且不改变剩余字符之间相对顺序形成的一个新字符串。
+     *
+     * <p>例如，"ace" 是 "abcde" 的一个子序列。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：s = "aabca" 输出：3 解释：长度为 3 的 3 个回文子序列分别是： - "aba" ("aabca" 的子序列) - "aaa" ("aabca" 的子序列)
+     * - "aca" ("aabca" 的子序列) 示例 2：
+     *
+     * <p>输入：s = "adc" 输出：0 解释："adc" 不存在长度为 3 的回文子序列。 示例 3：
+     *
+     * <p>输入：s = "bbcbaba" 输出：4 解释：长度为 3 的 4 个回文子序列分别是： - "bbb" ("bbcbaba" 的子序列) - "bcb" ("bbcbaba"
+     * 的子序列) - "bab" ("bbcbaba" 的子序列) - "aba" ("bbcbaba" 的子序列)
+     *
+     * <p>提示：
+     *
+     * <p>3 <= s.length <= 105 s 仅由小写英文字母组成
+     *
+     * @param s
+     * @return
+     */
+    public int countPalindromicSubsequence(String s) {
+        int result = 0;
+        int n = s.length();
+        // 前缀和
+        int[][] counts = new int[n][26];
+        int[] startIdx = new int[26], endIdx = new int[26];
+        Arrays.fill(startIdx, -1);
+        for (int i = 0; i < n; i++) {
+            char c = s.charAt(i);
+            int letIdx = c - 'a';
+            if (startIdx[letIdx] == -1) {
+                startIdx[letIdx] = i;
+            }
+            endIdx[letIdx] = i;
+            if (i == 0) {
+                counts[i][letIdx]++;
+            } else {
+                System.arraycopy(counts[i - 1], 0, counts[i], 0, 26);
+                counts[i][letIdx]++;
+            }
+        }
+        logResult(counts);
+        for (int i = 0; i < 26; i++) {
+            // 没有 字母 i
+            if (startIdx[i] == -1) {
+                continue;
+            }
+            // 只有一个
+            if (startIdx[i] == endIdx[i]) {
+                continue;
+            }
+            // 计算中间的元素
+            int start = startIdx[i], end = endIdx[i];
+
+            for (int j = 0; j < 26; j++) {
+                int cnt = counts[end - 1][j] - counts[start][j];
+                if (cnt > 0) {
+                    result++;
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * 5817. 判断字符串是否可分解为值均等的子串
+     *
+     * <p>一个字符串的所有字符都是一样的，被称作等值字符串。
+     *
+     * <p>举例，"1111" 和 "33" 就是等值字符串。 相比之下，"123"就不是等值字符串。
+     * 规则：给出一个数字字符串s，将字符串分解成一些等值字符串，如果有且仅有一个等值子字符串长度为2，其他的等值子字符串的长度都是3.
+     *
+     * <p>如果能够按照上面的规则分解字符串s，就返回真，否则返回假。
+     *
+     * <p>子串就是原字符串中连续的字符序列。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入: s = "000111000" 输出: false 解释: s只能被分解长度为3的等值子字符串。 示例 2：
+     *
+     * <p>输入: s = "00011111222" 输出: true 解释: s 能被分解为 ["000","111","11","222"]. 示例 3：
+     *
+     * <p>输入: s = "01110002223300" 输出: false 解释: 一个不能被分解的原因是在开头有一个0.
+     *
+     * <p>提示:
+     *
+     * <p>1 <= s.length <= 1000 s 仅包含数字。
+     *
+     * @param s
+     * @return
+     */
+    public boolean isDecomposable(String s) {
+        int count = 1, count2 = 0;
+
+        for (int i = 1; i < s.length(); i++) {
+            if (s.charAt(i) == s.charAt(i - 1)) {
+                count++;
+                if (count == 3) {
+                    count = 0;
+                }
+            } else {
+                if (count == 1) {
+                    return false;
+                }
+                if (count == 2) {
+                    count2++;
+                }
+                count = 1;
+            }
+        }
+        if (count == 1) {
+            return false;
+        }
+        if (count == 2) {
+            count2++;
+        }
+
+        return count2 == 1;
     }
 }

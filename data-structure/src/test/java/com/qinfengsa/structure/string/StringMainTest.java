@@ -92,4 +92,10 @@ public class StringMainTest {
         String word = "aabb";
         logResult(main.wonderfulSubstrings(word));
     }
+
+    @Test
+    public void countPalindromicSubsequence() {
+        String s = "aabca";
+        logResult(main.countPalindromicSubsequence(s));
+    }
 }
