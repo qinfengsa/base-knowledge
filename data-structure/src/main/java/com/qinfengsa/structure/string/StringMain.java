@@ -1212,4 +1212,47 @@ public class StringMain {
 
         return count;
     }
+
+    /**
+     * 5804. 检查是否所有字符出现次数相同
+     *
+     * <p>给你一个字符串 s ，如果 s 是一个 好 字符串，请你返回 true ，否则请返回 false 。
+     *
+     * <p>如果 s 中出现过的 所有 字符的出现次数 相同 ，那么我们称字符串 s 是 好 字符串。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：s = "abacbc" 输出：true 解释：s 中出现过的字符为 'a'，'b' 和 'c' 。s 中所有字符均出现 2 次。 示例 2：
+     *
+     * <p>输入：s = "aaabb" 输出：false 解释：s 中出现过的字符为 'a' 和 'b' 。 'a' 出现了 3 次，'b' 出现了 2 次，两者出现次数不同。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= s.length <= 1000 s 只包含小写英文字母。
+     *
+     * @param s
+     * @return
+     */
+    public boolean areOccurrencesEqual(String s) {
+
+        int[] counts = new int[26];
+        for (char c : s.toCharArray()) {
+            counts[c - 'a']++;
+        }
+        int num = 0;
+
+        for (int i = 0; i < 26; i++) {
+            if (counts[i] == 0) {
+                continue;
+            }
+            if (num == 0) {
+                num = counts[i];
+            }
+            if (num != counts[i]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }

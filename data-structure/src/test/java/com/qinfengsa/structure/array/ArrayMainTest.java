@@ -258,4 +258,17 @@ public class ArrayMainTest {
         int[] entrance = {0, 1};
         logResult(main.nearestExit(maze, entrance));
     }
+
+    @Test
+    public void smallestChair() {
+        int[][] times = {{3, 10}, {1, 5}, {2, 6}};
+        int targetFriend = 0;
+        logResult(main.smallestChair(times, targetFriend));
+    }
+
+    @Test
+    public void splitPainting() {
+        int[][] segments = {{1, 4, 5}, {1, 4, 7}, {4, 7, 1}, {4, 7, 11}};
+        logResult(main.splitPainting(segments));
+    }
 }

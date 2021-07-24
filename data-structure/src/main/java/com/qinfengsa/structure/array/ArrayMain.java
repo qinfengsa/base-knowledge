@@ -2901,4 +2901,194 @@ public class ArrayMain {
 
         return result;
     }
+
+    /**
+     * 5805. 最小未被占据椅子的编号
+     *
+     * <p>有 n 个朋友在举办一个派对，这些朋友从 0 到 n - 1 编号。派对里有 无数 张椅子，编号为 0 到 infinity 。当一个朋友到达派对时，他会占据 编号最小
+     * 且未被占据的椅子。
+     *
+     * <p>比方说，当一个朋友到达时，如果椅子 0 ，1 和 5 被占据了，那么他会占据 2 号椅子。
+     * 当一个朋友离开派对时，他的椅子会立刻变成未占据状态。如果同一时刻有另一个朋友到达，可以立即占据这张椅子。
+     *
+     * <p>给你一个下标从 0 开始的二维整数数组 times ，其中 times[i] = [arrivali, leavingi] 表示第 i 个朋友到达和离开的时刻，同时给你一个整数
+     * targetFriend 。所有到达时间 互不相同 。
+     *
+     * <p>请你返回编号为 targetFriend 的朋友占据的 椅子编号 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：times = [[1,4],[2,3],[4,6]], targetFriend = 1 输出：1 解释： - 朋友 0 时刻 1 到达，占据椅子 0 。 - 朋友 1
+     * 时刻 2 到达，占据椅子 1 。 - 朋友 1 时刻 3 离开，椅子 1 变成未占据。 - 朋友 0 时刻 4 离开，椅子 0 变成未占据。 - 朋友 2 时刻 4 到达，占据椅子 0
+     * 。 朋友 1 占据椅子 1 ，所以返回 1 。 示例 2：
+     *
+     * <p>输入：times = [[3,10],[1,5],[2,6]], targetFriend = 0 输出：2 解释： - 朋友 1 时刻 1 到达，占据椅子 0 。 - 朋友 2
+     * 时刻 2 到达，占据椅子 1 。 - 朋友 0 时刻 3 到达，占据椅子 2 。 - 朋友 1 时刻 5 离开，椅子 0 变成未占据。 - 朋友 2 时刻 6 离开，椅子 1
+     * 变成未占据。 - 朋友 0 时刻 10 离开，椅子 2 变成未占据。 朋友 0 占据椅子 2 ，所以返回 2 。
+     *
+     * <p>提示：
+     *
+     * <p>n == times.length 2 <= n <= 104 times[i].length == 2 1 <= arrivali < leavingi <= 105 0 <=
+     * targetFriend <= n - 1 每个 arrivali 时刻 互不相同 。
+     *
+     * @param times
+     * @param targetFriend
+     * @return
+     */
+    public int smallestChair(int[][] times, int targetFriend) {
+        int n = times.length;
+        List<FriendNode> friendNodeList = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            friendNodeList.add(new FriendNode(i, times[i][0], times[i][1]));
+        }
+        friendNodeList.sort((a, b) -> a.start == b.start ? a.idx - b.idx : a.start - b.start);
+        int curChair = 0;
+        PriorityQueue<TimeNode> heap = new PriorityQueue<>((a, b) -> a.time - b.time);
+
+        PriorityQueue<Integer> chairQueue = new PriorityQueue<>();
+        for (FriendNode node : friendNodeList) {
+            int time = node.start;
+            while (!heap.isEmpty() && heap.peek().time <= time) {
+                TimeNode timeNode = heap.poll();
+                chairQueue.offer(timeNode.chair);
+            }
+            int chair;
+            if (chairQueue.isEmpty()) {
+                chair = curChair++;
+            } else {
+                chair = chairQueue.poll();
+            }
+            if (node.idx == targetFriend) {
+                return chair;
+            }
+            heap.offer(new TimeNode(node.end, chair));
+        }
+
+        return -1;
+    }
+
+    static class FriendNode {
+        int idx, start, end;
+
+        public FriendNode(int idx, int start, int end) {
+            this.idx = idx;
+            this.start = start;
+            this.end = end;
+        }
+    }
+
+    static class TimeNode {
+        int time, chair;
+
+        public TimeNode(int time, int chair) {
+            this.time = time;
+            this.chair = chair;
+        }
+    }
+
+    /**
+     * 5806. 描述绘画结果
+     *
+     * <p>给你一个细长的画，用数轴表示。这幅画由若干有重叠的线段表示，每个线段有 独一无二 的颜色。给你二维整数数组 segments ，其中 segments[i] = [starti,
+     * endi, colori] 表示线段为 半开区间 [starti, endi) 且颜色为 colori 。
+     *
+     * <p>线段间重叠部分的颜色会被 混合 。如果有两种或者更多颜色混合时，它们会形成一种新的颜色，用一个 集合 表示这个混合颜色。
+     *
+     * <p>比方说，如果颜色 2 ，4 和 6 被混合，那么结果颜色为 {2,4,6} 。 为了简化题目，你不需要输出整个集合，只需要用集合中所有元素的 和 来表示颜色集合。
+     *
+     * <p>你想要用 最少数目 不重叠 半开区间 来 表示 这幅混合颜色的画。这些线段可以用二维数组 painting 表示，其中 painting[j] = [leftj, rightj,
+     * mixj] 表示一个 半开区间[leftj, rightj) 的颜色 和 为 mixj 。
+     *
+     * <p>比方说，这幅画由 segments = [[1,4,5],[1,7,7]] 组成，那么它可以表示为 painting = [[1,4,12],[4,7,7]] ，因为： [1,4)
+     * 由颜色 {5,7} 组成（和为 12），分别来自第一个线段和第二个线段。 [4,7) 由颜色 {7} 组成，来自第二个线段。 请你返回二维数组 painting
+     * ，它表示最终绘画的结果（没有 被涂色的部分不出现在结果中）。你可以按 任意顺序 返回最终数组的结果。
+     *
+     * <p>半开区间 [a, b) 是数轴上点 a 和点 b 之间的部分，包含 点 a 且 不包含 点 b 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：segments = [[1,4,5],[4,7,7],[1,7,9]] 输出：[[1,4,14],[4,7,16]] 解释：绘画借故偶可以表示为： - [1,4) 颜色为
+     * {5,9} （和为 14），分别来自第一和第二个线段。 - [4,7) 颜色为 {7,9} （和为 16），分别来自第二和第三个线段。 示例 2：
+     *
+     * <p>输入：segments = [[1,7,9],[6,8,15],[8,10,7]] 输出：[[1,6,9],[6,7,24],[7,8,15],[8,10,7]]
+     * 解释：绘画结果可以以表示为： - [1,6) 颜色为 9 ，来自第一个线段。 - [6,7) 颜色为 {9,15} （和为 24），来自第一和第二个线段。 - [7,8) 颜色为 15
+     * ，来自第二个线段。 - [8,10) 颜色为 7 ，来自第三个线段。 示例 3：
+     *
+     * <p>输入：segments = [[1,4,5],[1,4,7],[4,7,1],[4,7,11]] 输出：[[1,4,12],[4,7,12]] 解释：绘画结果可以表示为： -
+     * [1,4) 颜色为 {5,7} （和为 12），分别来自第一和第二个线段。 - [4,7) 颜色为 {1,11} （和为 12），分别来自第三和第四个线段。 注意，只返回一个单独的线段
+     * [1,7) 是不正确的，因为混合颜色的集合不相同。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= segments.length <= 2 * 104 segments[i].length == 3 1 <= starti < endi <= 105 1 <=
+     * colori <= 109 每种颜色 colori 互不相同。
+     *
+     * @param segments
+     * @return
+     */
+    public List<List<Long>> splitPainting(int[][] segments) {
+        List<List<Long>> result = new ArrayList<>();
+
+        Arrays.sort(segments, (a, b) -> a[0] == b[0] ? a[1] - b[1] : a[0] - b[0]);
+        int len = segments.length;
+        long last = 0, color = 0;
+
+        PriorityQueue<SegmentNode> queue = new PriorityQueue<>((a, b) -> a.num - b.num);
+        for (int[] segment : segments) {
+
+            while (!queue.isEmpty() && queue.peek().num <= segment[0]) {
+                SegmentNode node = queue.poll();
+                if (node.num > last) {
+                    List<Long> list = new ArrayList<>();
+                    list.add(last);
+                    list.add((long) node.num);
+                    list.add(color);
+                    result.add(list);
+                }
+                last = node.num;
+                color -= node.color;
+            }
+            if (queue.isEmpty()) {
+                last = 0;
+            }
+
+            if (last == 0) {
+                last = segment[0];
+            } else if (segment[0] > last) {
+                List<Long> list = new ArrayList<>();
+                list.add(last);
+                list.add((long) segment[0]);
+                list.add(color);
+                result.add(list);
+                last = segment[0];
+            }
+
+            queue.offer(new SegmentNode(segment[1], segment[2]));
+            color += segment[2];
+        }
+
+        while (!queue.isEmpty()) {
+            SegmentNode node = queue.poll();
+            if (node.num > last) {
+                List<Long> list = new ArrayList<>();
+                list.add(last);
+                list.add((long) node.num);
+                list.add(color);
+                result.add(list);
+                last = node.num;
+            }
+            color -= node.color;
+        }
+
+        return result;
+    }
+
+    static class SegmentNode {
+        int num, color;
+
+        public SegmentNode(int num, int color) {
+            this.num = num;
+            this.color = color;
+        }
+    }
 }
