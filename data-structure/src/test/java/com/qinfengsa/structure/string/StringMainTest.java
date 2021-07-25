@@ -98,4 +98,18 @@ public class StringMainTest {
         String s = "aabca";
         logResult(main.countPalindromicSubsequence(s));
     }
+
+    @Test
+    public void getLucky() {
+        String s = "iiii";
+        int k = 1;
+        logResult(main.getLucky(s, k));
+    }
+
+    @Test
+    public void maximumNumber() {
+        String num = "334111";
+        int[] change = {0, 9, 2, 3, 3, 2, 5, 5, 5, 5};
+        logResult(main.maximumNumber(num, change));
+    }
 }

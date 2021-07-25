@@ -271,4 +271,10 @@ public class ArrayMainTest {
         int[][] segments = {{1, 4, 5}, {1, 4, 7}, {4, 7, 1}, {4, 7, 11}};
         logResult(main.splitPainting(segments));
     }
+
+    @Test
+    public void maxCompatibilitySum() {
+        int[][] students = {{0, 0}, {0, 0}, {0, 0}}, mentors = {{1, 1}, {1, 1}, {1, 1}};
+        logResult(main.maxCompatibilitySum(students, mentors));
+    }
 }
