@@ -1186,4 +1186,85 @@ public class MathMain {
 
         return sub / (subCnt / 2) != 9;
     }
+
+    /**
+     * 5830. 三除数
+     *
+     * <p>给你一个整数 n 。如果 n 恰好有三个正除数 ，返回 true ；否则，返回 false 。
+     *
+     * <p>如果存在整数 k ，满足 n = k * m ，那么整数 m 就是 n 的一个 除数 。
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：n = 2 输出：false 解释：2 只有两个除数：1 和 2 。 示例 2：
+     *
+     * <p>输入：n = 4 输出：true 解释：4 有三个除数：1、2 和 4 。
+     *
+     * <p>提示：
+     *
+     * <p>1 <= n <= 104
+     *
+     * @param n
+     * @return
+     */
+    public boolean isThree(int n) {
+        int count = 0;
+        for (int i = 1; i * i <= n; i++) {
+            if (n % i != 0) {
+                continue;
+            }
+            if (i * i == n) {
+                count++;
+            } else {
+                count += 2;
+            }
+        }
+        return count == 3;
+    }
+
+    /**
+     * 5187. 收集足够苹果的最小花园周长
+     *
+     * <p>给你一个用无限二维网格表示的花园，每一个 整数坐标处都有一棵苹果树。整数坐标 (i, j) 处的苹果树有 |i| + |j| 个苹果。
+     *
+     * <p>你将会买下正中心坐标是 (0, 0) 的一块 正方形土地 ，且每条边都与两条坐标轴之一平行。
+     *
+     * <p>给你一个整数 neededApples ，请你返回土地的 最小周长 ，使得 至少 有 neededApples 个苹果在土地 里面或者边缘上。
+     *
+     * <p>|x| 的值定义为：
+     *
+     * <p>如果 x >= 0 ，那么值为 x 如果 x < 0 ，那么值为 -x
+     *
+     * <p>示例 1：
+     *
+     * <p>输入：neededApples = 1 输出：8 解释：边长长度为 1 的正方形不包含任何苹果。 但是边长为 2 的正方形包含 12 个苹果（如上图所示）。 周长为 2 * 4 =
+     * 8 。 示例 2：
+     *
+     * <p>输入：neededApples = 13 输出：16 示例 3：
+     *
+     * <p>输入：neededApples = 1000000000 输出：5040
+     *
+     * <p>提示：
+     *
+     * <p>1 <= neededApples <= 1015
+     *
+     * @param neededApples
+     * @return
+     */
+    public long minimumPerimeter(long neededApples) {
+        long result = 0;
+        long left = 1L, right = 100000L;
+        // 公式 12 * n^2 -> 求和 12 * n * (n + 1) * (2n + 1) / 6 -> 2 * n * (n + 1) * (2n + 1)
+        while (left < right) {
+            long mid = (left + right) >> 1;
+            if (2 * mid * (mid + 1) * (2 * mid + 1) >= neededApples) {
+                result = mid;
+                right = mid - 1;
+            } else {
+                left = mid + 1;
+            }
+        }
+
+        return result;
+    }
 }
